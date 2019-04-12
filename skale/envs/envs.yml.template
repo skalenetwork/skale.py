@@ -1,0 +1,31 @@
+envs:
+  ua_server:
+    ip: ''
+    http_port:
+    ws_port:
+    version:
+  aws:
+    ip: ''
+    http_port:
+    ws_port:
+    version:
+  do:
+    ip: ''
+    http_port:
+    ws_port:
+    version:
+  local:
+    ip: ''
+    http_port:
+    ws_port:
+    version:
+  aws3:
+    ip: ''
+    http_port:
+    ws_port:
+    version:
+  test:
+    ip: ''
+    http_port:
+    ws_port:
+    version:

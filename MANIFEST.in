@@ -1,0 +1,7 @@
+include README.md
+include skale/contracts_data.json
+
+include skale/envs/envs.yml
+include skale/envs/aws.json
+include skale/envs/local.json
+include skale/envs/ua_server.json
