@@ -2,7 +2,8 @@
 
 [![PyPI version](https://badge.fury.io/py/skale.py.svg)](https://badge.fury.io/py/skale.py)
 [![Build Status](https://travis-ci.com/skalenetwork/skale.py.svg?token=tLesVRTSHvWZxoyqXdoA&branch=develop)](https://travis-ci.com/skalenetwork/skale.py) 
-[![codecov](https://codecov.io/gh/skalenetwork/skale.py/branch/develop/graph/badge.svg?token=XHiZ15ijpa)](https://codecov.io/gh/skalenetwork/skale.py)  
+[![codecov](https://codecov.io/gh/skalenetwork/skale.py/branch/develop/graph/badge.svg?token=XHiZ15ijpa)](https://codecov.io/gh/skalenetwork/skale.py)
+[![Discord](https://img.shields.io/discord/534485763354787851.svg)](https://discord.gg/vvUtWJB)
 
 Python client library used in SKALE network components.
 
@@ -85,3 +86,9 @@ bash test_runner.sh
 Running test suite manually:
 
 See `tests/README.md`
+
+### License
+
+![GitHub](https://img.shields.io/github/license/skalenetwork/skale.py.svg)
+
+All contributions are made under the [GNU Lesser General Public License v3](https://www.gnu.org/licenses/lgpl-3.0.en.html). See [LICENSE](LICENSE).
