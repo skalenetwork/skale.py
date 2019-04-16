@@ -2,10 +2,11 @@
 
 [![PyPI version](https://badge.fury.io/py/skale.py.svg)](https://badge.fury.io/py/skale.py)
 [![Build Status](https://travis-ci.com/skalenetwork/skale.py.svg?token=tLesVRTSHvWZxoyqXdoA&branch=develop)](https://travis-ci.com/skalenetwork/skale.py) 
-[![codecov](https://codecov.io/gh/skalenetwork/skale.py/branch/develop/graph/badge.svg?token=0QYzyW1tZN)](https://codecov.io/gh/skalenetwork/skale.py)  
+[![codecov](https://codecov.io/gh/skalenetwork/skale.py/branch/develop/graph/badge.svg?token=XHiZ15ijpa)](https://codecov.io/gh/skalenetwork/skale.py)  
 
-SKALE client tools.  
-Python implementation used in skale-node and other SKALE network components.
+Python client library used in SKALE network components.
+
+- Python 3.6+ support
 
 ### Installation
 
