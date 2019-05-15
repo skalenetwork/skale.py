@@ -16,7 +16,7 @@ class NodeInfo():
 
     def to_config(self):
         return {
-            'nodeId': self.node_id,
+            'nodeID': self.node_id,
             'nodeName': self.node_name,
             'basePort': self.base_port,
             'httpRpcPort': self.http_rpc_port,
