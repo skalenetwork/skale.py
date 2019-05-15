@@ -14,8 +14,6 @@ else
     echo "Bumping $CURRENT_VERSION → $1"
 fi
 
-echo "Formatting code with yapf..."
-yapf -ir ./skale
 
 bumpversion --current-version $CURRENT_VERSION $1 setup.py
 
