@@ -8,5 +8,5 @@ class CurrentNodeInfo(NodeInfo):
 
     def to_config(self):
         return {**super().to_config(), **{
-            'bindIp': self.bind_ip
+            'bindIP': self.bind_ip
         }}

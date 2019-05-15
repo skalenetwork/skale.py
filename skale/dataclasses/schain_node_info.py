@@ -17,5 +17,5 @@ class SchainNodeInfo(NodeInfo):
             'owner': self.owner,
             'schainIndex': self.schain_index,
             'ip': self.ip,
-            'publicIp': self.public_ip
+            'publicIP': self.public_ip
         }}
