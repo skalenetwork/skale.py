@@ -8,4 +8,3 @@ from skale.contracts import Manager, Token, Nodes, SChains, Validators, Groups, 
     Constants
 from skale.event_listener import EventListener
 from skale.blockchain_env import BlockchainEnv
-from skale.dataclasses import node_info, current_node_info, schain_node_info
