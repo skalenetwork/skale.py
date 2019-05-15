@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ Get SKALE validator data """
-
+from web3 import Web3
 from skale.contracts import BaseContract
 
 
@@ -29,3 +29,8 @@ class ValidatorsData(BaseContract):
     def get_delta_period(self):
         constants = self.skale.get_contract_by_name('constants')
         return constants.contract.functions.deltaPeriod().call()
+
+    def get_validated_array(self, node_id, account):
+        node_id_bytes = Web3.soliditySha3(['uint256'], [node_id])
+        return self.contract.functions.getValidatedArray(node_id_bytes).call(
+            {'from': account})
