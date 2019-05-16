@@ -1,4 +1,4 @@
-from skale.utils.node_info import NodeInfo
+from skale.dataclasses.node_info import NodeInfo
 
 
 class SchainNodeInfo(NodeInfo):

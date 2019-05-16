@@ -24,8 +24,8 @@ from skale.contracts import BaseContract
 from skale.utils.helper import format, ip_from_bytes, public_key_to_address
 from skale.skaled_ports import SkaledPorts
 
-from skale.utils.current_node_info import CurrentNodeInfo
-from skale.utils.schain_node_info import SchainNodeInfo
+from skale.dataclasses.current_node_info import CurrentNodeInfo
+from skale.dataclasses.schain_node_info import SchainNodeInfo
 
 FIELDS = [
     'name', 'owner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate',
