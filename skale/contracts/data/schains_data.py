@@ -80,7 +80,7 @@ class SChainsData(BaseContract):
         nodes_info = []
         nodes = self.get_nodes_for_schain(name)
 
-        for i, node in enumerate(nodes):
+        for i, node in enumerate(nodes, 1):
             pk = node['publicKey'].hex()
             base_port = self.get_schain_base_port_on_node(name, node['id'], node['port'])
 
