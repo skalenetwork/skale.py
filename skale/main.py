@@ -52,12 +52,13 @@ class Skale:
                               address)
 
     def add_lib_contract(self, name, contract_class, contract_address=None):
-        address = contract_address or self.get_contract_addres_by_name(
+        address = contract_address or self.get_contract_address_by_name(
             self.abi, name)
+        logger.info(f'Initialized: {name} at {address}')
         abi = self.get_contract_abi_by_name(self.abi, name)
         self.add_contract(name, contract_class(self, name, address, abi))
 
-    def get_contract_addres_by_name(self, abi, name):
+    def get_contract_address_by_name(self, abi, name):
         return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
 
     def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names

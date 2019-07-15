@@ -19,8 +19,10 @@
 """ Call SKALE node data example """
 
 from skale import BlockchainEnv, Skale
+import skale.utils.helper as Helper
 from skale.utils.helper import ip_from_bytes
 
+Helper.init_default_logger()
 skale = Skale(BlockchainEnv.TEST)
 
 nodes_ids = skale.nodes_data.get_active_node_ids()
