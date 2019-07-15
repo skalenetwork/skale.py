@@ -7,6 +7,7 @@ GAS = {
     'token_transfer': 60000,
     'add_authorized': 100000,
     'set_periods': 200000,
+    'delete_node': 600000
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}

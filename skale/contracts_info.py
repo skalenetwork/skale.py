@@ -8,7 +8,7 @@ CONTRACTS_INFO = [
     ContractInfo('token', 'SkaleToken', contracts.Token, ContractTypes.API,
                  False),
     ContractInfo('manager', 'SkaleManager', contracts.Manager,
-                 ContractTypes.API, False),
+                 ContractTypes.API, True),
     ContractInfo('constants', 'Constants', contracts.Constants,
                  ContractTypes.INTERNAL, True),
     ContractInfo('nodes', 'NodesFunctionality', contracts.Nodes,

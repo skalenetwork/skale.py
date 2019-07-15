@@ -116,3 +116,9 @@ class Manager(BaseContract):
                                                  latency)
         tx = sign_and_send(self.skale, op, GAS['send_verdict'], wallet)
         return {'tx': tx}
+
+    def deregister(self, node_id, wallet):
+        op = self.contract.functions.deleteNode(node_id)
+        tx = sign_and_send(self.skale, op, GAS['delete_node'], wallet)
+        return {'tx': tx}
+

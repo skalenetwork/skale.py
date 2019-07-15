@@ -41,12 +41,12 @@ class Skale:
         self.add_lib_contract('contract_manager', contracts.ContractManager)
         for name in self.__contracts_info:
             info = self.__contracts_info[name]
-            if info.upgradable:
-                self.init_upgradable_contract(info)
+            if info.upgradeable:
+                self.init_upgradeable_contract(info)
             else:
                 self.add_lib_contract(info.name, info.contract_class)
 
-    def init_upgradable_contract(self, contract_info):
+    def init_upgradeable_contract(self, contract_info):
         address = self.get_contract_address(contract_info.contract_name)
         self.add_lib_contract(contract_info.name, contract_info.contract_class,
                               address)
