@@ -19,7 +19,7 @@
 """ SKALE automation config """
 
 NUMBER_OF_ACCOUNTS = 2
-SKALE_AMOUNT = 100
+SKALE_AMOUNT = 1000
 ETH_AMOUNT = 10
 
 LONG_LINE = '=' * 100
