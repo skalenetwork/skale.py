@@ -21,5 +21,8 @@
 from skale import BlockchainEnv, Skale
 
 skale = Skale(BlockchainEnv.DO)
-schains = skale.schains_data.get_all_schains()
-print(schains)
+schains_ids = skale.schains_data.get_all_schains_ids()
+
+for id in schains_ids:
+    schain = skale.schains_data.get(id)
+    print(schain)

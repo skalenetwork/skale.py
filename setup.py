@@ -26,7 +26,7 @@ extras_require['dev'] = (
 setup(
     name='skale.py',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.57.0',
+    version='0.79.0',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -34,7 +34,7 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==4.8.2",
+        "web3==4.9.2",
         "asyncio==3.4.3",
     ],
 

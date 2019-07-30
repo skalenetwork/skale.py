@@ -29,4 +29,4 @@ class ContractInfo(NamedTuple):
     contract_name: str
     contract_class: BaseContract
     type: ContractTypes
-    upgradable: bool
+    upgradeable: bool

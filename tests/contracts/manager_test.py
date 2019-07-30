@@ -83,3 +83,41 @@ def test_get_bounty(skale, wallet):
 
 def test_send_verdict(skale, wallet):
     pass  # todo!
+
+def test_deregister_node(skale, wallet):
+
+    active_node_ids_before = skale.nodes_data.get_active_node_ids()
+
+    ip, public_ip, port, name = generate_random_node_data()
+    res = skale.manager.create_node(ip, port, name, wallet, public_ip)
+    receipt = Helper.await_receipt(skale.web3, res['tx'])
+    assert receipt['status'] == 1
+
+    node_idx = skale.nodes_data.node_name_to_index(name)
+
+    res = skale.manager.deregister(node_idx, wallet)
+    receipt = Helper.await_receipt(skale.web3, res['tx'])
+    assert receipt['status'] == 1
+
+    active_node_ids_after = skale.nodes_data.get_active_node_ids()
+    #assert len(active_node_ids_after) == len(active_node_ids_before) # todo: fix!
+
+
+def test_delete_schain(skale, wallet):
+    schains_ids = skale.schains_data.get_all_schains_ids()
+
+    # create schain
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
+    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes, price_in_wei, name, wallet)
+    receipt = Helper.await_receipt(skale.web3, res['tx'])
+
+    assert receipt['status'] == 1
+
+    # remove it
+    res = skale.manager.delete_schain(name, wallet)
+    receipt = Helper.await_receipt(skale.web3, res['tx'])
+    assert receipt['status'] == 1
+
+    schains_ids_after = skale.schains_data.get_all_schains_ids()
+    assert len(schains_ids_after) == len(schains_ids)

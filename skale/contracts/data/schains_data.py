@@ -22,6 +22,10 @@ from Crypto.Hash import keccak
 
 from skale.contracts import BaseContract
 from skale.utils.helper import format, ip_from_bytes, public_key_to_address
+from skale.skaled_ports import SkaledPorts
+
+from skale.dataclasses.current_node_info import CurrentNodeInfo
+from skale.dataclasses.schain_node_info import SchainNodeInfo
 
 FIELDS = [
     'name', 'owner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate',
@@ -62,29 +66,35 @@ class SChainsData(BaseContract):
     def get_schain_id_by_index_for_owner(self, account, index):
         return self.contract.functions.schainIndexes(account, index).call()
 
+    def get_current_node_for_schain_config(self, schain_name: str, node_id: int) -> CurrentNodeInfo:
+        node = self.skale.nodes_data.get(node_id)
+        schain_base_port = self.get_schain_base_port_on_node(schain_name, node_id, node['port'])
+        return CurrentNodeInfo(
+            node_name=node['name'],
+            node_id=node_id,
+            base_port=schain_base_port,
+            bind_ip=ip_from_bytes(node['ip'])
+        ).to_config()
+
     def get_nodes_for_schain_config(self, name):
         nodes_info = []
         nodes = self.get_nodes_for_schain(name)
 
-        for i, node in enumerate(nodes):
+        for i, node in enumerate(nodes, 1):
             pk = node['publicKey'].hex()
+            base_port = self.get_schain_base_port_on_node(name, node['id'], node['port'])
 
-            node_info = {
-                'schainIndex': i,
-                'nodeID': node['id'],
-                'ip': ip_from_bytes(node['ip']),
-                'basePort': node['port'],
-                'publicKey': pk,
-                'publicIP': ip_from_bytes(node['publicIP']),
-                'owner': public_key_to_address(pk)
-            }
+            node_info = SchainNodeInfo(
+                node_name=node['name'],
+                node_id=node['id'],
+                base_port=base_port,
 
-            node_info['basePort'] = self.get_schain_base_port_on_node(
-                name, node_info['nodeID'],
-                node_info['basePort']
-            )
-            node_info['rpcPort'] = node_info['basePort'] + NUMBER_OF_PORTS
-
+                schain_index=i,
+                ip=ip_from_bytes(node['ip']),
+                public_key=pk,
+                public_ip=ip_from_bytes(node['publicIP']),
+                owner=public_key_to_address(pk)
+            ).to_config()
             nodes_info.append(node_info)
         return nodes_info
 

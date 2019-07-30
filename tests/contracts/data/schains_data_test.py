@@ -78,7 +78,11 @@ def test_get_nodes_for_schain_config(skale):
     schain_nodes = skale.schains_data.get_nodes_for_schain_config(DEFAULT_SCHAIN_NAME)
 
     assert len(schain_nodes) >= MIN_NODES_IN_SCHAIN
-    assert list(schain_nodes[0].keys()) == SCHAIN_CONFIG_FIELDS
+
+    print(schain_nodes[0].keys())
+    print(SCHAIN_CONFIG_FIELDS)
+
+    assert set(schain_nodes[0].keys()) == set(SCHAIN_CONFIG_FIELDS)
 
 
 def test_get_schain_base_port_on_node(skale):

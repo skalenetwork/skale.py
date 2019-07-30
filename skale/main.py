@@ -41,23 +41,24 @@ class Skale:
         self.add_lib_contract('contract_manager', contracts.ContractManager)
         for name in self.__contracts_info:
             info = self.__contracts_info[name]
-            if info.upgradable:
-                self.init_upgradable_contract(info)
+            if info.upgradeable:
+                self.init_upgradeable_contract(info)
             else:
                 self.add_lib_contract(info.name, info.contract_class)
 
-    def init_upgradable_contract(self, contract_info):
+    def init_upgradeable_contract(self, contract_info):
         address = self.get_contract_address(contract_info.contract_name)
         self.add_lib_contract(contract_info.name, contract_info.contract_class,
                               address)
 
     def add_lib_contract(self, name, contract_class, contract_address=None):
-        address = contract_address or self.get_contract_addres_by_name(
+        address = contract_address or self.get_contract_address_by_name(
             self.abi, name)
+        logger.info(f'Initialized: {name} at {address}')
         abi = self.get_contract_abi_by_name(self.abi, name)
         self.add_contract(name, contract_class(self, name, address, abi))
 
-    def get_contract_addres_by_name(self, abi, name):
+    def get_contract_address_by_name(self, abi, name):
         return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
 
     def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names
