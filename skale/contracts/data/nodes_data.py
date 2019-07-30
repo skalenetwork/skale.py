@@ -75,3 +75,7 @@ class NodesData(BaseContract):
     def is_node_ip_available(self, ip):
         ip_bytes = socket.inet_aton(ip)
         return not self.contract.functions.nodesIPCheck(ip_bytes).call()
+
+    def node_name_to_index(self, name):
+        name_hash = self.name_to_id(name)
+        return self.contract.functions.nodesNameToIndex(name_hash).call()
