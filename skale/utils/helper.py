@@ -34,9 +34,6 @@ import yaml
 from eth_keys import keys
 from web3 import Web3
 
-from skale.blockchain_env import BlockchainEnv
-from skale.config import ENV_FILE_EXTENSION, ENVS_DIR, SKALE_ENVS_FILEPATH
-
 logger = logging.getLogger(__name__)
 
 
@@ -144,19 +141,7 @@ def check_ip(ip):
     return ipaddress.ip_address(ip)
 
 
-def generate_ws_addr(ip, port):
-    check_ip(ip)
-    check_port(port)
-    return 'ws://' + ip + ':' + str(port)
-
-
-def get_contracts_data_filepath(skale_env):
-    return os.path.join(ENVS_DIR, f'{skale_env.value}.json')
-
-
-def get_abi(skale_env, abi_filepath=None):
-    if (skale_env != BlockchainEnv.CUSTOM):
-        abi_filepath = get_contracts_data_filepath(skale_env)
+def get_abi(abi_filepath=None):
     with open(abi_filepath) as data_file:
         return json.load(data_file)
 
@@ -188,15 +173,6 @@ def load_yaml(filepath):
             return yaml.load(stream)
         except yaml.YAMLError as exc:
             print(exc)
-
-
-def load_skale_env_file():
-    return load_yaml(SKALE_ENVS_FILEPATH)
-
-
-def load_skale_env_config(env):
-    env_file = load_skale_env_file()
-    return env_file['envs'][env.value]
 
 
 def generate_custom_config(ip, ws_port):

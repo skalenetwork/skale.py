@@ -21,15 +21,14 @@
 import pytest
 from web3.auto import w3
 
-from skale import BlockchainEnv, Skale
+from skale import Skale
 from skale.utils.account_tools import init_test_wallet
-from tests.constants import RPC_IP, RPC_PORT
-
+from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 
 @pytest.fixture
 def skale():
     '''Returns a SKALE instance with provider from config'''
-    return Skale(BlockchainEnv.TEST, ip=RPC_IP, ws_port=RPC_PORT)
+    return Skale(ENDPOINT, TEST_ABI_FILEPATH)
 
 
 @pytest.fixture

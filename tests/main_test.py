@@ -20,16 +20,16 @@
 
 from web3 import WebsocketProvider
 
-from skale import BlockchainEnv, Skale
+from skale import Skale
 from skale.contracts import BaseContract
 from skale.contracts.functionality.nodes import Nodes
 from skale.contracts_info import CONTRACTS_INFO
 from skale.utils.contract_info import ContractInfo
-from tests.constants import TEST_CONTRACT_NAME, RPC_IP, RPC_PORT
+from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH
 
 
 def test_lib_init():
-    skale = Skale(BlockchainEnv.TEST, ip=RPC_IP, ws_port=RPC_PORT)
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
 
     lib_contracts_info = skale._Skale__contracts_info
     for contract_info in CONTRACTS_INFO:

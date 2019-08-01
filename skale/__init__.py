@@ -7,4 +7,3 @@ from skale.main import Skale
 from skale.contracts import Manager, Token, Nodes, SChains, Validators, Groups, BaseContract, \
     Constants
 from skale.event_listener import EventListener
-from skale.blockchain_env import BlockchainEnv

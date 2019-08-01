@@ -19,9 +19,9 @@
 """ SKALE data prep for testing """
 
 import skale.utils.helper as Helper
-from skale import BlockchainEnv, Skale
+from skale import Skale
 from skale.utils.account_tools import init_test_wallet
-from tests.constants import DEFAULT_SCHAIN_NAME, TEST_NAME
+from tests.constants import DEFAULT_SCHAIN_NAME, TEST_NAME, ENDPOINT, TEST_ABI_FILEPATH
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
@@ -51,7 +51,7 @@ def prepare_data(skale, wallet):
 
 if __name__ == "__main__":
     Helper.init_default_logger()
-    skale = Skale(BlockchainEnv.TEST)
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
     wallet = init_test_wallet()
 
     prepare_data(skale, wallet)

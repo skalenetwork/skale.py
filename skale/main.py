@@ -1,34 +1,35 @@
 import logging
 
-from web3 import Web3, WebsocketProvider
+from web3 import Web3, WebsocketProvider, HTTPProvider
+from urllib.parse import urlparse
 
 import skale.contracts as contracts
-from skale.blockchain_env import BlockchainEnv
 from skale.contracts_info import CONTRACTS_INFO
-from skale.utils.helper import (generate_custom_config, generate_ws_addr,
-                                get_abi, load_skale_env_config)
+from skale.utils.helper import get_abi
 
 logger = logging.getLogger(__name__)
 
 
 class Skale:
-    def __init__(self, skale_env, ip=None, ws_port=None, abi_filepath=None):
-        if (ip and ws_port):
-            env_config = generate_custom_config(ip, ws_port)
-        else:
-            env_config = load_skale_env_config(skale_env)
-
-        logger.info(
-            f'Init skale-py: skale_env: {skale_env}, env_config: {env_config}')
-        ws_addr = generate_ws_addr(env_config['ip'], env_config['ws_port'])
-        self.web3 = Web3(WebsocketProvider(ws_addr))
-        self.abi = get_abi(skale_env, abi_filepath)
+    def __init__(self, endpoint, abi_filepath):
+        logger.info(f'Init skale-py, connecting to {endpoint}')
+        provider = self.get_provider(endpoint)
+        self.web3 = Web3(provider)
+        self.abi = get_abi(abi_filepath)
         self.__contracts = {}
         self.__contracts_info = {}
         self.nonces = {}
 
         self.__init_contracts_info()
         self.__init_contracts()
+
+    def get_provider(self, endpoint):
+        scheme = urlparse(endpoint).scheme
+        if scheme == 'ws' or scheme == 'wss':
+            return WebsocketProvider(endpoint)
+        if scheme == 'http' or scheme == 'https':
+            return HTTPProvider(endpoint)
+        raise Exception(f'Wrong endpoint option. Supported endpoint schemes: http/https/ws/wss')
 
     def __init_contracts_info(self):
         for contract_info in CONTRACTS_INFO:

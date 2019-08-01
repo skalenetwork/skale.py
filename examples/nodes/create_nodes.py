@@ -18,13 +18,16 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ Create SKALE node example """
 
+import os
 import sys
 
 import skale.utils.helper as Helper
-from skale import BlockchainEnv, Skale
+from skale import Skale
 from skale.utils.account_tools import init_wallet
 from skale.utils.constants import LONG_LINE
 from tests.utils import generate_random_node_data
+
+from examples.helper import ENDPOINT, LOCAL_ABI_FILEPATH
 
 Helper.init_default_logger()
 
@@ -47,7 +50,7 @@ def create_nodes(skale, amount, wallet):
 if __name__ == "__main__":
     amount = sys.argv[1]
 
-    skale = Skale(BlockchainEnv.DO)
+    skale = Skale(ENDPOINT, LOCAL_ABI_FILEPATH)
     wallet = init_wallet()
 
     print(f'Creating {amount} nodes...')

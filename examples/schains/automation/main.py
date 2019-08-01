@@ -28,11 +28,13 @@ import skale.utils.helper as Helper
 from examples.schains.automation.config import (ETH_AMOUNT, FOLDER_NAME,
                                                 LONG_LINE, NUMBER_OF_ACCOUNTS,
                                                 SKALE_AMOUNT)
-from skale import BlockchainEnv, Skale
+from skale import Skale
 from skale.utils.account_tools import (check_ether_balance,
                                        check_skale_balance, generate_account,
                                        init_wallet, send_ether, send_tokens)
 from tests.utils import generate_random_schain_data
+from examples.helper import ENDPOINT, LOCAL_ABI_FILEPATH
+
 
 Helper.init_default_logger()
 logger = logging.getLogger(__name__)
@@ -88,7 +90,7 @@ def generate_accounts(skale, base_wallet, n, debug=True):
 
 
 if __name__ == "__main__":
-    skale = Skale(BlockchainEnv.DO)
+    skale = Skale(ENDPOINT, LOCAL_ABI_FILEPATH)
     base_wallet = init_wallet()
     amount = sys.argv[1] or NUMBER_OF_ACCOUNTS
     generate_accounts(skale, base_wallet, int(amount))
