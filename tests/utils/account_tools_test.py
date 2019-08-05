@@ -22,7 +22,7 @@ from web3 import Web3
 
 from skale.utils.account_tools import (check_ether_balance, generate_account,
                                        generate_accounts, init_wallet,
-                                       send_ether, send_tokens)
+                                       send_ether, send_tokens, check_skale_balance)
 from skale.utils.helper import private_key_to_address
 from tests.constants import TOKEN_TRANSFER_VALUE, ETH_TRANSFER_VALUE, N_TEST_WALLETS
 
@@ -82,9 +82,11 @@ def test_generate_accounts(skale, wallet):
 
     test_address = results[-1]['address']
     eth_balance = check_ether_balance(skale.web3, test_address)
+    token_balance_test = check_skale_balance(skale, test_address)
     token_balance = skale.token.get_balance(test_address)
 
     token_transfer_value_wei = skale.web3.toWei(TOKEN_TRANSFER_VALUE, 'ether')
 
+    assert TOKEN_TRANSFER_VALUE == token_balance_test
     assert eth_balance == ETH_TRANSFER_VALUE
     assert token_balance == token_transfer_value_wei

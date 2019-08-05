@@ -18,9 +18,11 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ Get all SKALE chains example """
 
-from skale import BlockchainEnv, Skale
+from skale import Skale
+from examples.helper import ENDPOINT, LOCAL_ABI_FILEPATH
 
-skale = Skale(BlockchainEnv.DO)
+skale = Skale(ENDPOINT, LOCAL_ABI_FILEPATH)
+
 schains_ids = skale.schains_data.get_all_schains_ids()
 
 for id in schains_ids:

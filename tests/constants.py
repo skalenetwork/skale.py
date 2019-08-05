@@ -20,6 +20,8 @@
 
 import os
 
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+
 NOT_EXIST_NODE_ID = 99999
 DEFAULT_NODE_ID = 0
 UNUSED_NAME = 'asdf5fghjtre4'
@@ -58,9 +60,8 @@ NODE_CREATED_EVENT_FIELDS = ['nodeIndex', 'owner', 'name', 'ip', 'publicIP', 'po
 TEST_EVENT_NAME = 'NodeCreated'
 
 
-RPC_IP = os.environ['RPC_IP']
-RPC_PORT = int(os.environ['RPC_PORT'])
-
+ENDPOINT = os.environ['ENDPOINT']
+TEST_ABI_FILEPATH = os.path.join(DIR_PATH, os.pardir, 'test_abi.json')
 
 # constants contract
 NEW_REWARD_PERIOD = 500

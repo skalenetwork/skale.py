@@ -18,12 +18,16 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ Call SKALE node data example """
 
-from skale import BlockchainEnv, Skale
+import os
+from skale import Skale
 import skale.utils.helper as Helper
 from skale.utils.helper import ip_from_bytes
+from examples.helper import ENDPOINT, LOCAL_ABI_FILEPATH
 
 Helper.init_default_logger()
-skale = Skale(BlockchainEnv.TEST)
+
+
+skale = Skale(ENDPOINT, LOCAL_ABI_FILEPATH)
 
 nodes_ids = skale.nodes_data.get_active_node_ids()
 nodes_ips = skale.nodes_data.get_active_node_ips()
