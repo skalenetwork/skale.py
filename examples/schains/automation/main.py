@@ -32,6 +32,7 @@ from skale import Skale
 from skale.utils.account_tools import (check_ether_balance,
                                        check_skale_balance, generate_account,
                                        init_wallet, send_ether, send_tokens)
+from skale.utils.random_names.generator import generate_random_schain_name
 from tests.utils import generate_random_schain_data
 from examples.helper import ENDPOINT, LOCAL_ABI_FILEPATH
 
@@ -58,15 +59,16 @@ def save_info(filename, schain_info=None, wallet=None):
 
 
 def create_schain(skale, wallet):
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, old_name = generate_random_schain_data()
+    schain_name = generate_random_schain_name()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
 
-    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes, price_in_wei, name, wallet)
+    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes, price_in_wei, schain_name, wallet)
     receipt = Helper.await_receipt(skale.web3, res['tx'])
     Helper.check_receipt(receipt)
 
-    schain_struct = skale.schains_data.get_by_name(name)
-    schain_nodes = skale.schains_data.get_nodes_for_schain_config(name)
+    schain_struct = skale.schains_data.get_by_name(schain_name)
+    schain_nodes = skale.schains_data.get_nodes_for_schain_config(schain_name)
     return {'schain_struct': schain_struct, 'schain_nodes': schain_nodes}
 
 

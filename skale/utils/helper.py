@@ -239,3 +239,10 @@ def init_default_logger():
     handlers.append(stream_handler)
 
     logging.basicConfig(level=logging.DEBUG, handlers=handlers)
+
+
+def read_file(path):
+    file = open(path, 'r')
+    text = file.read()
+    file.close()
+    return text

@@ -15,6 +15,7 @@ extras_require = {
         "pytest==3.8.1",
         "twine==1.12.1",
         "when-changed",
+        "Random-Word==1.0.4"
     ]
 }
 
