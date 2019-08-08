@@ -5,7 +5,3 @@ include skale/envs/envs.yml
 include skale/envs/aws.json
 include skale/envs/local.json
 include skale/envs/ua_server.json
-
-include skale/utils/random_names/constellations.txt
-include skale/utils/random_names/positive-and-time-adjectives.txt
-include skale/utils/random_names/stars.txt
