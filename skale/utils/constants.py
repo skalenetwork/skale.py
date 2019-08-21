@@ -8,6 +8,7 @@ GAS = {
     'add_authorized': 100000,
     'set_periods': 200000,
     'delete_node': 600000,
+    'delete_node_by_root': 600000,
     'delete_schain': 600000
 }
 

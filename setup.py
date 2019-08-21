@@ -15,6 +15,7 @@ extras_require = {
         "pytest==3.8.1",
         "twine==1.12.1",
         "when-changed",
+        "Random-Word==1.0.4"
     ]
 }
 
@@ -26,7 +27,7 @@ extras_require['dev'] = (
 setup(
     name='skale.py',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='0.79.0',
+    version='0.82.0',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',

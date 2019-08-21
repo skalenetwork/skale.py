@@ -127,3 +127,7 @@ class Manager(BaseContract):
         tx = sign_and_send(self.skale, op, GAS['delete_schain'], wallet)
         return {'tx': tx}
 
+    def delete_node_by_root(self, node_id, wallet):
+        op = self.contract.functions.deleteNodeByRoot(node_id)
+        tx = sign_and_send(self.skale, op, GAS['delete_node_by_root'], wallet)
+        return {'tx': tx}
