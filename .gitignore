@@ -115,3 +115,5 @@ schain.json
 abi.json
 
 .DS_Store
+
+.vscode/

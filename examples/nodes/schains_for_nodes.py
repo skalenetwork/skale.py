@@ -20,10 +20,11 @@
 
 import json
 
-from skale import BlockchainEnv, Skale
+from skale import Skale
 from skale.utils.helper import ip_from_bytes
+from examples.helper import ENDPOINT, LOCAL_ABI_FILEPATH
 
-skale = Skale(BlockchainEnv.DO)
+skale = Skale(ENDPOINT, LOCAL_ABI_FILEPATH)
 
 # todo: get all nodes
 node_idx = skale.nodes_data.get_active_node_ids()
