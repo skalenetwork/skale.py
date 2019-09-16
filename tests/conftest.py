@@ -25,6 +25,7 @@ from skale import Skale
 from skale.utils.account_tools import init_test_wallet
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 
+
 @pytest.fixture
 def skale():
     '''Returns a SKALE instance with provider from config'''

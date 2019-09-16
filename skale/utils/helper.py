@@ -21,7 +21,6 @@
 import ipaddress
 import json
 import logging
-import os
 import random
 import socket
 import string
@@ -52,7 +51,7 @@ def format(fields):
         def wrapper(*args, **kwargs):
             result = function(*args, **kwargs)
 
-            if result == None:
+            if result is None:
                 return None
 
             obj = {}
@@ -101,7 +100,7 @@ def sign_and_send(skale, method, gas_amount, wallet):
 def await_receipt(web3, tx, retries=10, timeout=5):
     for _ in range(0, retries):
         receipt = get_receipt(web3, tx)
-        if (receipt != None):
+        if receipt is not None:
             return receipt
         sleep(timeout)
     return None

@@ -101,6 +101,7 @@ def test_is_node_ip_available(skale):
     assert is_used_node_ip_available is False
     assert is_unused_node_ip_available is True
 
+
 def test_node_name_to_index(skale):
     node_idx = skale.nodes_data.node_name_to_index(TEST_NAME)
     assert DEFAULT_NODE_ID == node_idx

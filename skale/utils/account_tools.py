@@ -41,28 +41,30 @@ def init_test_wallet():
     return init_wallet(os.environ['TEST_ETH_PRIVATE_KEY'])
 
 
-def send_tokens(skale, sender_wallet, receiver_account, amount, await=True):
+def send_tokens(skale, sender_wallet, receiver_account, amount,
+                wait_for=True):
     logger.info(
         f'Sending {amount} SKALE tokens from {sender_wallet["address"]} => {receiver_account}'
     )
 
     wei_amount = skale.web3.toWei(amount, 'ether')
     res = skale.token.transfer(receiver_account, wei_amount, sender_wallet)
-    if await:
+    if wait_for:
         receipt = Helper.await_receipt(skale.web3, res['tx'])
         Helper.check_receipt(receipt)
         return receipt
     return res['tx']
 
 
-def send_ether(web3, sender_wallet, receiver_account, amount, await=True):
+def send_ether(web3, sender_wallet, receiver_account, amount,
+               wait_for=True):
     logger.info(
         f'Sending {amount} ETH from {sender_wallet["address"]} => {receiver_account}'
     )
 
     wei_amount = web3.toWei(amount, 'ether')
     tx = Helper.send_eth(web3, receiver_account, wei_amount, sender_wallet)
-    if await:
+    if wait_for:
         receipt = Helper.await_receipt(web3, tx)
         Helper.check_receipt(receipt)
         return receipt
