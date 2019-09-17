@@ -18,6 +18,8 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE manager test """
 
+import pytest
+
 import skale.utils.helper as Helper
 from tests.constants import DEFAULT_NODE_ID
 from tests.utils import generate_random_node_data, generate_random_schain_data
@@ -85,7 +87,7 @@ def test_send_verdict(skale, wallet):
     pass  # todo!
 
 
-@pytest.mark.skip('Broken test should be fixed'
+@pytest.mark.skip('Broken test should be fixed')
 def test_deregister_node(skale, wallet):
 
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
