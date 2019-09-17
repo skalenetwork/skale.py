@@ -39,18 +39,18 @@ Commands:
 
 Nodes.py commands usage example:
 ```
- ENDPOINT=ws://dev1.geth.skalenodes.com:1920 python nodes.py create 12 --abi-filepath ~/abi-file
+ ENDPOINT=https[ws]://endpoint.com:8080 python nodes.py create 12 --abi-filepath ~/abi-file
  ```
 
 ```
-ENDPOINT=ws://dev1.geth.skalenodes.com:1920 python nodes.py remove GNGLL11F
+ENDPOINT=https[ws]://endpoint.com:8080 python nodes.py remove GNGLL11F
 ```
 ```
- ENDPOINT=ws://dev1.geth.skalenodes.com:1920 python nodes.py show
+ ENDPOINT=https[ws]://endpoint.com:8080 python nodes.py show
 ```
 
 ```
-ENDPOINT=ws://dev1.geth.skalenodes.com:1920 python nodes.py schains-by-node --save-to ~/dir
+ENDPOINT=https[ws]://endpoint.com:8080 python nodes.py schains-by-node --save-to ~/dir
 ```
 
 #  Schains.py
@@ -80,13 +80,13 @@ endpoint and abi-filepath parameter has the same meaning as in nodes.py
 
 Schain.py commands usage example:
 ```
-  ENDPOINT=ws://dev1.geth.skalenodes.com:1920 python schains.py create --eth-amount 100 --skale-amount 1230 --save-to creds   
+  ENDPOINT=https[ws]://endpoint.com:8080 python schains.py create --eth-amount 100 --skale-amount 1230 --save-to creds   
 ```
 
 ```
-ENDPOINT=ws://dev1.geth.skalenodes.com:1920 python schains.py show
+ENDPOINT=https[ws]://endpoint.com:8080 python schains.py show
 ```
 
 ```
-ENDPOINT=ws://dev1.geth.skalenodes.com:1920 python schains.py remove node-name
+ENDPOINT=https[ws]://endpoint.com:8080 python schains.py remove node-name
 ```
