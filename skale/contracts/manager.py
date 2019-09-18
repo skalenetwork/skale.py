@@ -88,7 +88,7 @@ class Manager(BaseContract):
 
         op = token.contract.functions.transfer(self.address, deposit,
                                                transaction_data)
-        tx = sign_and_send(self.skale, op, GAS['create_node'], wallet)
+        tx = sign_and_send(self.skale, op, GAS['create_schain'], wallet)
         return {'tx': tx, 'nonce': skale_nonce}
 
     def create_schain_data_to_bytes(self, lifetime, type_of_nodes, name,

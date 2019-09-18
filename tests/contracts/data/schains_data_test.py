@@ -21,10 +21,11 @@
 import skale.contracts.data.nodes_data as nodes_data
 from skale.contracts.data.nodes_data import SCHAIN_CONFIG_FIELDS
 from skale.contracts.data.schains_data import FIELDS, PORTS_PER_SCHAIN
-from tests.constants import DEFAULT_SCHAIN_ID, NOT_EXIST_SCHAIN_ID, EMPTY_SCHAIN_ARR, \
-    DEFAULT_SCHAIN_NAME, \
-    MIN_NODES_IN_SCHAIN, DEFAULT_NODE_ID, DEFAULT_NODE_PORT, NOT_EXIST_SCHAIN_NAME, \
-    DEFAULT_SCHAIN_INDEX
+from tests.constants import (DEFAULT_NODE_ID, DEFAULT_SCHAIN_ID,
+                             EMPTY_SCHAIN_ARR, DEFAULT_SCHAIN_NAME,
+                             MIN_NODES_IN_SCHAIN, DEFAULT_SCHAIN_INDEX)
+
+DEFAULT_NODE_PORT = 3000
 
 
 def test_get_raw(skale):
@@ -33,7 +34,8 @@ def test_get_raw(skale):
 
 
 def test_get_raw_not_exist(skale):
-    schain_arr = skale.schains_data._SChainsData__get_raw(NOT_EXIST_SCHAIN_ID)
+    not_exist_schain_id = b'unused_hash'
+    schain_arr = skale.schains_data._SChainsData__get_raw(not_exist_schain_id)
     assert schain_arr == EMPTY_SCHAIN_ARR
 
 
@@ -99,10 +101,11 @@ def test_get_schain_base_port_on_node(skale):
 
 def test_get_schain_index_in_node(skale):
     node_schains = skale.schains_data.get_schains_for_node(DEFAULT_NODE_ID)
-    schain_index_in_node = skale.schains_data.get_schain_index_in_node(DEFAULT_SCHAIN_NAME,
-                                                                       node_schains)
+    not_exist_schain_name = 'unused_name'
+    schain_index_in_node = skale.schains_data.get_schain_index_in_node(
+        DEFAULT_SCHAIN_NAME, node_schains)
     not_exist_schain_index_in_node = skale.schains_data.get_schain_index_in_node(
-        NOT_EXIST_SCHAIN_NAME, node_schains)
+        not_exist_schain_name, node_schains)
 
     assert schain_index_in_node != -1
     assert not_exist_schain_index_in_node == -1
@@ -159,7 +162,6 @@ def test_get_schains_for_node(skale):
 
 def test_name_to_id(skale):
     schain_id = skale.schains_data.name_to_id(DEFAULT_SCHAIN_NAME)
-
     assert schain_id == DEFAULT_SCHAIN_ID
 
 
