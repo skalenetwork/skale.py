@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from skale.contracts.base_contract import BaseContract
 
 from skale.contracts.manager import Manager

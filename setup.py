@@ -20,8 +20,7 @@ extras_require = {
 }
 
 extras_require['dev'] = (
-    extras_require['linter'] +
-    extras_require['dev']
+    extras_require['linter'] + extras_require['dev']
 )
 
 setup(
@@ -37,9 +36,10 @@ setup(
     install_requires=[
         "web3==4.9.2",
         "asyncio==3.4.3",
+        "pyyaml==5.1.2"
     ],
 
-    python_requires='>3.6,<4',
+    python_requires='>=3.6,<4',
     extras_require=extras_require,
 
 

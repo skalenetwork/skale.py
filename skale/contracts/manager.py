@@ -63,13 +63,13 @@ class Manager(BaseContract):
         name_bytes = name.encode()
 
         data_bytes = (
-            type_bytes +
-            port_bytes +
-            nonce_bytes +
-            ip_bytes +
-            public_ip_bytes +
-            pk_bytes +
-            name_bytes
+            type_bytes
+            + port_bytes  # noqa: W503
+            + nonce_bytes  # noqa: W503
+            + ip_bytes  # noqa: W503
+            + public_ip_bytes  # noqa: W503
+            + pk_bytes  # noqa: W503
+            + name_bytes  # noqa: W503
         )
         logger.info(
             f'create_node_data_to_bytes bytes: {self.skale.web3.toHex(data_bytes)}'

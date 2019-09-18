@@ -13,7 +13,8 @@ class EventListener():
                  error_handler=None,
                  opts={}):
         logger.info(
-            f'adding listener: {event.__name__}, handler: {handler.__name__}, poll_interval: {poll_interval}'
+            f'adding listener: {event.__name__}, handler: {handler.__name__}, '
+            'poll_interval: {poll_interval}'
         )
         self.event = event
         self.filter = event.createFilter(fromBlock=1)
@@ -30,7 +31,9 @@ class EventListener():
                 sleep(self.poll_interval)
             except Exception as err:
                 logger.exception(
-                    f'Error was occurred during the event polling: {self.event.__name__}, handler: {self.handler.__name__}. See full stacktrace below.'
+                    f'Error was occurred during the event polling: '
+                    '{self.event.__name__}, handler: {self.handler.__name__}.'
+                    'See full stacktrace below.'
                 )
                 if self.error_handler:
                     self.error_handler(err)

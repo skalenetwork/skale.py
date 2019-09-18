@@ -29,7 +29,10 @@ class Skale:
             return WebsocketProvider(endpoint)
         if scheme == 'http' or scheme == 'https':
             return HTTPProvider(endpoint)
-        raise Exception(f'Wrong endpoint option. Supported endpoint schemes: http/https/ws/wss')
+        raise Exception(
+            'Wrong endpoint option.'
+            'Supported endpoint schemes: http/https/ws/wss'
+        )
 
     def __init_contracts_info(self):
         for contract_info in CONTRACTS_INFO:

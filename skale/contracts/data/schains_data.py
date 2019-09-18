@@ -22,7 +22,6 @@ from Crypto.Hash import keccak
 
 from skale.contracts import BaseContract
 from skale.utils.helper import format, ip_from_bytes, public_key_to_address
-from skale.skaled_ports import SkaledPorts
 
 from skale.dataclasses.current_node_info import CurrentNodeInfo
 from skale.dataclasses.schain_node_info import SchainNodeInfo
@@ -142,3 +141,6 @@ class SChainsData(BaseContract):
 
     def get_all_schains_ids(self):
         return self.contract.functions.getSchains().call()
+
+    def get_schains_number(self):
+        return self.contract.functions.numberOfSchains().call()
