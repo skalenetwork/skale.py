@@ -39,7 +39,7 @@ setup(
         "pyyaml==5.1.2"
     ],
 
-    python_requires='>3.6,<4',
+    python_requires='>=3.6,<4',
     extras_require=extras_require,
 
 
