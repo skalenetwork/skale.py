@@ -55,11 +55,6 @@ MIN_NODES_IN_SCHAIN = 2
 
 N_TEST_WALLETS = 2
 
-NODE_CREATED_EVENT_FIELDS = ['nodeIndex', 'owner', 'name', 'ip', 'publicIP', 'port', 'nonce',
-                             'time', 'gasSpend']
-TEST_EVENT_NAME = 'NodeCreated'
-
-
 ENDPOINT = os.environ['ENDPOINT']
 TEST_ABI_FILEPATH = os.path.join(DIR_PATH, os.pardir, 'test_abi.json')
 
