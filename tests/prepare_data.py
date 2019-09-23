@@ -29,7 +29,7 @@ def prepare_data(skale, wallet):
     # create couple of nodes
     for i in range(0, 2):
         ip, public_ip, port, name = generate_random_node_data()
-        if (i == 0):
+        if i == 0:
             name = TEST_NAME
         res = skale.manager.create_node(ip, port, name, wallet, public_ip)
         receipt = Helper.await_receipt(skale.web3, res['tx'])
