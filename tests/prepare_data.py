@@ -21,23 +21,43 @@
 import skale.utils.helper as Helper
 from skale import Skale
 from skale.utils.account_tools import init_test_wallet
-from tests.constants import DEFAULT_SCHAIN_NAME, TEST_NAME, ENDPOINT, TEST_ABI_FILEPATH
+from tests.constants import (DEFAULT_SCHAIN_NAME, TEST_NAME,
+                             ENDPOINT, TEST_ABI_FILEPATH)
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
+def cleanup_testnet(skale, wallet):
+    print('Cleanup testnet')
+    for schain_id in skale.schains_data.get_all_schains_ids():
+        schain_data = skale.schains_data.get(schain_id)
+        schain_name = schain_data.get('name', None)
+        if schain_name is not None:
+            res = skale.manager.delete_schain(schain_name, wallet)
+            receipt = Helper.await_receipt(skale.web3, res['tx'])
+            Helper.check_receipt(receipt)
+    for node_id in [*skale.nodes_data.get_active_node_ids()]:
+        res = skale.manager.delete_node_by_root(node_id, wallet)
+        receipt = Helper.await_receipt(skale.web3, res['tx'])
+        Helper.check_receipt(receipt)
+
+
 def prepare_data(skale, wallet):
+    # cleanup all schains and nodes
+    cleanup_testnet(skale, wallet)
     # create couple of nodes
     for i in range(0, 2):
         ip, public_ip, port, name = generate_random_node_data()
         if i == 0:
             name = TEST_NAME
+
         res = skale.manager.create_node(ip, port, name, wallet, public_ip)
         receipt = Helper.await_receipt(skale.web3, res['tx'])
         Helper.check_receipt(receipt)
 
     # create 1 s-chain
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
+    price_in_wei = skale.schains.get_schain_price(type_of_nodes,
+                                                  lifetime_seconds)
     res = skale.manager.create_schain(
         lifetime_seconds,
         type_of_nodes,
