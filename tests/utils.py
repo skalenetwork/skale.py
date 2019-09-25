@@ -40,7 +40,6 @@ def generate_random_node_data():
 
 
 def generate_random_schain_data():
-    lifetime_years = 1
-    lifetime_seconds = lifetime_years * 366 * 86400
+    lifetime_seconds = 3600  # 1 hour
     type_of_nodes = 4
     return type_of_nodes, lifetime_seconds, generate_random_name()
