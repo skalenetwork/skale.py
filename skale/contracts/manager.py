@@ -111,9 +111,9 @@ class Manager(BaseContract):
         tx = sign_and_send(self.skale, op, GAS['get_bounty'], wallet)
         return {'tx': tx}
 
-    def send_verdict(self, validator, node_id, downtime, latency, wallet):
-        op = self.contract.functions.sendVerdict(validator, node_id, downtime,
-                                                 latency)
+    def send_verdict(self, validator, node_ids, downtimes, latencies, wallet):
+        op = self.contract.functions.sendVerdict(validator, node_ids, downtimes,
+                                                 latencies)
         tx = sign_and_send(self.skale, op, GAS['send_verdict'], wallet)
         return {'tx': tx}
 
