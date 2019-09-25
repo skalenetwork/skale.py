@@ -57,7 +57,7 @@ def test_create_schain_data_to_bytes(skale):
 def test_get_bounty(skale, wallet):
     node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
     res = skale.manager.get_bounty(node_id, wallet)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
+    _ = Helper.await_receipt(skale.web3, res['tx'])
     # assert receipt['status'] == 1  # todo: we couldn't test it here
     # todo: check account balance before and after
 
