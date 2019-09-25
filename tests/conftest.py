@@ -24,6 +24,7 @@ from web3.auto import w3
 from skale import Skale
 from skale.utils.account_tools import init_test_wallet
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
+from tests.prepare_data import create_nodes, create_schain, cleanup_nodes_schain
 
 
 @pytest.fixture
@@ -35,6 +36,17 @@ def skale():
 @pytest.fixture
 def wallet():
     return init_test_wallet()
+
+
+@pytest.fixture(scope='module')
+def skale_wallet_with_nodes_schain():
+    '''Init skale and wallet with two nodes and schain between them'''
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
+    wallet = init_test_wallet()
+    create_nodes(skale, wallet)
+    create_schain(skale, wallet)
+    yield skale, wallet
+    cleanup_nodes_schain(skale, wallet)
 
 
 @pytest.fixture
