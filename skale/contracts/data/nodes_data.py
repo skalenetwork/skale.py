@@ -32,7 +32,8 @@ FIELDS = [
 ]
 COMPACT_FIELDS = ['schainIndex', 'nodeID', 'ip', 'basePort']
 SCHAIN_CONFIG_FIELDS = [
-    'schainIndex', 'nodeID', 'nodeName', 'ip', 'basePort', 'publicKey', 'publicIP', 'owner',
+    'schainIndex', 'nodeID', 'nodeName', 'ip', 'basePort',
+    'publicKey', 'publicIP', 'owner',
     'httpRpcPort', 'httpsRpcPort', 'wsRpcPort', 'wssRpcPort'
 ]
 

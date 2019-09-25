@@ -40,15 +40,18 @@ class TestEventListener(object):
 
     def test_event_listener(self, skale, wallet):
         event = skale.nodes.contract.events.NodeCreated
+        self.event_result = None
         listener = EventListener(event, self.event_handler, 5)
         listener.run()
 
-        self.create_node(skale, wallet)
+        try:
+            self.create_node(skale, wallet)
 
-        while not self.event_result:
-            sleep(1)
+            while not self.event_result:
+                sleep(1)
 
-        assert self.event_result.event == TEST_EVENT_NAME
-        assert list(self.event_result.args.keys()) == NODE_CREATED_EVENT_FIELDS
+            assert self.event_result.event == TEST_EVENT_NAME
+            assert list(self.event_result.args.keys()) == NODE_CREATED_EVENT_FIELDS
 
-        listener.stop()
+        finally:
+            listener.stop()
