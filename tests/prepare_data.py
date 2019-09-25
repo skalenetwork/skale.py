@@ -28,8 +28,8 @@ from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
-def cleanup_nodes_schain(skale, wallet):
-    print('Cleanup nodes and schain')
+def cleanup_nodes_schains(skale, wallet):
+    print('Cleanup nodes and schains')
     for schain_id in skale.schains_data.get_all_schains_ids():
         schain_data = skale.schains_data.get(schain_id)
         schain_name = schain_data.get('name', None)
@@ -72,21 +72,19 @@ def create_schain(skale, wallet):
 
 
 @click.command()
-@click.option('--cleanup', is_flag=True)
-def prepare_data(cleanup):
+@click.option('--cleanup-only', is_flag=True)
+def prepare_data(cleanup_only):
     Helper.init_default_logger()
     skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
     wallet = init_test_wallet()
-    if cleanup:
-        cleanup_nodes_schain(skale, wallet)
-
-    try:
-        create_nodes(skale, wallet)
-        create_schain(skale, wallet)
-    except Exception as err:
-        print(f'Preparation failed. {err}')
-    finally:
-        cleanup_nodes_schain(skale, wallet)
+    cleanup_nodes_schains(skale, wallet)
+    if not cleanup_only:
+        try:
+            create_nodes(skale, wallet)
+            create_schain(skale, wallet)
+        except Exception as err:
+            print(f'Preparation failed. {err}')
+            cleanup_nodes_schains(skale, wallet)
 
 
 if __name__ == "__main__":

@@ -54,8 +54,7 @@ def test_create_schain_data_to_bytes(skale):
     assert bytes_data.find(name_bytes) != -1
 
 
-def test_get_bounty(skale_wallet_with_nodes_schain):
-    skale, wallet = skale_wallet_with_nodes_schain
+def test_get_bounty(skale, wallet):
     node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
     res = skale.manager.get_bounty(node_id, wallet)
     receipt = Helper.await_receipt(skale.web3, res['tx'])
@@ -63,14 +62,14 @@ def test_get_bounty(skale_wallet_with_nodes_schain):
     # todo: check account balance before and after
 
 
-def test_send_verdict(skale, wallet):
+@pytest.mark.skip('Not implemented')
+def test_send_verdict(skale):
     pass  # todo!
 
 
 @pytest.mark.skip('Broken test. Should be fixed')
-def test_create_deregister_node(skale_wallet_with_nodes_schain):
+def test_create_deregister_node(skale, wallet):
 
-    skale, wallet = skale_wallet_with_nodes_schain
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
 
     ip, public_ip, port, name = generate_random_node_data()
@@ -91,8 +90,7 @@ def test_create_deregister_node(skale_wallet_with_nodes_schain):
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
-def test_create_delete_schain(skale_wallet_with_nodes_schain):
-    skale, wallet = skale_wallet_with_nodes_schain
+def test_create_delete_schain(skale, wallet):
     schains_ids = skale.schains_data.get_all_schains_ids()
 
     # create schain

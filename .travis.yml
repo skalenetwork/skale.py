@@ -8,8 +8,7 @@ install:
 - pip install -e .[dev]
 - export ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
 script:
-- python tests/prepare_data.py --cleanup
-- py.test --cov=./ tests/
+- ./run-tests.sh
 after_success:
 - codecov -t $CODECOV_TOKEN
 env:
