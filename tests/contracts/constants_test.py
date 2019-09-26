@@ -20,3 +20,12 @@ def test_get_set_check_time(skale, wallet):
     assert receipt['status'] == 1
     res = skale.constants.get_check_time()
     assert res == new_check_time
+
+
+def test_get_set_latency(skale, wallet):
+    new_latency = 1000
+    res = skale.constants.set_latency(new_latency, wallet)
+    receipt = Helper.await_receipt(skale.web3, res['tx'])
+    assert receipt['status'] == 1
+    res = skale.constants.get_latency()
+    assert res == new_latency

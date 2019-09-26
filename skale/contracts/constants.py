@@ -22,3 +22,11 @@ class Constants(BaseContract):
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
+
+    def set_latency(self, new_allowable_latency, wallet):
+        op = self.contract.functions.setLatency(new_allowable_latency)
+        tx = sign_and_send(self.skale, op, GAS['set_latency'], wallet)
+        return {'tx': tx}
+
+    def get_latency(self):
+        return self.contract.functions.allowableLatency().call()
