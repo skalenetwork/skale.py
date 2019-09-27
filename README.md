@@ -7,7 +7,7 @@
 
 Python client library used in SKALE network components.
 
-- Python 3.6+ support
+-   Python 3.6+ support
 
 ### Installation
 
@@ -31,16 +31,13 @@ active_nodes = skale.nodes_data.get_active_node_ips()
 schains = skale.schains_data.get_schains_for_owner('0x...')
 ```
 
-
 ### Development
 
 ##### Install local version (with hot reload)
 
-```
-virtualenv venv
-. venv/bin/activate 
-pip install -e .[dev]
-```
+    virtualenv venv
+    . venv/bin/activate 
+    pip install -e .[dev]
 
 #### Build and publish library
 
@@ -52,7 +49,7 @@ bash build_and_publish.sh major/minor/patch
 
 ```bash
  export $(cat .env | xargs) && bash build_and_publish.sh major/minor/patch
-``` 
+```
 
 ##### Format your code before commit
 
@@ -64,6 +61,7 @@ WHEN_CHANGED_EVENT=file_modified when-changed -v -s -r -1 skale/ tests/ examples
 ```
 
 Install `when-changed`:
+
 ```bash
  pip install https://github.com/joh/when-changed/archive/master.zip
 ```
@@ -71,7 +69,7 @@ Install `when-changed`:
 #### Versioning
 
 The version scheme for this repo is `{major}.{minor}.{patch}`
-For more details see: https://semver.org/
+For more details see: <https://semver.org/>
 
 #### Testing
 

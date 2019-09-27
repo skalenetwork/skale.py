@@ -5,7 +5,7 @@ about: Let us know about a bug
 
 <!-- Please reserve GitHub issues for bug reports and feature requests.
 
-For questions, the best place to get answers is on our [Discord channel](https://discord.gg/vvUtWJB), where questions will get more visibility from experienced users than the issue tracker.
+For questions, the best place to get answers is on our [Discord channel](http://skale.chat), where questions will get more visibility from experienced users than the issue tracker.
 
 -->
 
@@ -27,9 +27,9 @@ For questions, the best place to get answers is on our [Discord channel](https:/
 
 ### Steps to reproduce
 
-1.
-2.
-3.
+1\.
+2\.
+3\.
 
 ### Debug output
 
