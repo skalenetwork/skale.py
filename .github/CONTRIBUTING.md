@@ -2,15 +2,15 @@
 
 Looking to contribute something to SKALE? **Here are instructions on how you can help.**
 
-Before you start, please review the [README.md](https://github.com/skalenetwork/skale.py/blob/master/README.md) and our [Code of Conduct](https://github.com/skalenetwork/skale.py/blob/master/CODE_OF_CONDUCT.md).
+Before you start, please review the [README.md](https://github.com/skalenetwork/skale.py/blob/develop/README.md) and our [Code of Conduct](https://github.com/skalenetwork/skale.py/blob/develop/.github/CODE_OF_CONDUCT.md).
 
-# Code Guidelines
+## Code Guidelines
 
 **When contributing to this repository, please find an issue you would like to help with or first discuss the change you wish to make by opening an issue.**
 
-#### I don't want to read this whole thing - I just have a question!!!
+### I don't want to read this whole thing - I just have a question!!!
 
-> **Note:** Please don't file an issue to ask a question. You'll get faster results by simply [joining our Discord and asking our team there](https://discord.gg/vvUtWJB).
+> **Note:** Please don't file an issue to ask a question. You'll get faster results by simply [joining our Discord and asking our team there](http://skale.chat).
 
 ## Reporting bugs
 

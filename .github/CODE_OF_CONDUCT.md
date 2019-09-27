@@ -50,7 +50,7 @@ If you are experiencing or witnessing conflict, we ask you to use the following 
 
 ## Reporting Violations
 
-Violations of the Code of Conduct can be reported to to the SKALE support team at <mailto:support+codeofconduct@skalelabs.com> or at [https://discord.gg/vvUtWJB](https://discord.gg/vvUtWJB/). The Project Steward will determine whether the Code of Conduct was violated, and will issue an appropriate sanction, possibly including a written warning or expulsion from the project, project sponsored spaces, or project forums. We ask that you make a good-faith effort to resolve your conflict via the conflict resolution policy (above) before submitting a report.
+Violations of the Code of Conduct can be reported to to the SKALE support team at <mailto:support+codeofconduct@skalelabs.com> or at [http://skale.chat](http://skale.chat). The Project Steward will determine whether the Code of Conduct was violated, and will issue an appropriate sanction, possibly including a written warning or expulsion from the project, project sponsored spaces, or project forums. We ask that you make a good-faith effort to resolve your conflict via the conflict resolution policy (above) before submitting a report.
 
 Violations of the Code of Conduct can occur in any setting, even those unrelated to the project. We will only consider complaints about conduct that has occurred within one year of the report.
 
