@@ -11,13 +11,16 @@ class EventListener():
                  handler,
                  poll_interval,
                  error_handler=None,
-                 opts={}):
+                 filter_opts={}):
         logger.info(
             f'adding listener: {event.__name__}, handler: {handler.__name__}, '
             'poll_interval: {poll_interval}'
         )
         self.event = event
-        self.filter = event.createFilter(fromBlock=1)
+        if 'fromBlock' not in filter_opts:
+            filter_opts = {'fromBlock': 1, **filter_opts}
+        self.filter = event.createFilter(**filter_opts)
+
         self.poll_interval = poll_interval
         self.handler = handler
         self.error_handler = error_handler

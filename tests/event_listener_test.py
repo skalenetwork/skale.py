@@ -20,11 +20,16 @@
 
 from time import sleep
 
+from unittest import mock
+
 from skale.event_listener import EventListener
 import skale.utils.helper as Helper
 
-from tests.constants import NODE_CREATED_EVENT_FIELDS, TEST_EVENT_NAME
 from tests.utils import generate_random_node_data
+
+CREATED_EVENT_FIELDS = ['nodeIndex', 'owner', 'name', 'ip', 'publicIP',
+                        'port', 'nonce', 'time', 'gasSpend']
+TEST_EVENT_NAME = 'NodeCreated'
 
 
 class TestEventListener(object):
@@ -51,7 +56,24 @@ class TestEventListener(object):
                 sleep(1)
 
             assert self.event_result.event == TEST_EVENT_NAME
-            assert list(self.event_result.args.keys()) == NODE_CREATED_EVENT_FIELDS
+            assert list(self.event_result.args.keys()) == CREATED_EVENT_FIELDS
 
         finally:
             listener.stop()
+
+    def test_event_listener_filter_params(self, skale, wallet):
+        event_mock = mock.Mock()
+        create_filter_mock = mock.Mock()
+        event_mock.createFilter = create_filter_mock
+        event_mock.__name__ = 'EventMock'
+
+        opts = {'fromBlock': 2, 'toBlock': 3,
+                'argument_filters': {'arg1': 'value'},
+                'topics': []}
+        _ = EventListener(event_mock, self.event_handler, 5, filter_opts=opts)
+        create_filter_mock.assert_called_with(
+            argument_filters={'arg1': 'value'},
+            fromBlock=2, toBlock=3, topics=[]
+        )
+        _ = EventListener(event_mock, self.event_handler, 5)
+        create_filter_mock.assert_called_with(fromBlock=1)
