@@ -1,3 +1,5 @@
+from enum import IntEnum
+
 NODE_DEPOSIT = 100000000000000000000
 
 GAS = {
@@ -19,9 +21,10 @@ OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}
 
 LONG_LINE = '=' * 100
 
-SCHAIN_TYPES = {
-    'tiny': 1,
-    'small': 2,
-    'medium': 3,
-    'test': 4,
-}
+
+class SchainNodesType(IntEnum):
+    TINY = 1
+    SMALL = 2
+    MEDIUM = 3
+    TEST2 = 4
+    TEST4 = 5

@@ -31,9 +31,8 @@ from skale.utils.account_tools import (check_ether_balance,
                                        check_skale_balance, generate_account,
                                        init_wallet as init_base_wallet,
                                        send_ether, send_tokens)
-from skale.utils.constants import LONG_LINE
+from skale.utils.constants import LONG_LINE, SchainNodesType
 from skale.utils.random_names.generator import generate_random_schain_name
-from tests.utils import generate_random_schain_data
 
 from examples.helper import ENDPOINT, ABI_FILEPATH
 
@@ -70,13 +69,13 @@ def save_info(schain_index, schain_info=None, wallet=None, data_dir=None):
             json.dump(info, outfile, indent=4)
 
 
-def create_schain(skale, wallet):
-    type_of_nodes, lifetime_seconds, old_name = generate_random_schain_data()
+def create_schain(skale, wallet, nodes_type):
+    lifetime_seconds = 12 * 3600  # 12 hours
     schain_name = generate_random_schain_name()
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes,
+    price_in_wei = skale.schains.get_schain_price(nodes_type,
                                                   lifetime_seconds)
 
-    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
+    res = skale.manager.create_schain(lifetime_seconds, nodes_type,
                                       price_in_wei, schain_name, wallet)
     receipt = Helper.await_receipt(skale.web3, res['tx'])
     Helper.check_receipt(receipt)
@@ -109,6 +108,10 @@ def show_all_schain_ids(skale):
 
 @main.command()
 @click.argument('amount', default=1)
+@click.option('--nodes-type', default=SchainNodesType.TEST2.name,
+              type=click.Choice([n_type.name for n_type in SchainNodesType],
+                                case_sensitive=False),
+              help='Nodes type (tiny/small/medium/test2/test4) for schain')
 @click.option('--save-to', default='./creds',
               help='Directory to save schains data')
 @click.option('--skale-amount', default=1000,
@@ -116,12 +119,13 @@ def show_all_schain_ids(skale):
 @click.option('--eth-amount', default=10,
               help='Amount of eth to add to new accounts')
 @click.pass_context
-def create(ctx, amount, save_to, skale_amount, eth_amount):
+def create(ctx, amount, nodes_type, save_to, skale_amount, eth_amount):
     """ Command that creates new accounts with schains """
     skale = ctx.obj['skale']
+    nodes_type = SchainNodesType[nodes_type.upper()]
     for i in range(amount):
         wallet = create_account(skale, skale_amount, eth_amount)
-        schain_info = create_schain(skale, wallet)
+        schain_info = create_schain(skale, wallet, nodes_type)
         save_info(i, schain_info, wallet, save_to)
         logger.info(LONG_LINE)
     show_all_schain_ids(skale)
@@ -131,8 +135,6 @@ def create(ctx, amount, save_to, skale_amount, eth_amount):
 @click.argument('schain_name')
 @click.pass_context
 def remove(ctx, schain_name):
-    """ Command that removes schain by name """
-    # TODO: check if this function works
     skale = ctx.obj['skale']
     wallet = init_base_wallet()
     res = skale.manager.delete_schain(schain_name, wallet)

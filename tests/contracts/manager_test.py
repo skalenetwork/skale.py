@@ -22,7 +22,7 @@ import pytest
 
 import skale.utils.helper as Helper
 from tests.constants import DEFAULT_NODE_NAME
-from tests.utils import generate_random_node_data, generate_random_schain_data
+from tests.utils import generate_random_node_data, simple_schain_data
 
 
 def test_create_node_data_to_bytes(skale, wallet):
@@ -39,7 +39,7 @@ def test_create_node_data_to_bytes(skale, wallet):
 
 
 def test_create_schain_data_to_bytes(skale):
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = simple_schain_data()
     skale_nonce = Helper.generate_nonce()
 
     bytes_data = skale.manager.create_schain_data_to_bytes(
@@ -95,7 +95,7 @@ def test_create_delete_schain(skale, wallet):
     schains_ids = skale.schains_data.get_all_schains_ids()
 
     # create schain
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = simple_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
     res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
                                       price_in_wei, name, wallet)

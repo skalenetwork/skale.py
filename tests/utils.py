@@ -21,6 +21,8 @@
 import random
 import string
 
+from skale.utils.constants import SchainNodesType
+
 
 def generate_random_ip():
     return '.'.join('%s' % random.randint(0, 255) for i in range(4))
@@ -39,7 +41,6 @@ def generate_random_node_data():
         generate_random_name()
 
 
-def generate_random_schain_data():
+def simple_schain_data():
     lifetime_seconds = 3600  # 1 hour
-    type_of_nodes = 4
-    return type_of_nodes, lifetime_seconds, generate_random_name()
+    return SchainNodesType.TEST2, lifetime_seconds, generate_random_name()

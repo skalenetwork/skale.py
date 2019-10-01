@@ -25,7 +25,7 @@ from skale import Skale
 from skale.utils.account_tools import init_test_wallet
 from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
                              ENDPOINT, TEST_ABI_FILEPATH)
-from tests.utils import generate_random_node_data, generate_random_schain_data
+from tests.utils import generate_random_node_data, simple_schain_data
 
 
 def cleanup_nodes_schains(skale, wallet):
@@ -57,7 +57,7 @@ def create_nodes(skale, wallet):
 def create_schain(skale, wallet):
     print('Creating schain')
     # create 1 s-chain
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = simple_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
 
     res = skale.manager.create_schain(
