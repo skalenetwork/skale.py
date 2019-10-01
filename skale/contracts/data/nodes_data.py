@@ -42,7 +42,7 @@ class NodesData(BaseContract):
     def __get_raw(self, node_id):
         try:
             return self.contract.functions.nodes(node_id).call()
-        except BadFunctionCallOutput:
+        except ValueError:
             return None
 
     @format(FIELDS)

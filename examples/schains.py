@@ -31,7 +31,7 @@ from skale.utils.account_tools import (check_ether_balance,
                                        check_skale_balance, generate_account,
                                        init_wallet as init_base_wallet,
                                        send_ether, send_tokens)
-from skale.utils.constants import LONG_LINE, SchainNodesType
+from skale.utils.constants import LONG_LINE, SchainType
 from skale.utils.random_names.generator import generate_random_schain_name
 
 from examples.helper import ENDPOINT, ABI_FILEPATH
@@ -108,8 +108,8 @@ def show_all_schain_ids(skale):
 
 @main.command()
 @click.argument('amount', default=1)
-@click.option('--nodes-type', default=SchainNodesType.TEST2.name,
-              type=click.Choice([n_type.name for n_type in SchainNodesType],
+@click.option('--type', default=SchainType.TEST2.name,
+              type=click.Choice([n_type.name for n_type in SchainType],
                                 case_sensitive=False),
               help='Nodes type (tiny/small/medium/test2/test4) for schain')
 @click.option('--save-to', default='./creds',
@@ -119,10 +119,10 @@ def show_all_schain_ids(skale):
 @click.option('--eth-amount', default=10,
               help='Amount of eth to add to new accounts')
 @click.pass_context
-def create(ctx, amount, nodes_type, save_to, skale_amount, eth_amount):
+def create(ctx, amount, type, save_to, skale_amount, eth_amount):
     """ Command that creates new accounts with schains """
     skale = ctx.obj['skale']
-    nodes_type = SchainNodesType[nodes_type.upper()]
+    nodes_type = SchainType[type.upper()]
     for i in range(amount):
         wallet = create_account(skale, skale_amount, eth_amount)
         schain_info = create_schain(skale, wallet, nodes_type)

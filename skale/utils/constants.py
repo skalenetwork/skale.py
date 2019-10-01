@@ -22,7 +22,7 @@ OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}
 LONG_LINE = '=' * 100
 
 
-class SchainNodesType(IntEnum):
+class SchainType(IntEnum):
     TINY = 1
     SMALL = 2
     MEDIUM = 3
