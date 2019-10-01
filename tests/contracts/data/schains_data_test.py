@@ -18,6 +18,8 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE chain data test """
 
+import ipaddress
+
 import skale.contracts.data.nodes_data as nodes_data
 from skale.contracts.data.nodes_data import SCHAIN_CONFIG_FIELDS
 from skale.contracts.data.schains_data import FIELDS, PORTS_PER_SCHAIN
@@ -54,16 +56,16 @@ def test_get_by_name(skale):
     assert schain == schain_by_name
 
 
-def test_get_schains_for_owner(skale, wallet, empty_wallet):
+def test_get_schains_for_owner(skale, wallet, empty_account):
     schains = skale.schains_data.get_schains_for_owner(wallet['address'])
 
     assert isinstance(schains, list)
     assert set(schains[-1].keys()) == set(FIELDS)
 
 
-def test_get_schain_list_size(skale, wallet, empty_wallet):
+def test_get_schain_list_size(skale, wallet, empty_account):
     list_size = skale.schains_data.get_schain_list_size(wallet['address'])
-    empty_list_size = skale.schains_data.get_schain_list_size(empty_wallet.address)
+    empty_list_size = skale.schains_data.get_schain_list_size(empty_account.address)
 
     assert list_size != 0
     assert empty_list_size == 0
@@ -178,3 +180,21 @@ def test_get_all_schains_ids(skale):
     schains_ids = skale.schains_data.get_all_schains_ids()
     schain = skale.schains_data.get(schains_ids[-1])
     assert list(schain.keys()) == FIELDS
+
+
+def test_get_current_node_for_schain_config(skale):
+    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    res = skale.schains_data.get_current_node_for_schain_config(
+        DEFAULT_SCHAIN_NAME, node_id)
+    assert res['nodeName'] == DEFAULT_NODE_NAME
+    assert type(res['nodeID']) is int
+    assert type(res['basePort']) is int
+    assert type(res['httpRpcPort']) is int
+    assert type(res['httpsRpcPort']) is int
+    assert type(res['wsRpcPort']) is int
+    assert type(res['wssRpcPort']) is int
+    ipaddress.ip_address(res['bindIP'])
+
+
+def test_get_schains_number(skale):
+    assert skale.schains_data.get_schains_number() == 1

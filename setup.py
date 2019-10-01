@@ -16,7 +16,8 @@ extras_require = {
         "click==7.0",
         "twine==1.12.1",
         "when-changed",
-        "Random-Word==1.0.4"
+        "Random-Word==1.0.4",
+        "pytest-cov==2.7.1"
     ]
 }
 

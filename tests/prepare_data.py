@@ -57,7 +57,7 @@ def create_nodes(skale, wallet):
 def create_schain(skale, wallet):
     print('Creating schain')
     # create 1 s-chain
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, _ = generate_random_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
 
     res = skale.manager.create_schain(
@@ -69,6 +69,7 @@ def create_schain(skale, wallet):
     )
     receipt = Helper.await_receipt(skale.web3, res['tx'])
     Helper.check_receipt(receipt)
+    # print(receipt)
 
 
 @click.command()
