@@ -69,7 +69,6 @@ def create_schain(skale, wallet):
     )
     receipt = Helper.await_receipt(skale.web3, res['tx'])
     Helper.check_receipt(receipt)
-    # print(receipt)
 
 
 @click.command()
