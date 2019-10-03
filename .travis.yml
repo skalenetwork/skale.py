@@ -2,6 +2,8 @@ language: python
 python:
 - '3.6'
 cache: pip
+before_install:
+- echo -e "machine github.com\n  login $CI_USER_TOKEN" > ~/.netrc
 install:
 - pip install codecov pytest-cov
 - pip install -e .
