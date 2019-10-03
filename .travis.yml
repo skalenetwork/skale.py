@@ -9,7 +9,7 @@ install:
 - pip install -e .
 - pip install -e .[dev]
 - export ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
-- npm install truffle
+- npm i -g truffle
 - git clone https://${CI_USER_TOKEN}@github.com/skalenetwork/skale-manager.git
 - cd skale-manager/
 - PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY  truffle migrate --network SKALE_private_testnet
