@@ -2,6 +2,14 @@ language: python
 python:
 - '3.6'
 cache: pip
+node_js:
+  - "10"
+os: linux
+dist: bionic
+env:
+  global:
+    - NODE_OPTIONS="--max_old_space_size=4096"
+
 before_install:
 - echo -e "machine github.com\n  login $CI_USER_TOKEN" > ~/.netrc
 install:
