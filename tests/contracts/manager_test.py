@@ -81,8 +81,6 @@ def test_get_bounty(skale, wallet):
 
 
 def test_send_verdict(skale, wallet):
-    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
-    validator_id = node_id
     nonce = skale.web3.eth.getTransactionCount(wallet['address'])
     gas_price = skale.web3.eth.gasPrice
     contract_address = skale.manager.address
@@ -96,11 +94,13 @@ def test_send_verdict(skale, wallet):
             '0000000000000000000000000000000000000000000000000'
             '000000000000000000000000000000000000007b000000000'
             '0000000000000000000000000000000000000000000000000'
-            '0000010000000000000000000000000000000000000000000'
-            '000000000000000000001')
+            '0000140000000000000000000000000000000000000000000'
+            '00000000000000000000a'
+        )
     }
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, wallet['private_key']).rawTransaction
+    validator_id = 0
     another_node_id = 123
     downtime = 20
     latency = 10
@@ -112,8 +112,6 @@ def test_send_verdict(skale, wallet):
 
 
 def test_send_verdicts(skale, wallet):
-    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
-    validator_id = node_id
     nonce = skale.web3.eth.getTransactionCount(wallet['address'])
     gas_price = skale.web3.eth.gasPrice
     contract_address = skale.manager.address
@@ -145,6 +143,7 @@ def test_send_verdicts(skale, wallet):
     }
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, wallet['private_key']).rawTransaction
+    validator_id = 0
     another_node_ids = [123, 231, 451]
     downtimes = [1, 2, 3]
     latencies = [10, 20, 30]
