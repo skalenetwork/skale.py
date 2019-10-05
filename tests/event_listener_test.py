@@ -70,10 +70,10 @@ class TestEventListener(object):
         opts = {'fromBlock': 2, 'toBlock': 3,
                 'argument_filters': {'arg1': 'value'},
                 'topics': []}
-        _ = EventListener(event_mock, self.event_handler, 5, filter_opts=opts)
+        _ = EventListener(event_mock, self.event_handler, 5, filter_opts=opts)  # noqa: F841
         create_filter_mock.assert_called_with(
             argument_filters={'arg1': 'value'},
             fromBlock=2, toBlock=3, topics=[]
         )
-        _ = EventListener(event_mock, self.event_handler, 5)
+        _ = EventListener(event_mock, self.event_handler, 5)  # noqa: F841
         create_filter_mock.assert_called_with(fromBlock=1)
