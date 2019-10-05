@@ -2,13 +2,26 @@ language: python
 python:
 - '3.6'
 cache: pip
+node_js:
+  - "10"
+os: linux
+dist: bionic
+env:
+  global:
+    - NODE_OPTIONS="--max_old_space_size=4096"
+
 install:
 - pip install codecov pytest-cov
 - pip install -e .
 - pip install -e .[dev]
 - export ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
+- git clone https://${CI_USER_TOKEN}@github.com/skalenetwork/skale-manager.git
+- cd skale-manager/
+- npm i  
+- PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY npx truffle migrate --network SKALE_private_testnet
+- cp data/SKALE_private_testnet.json ../test_abi.json && cd ..
 script:
-- py.test --cov=./ tests/
+- ./run-tests.sh
 after_success:
 - codecov -t $CODECOV_TOKEN
 env:

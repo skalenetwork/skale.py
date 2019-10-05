@@ -88,7 +88,7 @@ class Manager(BaseContract):
 
         op = token.contract.functions.transfer(self.address, deposit,
                                                transaction_data)
-        tx = sign_and_send(self.skale, op, GAS['create_node'], wallet)
+        tx = sign_and_send(self.skale, op, GAS['create_schain'], wallet)
         return {'tx': tx, 'nonce': skale_nonce}
 
     def create_schain_data_to_bytes(self, lifetime, type_of_nodes, name,
@@ -114,6 +114,12 @@ class Manager(BaseContract):
     def send_verdict(self, validator, node_id, downtime, latency, wallet):
         op = self.contract.functions.sendVerdict(validator, node_id, downtime,
                                                  latency)
+        tx = sign_and_send(self.skale, op, GAS['send_verdict'], wallet)
+        return {'tx': tx}
+
+    def send_verdicts(self, validator, nodes_ids, downtimes, latencies, wallet):
+        op = self.contract.functions.sendVerdicts(validator, nodes_ids,
+                                                  downtimes, latencies)
         tx = sign_and_send(self.skale, op, GAS['send_verdict'], wallet)
         return {'tx': tx}
 

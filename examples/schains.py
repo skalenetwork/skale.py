@@ -52,7 +52,7 @@ def main(ctx, endpoint, abi_filepath):
 
 
 def save_info(schain_index, schain_info=None, wallet=None, data_dir=None):
-    time = datetime.datetime.now()
+    time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     schain_name = schain_info['schain_struct']['name']
     filename = f'wallet_{schain_index}_{schain_name}_{time}.json'
     info = {

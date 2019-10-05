@@ -21,21 +21,8 @@
 import pytest
 
 import skale.utils.helper as Helper
-from tests.constants import DEFAULT_NODE_ID
+from tests.constants import DEFAULT_NODE_NAME
 from tests.utils import generate_random_node_data, generate_random_schain_data
-
-
-def test_create_node(skale, wallet):
-    active_node_ips_before = skale.nodes_data.get_active_node_ips()
-
-    ip, public_ip, port, name = generate_random_node_data()
-    res = skale.manager.create_node(ip, port, name, wallet, public_ip)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
-
-    assert receipt['status'] == 1
-
-    active_node_ips_after = skale.nodes_data.get_active_node_ips()
-    assert len(active_node_ips_after) == len(active_node_ips_before) + 1
 
 
 def test_create_node_data_to_bytes(skale, wallet):
@@ -43,20 +30,12 @@ def test_create_node_data_to_bytes(skale, wallet):
     skale_nonce = Helper.generate_nonce()
     pk = Helper.private_key_to_public(wallet['private_key'])
 
-    bytes_data = skale.manager.create_node_data_to_bytes(ip, public_ip, port, name, pk, skale_nonce)
+    bytes_data = skale.manager.create_node_data_to_bytes(
+        ip, public_ip, port, name, pk, skale_nonce)
     name_bytes = name.encode()
 
     assert type(bytes_data) is bytes
     assert bytes_data.find(name_bytes) != -1
-
-
-def test_create_schain(skale, wallet):
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
-    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes, price_in_wei, name, wallet)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
-
-    assert receipt['status'] == 1
 
 
 def test_create_schain_data_to_bytes(skale):
@@ -75,20 +54,22 @@ def test_create_schain_data_to_bytes(skale):
     assert bytes_data.find(name_bytes) != -1
 
 
+@pytest.mark.skip('Broken test. Should be fixed')
 def test_get_bounty(skale, wallet):
-    res = skale.manager.get_bounty(DEFAULT_NODE_ID, wallet)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
-    print(receipt)
-    # assert receipt['status'] == 1 # todo: we couldn't test it here
+    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    res = skale.manager.get_bounty(node_id, wallet)
+    Helper.await_receipt(skale.web3, res['tx'])
+    # assert receipt['status'] == 1  # todo: we couldn't test it here
     # todo: check account balance before and after
 
 
-def test_send_verdict(skale, wallet):
+@pytest.mark.skip('Not implemented')
+def test_send_verdict(skale):
     pass  # todo!
 
 
-@pytest.mark.skip('Broken test should be fixed')
-def test_deregister_node(skale, wallet):
+@pytest.mark.skip('Broken test. Should be fixed')
+def test_create_deregister_node(skale, wallet):
 
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
 
@@ -96,6 +77,9 @@ def test_deregister_node(skale, wallet):
     res = skale.manager.create_node(ip, port, name, wallet, public_ip)
     receipt = Helper.await_receipt(skale.web3, res['tx'])
     assert receipt['status'] == 1
+
+    active_node_ids_after = skale.nodes_data.get_active_node_ids()
+    assert len(active_node_ids_after) == len(active_node_ids_before) + 1
 
     node_idx = skale.nodes_data.node_name_to_index(name)
 
@@ -107,16 +91,20 @@ def test_deregister_node(skale, wallet):
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
-def test_delete_schain(skale, wallet):
+def test_create_delete_schain(skale, wallet):
     schains_ids = skale.schains_data.get_all_schains_ids()
 
     # create schain
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
-    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes, price_in_wei, name, wallet)
+    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
+                                      price_in_wei, name, wallet)
     receipt = Helper.await_receipt(skale.web3, res['tx'])
 
     assert receipt['status'] == 1
+
+    schains_ids_after = skale.schains_data.get_all_schains_ids()
+    assert len(schains_ids_after) == len(schains_ids) + 1
 
     # remove it
     res = skale.manager.delete_schain(name, wallet)
