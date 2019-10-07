@@ -29,7 +29,6 @@ from logging import Formatter, StreamHandler
 from random import randint
 from time import sleep
 
-import yaml
 from eth_keys import keys
 from web3 import Web3
 
@@ -102,42 +101,24 @@ def await_receipt(web3, tx, retries=10, timeout=5):
         receipt = get_receipt(web3, tx)
         if receipt is not None:
             return receipt
-        sleep(timeout)
-    return None
+        sleep(timeout)  # pragma: no cover
+    return None  # pragma: no cover
 
 
 def ip_from_bytes(bytes):
     return socket.inet_ntoa(bytes)
 
 
-def ip_to_bytes(ip):
+def ip_to_bytes(ip):  # pragma: no cover
     return socket.inet_aton(ip)
 
 
 def is_valid_ipv4_address(address):
     try:
-        socket.inet_pton(socket.AF_INET, address)
-    except AttributeError:  # no inet_pton here, sorry
-        try:
-            socket.inet_aton(address)
-        except socket.error:
-            return False
-        return address.count('.') == 3
-    except socket.error:  # not a valid address
+        ipaddress.IPv4Address(address)
+    except ValueError:
         return False
-
     return True
-
-
-def check_port(port):
-    if port not in range(1, 65535):
-        raise ValueError(
-            f'{port} does not appear to be a valid port. Allowed range: 1-65535'
-        )
-
-
-def check_ip(ip):
-    return ipaddress.ip_address(ip)
 
 
 def get_abi(abi_filepath=None):
@@ -145,37 +126,29 @@ def get_abi(abi_filepath=None):
         return json.load(data_file)
 
 
-def generate_nonce():
+def generate_nonce():  # pragma: no cover
     return randint(0, 65534)
 
 
-def random_string(size=6, chars=string.ascii_lowercase):
+def random_string(size=6, chars=string.ascii_lowercase):  # pragma: no cover
     return ''.join(random.choice(chars) for x in range(size))
 
 
-def generate_random_ip():
+def generate_random_ip():  # pragma: no cover
     return '.'.join('%s' % random.randint(0, 255) for i in range(4))
 
 
-def generate_random_name(len=8):
+def generate_random_name(len=8):  # pragma: no cover
     return ''.join(
         random.choices(string.ascii_uppercase + string.digits, k=len))
 
 
-def generate_random_port():
+def generate_random_port():  # pragma: no cover
     return random.randint(0, 60000)
 
 
-def load_yaml(filepath):
-    with open(filepath, 'r') as stream:
-        try:
-            return yaml.load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-
 def generate_custom_config(ip, ws_port):
-    if (not ip or not ws_port):
+    if not ip or not ws_port:
         raise ValueError(
             f'For custom init you should provide ip and ws_port: {ip}, {ws_port}'
         )
@@ -222,12 +195,12 @@ def private_key_to_address(pr):
 
 
 def check_receipt(receipt):
-    if receipt['status'] != 1:
+    if receipt['status'] != 1:  # pragma: no cover
         raise ValueError("Transaction failed, see receipt", receipt)
     return True
 
 
-def init_default_logger():
+def init_default_logger():  # pragma: no cover
     handlers = []
     formatter = Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -238,10 +211,3 @@ def init_default_logger():
     handlers.append(stream_handler)
 
     logging.basicConfig(level=logging.DEBUG, handlers=handlers)
-
-
-def read_file(path):
-    file = open(path, 'r')
-    text = file.read()
-    file.close()
-    return text

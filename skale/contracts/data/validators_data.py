@@ -31,6 +31,6 @@ class ValidatorsData(BaseContract):
         return constants.contract.functions.deltaPeriod().call()
 
     def get_validated_array(self, node_id, account):
-        node_id_bytes = Web3.soliditySha3(['uint256'], [node_id])
+        node_id_bytes = Web3.sha3(node_id)
         return self.contract.functions.getValidatedArray(node_id_bytes).call(
             {'from': account})
