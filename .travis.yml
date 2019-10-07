@@ -32,7 +32,7 @@ jobs:
       after_script:
         - codecov -t $CODECOV_TOKEN
     - stage: deploy
-      if: branch IN (develop, beta, stable, master, feature/SKALE-1574-automatic-builds)
+      if: branch IN (develop, beta, stable, master)
       script:
         - export VERSION=$(BRANCH=$TRAVIS_BRANCH bash ./scripts/calculate_version.sh)
         - echo "Version $VERSION"
@@ -66,7 +66,6 @@ jobs:
               - master
               - develop
               - beta
-              - feature/SKALE-1574-automatic-builds
         - provider: script
           skip_cleanup: true
           script: bash $TRAVIS_BUILD_DIR/scripts/publish.sh
@@ -77,4 +76,3 @@ jobs:
               - stable
               - develop
               - beta
-              - feature/SKALE-1574-automatic-builds

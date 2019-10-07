@@ -22,9 +22,7 @@ if [[ $BRANCH == 'master' ]]; then
 elif [[ $BRANCH == 'develop' ]]; then
     POSTFIX="dev"
 elif [[ $BRANCH == 'beta' ]]; then
-    POSTFIX="dev"
-elif [[ $BRANCH == 'feature/SKALE-1574-automatic-builds' ]]; then
-    POSTFIX="a"
+    POSTFIX="b"
 else
     echo "Branch is not valid, couldn't calculate version"
     exit 1
