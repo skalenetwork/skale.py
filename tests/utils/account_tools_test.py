@@ -19,6 +19,7 @@
 """ SKALE account tools test """
 
 from web3 import Web3
+from hexbytes import HexBytes
 
 from skale.utils.account_tools import (check_ether_balance, generate_account,
                                        generate_accounts, init_wallet,
@@ -37,31 +38,38 @@ def test_init_wallet():
     assert Web3.toChecksumAddress(address_from_pk) == address_fx
 
 
-def test_send_tokens(skale, wallet, empty_wallet):
+def test_send_tokens(skale, wallet, empty_account):
     sender_balance = skale.token.get_balance(wallet['address'])
 
-    send_tokens(skale, wallet, empty_wallet.address, TOKEN_TRANSFER_VALUE)
+    send_tokens(skale, wallet, empty_account.address, TOKEN_TRANSFER_VALUE)
 
-    receiver_balance_after = skale.token.get_balance(empty_wallet.address)
+    receiver_balance_after = skale.token.get_balance(empty_account.address)
     sender_balance_after = skale.token.get_balance(wallet['address'])
 
     token_transfer_value_wei = skale.web3.toWei(TOKEN_TRANSFER_VALUE, 'ether')
 
     assert receiver_balance_after == token_transfer_value_wei
     assert sender_balance_after == sender_balance - token_transfer_value_wei
+    res = send_tokens(skale, wallet, empty_account.address, TOKEN_TRANSFER_VALUE,
+                      wait_for=False)
+    assert type(res) is HexBytes
 
 
-def test_send_ether(skale, wallet, empty_wallet):
+def test_send_ether(skale, wallet, empty_account):
     sender_balance = check_ether_balance(skale.web3, wallet['address'])
 
-    send_ether(skale.web3, wallet, empty_wallet.address, ETH_TRANSFER_VALUE)
+    send_ether(skale.web3, wallet, empty_account.address, ETH_TRANSFER_VALUE)
 
-    receiver_balance_after = check_ether_balance(skale.web3, empty_wallet.address)
+    receiver_balance_after = check_ether_balance(skale.web3, empty_account.address)
     sender_balance_after = check_ether_balance(skale.web3, wallet['address'])
 
     assert receiver_balance_after == ETH_TRANSFER_VALUE
     assert int(sender_balance_after) == int(
         sender_balance) - ETH_TRANSFER_VALUE  # todo: think about better check
+
+    res = send_ether(skale.web3, wallet, empty_account.address,
+                     ETH_TRANSFER_VALUE, wait_for=False)
+    assert type(res) is HexBytes
 
 
 def test_generate_account(skale):
@@ -76,7 +84,8 @@ def test_generate_accounts(skale, wallet):
         wallet,
         N_TEST_WALLETS,
         TOKEN_TRANSFER_VALUE,
-        ETH_TRANSFER_VALUE
+        ETH_TRANSFER_VALUE,
+        debug=True
     )
     assert len(results) == N_TEST_WALLETS
 

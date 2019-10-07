@@ -18,7 +18,9 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE main test """
 
-from web3 import WebsocketProvider
+import mock
+import pytest
+from web3 import HTTPProvider, WebsocketProvider
 
 from skale import Skale
 from skale.contracts import BaseContract
@@ -49,6 +51,16 @@ def test_lib_init():
     provider = skale.web3.providers[0]
     assert isinstance(provider, WebsocketProvider)
 
+    http_endpoint = 'http://localhost:8080'
+    with mock.patch.object(Skale, '_Skale__init_contracts'):
+        skale = Skale(http_endpoint, TEST_ABI_FILEPATH)
+        provider = skale.web3.providers[0]
+        assert isinstance(provider, HTTPProvider)
+
+    file_endpoint = 'file://local_file:1001'
+    with pytest.raises(Exception):
+        Skale(file_endpoint, TEST_ABI_FILEPATH)
+
 
 def test_get_contract_address(skale):
     lib_nodes_functionality_address = skale.get_contract_address(TEST_CONTRACT_NAME)
@@ -58,6 +70,8 @@ def test_get_contract_address(skale):
 
 
 def test_get_attr(skale):
+    with pytest.raises(AttributeError):
+        skale.t123_random_attr
     skale_py_nodes_contract = skale.nodes
     assert issubclass(type(skale_py_nodes_contract), BaseContract)
     assert isinstance(skale_py_nodes_contract, Nodes)

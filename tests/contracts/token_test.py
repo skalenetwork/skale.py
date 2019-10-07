@@ -22,32 +22,28 @@ import skale.utils.helper as Helper
 from tests.constants import TOKEN_TRANSFER_VALUE
 
 
-def test_transfer(skale, wallet, empty_wallet):
-    receiver_balance = skale.token.get_balance(empty_wallet.address)
+def test_transfer(skale, wallet, empty_account):
+    receiver_balance = skale.token.get_balance(empty_account.address)
     sender_balance = skale.token.get_balance(wallet['address'])
 
     assert receiver_balance == 0
     assert sender_balance != 0
 
-    res = skale.token.transfer(empty_wallet.address, TOKEN_TRANSFER_VALUE, wallet)
+    res = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE, wallet)
     receipt = Helper.await_receipt(skale.web3, res['tx'])
 
     assert receipt['status'] == 1
 
-    receiver_balance_after = skale.token.get_balance(empty_wallet.address)
+    receiver_balance_after = skale.token.get_balance(empty_account.address)
     sender_balance_after = skale.token.get_balance(wallet['address'])
 
     assert receiver_balance_after == TOKEN_TRANSFER_VALUE
     assert sender_balance_after == sender_balance - TOKEN_TRANSFER_VALUE
 
 
-def test_get_balance(skale, wallet, empty_wallet):
-    empty_balance = skale.token.get_balance(empty_wallet.address)
+def test_get_balance(skale, wallet, empty_account):
+    empty_balance = skale.token.get_balance(empty_account.address)
     not_empty_balance = skale.token.get_balance(wallet['address'])
 
     assert empty_balance == 0
     assert not_empty_balance != 0
-
-
-def test_add_authorized(skale, wallet):
-    pass  # todo

@@ -1,0 +1,6 @@
+[run]
+omit = 
+    setup.py
+    skale/__init__.py
+    tests/*
+    skale/utils/random_names/*
