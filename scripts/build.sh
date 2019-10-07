@@ -2,7 +2,8 @@
 
 set -e
 
-bumpversion --allow-dirty --new-version $VERSION setup.py
+CURRENT_VERSION="$(python setup.py --version)"
+sed -i "s/${CURRENT_VERSION}/${VERSION}/g" setup.py
 
 rm -rf ./dist/*
 
