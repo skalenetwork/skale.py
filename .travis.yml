@@ -31,3 +31,50 @@ jobs:
         - ./run-tests.sh
       after_script:
         - codecov -t $CODECOV_TOKEN
+    - stage: deploy
+      if: branch IN (develop, beta, stable, master, feature/SKALE-1574-automatic-builds)
+      script:
+        - export VERSION=$(BRANCH=$TRAVIS_BRANCH bash ./scripts/calculate_version.sh)
+        - echo "Version $VERSION"
+        - bash ./scripts/build.sh
+      before_deploy:
+        # Set up git user name and tag this commit
+        - (
+          test ! $TRAVIS_TAG &&
+          git config --local user.name "skale-travis" &&
+          git config --local user.email "$GITHUB_EMAIL" &&
+          export TRAVIS_TAG=$VERSION &&
+          git tag "$TRAVIS_TAG" &&
+          git push https://$GITHUB_OAUTH_TOKEN@github.com/$TRAVIS_REPO_SLUG.git $TRAVIS_TAG
+          ) || true
+      deploy:
+        - provider: releases
+          api_key: "$GITHUB_OAUTH_TOKEN"
+          skip_cleanup: true
+          name: $VERSION @ $(date +'%d.%m.%Y %R')
+          on:
+            repo: $TRAVIS_REPO_SLUG
+            branch: master
+        - provider: releases
+          api_key: "$GITHUB_OAUTH_TOKEN"
+          skip_cleanup: true
+          prerelease: true
+          name: $VERSION @ $(date +'%d.%m.%Y %R')
+          on:
+            repo: $TRAVIS_REPO_SLUG
+            branch:
+              - master
+              - develop
+              - beta
+              - feature/SKALE-1574-automatic-builds
+        - provider: script
+          skip_cleanup: true
+          script: bash $TRAVIS_BUILD_DIR/scripts/publish.sh
+          on:
+            repo: $TRAVIS_REPO_SLUG
+            branch:
+              - master
+              - stable
+              - develop
+              - beta
+              - feature/SKALE-1574-automatic-builds
