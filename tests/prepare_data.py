@@ -57,7 +57,7 @@ def create_nodes(skale, wallet):
 def create_schain(skale, wallet):
     print('Creating schain')
     # create 1 s-chain
-    type_of_nodes, lifetime_seconds, name = simple_schain_data()
+    type_of_nodes, lifetime_seconds, _ = simple_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes, lifetime_seconds)
 
     res = skale.manager.create_schain(

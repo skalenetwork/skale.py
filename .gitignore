@@ -113,5 +113,6 @@ data.json
 schain.json
 
 abi.json
+test_abi.json
 
 .DS_Store

@@ -3,8 +3,9 @@ from enum import IntEnum
 NODE_DEPOSIT = 100000000000000000000
 
 GAS = {
+    'add_validator': 4500000,
     'create_node': 4500000,
-    'create_schain': 4500000,
+    'create_schain': 7500000,
     'get_bounty': 4500000,
     'send_verdict': 200000,
     'set_check_time': 200000,

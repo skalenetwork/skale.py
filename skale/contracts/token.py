@@ -32,7 +32,7 @@ class Token(BaseContract):
     def get_balance(self, address):
         return self.contract.functions.balanceOf(address).call()
 
-    def add_authorized(self, address, wallet):
+    def add_authorized(self, address, wallet):  # pragma: no cover
         op = self.contract.functions.addAuthorized(address)
         tx = sign_and_send(self.skale, op, GAS['token_transfer'], wallet)
         return {'tx': tx}
