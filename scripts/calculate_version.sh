@@ -18,7 +18,7 @@ fi
 
 if [[ $BRANCH == 'master' ]]; then
     echo $VERSION
-    exit 1
+    exit 0
 elif [[ $BRANCH == 'develop' ]]; then
     POSTFIX="dev"
 elif [[ $BRANCH == 'beta' ]]; then
