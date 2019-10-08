@@ -28,7 +28,7 @@ extras_require['dev'] = (
 setup(
     name='skale.py',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='1.0',
+    version='1.1',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
