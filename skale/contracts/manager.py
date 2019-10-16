@@ -100,9 +100,11 @@ class Manager(BaseContract):
         nonce_hex = nonce.to_bytes(2, byteorder='big')
         name_hex = name.encode()
 
-        data_bytes = type_bytes + lifetime_hex + type_of_nodes_hex + nonce_hex + name_hex
+        data_bytes = (type_bytes + lifetime_hex +
+                      type_of_nodes_hex + nonce_hex + name_hex)
         logger.info(
-            f'create_schain_data_to_bytes bytes: {self.skale.web3.toHex(data_bytes)}'
+            f'create_schain_data_to_bytes bytes:'
+            f'{self.skale.web3.toHex(data_bytes)}'
         )
         return data_bytes
 

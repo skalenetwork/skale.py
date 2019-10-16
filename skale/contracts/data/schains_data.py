@@ -132,6 +132,7 @@ class SChainsData(BaseContract):
         schain_ids = self.get_schain_ids_for_node(node_id)
         for schain_id in schain_ids:
             schain = self.get(schain_id)
+            schain['active'] = True if self.schain_active(schain) else False
             schains.append(schain)
         return schains
 
@@ -144,3 +145,8 @@ class SChainsData(BaseContract):
 
     def get_schains_number(self):
         return self.contract.functions.numberOfSchains().call()
+
+    def schain_active(self, schain):
+        if schain['name'] is not '' and \
+                schain['owner'] is not '0x0000000000000000000000000000000000000000':
+            return True

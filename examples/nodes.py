@@ -37,6 +37,7 @@ Helper.init_default_logger()
 
 def create_node(skale, wallet):
     ip, public_ip, port, name = generate_random_node_data()
+    port = 10000
     res = skale.manager.create_node(ip, port, name, wallet, public_ip)
     receipt = Helper.await_receipt(skale.web3, res['tx'])
     return receipt

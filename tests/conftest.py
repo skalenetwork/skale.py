@@ -38,5 +38,5 @@ def wallet():
 
 
 @pytest.fixture
-def empty_wallet():
+def empty_account():
     return w3.eth.account.create()
