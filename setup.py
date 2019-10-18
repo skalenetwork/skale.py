@@ -36,7 +36,7 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==4.9.2",
+        "web3==5.2.1",
         "asyncio==3.4.3",
         "pyyaml==5.1.2"
     ],
