@@ -19,13 +19,11 @@
 """ SKALE manager test """
 
 import mock
-import pytest
 import web3
 from hexbytes import HexBytes
 
 import skale.utils.helper as helper
 
-from tests.constants import DEFAULT_NODE_NAME
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
@@ -59,7 +57,7 @@ def test_create_schain_data_to_bytes(skale):
 
 
 def test_get_bounty(skale, wallet):
-    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_id = 0
     nonce = skale.web3.eth.getTransactionCount(wallet['address'])
     gas_price = skale.web3.eth.gasPrice
     contract_address = skale.manager.address
@@ -174,7 +172,7 @@ def test_create_node_delete_node_by_root(skale, wallet):
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
-def test_create_deregister_node_create_schain(skale, wallet):
+def test_create_deregister_node(skale, wallet):
     # Create node
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
 
@@ -188,41 +186,6 @@ def test_create_deregister_node_create_schain(skale, wallet):
 
     node_idx = skale.nodes_data.node_name_to_index(name)
 
-    # Create schain
-
-    schains_ids = skale.schains_data.get_all_schains_ids()
-
-    type_, lifetime_seconds, name = generate_random_schain_data()
-    price_in_wei = skale.schains.get_schain_price(type_, lifetime_seconds)
-    res = skale.manager.create_schain(lifetime_seconds, type_,
-                                      price_in_wei, name, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
-
-    schains_ids_number_after = skale.schains_data.get_schains_number()
-    assert schains_ids_number_after == len(schains_ids) + 1
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
-
-    schains_names = [
-        skale.schains_data.get(sid)['name']
-        for sid in schains_ids_after
-    ]
-    assert name in schains_names
-
-    res = skale.manager.delete_schain(name, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
-
-    schains_ids_number_after = skale.schains_data.get_schains_number()
-    assert schains_ids_number_after == len(schains_ids)
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
-
-    schains_names = [
-        skale.schains_data.get(sid)['name']
-        for sid in schains_ids_after
-    ]
-    assert name not in schains_names
-
     # Deregister node
 
     res = skale.manager.deregister(node_idx, wallet)
@@ -232,9 +195,6 @@ def test_create_deregister_node_create_schain(skale, wallet):
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
-@pytest.mark.skip('Manager is currently unstable for this case,'
-                  'so as a workaround this functionallity is tested in'
-                  'test_create_deregister_node_create_schain')
 def test_create_delete_schain(skale, wallet):
     schains_ids = skale.schains_data.get_all_schains_ids()
 
