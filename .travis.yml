@@ -9,12 +9,12 @@ dist: bionic
 env:
   global:
     - NODE_OPTIONS="--max_old_space_size=4096"
+    - ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
 
 install:
   - pip install codecov pytest-cov
   - pip install -e .
   - pip install -e .[dev]
-  - export ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
 
 before_script:
   - "flake8 ."
@@ -25,7 +25,7 @@ jobs:
       script:
         - git clone https://${CI_USER_TOKEN}@github.com/skalenetwork/skale-manager.git
         - cd skale-manager/
-        - sed -i 's/petersburg/byzantium/g' truffle-config.js
+        - git checkout stable
         - npm i
         - PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY npx truffle migrate --network SKALE_private_testnet
         - cp data/SKALE_private_testnet.json ../test_abi.json && cd ..
