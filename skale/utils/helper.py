@@ -83,6 +83,7 @@ def get_nonce(skale, address):
 
 def sign_and_send(skale, method, gas_amount, wallet):
     eth_nonce = get_nonce(skale, wallet['address'])
+    logger.info(f'Method {method}. Transaction nonce: {eth_nonce}')
     txn = method.buildTransaction({
         'gas': gas_amount,
         'nonce': eth_nonce  # + 2
@@ -160,6 +161,7 @@ def generate_custom_config(ip, ws_port):
 
 def send_eth(web3, account, amount, wallet):
     eth_nonce = get_eth_nonce(web3, wallet['address'])
+    logger.info(f'Transaction nonce {eth_nonce}')
     txn = {
         'to': account,
         'from': wallet['address'],

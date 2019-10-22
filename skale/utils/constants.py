@@ -8,7 +8,7 @@ GAS = {
     'send_verdict': 200000,
     'set_check_time': 200000,
     'set_latency': 200000,
-    'token_transfer': 60000,
+    'token_transfer': 600000,
     'add_authorized': 100000,
     'set_periods': 200000,
     'delete_node': 6000000,
