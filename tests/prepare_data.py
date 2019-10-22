@@ -83,8 +83,8 @@ def prepare_data(cleanup_only):
             create_nodes(skale, wallet)
             create_schain(skale, wallet)
         except Exception as err:
-            print(f'Preparation failed. {err}')
             cleanup_nodes_schains(skale, wallet)
+            raise err
 
 
 if __name__ == "__main__":

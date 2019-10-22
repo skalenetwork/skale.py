@@ -25,7 +25,7 @@ from skale.utils.helper import sign_and_send
 
 class Token(BaseContract):
     def transfer(self, address, value, wallet):
-        op = self.contract.functions.transfer(address, value)
+        op = self.contract.functions.send(address, value, b'')
         tx = sign_and_send(self.skale, op, GAS['token_transfer'], wallet)
         return {'tx': tx}
 
