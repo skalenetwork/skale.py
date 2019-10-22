@@ -53,7 +53,8 @@ def send_tokens(skale, sender_wallet, receiver_account, amount,
         receipt = Helper.await_receipt(skale.web3, res['tx'])
         Helper.check_receipt(receipt)
         return receipt
-    return res['tx']
+    else:  # pragma: no cover
+        return res['tx']
 
 
 def send_ether(web3, sender_wallet, receiver_account, amount,
@@ -68,7 +69,8 @@ def send_ether(web3, sender_wallet, receiver_account, amount,
         receipt = Helper.await_receipt(web3, tx)
         Helper.check_receipt(receipt)
         return receipt
-    return tx
+    else:  # pragma: no cover
+        return tx
 
 
 def check_ether_balance(web3, address):
