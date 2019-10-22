@@ -19,6 +19,7 @@
 """ SKALE test constants """
 
 import os
+from decimal import Decimal
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -31,7 +32,7 @@ TEST_CONTRACT_NAME_HASH = 'f88bdb637038c4be9f72381c0db0b0d7b7f369cfdd49619ee7e48
 ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 TOKEN_TRANSFER_VALUE = 100
-ETH_TRANSFER_VALUE = 5
+ETH_TRANSFER_VALUE = Decimal('0.05')
 
 DEFAULT_SCHAIN_NAME = 'test_schain'
 DEFAULT_SCHAIN_INDEX = 0
