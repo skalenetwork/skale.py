@@ -19,7 +19,6 @@
 """ SKALE account tools test """
 
 from web3 import Web3
-from hexbytes import HexBytes
 
 from skale.utils.account_tools import (check_ether_balance, generate_account,
                                        generate_accounts, init_wallet,
@@ -50,9 +49,6 @@ def test_send_tokens(skale, wallet, empty_account):
 
     assert receiver_balance_after == token_transfer_value_wei
     assert sender_balance_after == sender_balance - token_transfer_value_wei
-    res = send_tokens(skale, wallet, empty_account.address, TOKEN_TRANSFER_VALUE,
-                      wait_for=False)
-    assert type(res) is HexBytes
 
 
 def test_send_ether(skale, wallet, empty_account):
@@ -60,16 +56,15 @@ def test_send_ether(skale, wallet, empty_account):
 
     send_ether(skale.web3, wallet, empty_account.address, ETH_TRANSFER_VALUE)
 
-    receiver_balance_after = check_ether_balance(skale.web3, empty_account.address)
+    receiver_balance_after = check_ether_balance(skale.web3,
+                                                 empty_account.address)
     sender_balance_after = check_ether_balance(skale.web3, wallet['address'])
 
     assert receiver_balance_after == ETH_TRANSFER_VALUE
-    assert int(sender_balance_after) == int(
-        sender_balance) - ETH_TRANSFER_VALUE  # todo: think about better check
-
-    res = send_ether(skale.web3, wallet, empty_account.address,
-                     ETH_TRANSFER_VALUE, wait_for=False)
-    assert type(res) is HexBytes
+    # check that sender_balance_after
+    # have decreased by ETH_TRANSFER_VALUE and some gas
+    assert sender_balance - 2 * ETH_TRANSFER_VALUE < sender_balance_after < \
+        sender_balance - ETH_TRANSFER_VALUE
 
 
 def test_generate_account(skale):
