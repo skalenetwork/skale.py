@@ -26,7 +26,7 @@ import socket
 import skale.utils.helper as Helper
 from skale.contracts import BaseContract
 from skale.utils.constants import GAS, NODE_DEPOSIT, OP_TYPES
-from skale.utils.helper import sign_and_send
+from skale.utils.tx import sign_and_send
 
 logger = logging.getLogger(__name__)
 

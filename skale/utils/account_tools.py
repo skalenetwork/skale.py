@@ -30,11 +30,25 @@ from skale.utils.helper import private_key_to_address
 logger = logging.getLogger(__name__)
 
 
-def init_wallet(private_key=None):
+def _init_software_wallet(private_key=None):
     base_pr = private_key or os.environ['ETH_PRIVATE_KEY']
     address = private_key_to_address(base_pr)
     address_fx = Web3.toChecksumAddress(address)
     return {'address': address_fx, 'private_key': base_pr}
+
+
+def _init_hw_wallet():
+    address_chs = Web3.toChecksumAddress(
+        '47be82C32BF112f7bEa3f225a2a97091ca133FA2'
+    )
+    return {'address': address_chs}
+
+
+def init_wallet(private_key=None):
+    if private_key is not None or os.getenv('WALLET') != 'LEDGER':
+        return _init_software_wallet(private_key)
+    else:
+        _init_hw_wallet()
 
 
 def init_test_wallet():

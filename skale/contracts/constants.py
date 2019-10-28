@@ -1,6 +1,6 @@
 from skale.contracts import BaseContract
 from skale.utils.constants import GAS
-from skale.utils.helper import sign_and_send
+from skale.utils.tx import sign_and_send
 
 
 class Constants(BaseContract):

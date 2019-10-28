@@ -73,6 +73,7 @@ def save_info(schain_index, schain_info=None, wallet=None, data_dir=None):
 def create_schain(skale, wallet):
     type_of_nodes, lifetime_seconds, old_name = generate_random_schain_data()
     schain_name = generate_random_schain_name()
+    schain_name = 'test-schain'
     price_in_wei = skale.schains.get_schain_price(type_of_nodes,
                                                   lifetime_seconds)
 

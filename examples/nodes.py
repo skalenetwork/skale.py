@@ -111,18 +111,16 @@ def schains_by_node(ctx, save_to):
 @main.command()
 @click.pass_context
 def show(ctx):
-    """ Command to show active nodes """
+    """ Command to show id name and ip of active nodes """
     skale = ctx.obj['skale']
 
-    nodes_ips = skale.nodes_data.get_active_node_ips()
-
-    ips = []
-    for ip in nodes_ips:
-        ips.append(ip_from_bytes(ip))
-
-    print('IPS', ips)
-    node_data = skale.nodes_data.get(0)
-    print(node_data)
+    nodes_data = []
+    for _id in skale.nodes_data.get_active_node_ids():
+        data = skale.nodes_data.get(_id)
+        name = data.get('name')
+        ip = ip_from_bytes(data.get('ip'))
+        nodes_data.append((_id, name, ip))
+    print(nodes_data)
 
 
 @main.command()

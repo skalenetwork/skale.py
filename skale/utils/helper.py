@@ -32,6 +32,7 @@ from time import sleep
 from eth_keys import keys
 from web3 import Web3
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -63,10 +64,6 @@ def format(fields):
     return real_decorator
 
 
-def get_receipt(web3, tx):
-    return web3.eth.getTransactionReceipt(tx)
-
-
 def get_eth_nonce(web3, address):
     return web3.eth.getTransactionCount(address)
 
@@ -81,20 +78,8 @@ def get_nonce(skale, address):
     return lib_nonce
 
 
-def sign_and_send(skale, method, gas_amount, wallet):
-    eth_nonce = get_nonce(skale, wallet['address'])
-    logger.info(f'Method {method}. Transaction nonce: {eth_nonce}')
-    txn = method.buildTransaction({
-        'gas': gas_amount,
-        'nonce': eth_nonce  # + 2
-    })
-    signed_txn = skale.web3.eth.account.signTransaction(
-        txn, private_key=wallet['private_key'])
-    tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-    logger.info(
-        f'{method.__class__.__name__} - transaction_hash: {skale.web3.toHex(tx)}'
-    )
-    return tx
+def get_receipt(web3, tx):
+    return web3.eth.getTransactionReceipt(tx)
 
 
 def await_receipt(web3, tx, retries=10, timeout=5):
@@ -157,27 +142,6 @@ def generate_custom_config(ip, ws_port):
         'ip': ip,
         'ws_port': ws_port,
     }
-
-
-def send_eth(web3, account, amount, wallet):
-    eth_nonce = get_eth_nonce(web3, wallet['address'])
-    logger.info(f'Transaction nonce {eth_nonce}')
-    txn = {
-        'to': account,
-        'from': wallet['address'],
-        'value': amount,
-        'gasPrice': web3.eth.gasPrice,
-        'gas': 22000,
-        'nonce': eth_nonce
-    }
-    signed_txn = web3.eth.account.signTransaction(
-        txn, private_key=wallet['private_key'])
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-
-    logger.info(
-        f'ETH transfer {wallet["address"]} => {account}, {amount} wei, tx: {web3.toHex(tx)}'
-    )
-    return tx
 
 
 def private_key_to_public(pr):
