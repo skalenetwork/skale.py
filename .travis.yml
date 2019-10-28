@@ -9,12 +9,12 @@ dist: bionic
 env:
   global:
     - NODE_OPTIONS="--max_old_space_size=4096"
+    - ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
 
 install:
   - pip install codecov pytest-cov
   - pip install -e .
   - pip install -e .[dev]
-  - export ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
 
 before_script:
   - "flake8 ."
@@ -63,7 +63,6 @@ jobs:
           on:
             repo: $TRAVIS_REPO_SLUG
             branch:
-              - master
               - develop
               - beta
         - provider: script

@@ -7,17 +7,17 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        "flake8==3.4.1",
-        "isort>=4.2.15,<4.3.5",
+        "flake8==3.7.8",
+        "isort>=4.2.15,<4.3.22",
     ],
     'dev': [
         "bumpversion==0.5.3",
-        "pytest==3.8.1",
+        "pytest==5.2.1",
         "click==7.0",
         "twine==1.12.1",
         "when-changed",
         "Random-Word==1.0.4",
-        "pytest-cov==2.7.1"
+        "pytest-cov==2.8.1"
     ]
 }
 
@@ -28,7 +28,7 @@ extras_require['dev'] = (
 setup(
     name='skale.py',
     # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='1.0',
+    version='1.1',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',

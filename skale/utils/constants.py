@@ -8,12 +8,12 @@ GAS = {
     'send_verdict': 200000,
     'set_check_time': 200000,
     'set_latency': 200000,
-    'token_transfer': 60000,
+    'token_transfer': 600000,
     'add_authorized': 100000,
     'set_periods': 200000,
     'delete_node': 6000000,
-    'delete_node_by_root': 600000,
-    'delete_schain': 600000
+    'delete_node_by_root': 6000000,
+    'delete_schain': 6000000
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}
