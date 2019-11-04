@@ -38,7 +38,8 @@ setup(
     install_requires=[
         "web3==4.9.2",
         "asyncio==3.4.3",
-        "pyyaml==5.1.2"
+        "pyyaml==5.1.2",
+        "ledgerblue==0.1.29",
     ],
 
     python_requires='>=3.6,<4',
