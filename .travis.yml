@@ -13,7 +13,7 @@ env:
 
 install:
   - sudo apt install libudev-dev
-  - sudo apt install libusb-1.0.0-dev
+  - sudo apt install libusb-1.0-0-dev
   - sudo apt install python3-dev
   - pip install codecov pytest-cov
   - pip install -e .
