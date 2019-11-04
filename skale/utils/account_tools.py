@@ -24,8 +24,10 @@ import os
 from web3 import Web3
 
 import skale.utils.helper as Helper
+from skale.utils.tx import send_eth
 from skale.utils.constants import LONG_LINE
 from skale.utils.helper import private_key_to_address
+from skale.utils.wallets.ledger import LedgerWallet
 
 logger = logging.getLogger(__name__)
 
@@ -38,17 +40,14 @@ def _init_software_wallet(private_key=None):
 
 
 def _init_hw_wallet():
-    address_chs = Web3.toChecksumAddress(
-        '47be82C32BF112f7bEa3f225a2a97091ca133FA2'
-    )
-    return {'address': address_chs}
+    return LedgerWallet()
 
 
 def init_wallet(private_key=None):
-    if private_key is not None or os.getenv('WALLET') != 'LEDGER':
-        return _init_software_wallet(private_key)
+    if os.getenv('WALLET') == 'LEDGER':
+        return _init_hw_wallet()
     else:
-        _init_hw_wallet()
+        return _init_software_wallet(private_key)
 
 
 def init_test_wallet():
@@ -78,7 +77,7 @@ def send_ether(web3, sender_wallet, receiver_account, amount,
     )
 
     wei_amount = web3.toWei(amount, 'ether')
-    tx = Helper.send_eth(web3, receiver_account, wei_amount, sender_wallet)
+    tx = send_eth(web3, receiver_account, wei_amount, sender_wallet)
     if wait_for:
         receipt = Helper.await_receipt(web3, tx)
         Helper.check_receipt(receipt)

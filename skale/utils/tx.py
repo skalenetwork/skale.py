@@ -2,7 +2,7 @@ import logging
 import os
 
 from skale.utils.helper import get_eth_nonce, get_nonce
-from skale.utils.hw import hardware_sign_and_send
+from skale.utils.wallets.ledger import hardware_sign_and_send
 
 logger = logging.getLogger(__name__)
 

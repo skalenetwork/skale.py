@@ -38,7 +38,7 @@ class Manager(BaseContract):
 
         token = self.skale.get_contract_by_name('token')
         skale_nonce = Helper.generate_nonce()
-        pk = Helper.private_key_to_public(wallet['private_key'])
+        pk = Helper.wallet_to_public_key(wallet)
 
         if not public_ip:
             public_ip = ip

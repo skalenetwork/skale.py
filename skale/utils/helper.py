@@ -144,14 +144,28 @@ def generate_custom_config(ip, ws_port):
     }
 
 
+def wallet_to_public_key(wallet):
+    if isinstance(wallet, dict):
+        return private_key_to_public(wallet['private_key'])
+    else:
+        return wallet['public_key']
+
+
+def to_checksum_address(address):
+    return Web3.toChecksumAddress(address)
+
+
 def private_key_to_public(pr):
     pr_bytes = Web3.toBytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
-def public_key_to_address(pk):
-    hash = Web3.sha3(hexstr=str(pk))
+def public_key_to_address(public_key):
+    """ Convert public key to address
+    @param: public_key public key without 0x prefix
+    """
+    hash = Web3.sha3(hexstr=str(public_key))
     return Web3.toHex(hash[-20:])
 
 
