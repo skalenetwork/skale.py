@@ -105,7 +105,7 @@ def schains_by_node(ctx, save_to):
     with open(filepath, 'w') as outfile:
         json.dump(schains, outfile)
 
-    print('Schains on each node:')
+    print('sChains on each node:')
     print(sizes)
 
 
