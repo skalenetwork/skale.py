@@ -1,8 +1,6 @@
 import logging
 
-from web3 import Web3, WebsocketProvider, HTTPProvider
-from urllib.parse import urlparse
-
+from web3 import Web3
 import skale.contracts as contracts
 from skale.contracts_info import CONTRACTS_INFO
 from skale.utils.helper import get_abi

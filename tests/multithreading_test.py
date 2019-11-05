@@ -21,7 +21,6 @@
 import threading
 
 from skale import Skale
-import skale.utils.helper as Helper
 from skale.utils.web3_utils import init_web3
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, DEFAULT_NODE_NAME
 
@@ -31,6 +30,7 @@ def get_node_data():
     for _ in range(0, 30):
         skale.nodes_data.get_by_name(DEFAULT_NODE_NAME)
 
+
 def test_multithead_calls():
     init_web3(ENDPOINT)
     monitors = []
@@ -38,6 +38,5 @@ def test_multithead_calls():
         monitor = threading.Thread(target=get_node_data, daemon=True)
         monitor.start()
         monitors.append(monitor)
-        print('!!!')
     for monitor in monitors:
         monitor.join()

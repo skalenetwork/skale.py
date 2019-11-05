@@ -78,6 +78,7 @@ def wait_receipt(web3, tx, retries=10, timeout=5):
         sleep(timeout)  # pragma: no cover
     raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
 
+
 def send_eth(web3, account, amount, wallet):
     eth_nonce = get_eth_nonce(web3, wallet['address'])
     LOGGER.info(f'Transaction nonce {eth_nonce}')

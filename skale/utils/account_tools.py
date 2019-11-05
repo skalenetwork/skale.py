@@ -23,7 +23,6 @@ import os
 
 from web3 import Web3
 
-import skale.utils.helper as Helper
 from skale.utils.constants import LONG_LINE
 from skale.utils.web3_utils import check_receipt, private_key_to_address, send_eth, wait_receipt
 

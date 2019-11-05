@@ -59,7 +59,6 @@ def format_fields(fields):
     return real_decorator
 
 
-
 def ip_from_bytes(bytes):
     return socket.inet_ntoa(bytes)
 

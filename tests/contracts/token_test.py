@@ -18,7 +18,6 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE token test """
 
-import skale.utils.helper as Helper
 from skale.utils.web3_utils import wait_receipt
 
 from tests.constants import TOKEN_TRANSFER_VALUE

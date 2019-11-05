@@ -148,6 +148,6 @@ class SChainsData(BaseContract):
         return self.contract.functions.numberOfSchains().call()
 
     def schain_active(self, schain):
-        if schain['name'] is not '' and \
-                schain['owner'] is not '0x0000000000000000000000000000000000000000':
+        if schain['name'] != '' and \
+                schain['owner'] != '0x0000000000000000000000000000000000000000':
             return True

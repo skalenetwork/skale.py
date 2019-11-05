@@ -22,7 +22,7 @@ import click
 
 import skale.utils.helper as Helper
 from skale import Skale
-from skale.utils.account_tools import init_test_wallet§
+from skale.utils.account_tools import init_test_wallet
 from skale.utils.web3_utils import wait_receipt, check_receipt
 from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
                              ENDPOINT, TEST_ABI_FILEPATH)

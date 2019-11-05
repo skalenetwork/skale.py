@@ -1,8 +1,4 @@
-import pytest
-
 from skale.utils.helper import format_fields, is_valid_ipv4_address
-from skale.utils.web3_utils import wait_receipt, check_receipt
-
 
 
 def test_format():
@@ -25,4 +21,3 @@ def test_is_valid_ipv4_address():
     assert is_valid_ipv4_address('257.1.1.1') is False
     assert is_valid_ipv4_address('saddas') is False
     assert is_valid_ipv4_address('0:0:0:0:0:0:0:0') is False
-

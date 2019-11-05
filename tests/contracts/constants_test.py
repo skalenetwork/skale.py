@@ -1,4 +1,3 @@
-import skale.utils.helper as Helper
 from skale.utils.web3_utils import wait_receipt
 
 from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
