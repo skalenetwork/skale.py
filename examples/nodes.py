@@ -114,7 +114,6 @@ def schains_by_node(ctx, save_to):
 def show(ctx):
     """ Command to show active nodes """
     skale = ctx.obj['skale']
-
     nodes_ips = skale.nodes_data.get_active_node_ips()
 
     ips = []

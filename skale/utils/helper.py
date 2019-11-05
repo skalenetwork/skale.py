@@ -101,6 +101,10 @@ def generate_random_port():  # pragma: no cover
     return random.randint(0, 60000)
 
 
+def add_0x_prefix(bytes_string):  # pragma: no cover
+    return '0x' + bytes_string
+
+
 def init_default_logger():  # pragma: no cover
     handlers = []
     formatter = Formatter(
