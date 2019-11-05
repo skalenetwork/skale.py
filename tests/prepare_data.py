@@ -22,7 +22,8 @@ import click
 
 import skale.utils.helper as Helper
 from skale import Skale
-from skale.utils.account_tools import init_test_wallet
+from skale.utils.account_tools import init_test_wallet§
+from skale.utils.web3_utils import wait_receipt, check_receipt
 from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
                              ENDPOINT, TEST_ABI_FILEPATH)
 from tests.utils import generate_random_node_data, generate_random_schain_data
@@ -35,12 +36,12 @@ def cleanup_nodes_schains(skale, wallet):
         schain_name = schain_data.get('name', None)
         if schain_name is not None:
             res = skale.manager.delete_schain(schain_name, wallet)
-            receipt = Helper.await_receipt(skale.web3, res['tx'])
-            Helper.check_receipt(receipt)
+            receipt = wait_receipt(skale.web3, res['tx'])
+            check_receipt(receipt)
     for node_id in skale.nodes_data.get_active_node_ids():
         res = skale.manager.deregister(node_id, wallet)
-        receipt = Helper.await_receipt(skale.web3, res['tx'])
-        Helper.check_receipt(receipt)
+        receipt = wait_receipt(skale.web3, res['tx'])
+        check_receipt(receipt)
 
 
 def create_nodes(skale, wallet):
@@ -50,8 +51,8 @@ def create_nodes(skale, wallet):
     for name in node_names:
         ip, public_ip, port, _ = generate_random_node_data()
         res = skale.manager.create_node(ip, port, name, wallet, public_ip)
-        receipt = Helper.await_receipt(skale.web3, res['tx'])
-        Helper.check_receipt(receipt)
+        receipt = wait_receipt(skale.web3, res['tx'])
+        check_receipt(receipt)
 
 
 def create_schain(skale, wallet):
@@ -67,8 +68,8 @@ def create_schain(skale, wallet):
         DEFAULT_SCHAIN_NAME,
         wallet
     )
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
-    Helper.check_receipt(receipt)
+    receipt = wait_receipt(skale.web3, res['tx'])
+    check_receipt(receipt)
 
 
 @click.command()

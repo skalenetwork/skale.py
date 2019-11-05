@@ -21,7 +21,8 @@
 from Crypto.Hash import keccak
 
 from skale.contracts import BaseContract
-from skale.utils.helper import format, ip_from_bytes, public_key_to_address
+from skale.utils.helper import format_fields, ip_from_bytes
+from skale.utils.web3_utils import public_key_to_address
 
 from skale.dataclasses.current_node_info import CurrentNodeInfo
 from skale.dataclasses.schain_node_info import SchainNodeInfo
@@ -39,11 +40,11 @@ class SChainsData(BaseContract):
     def __get_raw(self, name):
         return self.contract.functions.schains(name).call()
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get(self, id):
         return self.__get_raw(id)
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get_by_name(self, name):
         id = self.name_to_id(name)
         return self.__get_raw(id)

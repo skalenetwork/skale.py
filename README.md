@@ -20,8 +20,8 @@ pip install skale
 Library initialization
 
 ```python
-from skale import Skale, BlockchainEnv
-skale = Skale(BlockchainEnv.DO)
+from skale import Skale
+skale = Skale('RPC_ENDPOINT', 'JSON_ABI_FILEPATH')
 ```
 
 Interactions with SKALE contracts
@@ -30,6 +30,11 @@ Interactions with SKALE contracts
 active_nodes = skale.nodes_data.get_active_node_ips()
 schains = skale.schains_data.get_schains_for_owner('0x...')
 ```
+
+#### Working in multiple threads
+
+Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.  
+Take a look on the `tests/multithreading_test.py` for the reference.
 
 ### Development
 

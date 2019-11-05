@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import skale.contracts as contracts
 from skale.contracts_info import CONTRACTS_INFO
 from skale.utils.helper import get_abi
+from skale.utils.web3_utils import get_provider
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 class Skale:
     def __init__(self, endpoint, abi_filepath):
         logger.info(f'Init skale-py, connecting to {endpoint}')
-        provider = self.get_provider(endpoint)
+        provider = get_provider(endpoint)
         self.web3 = Web3(provider)
         self.abi = get_abi(abi_filepath)
         self.__contracts = {}
@@ -22,17 +23,6 @@ class Skale:
 
         self.__init_contracts_info()
         self.__init_contracts()
-
-    def get_provider(self, endpoint):
-        scheme = urlparse(endpoint).scheme
-        if scheme == 'ws' or scheme == 'wss':
-            return WebsocketProvider(endpoint)
-        if scheme == 'http' or scheme == 'https':
-            return HTTPProvider(endpoint)
-        raise Exception(
-            'Wrong endpoint option.'
-            'Supported endpoint schemes: http/https/ws/wss'
-        )
 
     def __init_contracts_info(self):
         for contract_info in CONTRACTS_INFO:
