@@ -18,7 +18,8 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE token test """
 
-import skale.utils.helper as Helper
+from skale.utils.web3_utils import wait_receipt
+
 from tests.constants import TOKEN_TRANSFER_VALUE
 
 
@@ -30,7 +31,7 @@ def test_transfer(skale, wallet, empty_account):
     assert sender_balance != 0
 
     res = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE, wallet)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
+    receipt = wait_receipt(skale.web3, res['tx'])
 
     assert receipt['status'] == 1
 

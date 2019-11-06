@@ -25,6 +25,7 @@ import click
 
 import skale.utils.helper as Helper
 from skale.utils.helper import ip_from_bytes
+from skale.utils.web3_utils import wait_receipt, check_receipt
 from skale import Skale
 from skale.utils.account_tools import init_wallet
 from skale.utils.constants import LONG_LINE
@@ -39,7 +40,7 @@ def create_node(skale, wallet):
     ip, public_ip, port, name = generate_random_node_data()
     port = 10000
     res = skale.manager.create_node(ip, port, name, wallet, public_ip)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
+    receipt = wait_receipt(skale.web3, res['tx'])
     return receipt
 
 
@@ -66,7 +67,7 @@ def create(ctx, amount):
         print(LONG_LINE)
         print(f'Creating {i+1}/{amount} node...')
         receipt = create_node(skale, wallet)
-        Helper.check_receipt(receipt)
+        check_receipt(receipt)
 
 
 @main.command()
@@ -104,7 +105,7 @@ def schains_by_node(ctx, save_to):
     with open(filepath, 'w') as outfile:
         json.dump(schains, outfile)
 
-    print('Schains on each node:')
+    print('sChains on each node:')
     print(sizes)
 
 
@@ -113,7 +114,6 @@ def schains_by_node(ctx, save_to):
 def show(ctx):
     """ Command to show active nodes """
     skale = ctx.obj['skale']
-
     nodes_ips = skale.nodes_data.get_active_node_ips()
 
     ips = []
@@ -136,8 +136,8 @@ def remove(ctx, node_name):
     node_id = skale.nodes_data.node_name_to_index(node_name)
     res = skale.manager.delete_node_by_root(node_id, wallet)
 
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
-    Helper.check_receipt(receipt)
+    receipt = wait_receipt(skale.web3, res['tx'])
+    check_receipt(receipt)
 
 
 if __name__ == "__main__":

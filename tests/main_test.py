@@ -48,13 +48,13 @@ def test_lib_init():
 
     assert skale.abi is not None
 
-    provider = skale.web3.providers[0]
+    provider = skale.web3.provider
     assert isinstance(provider, WebsocketProvider)
 
     http_endpoint = 'http://localhost:8080'
     with mock.patch.object(Skale, '_Skale__init_contracts'):
         skale = Skale(http_endpoint, TEST_ABI_FILEPATH)
-        provider = skale.web3.providers[0]
+        provider = skale.web3.provider
         assert isinstance(provider, HTTPProvider)
 
     file_endpoint = 'file://local_file:1001'
