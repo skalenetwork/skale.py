@@ -27,6 +27,7 @@ import skale.utils.helper as Helper
 from skale.contracts import BaseContract
 from skale.utils.constants import GAS, NODE_DEPOSIT, OP_TYPES
 from skale.utils.tx import sign_and_send
+from skale.utils.web3_utils import private_key_to_public
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class Manager(BaseContract):
 
         token = self.skale.get_contract_by_name('token')
         skale_nonce = Helper.generate_nonce()
-        pk = Helper.wallet_to_public_key(wallet)
+        pk = private_key_to_public(wallet['private_key'])
 
         if not public_ip:
             public_ip = ip
@@ -48,7 +49,7 @@ class Manager(BaseContract):
 
         op = token.contract.functions.send(self.address, NODE_DEPOSIT,
                                            transaction_data)
-        tx = sign_and_send(self.skale, op, GAS['create_node'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['create_node'], wallet)
         return {'tx': tx, 'nonce': skale_nonce}
 
     def create_node_data_to_bytes(self, ip, public_ip, port, name, pk, nonce):
@@ -88,7 +89,7 @@ class Manager(BaseContract):
 
         op = token.contract.functions.send(self.address, deposit,
                                            transaction_data)
-        tx = sign_and_send(self.skale, op, GAS['create_schain'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['create_schain'], wallet)
         return {'tx': tx, 'nonce': skale_nonce}
 
     def create_schain_data_to_bytes(self, lifetime, type_of_nodes, name,
@@ -110,32 +111,32 @@ class Manager(BaseContract):
 
     def get_bounty(self, node_id, wallet):
         op = self.contract.functions.getBounty(node_id)
-        tx = sign_and_send(self.skale, op, GAS['get_bounty'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['get_bounty'], wallet)
         return {'tx': tx}
 
     def send_verdict(self, validator, node_id, downtime, latency, wallet):
         op = self.contract.functions.sendVerdict(validator, node_id, downtime,
                                                  latency)
-        tx = sign_and_send(self.skale, op, GAS['send_verdict'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['send_verdict'], wallet)
         return {'tx': tx}
 
     def send_verdicts(self, validator, nodes_ids, downtimes, latencies, wallet):
         op = self.contract.functions.sendVerdicts(validator, nodes_ids,
                                                   downtimes, latencies)
-        tx = sign_and_send(self.skale, op, GAS['send_verdict'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['send_verdict'], wallet)
         return {'tx': tx}
 
     def deregister(self, node_id, wallet):
         op = self.contract.functions.deleteNode(node_id)
-        tx = sign_and_send(self.skale, op, GAS['delete_node'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['delete_node'], wallet)
         return {'tx': tx}
 
     def delete_schain(self, schain_name, wallet):
         op = self.contract.functions.deleteSchain(schain_name)
-        tx = sign_and_send(self.skale, op, GAS['delete_schain'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['delete_schain'], wallet)
         return {'tx': tx}
 
     def delete_node_by_root(self, node_id, wallet):
         op = self.contract.functions.deleteNodeByRoot(node_id)
-        tx = sign_and_send(self.skale, op, GAS['delete_node_by_root'], wallet)
+        tx = sign_and_send(self.skale.web3, op, GAS['delete_node_by_root'], wallet)
         return {'tx': tx}

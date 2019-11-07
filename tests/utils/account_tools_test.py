@@ -23,7 +23,7 @@ from web3 import Web3
 from skale.utils.account_tools import (check_ether_balance, generate_account,
                                        generate_accounts, init_wallet,
                                        send_ether, send_tokens, check_skale_balance)
-from skale.utils.helper import private_key_to_address
+from skale.utils.web3_utils import private_key_to_address
 from tests.constants import TOKEN_TRANSFER_VALUE, ETH_TRANSFER_VALUE, N_TEST_WALLETS
 
 

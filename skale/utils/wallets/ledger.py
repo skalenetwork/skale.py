@@ -2,15 +2,14 @@ import logging
 
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
-from eth_account.internal.transactions import encode_transaction
-from eth_account.internal.transactions import \
+from eth_account._utils.transactions import encode_transaction
+from eth_account._utils.transactions import \
     serializable_unsigned_transaction_from_dict as tx_from_dict
 from eth_utils.crypto import keccak
 from ledgerblue.comm import getDongle
 from rlp import encode
-
-from skale.utils.helper import get_nonce
-from skale.utils.helper import to_checksum_address, public_key_to_address
+from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
+                                   to_checksum_address
 
 from skale.utils.wallets.common import chunks, BaseWallet, derivation_path_prefix
 
@@ -33,8 +32,8 @@ class LedgerWallet(BaseWallet):
     def public_key(self):
         return self._public_key
 
+    # todo: remove this method after making software wallet as class
     def __getitem__(self, key):
-        # todo: remove after make software wallet as class
         items = {'address': self.address, 'public_key': self.public_key}
         return items[key]
 
@@ -56,9 +55,9 @@ class LedgerWallet(BaseWallet):
         signed_txn = AttributeDict({
             'rawTransaction': HexBytes(enctx),
             'hash': HexBytes(transaction_hash),
+            'v': sign_v,
             'r': sign_r,
             's': sign_s,
-            'v': sign_v,
         })
         return signed_txn
 
@@ -111,7 +110,7 @@ class LedgerWallet(BaseWallet):
 
 def hardware_sign_and_send(skale, method, gas_amount, wallet):
     address_from = wallet['address']
-    eth_nonce = get_nonce(skale, address_from)
+    eth_nonce = get_eth_nonce(skale.web3, address_from)
     tx_dict = method.buildTransaction({
         'gas': gas_amount,
         'nonce': eth_nonce

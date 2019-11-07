@@ -16,23 +16,27 @@
 #
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE token operations """
+""" SKALE test multithreading """
 
-from skale.contracts import BaseContract
-from skale.utils.constants import GAS
-from skale.utils.tx import sign_and_send
+import threading
+
+from skale import Skale
+from skale.utils.web3_utils import init_web3
+from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, DEFAULT_NODE_NAME
 
 
-class Token(BaseContract):
-    def transfer(self, address, value, wallet):
-        op = self.contract.functions.send(address, value, b'')
-        tx = sign_and_send(self.skale.web3, op, GAS['token_transfer'], wallet)
-        return {'tx': tx}
+def get_node_data():
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
+    for _ in range(0, 30):
+        skale.nodes_data.get_by_name(DEFAULT_NODE_NAME)
 
-    def get_balance(self, address):
-        return self.contract.functions.balanceOf(address).call()
 
-    def add_authorized(self, address, wallet):  # pragma: no cover
-        op = self.contract.functions.addAuthorized(address)
-        tx = sign_and_send(self.skale.web3, op, GAS['token_transfer'], wallet)
-        return {'tx': tx}
+def test_multithead_calls():
+    init_web3(ENDPOINT)
+    monitors = []
+    for _ in range(0, 5):
+        monitor = threading.Thread(target=get_node_data, daemon=True)
+        monitor.start()
+        monitors.append(monitor)
+    for monitor in monitors:
+        monitor.join()

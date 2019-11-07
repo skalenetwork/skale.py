@@ -23,11 +23,11 @@ import os
 
 from web3 import Web3
 
-import skale.utils.helper as Helper
 from skale.utils.tx import send_eth
 from skale.utils.constants import LONG_LINE
-from skale.utils.helper import private_key_to_address
 from skale.utils.wallets.ledger import LedgerWallet
+from skale.utils.web3_utils import check_receipt, private_key_to_address, \
+                                   wait_receipt
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +63,8 @@ def send_tokens(skale, sender_wallet, receiver_account, amount,
     wei_amount = skale.web3.toWei(amount, 'ether')
     res = skale.token.transfer(receiver_account, wei_amount, sender_wallet)
     if wait_for:
-        receipt = Helper.await_receipt(skale.web3, res['tx'])
-        Helper.check_receipt(receipt)
+        receipt = wait_receipt(skale.web3, res['tx'])
+        check_receipt(receipt)
         return receipt
     else:  # pragma: no cover
         return res['tx']
@@ -79,8 +79,8 @@ def send_ether(web3, sender_wallet, receiver_account, amount,
     wei_amount = web3.toWei(amount, 'ether')
     tx = send_eth(web3, receiver_account, wei_amount, sender_wallet)
     if wait_for:
-        receipt = Helper.await_receipt(web3, tx)
-        Helper.check_receipt(receipt)
+        receipt = wait_receipt(web3, tx)
+        check_receipt(receipt)
         return receipt
     else:  # pragma: no cover
         return tx

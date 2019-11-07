@@ -27,6 +27,7 @@ import click
 
 import skale.utils.helper as Helper
 from skale import Skale
+from skale.utils.web3_utils import wait_receipt, check_receipt
 from skale.utils.account_tools import (check_ether_balance,
                                        check_skale_balance, generate_account,
                                        init_wallet as init_base_wallet,
@@ -79,8 +80,8 @@ def create_schain(skale, wallet):
 
     res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
                                       price_in_wei, schain_name, wallet)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
-    Helper.check_receipt(receipt)
+    receipt = wait_receipt(skale.web3, res['tx'])
+    check_receipt(receipt)
 
     schain_struct = skale.schains_data.get_by_name(schain_name)
     schain_nodes = skale.schains_data.get_nodes_for_schain_config(schain_name)
@@ -137,8 +138,8 @@ def remove(ctx, schain_name):
     skale = ctx.obj['skale']
     wallet = init_base_wallet()
     res = skale.manager.delete_schain(schain_name, wallet)
-    receipt = Helper.await_receipt(skale.web3, res['tx'])
-    Helper.check_receipt(receipt)
+    receipt = wait_receipt(skale.web3, res['tx'])
+    check_receipt(receipt)
     print(f'sChain {schain_name} removed!')
 
 

@@ -1,33 +1,33 @@
 import logging
 import os
 
-from skale.utils.helper import get_eth_nonce, get_nonce
+from skale.utils.web3_utils import get_eth_nonce
 from skale.utils.wallets.ledger import hardware_sign_and_send
 
 logger = logging.getLogger(__name__)
 
 
-def software_sign_and_send(skale, method, gas_amount, wallet):
-    eth_nonce = get_nonce(skale, wallet['address'])
+def software_sign_and_send(web3, method, gas_amount, wallet):
+    eth_nonce = get_eth_nonce(web3, wallet['address'])
     logger.info(f'Method {method}. Transaction nonce: {eth_nonce}')
     txn = method.buildTransaction({
         'gas': gas_amount,
         'nonce': eth_nonce  # + 2
     })
-    signed_txn = skale.web3.eth.account.signTransaction(
+    signed_txn = web3.eth.account.signTransaction(
         txn, private_key=wallet['private_key'])
-    tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
     logger.info(
-        f'{method.__class__.__name__} - transaction_hash: {skale.web3.toHex(tx)}'
+        f'{method.__class__.__name__} - transaction_hash: {web3.toHex(tx)}'
     )
     return tx
 
 
-def sign_and_send(skale, method, gas_amount, wallet):
+def sign_and_send(web3, method, gas_amount, wallet):
     if os.getenv('WALLET') == 'LEDGER':
-        res = hardware_sign_and_send(skale, method, gas_amount, wallet)
+        res = hardware_sign_and_send(web3, method, gas_amount, wallet)
     else:
-        res = software_sign_and_send(skale, method, gas_amount, wallet)
+        res = software_sign_and_send(web3, method, gas_amount, wallet)
     return res
 
 

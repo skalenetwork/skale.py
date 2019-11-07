@@ -21,11 +21,12 @@
 from Crypto.Hash import keccak
 
 from skale.contracts import BaseContract
+from skale.utils.helper import add_0x_prefix
 
 
 class ContractManager(BaseContract):
     def get_contract_address(self, name):
-        contract_hash = self.get_contract_hash_by_name(name)
+        contract_hash = add_0x_prefix(self.get_contract_hash_by_name(name))
         return self.contract.functions.contracts(contract_hash).call()
 
     def get_contract_hash_by_name(self, name):

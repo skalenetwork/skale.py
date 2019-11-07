@@ -24,7 +24,7 @@ from Crypto.Hash import keccak
 from web3.exceptions import BadFunctionCallOutput
 
 from skale.contracts import BaseContract
-from skale.utils.helper import format
+from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'ip', 'publicIP', 'port', 'publicKey', 'start_date',
@@ -45,11 +45,11 @@ class NodesData(BaseContract):
         except (ValueError, BadFunctionCallOutput):
             return None
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get(self, node_id):
         return self.__get_raw(node_id)
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get_by_name(self, name):
         name_hash = self.name_to_id(name)
         id = self.contract.functions.nodesNameToIndex(name_hash).call()

@@ -27,16 +27,12 @@ import string
 import sys
 from logging import Formatter, StreamHandler
 from random import randint
-from time import sleep
-
-from eth_keys import keys
-from web3 import Web3
 
 
 logger = logging.getLogger(__name__)
 
 
-def format(fields):
+def format_fields(fields):
     """
         Transform array to object with passed fields
         Usage:
@@ -62,33 +58,6 @@ def format(fields):
         return wrapper
 
     return real_decorator
-
-
-def get_eth_nonce(web3, address):
-    return web3.eth.getTransactionCount(address)
-
-
-def get_nonce(skale, address):
-    lib_nonce = skale.nonces.get(address)
-    if not lib_nonce:
-        lib_nonce = get_eth_nonce(skale.web3, address)
-        skale.nonces.get(address)
-    else:
-        lib_nonce += lib_nonce
-    return lib_nonce
-
-
-def get_receipt(web3, tx):
-    return web3.eth.getTransactionReceipt(tx)
-
-
-def await_receipt(web3, tx, retries=10, timeout=5):
-    for _ in range(0, retries):
-        receipt = get_receipt(web3, tx)
-        if receipt is not None:
-            return receipt
-        sleep(timeout)  # pragma: no cover
-    return None  # pragma: no cover
 
 
 def ip_from_bytes(bytes):
@@ -144,40 +113,8 @@ def generate_custom_config(ip, ws_port):
     }
 
 
-def wallet_to_public_key(wallet):
-    if isinstance(wallet, dict):
-        return private_key_to_public(wallet['private_key'])
-    else:
-        return wallet['public_key']
-
-
-def to_checksum_address(address):
-    return Web3.toChecksumAddress(address)
-
-
-def private_key_to_public(pr):
-    pr_bytes = Web3.toBytes(hexstr=pr)
-    pk = keys.PrivateKey(pr_bytes)
-    return pk.public_key
-
-
-def public_key_to_address(public_key):
-    """ Convert public key to address
-    @param: public_key public key without 0x prefix
-    """
-    hash = Web3.sha3(hexstr=str(public_key))
-    return Web3.toHex(hash[-20:])
-
-
-def private_key_to_address(pr):
-    pk = private_key_to_public(pr)
-    return public_key_to_address(pk)
-
-
-def check_receipt(receipt):
-    if receipt['status'] != 1:  # pragma: no cover
-        raise ValueError("Transaction failed, see receipt", receipt)
-    return True
+def add_0x_prefix(bytes_string):  # pragma: no cover
+    return '0x' + bytes_string
 
 
 def init_default_logger():  # pragma: no cover
