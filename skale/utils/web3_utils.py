@@ -78,10 +78,6 @@ def sign_and_send(skale, method, gas_amount, wallet=None):
             tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
         else:
             raise ValueError('You should provide wallet or transactions_manager.')
-
-    print('-----')
-    print(tx)
-    print('-----')
     LOGGER.info(f'{method.__class__.__name__} - tx: {skale.web3.toHex(tx)}')
     return tx
 
