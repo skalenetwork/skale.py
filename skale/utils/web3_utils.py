@@ -26,7 +26,7 @@ from eth_keys import keys
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def get_provider(endpoint):
@@ -62,7 +62,7 @@ def build_transaction(method, gas_amount, nonce=None):
 
 
 def sign_and_send(skale, method, gas_amount, wallet=None):
-    LOGGER.info(f'Method: {method}, gas: {gas_amount}')
+    logger.info(f'Method: {method}, gas: {gas_amount}')
     if skale.transactions_manager:
         transaction = build_transaction(method, gas_amount)
         res = skale.transactions_manager.send_transaction(transaction)
@@ -78,7 +78,7 @@ def sign_and_send(skale, method, gas_amount, wallet=None):
             tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
         else:
             raise ValueError('You should provide wallet or transactions_manager.')
-    LOGGER.info(f'{method.__class__.__name__} - tx: {skale.web3.toHex(tx)}')
+    logger.info(f'{method.__class__.__name__} - tx: {skale.web3.toHex(tx)}')
     return tx
 
 
@@ -96,7 +96,7 @@ def wait_receipt(web3, tx, retries=10, timeout=5):
 
 def send_eth(web3, account, amount, wallet):
     eth_nonce = get_eth_nonce(web3, wallet['address'])
-    LOGGER.info(f'Transaction nonce {eth_nonce}')
+    logger.info(f'Transaction nonce {eth_nonce}')
     txn = {
         'to': account,
         'from': wallet['address'],
@@ -109,7 +109,7 @@ def send_eth(web3, account, amount, wallet):
         txn, private_key=wallet['private_key'])
     tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
 
-    LOGGER.info(
+    logger.info(
         f'ETH transfer {wallet["address"]} => {account}, {amount} wei, tx: {web3.toHex(tx)}'
     )
     return tx
