@@ -20,9 +20,9 @@
 
 import click
 
-import skale.utils.helper as Helper
 from skale import Skale
 from skale.utils.account_tools import init_test_wallet
+from skale.utils.helper import init_default_logger
 from skale.utils.web3_utils import wait_receipt, check_receipt
 from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
                              ENDPOINT, TEST_ABI_FILEPATH)
@@ -75,7 +75,7 @@ def create_schain(skale, wallet):
 @click.command()
 @click.option('--cleanup-only', is_flag=True)
 def prepare_data(cleanup_only):
-    Helper.init_default_logger()
+    init_default_logger()
     skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
     wallet = init_test_wallet()
     cleanup_nodes_schains(skale, wallet)

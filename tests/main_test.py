@@ -70,8 +70,8 @@ def test_get_contract_address(skale):
 
 
 def test_get_attr(skale):
-    with pytest.raises(AttributeError):
-        skale.t123_random_attr
+    random_attr = skale.t123_random_attr
+    assert random_attr is None
     skale_py_nodes_contract = skale.nodes
     assert issubclass(type(skale_py_nodes_contract), BaseContract)
     assert isinstance(skale_py_nodes_contract, Nodes)

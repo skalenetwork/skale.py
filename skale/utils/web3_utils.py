@@ -54,34 +54,6 @@ def get_eth_nonce(web3, address):
     return web3.eth.getTransactionCount(address)
 
 
-def build_transaction(method, gas_amount, nonce=None):
-    return method.buildTransaction({
-        'gas': gas_amount,
-        'nonce': nonce
-    })
-
-
-def sign_and_send(skale, method, gas_amount, wallet=None):
-    logger.info(f'Method: {method}, gas: {gas_amount}')
-    if skale.transactions_manager:
-        transaction = build_transaction(method, gas_amount)
-        res = skale.transactions_manager.send_transaction(transaction)
-        return res['tx']
-    else:
-        if wallet:
-            nonce = get_eth_nonce(skale.web3, wallet['address'])
-            transaction = build_transaction(method, gas_amount, nonce=nonce)
-            signed_txn = skale.web3.eth.account.sign_transaction(
-                transaction,
-                private_key=wallet['private_key']
-            )
-            tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        else:
-            raise ValueError('You should provide wallet or transactions_manager.')
-    logger.info(f'{method.__class__.__name__} - tx: {skale.web3.toHex(tx)}')
-    return tx
-
-
 def wait_receipt(web3, tx, retries=10, timeout=5):
     for _ in range(0, retries):
         try:
@@ -94,25 +66,10 @@ def wait_receipt(web3, tx, retries=10, timeout=5):
     raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
 
 
-def send_eth(web3, account, amount, wallet):
-    eth_nonce = get_eth_nonce(web3, wallet['address'])
-    logger.info(f'Transaction nonce {eth_nonce}')
-    txn = {
-        'to': account,
-        'from': wallet['address'],
-        'value': amount,
-        'gasPrice': web3.eth.gasPrice,
-        'gas': 22000,
-        'nonce': eth_nonce
-    }
-    signed_txn = web3.eth.account.signTransaction(
-        txn, private_key=wallet['private_key'])
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-
-    logger.info(
-        f'ETH transfer {wallet["address"]} => {account}, {amount} wei, tx: {web3.toHex(tx)}'
-    )
-    return tx
+def check_receipt(receipt):
+    if receipt['status'] != 1:  # pragma: no cover
+        raise ValueError("Transaction failed, see receipt", receipt)
+    return True
 
 
 def private_key_to_public(pr):
@@ -131,7 +88,12 @@ def private_key_to_address(pr):
     return public_key_to_address(pk)
 
 
-def check_receipt(receipt):
-    if receipt['status'] != 1:  # pragma: no cover
-        raise ValueError("Transaction failed, see receipt", receipt)
-    return True
+def to_checksum_address(address):
+    return Web3.toChecksumAddress(address)
+
+
+def wallet_to_public_key(wallet):
+    if isinstance(wallet, dict):
+        return private_key_to_public(wallet['private_key'])
+    else:
+        return wallet['public_key']

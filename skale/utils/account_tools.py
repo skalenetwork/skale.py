@@ -23,17 +23,31 @@ import os
 
 from web3 import Web3
 
+from skale.utils.tx import send_eth
 from skale.utils.constants import LONG_LINE
-from skale.utils.web3_utils import check_receipt, private_key_to_address, send_eth, wait_receipt
+from skale.utils.wallets.ledger import LedgerWallet
+from skale.utils.web3_utils import check_receipt, private_key_to_address, \
+                                   wait_receipt
 
 logger = logging.getLogger(__name__)
 
 
-def init_wallet(private_key=None):
+def _init_software_wallet(private_key=None):
     base_pr = private_key or os.environ['ETH_PRIVATE_KEY']
     address = private_key_to_address(base_pr)
     address_fx = Web3.toChecksumAddress(address)
     return {'address': address_fx, 'private_key': base_pr}
+
+
+def _init_hw_wallet():
+    return LedgerWallet()
+
+
+def init_wallet(private_key=None):
+    if os.getenv('WALLET') == 'LEDGER':
+        return _init_hw_wallet()
+    else:
+        return _init_software_wallet(private_key)
 
 
 def init_test_wallet():
