@@ -28,6 +28,7 @@ import sys
 from logging import Formatter, StreamHandler
 from random import randint
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,6 +100,17 @@ def generate_random_name(len=8):  # pragma: no cover
 
 def generate_random_port():  # pragma: no cover
     return random.randint(0, 60000)
+
+
+def generate_custom_config(ip, ws_port):
+    if not ip or not ws_port:
+        raise ValueError(
+            f'For custom init you should provide ip and ws_port: {ip}, {ws_port}'
+        )
+    return {
+        'ip': ip,
+        'ws_port': ws_port,
+    }
 
 
 def add_0x_prefix(bytes_string):  # pragma: no cover

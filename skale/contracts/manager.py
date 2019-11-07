@@ -26,7 +26,8 @@ import socket
 import skale.utils.helper as Helper
 from skale.contracts import BaseContract
 from skale.utils.constants import GAS, NODE_DEPOSIT, OP_TYPES
-from skale.utils.web3_utils import sign_and_send, private_key_to_public
+from skale.utils.tx import sign_and_send
+from skale.utils.web3_utils import private_key_to_public
 
 logger = logging.getLogger(__name__)
 

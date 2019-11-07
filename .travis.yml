@@ -12,6 +12,9 @@ env:
     - ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
 
 install:
+  - sudo apt-get install libudev-dev
+  - sudo apt-get install libusb-1.0-0-dev
+  - sudo apt-get install python3-dev
   - pip install codecov pytest-cov
   - pip install -e .
   - pip install -e .[dev]
