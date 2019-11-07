@@ -36,6 +36,10 @@ schains = skale.schains_data.get_schains_for_owner('0x...')
 Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.  
 Take a look on the `tests/multithreading_test.py` for the reference.
 
+#### Code samples
+
+You can find usage examples [here](https://github.com/skalenetwork/skale.py-examples).
+
 ### Development
 
 ##### Install local version (with hot reload)
