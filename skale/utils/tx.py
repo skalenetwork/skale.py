@@ -7,27 +7,39 @@ from skale.utils.wallets.ledger import hardware_sign_and_send
 logger = logging.getLogger(__name__)
 
 
-def software_sign_and_send(web3, method, gas_amount, wallet):
-    eth_nonce = get_eth_nonce(web3, wallet['address'])
-    logger.info(f'Method {method}. Transaction nonce: {eth_nonce}')
-    txn = method.buildTransaction({
+def build_transaction(method, gas_amount, nonce=None):
+    return method.buildTransaction({
         'gas': gas_amount,
-        'nonce': eth_nonce  # + 2
+        'nonce': nonce
     })
-    signed_txn = web3.eth.account.signTransaction(
-        txn, private_key=wallet['private_key'])
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-    logger.info(
-        f'{method.__class__.__name__} - transaction_hash: {web3.toHex(tx)}'
-    )
+
+
+def software_sign_and_send(skale, method, gas_amount, wallet=None):
+    logger.info(f'Method: {method}, gas: {gas_amount}')
+    if skale.transactions_manager:
+        transaction = build_transaction(method, gas_amount)
+        res = skale.transactions_manager.send_transaction(transaction)
+        return res['tx']
+    else:
+        if wallet:
+            nonce = get_eth_nonce(skale.web3, wallet['address'])
+            transaction = build_transaction(method, gas_amount, nonce=nonce)
+            signed_txn = skale.web3.eth.account.sign_transaction(
+                transaction,
+                private_key=wallet['private_key']
+            )
+            tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
+        else:
+            raise ValueError('You should provide wallet or transactions_manager.')
+    logger.info(f'{method.__class__.__name__} - tx: {skale.web3.toHex(tx)}')
     return tx
 
 
-def sign_and_send(web3, method, gas_amount, wallet):
+def sign_and_send(skale, method, gas_amount, wallet):
     if os.getenv('WALLET') == 'LEDGER':
-        res = hardware_sign_and_send(web3, method, gas_amount, wallet)
+        res = hardware_sign_and_send(skale.web3, method, gas_amount, wallet)
     else:
-        res = software_sign_and_send(web3, method, gas_amount, wallet)
+        res = software_sign_and_send(skale, method, gas_amount, wallet)
     return res
 
 

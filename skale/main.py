@@ -5,12 +5,13 @@ import skale.contracts as contracts
 from skale.contracts_info import CONTRACTS_INFO
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
+from skale.transactions_manager import TransactionsManager
 
 logger = logging.getLogger(__name__)
 
 
 class Skale:
-    def __init__(self, endpoint, abi_filepath):
+    def __init__(self, endpoint, abi_filepath, transactions_manager_url=None):
         logger.info(f'Init skale-py, connecting to {endpoint}')
         provider = get_provider(endpoint)
         self.web3 = Web3(provider)
@@ -18,7 +19,8 @@ class Skale:
         self.__contracts = {}
         self.__contracts_info = {}
         self.nonces = {}
-
+        if transactions_manager_url:
+            self.transactions_manager = TransactionsManager(transactions_manager_url)
         self.__init_contracts_info()
         self.__init_contracts()
 
@@ -70,5 +72,5 @@ class Skale:
 
     def __getattr__(self, name):
         if name not in self.__contracts:
-            raise AttributeError(name)
+            return None
         return self.get_contract_by_name(name)
