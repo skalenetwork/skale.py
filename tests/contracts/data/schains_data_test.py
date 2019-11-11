@@ -56,28 +56,28 @@ def test_get_by_name(skale):
     assert schain == schain_by_name
 
 
-def test_get_schains_for_owner(skale, wallet, empty_account):
-    schains = skale.schains_data.get_schains_for_owner(wallet['address'])
+def test_get_schains_for_owner(skale, empty_account):
+    schains = skale.schains_data.get_schains_for_owner(skale.wallet.address)
 
     assert isinstance(schains, list)
     assert set(schains[-1].keys()) == set(FIELDS)
 
 
-def test_get_schain_list_size(skale, wallet, empty_account):
-    list_size = skale.schains_data.get_schain_list_size(wallet['address'])
+def test_get_schain_list_size(skale, empty_account):
+    list_size = skale.schains_data.get_schain_list_size(skale.wallet.address)
     empty_list_size = skale.schains_data.get_schain_list_size(empty_account.address)
 
     assert list_size != 0
     assert empty_list_size == 0
 
 
-def test_get_schain_id_by_index_for_owner(skale, wallet):
+def test_get_schain_id_by_index_for_owner(skale):
     schain_id = skale.schains_data.get_schain_id_by_index_for_owner(
-        wallet['address'], 0
+        skale.wallet.address, 0
     )
     schain = skale.schains_data.get(schain_id)
 
-    assert schain['owner'] == wallet['address']
+    assert schain['owner'] == skale.wallet.address
 
 
 def test_get_nodes_for_schain_config(skale):

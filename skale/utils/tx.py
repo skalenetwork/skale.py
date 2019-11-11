@@ -1,64 +1,66 @@
+#   -*- coding: utf-8 -*-
+#
+#   This file is part of SKALE.py
+#
+#   Copyright (C) 2019 SKALE Labs
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Lesser General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public License
+#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import logging
-import os
 
 from skale.utils.web3_utils import get_eth_nonce
-from skale.utils.wallets.ledger import hardware_sign_and_send
 
 logger = logging.getLogger(__name__)
 
 
-def build_transaction(method, gas_amount, nonce=None):
+def build_tx_dict(method, gas_amount, nonce=None):
     return method.buildTransaction({
         'gas': gas_amount,
         'nonce': nonce
     })
 
 
-def software_sign_and_send(skale, method, gas_amount, wallet=None):
-    logger.info(f'Method: {method}, gas: {gas_amount}')
-    if skale.transactions_manager:
-        transaction = build_transaction(method, gas_amount)
-        res = skale.transactions_manager.send_transaction(transaction)
-        return res['tx']
-    else:
-        if wallet:
-            nonce = get_eth_nonce(skale.web3, wallet['address'])
-            transaction = build_transaction(method, gas_amount, nonce=nonce)
-            signed_txn = skale.web3.eth.account.sign_transaction(
-                transaction,
-                private_key=wallet['private_key']
-            )
-            tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        else:
-            raise ValueError('You should provide wallet or transactions_manager.')
-    logger.info(f'{method.__class__.__name__} - tx: {skale.web3.toHex(tx)}')
+def send_to_tx_manager(tx_manager, operation, gas_amount):
+    tx_dict = build_tx_dict(operation, gas_amount)
+    res = tx_manager.send_transaction(tx_dict)
+    return res['tx']
+
+
+def sign_and_send(web3, method, gas_amount, wallet):
+    nonce = get_eth_nonce(web3, wallet.address)
+    tx_dict = build_tx_dict(method, gas_amount, nonce)
+    signed_tx = wallet.sign(tx_dict)
+    tx = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
     return tx
 
 
-def sign_and_send(skale, method, gas_amount, wallet):
-    if os.getenv('WALLET') == 'LEDGER':
-        res = hardware_sign_and_send(skale.web3, method, gas_amount, wallet)
-    else:
-        res = software_sign_and_send(skale, method, gas_amount, wallet)
-    return res
-
-
 def send_eth(web3, account, amount, wallet):
-    eth_nonce = get_eth_nonce(web3, wallet['address'])
+    eth_nonce = get_eth_nonce(web3, wallet.address)
     logger.info(f'Transaction nonce {eth_nonce}')
     txn = {
         'to': account,
-        'from': wallet['address'],
+        'from': wallet.address,
         'value': amount,
         'gasPrice': web3.eth.gasPrice,
         'gas': 22000,
         'nonce': eth_nonce
     }
-    signed_txn = web3.eth.account.signTransaction(
-        txn, private_key=wallet['private_key'])
+    signed_txn = wallet.sign(txn)
     tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
 
     logger.info(
-        f'ETH transfer {wallet["address"]} => {account}, {amount} wei, tx: {web3.toHex(tx)}'
+        f'ETH transfer {wallet.address} => {account}, {amount} wei,'
+        f'tx: {web3.toHex(tx)}'
     )
     return tx

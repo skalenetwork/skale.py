@@ -19,49 +19,34 @@
 """ Account utilities """
 
 import logging
-import os
-
-from web3 import Web3
 
 from skale.utils.tx import send_eth
 from skale.utils.constants import LONG_LINE
-from skale.utils.wallets.ledger import LedgerWallet
-from skale.utils.web3_utils import check_receipt, private_key_to_address, \
-                                   wait_receipt
+from skale.utils.wallets import ledger, web3_wallet
+from skale.utils.web3_utils import check_receipt, wait_receipt
 
 logger = logging.getLogger(__name__)
 
 
-def _init_software_wallet(private_key=None):
-    base_pr = private_key or os.environ['ETH_PRIVATE_KEY']
-    address = private_key_to_address(base_pr)
-    address_fx = Web3.toChecksumAddress(address)
-    return {'address': address_fx, 'private_key': base_pr}
+WALLET_TYPE_TO_CLASS = {
+    'ledger': ledger.LedgerWallet,
+    'web3': web3_wallet.Web3Wallet
+}
 
 
-def _init_hw_wallet():
-    return LedgerWallet()
-
-
-def init_wallet(private_key=None):
-    if os.getenv('WALLET') == 'LEDGER':
-        return _init_hw_wallet()
-    else:
-        return _init_software_wallet(private_key)
-
-
-def init_test_wallet():
-    return init_wallet(os.environ['TEST_ETH_PRIVATE_KEY'])
+def create_wallet(wallet_type='web3', *args, **kwargs):
+    return WALLET_TYPE_TO_CLASS[wallet_type](*args, **kwargs)
 
 
 def send_tokens(skale, sender_wallet, receiver_account, amount,
                 wait_for=True):
     logger.info(
-        f'Sending {amount} SKALE tokens from {sender_wallet["address"]} => {receiver_account}'
+        f'Sending {amount} SKALE tokens from {sender_wallet.address} => '
+        f'{receiver_account}'
     )
 
     wei_amount = skale.web3.toWei(amount, 'ether')
-    res = skale.token.transfer(receiver_account, wei_amount, sender_wallet)
+    res = skale.token.transfer(receiver_account, wei_amount)
     if wait_for:
         receipt = wait_receipt(skale.web3, res['tx'])
         check_receipt(receipt)
@@ -73,7 +58,8 @@ def send_tokens(skale, sender_wallet, receiver_account, amount,
 def send_ether(web3, sender_wallet, receiver_account, amount,
                wait_for=True):
     logger.info(
-        f'Sending {amount} ETH from {sender_wallet["address"]} => {receiver_account}'
+        f'Sending {amount} ETH from {sender_wallet.address} => '
+        f'{receiver_account}'
     )
 
     wei_amount = web3.toWei(amount, 'ether')
@@ -120,8 +106,8 @@ def generate_accounts(skale,
     for i in range(0, n_wallets):
         wallet = generate_account(skale.web3)
 
-        send_tokens(skale, base_wallet, wallet['address'], skale_amount)
-        send_ether(skale.web3, base_wallet, wallet['address'], eth_amount)
+        send_tokens(skale, skale.wallet, wallet['address'], skale_amount)
+        send_ether(skale.web3, skale.wallet, wallet['address'], eth_amount)
 
         if debug:
             check_ether_balance(skale.web3, wallet['address'])

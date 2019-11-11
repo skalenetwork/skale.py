@@ -18,32 +18,22 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE account tools test """
 
-from web3 import Web3
-
 from skale.utils.account_tools import (check_ether_balance, generate_account,
-                                       generate_accounts, init_wallet,
-                                       send_ether, send_tokens, check_skale_balance)
-from skale.utils.web3_utils import private_key_to_address
-from tests.constants import TOKEN_TRANSFER_VALUE, ETH_TRANSFER_VALUE, N_TEST_WALLETS
+                                       generate_accounts, send_ether,
+                                       send_tokens, check_skale_balance)
+from tests.constants import (TOKEN_TRANSFER_VALUE,
+                             ETH_TRANSFER_VALUE,
+                             N_TEST_WALLETS)
 
 
-def test_init_wallet():
-    wallet = init_wallet()
-    assert wallet.get('address') is not None
-    assert wallet.get('private_key') is not None
+def test_send_tokens(skale, empty_account):
+    sender_balance = skale.token.get_balance(skale.wallet.address)
 
-    address_fx = Web3.toChecksumAddress(wallet['address'])
-    address_from_pk = private_key_to_address(wallet['private_key'])
-    assert Web3.toChecksumAddress(address_from_pk) == address_fx
-
-
-def test_send_tokens(skale, wallet, empty_account):
-    sender_balance = skale.token.get_balance(wallet['address'])
-
-    send_tokens(skale, wallet, empty_account.address, TOKEN_TRANSFER_VALUE)
+    send_tokens(skale, skale.wallet, empty_account.address,
+                TOKEN_TRANSFER_VALUE)
 
     receiver_balance_after = skale.token.get_balance(empty_account.address)
-    sender_balance_after = skale.token.get_balance(wallet['address'])
+    sender_balance_after = skale.token.get_balance(skale.wallet.address)
 
     token_transfer_value_wei = skale.web3.toWei(TOKEN_TRANSFER_VALUE, 'ether')
 
@@ -51,14 +41,15 @@ def test_send_tokens(skale, wallet, empty_account):
     assert sender_balance_after == sender_balance - token_transfer_value_wei
 
 
-def test_send_ether(skale, wallet, empty_account):
-    sender_balance = check_ether_balance(skale.web3, wallet['address'])
+def test_send_ether(skale, empty_account):
+    sender_balance = check_ether_balance(skale.web3, skale.wallet.address)
 
-    send_ether(skale.web3, wallet, empty_account.address, ETH_TRANSFER_VALUE)
+    send_ether(skale.web3, skale.wallet, empty_account.address,
+               ETH_TRANSFER_VALUE)
 
     receiver_balance_after = check_ether_balance(skale.web3,
                                                  empty_account.address)
-    sender_balance_after = check_ether_balance(skale.web3, wallet['address'])
+    sender_balance_after = check_ether_balance(skale.web3, skale.wallet.address)
 
     assert receiver_balance_after == ETH_TRANSFER_VALUE
     # check that sender_balance_after
@@ -73,10 +64,10 @@ def test_generate_account(skale):
     assert account.get('private_key') is not None
 
 
-def test_generate_accounts(skale, wallet):
+def test_generate_accounts(skale):
     results = generate_accounts(
         skale,
-        wallet,
+        skale.wallet,
         N_TEST_WALLETS,
         TOKEN_TRANSFER_VALUE,
         ETH_TRANSFER_VALUE,

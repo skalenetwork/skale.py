@@ -20,13 +20,12 @@
 
 from skale.contracts import BaseContract
 from skale.utils.constants import GAS
-from skale.utils.tx import sign_and_send
 
 
 class Token(BaseContract):
-    def transfer(self, address, value, wallet):
+    def transfer(self, address, value):
         op = self.contract.functions.send(address, value, b'')
-        tx = sign_and_send(self.skale, op, GAS['token_transfer'], wallet)
+        tx = self.skale.send_tx(op, GAS['token_transfer'])
         return {'tx': tx}
 
     def get_balance(self, address):
@@ -34,5 +33,5 @@ class Token(BaseContract):
 
     def add_authorized(self, address, wallet):  # pragma: no cover
         op = self.contract.functions.addAuthorized(address)
-        tx = sign_and_send(self.skale, op, GAS['token_transfer'], wallet)
+        tx = self.skale.send_tx(op, GAS['token_transfer'])
         return {'tx': tx}

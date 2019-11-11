@@ -27,5 +27,6 @@ def test_get_contract_address(skale):
 
 
 def test_get_contract_hash_by_name(skale):
-    contract_name_hash = skale.contract_manager.get_contract_hash_by_name(TEST_CONTRACT_NAME)
+    contract_name_hash = skale.contract_manager.get_contract_hash_by_name(
+        TEST_CONTRACT_NAME)
     assert TEST_CONTRACT_NAME_HASH == contract_name_hash

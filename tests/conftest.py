@@ -22,7 +22,6 @@ import pytest
 from web3.auto import w3
 
 from skale import Skale
-from skale.utils.account_tools import init_test_wallet
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 
 
@@ -30,11 +29,6 @@ from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 def skale():
     '''Returns a SKALE instance with provider from config'''
     return Skale(ENDPOINT, TEST_ABI_FILEPATH)
-
-
-@pytest.fixture
-def wallet():
-    return init_test_wallet()
 
 
 @pytest.fixture
