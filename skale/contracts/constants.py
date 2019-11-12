@@ -1,12 +1,11 @@
 from skale.contracts import BaseContract
 from skale.utils.constants import GAS
-from skale.utils.tx import sign_and_send
 
 
 class Constants(BaseContract):
-    def set_periods(self, new_reward_period, new_delta_period, wallet):
+    def set_periods(self, new_reward_period, new_delta_period):
         op = self.contract.functions.setPeriods(new_reward_period, new_delta_period)
-        tx = sign_and_send(self.skale, op, GAS['set_periods'], wallet)
+        tx = self.skale.send_tx(op, GAS['set_periods'])
         return {'tx': tx}
 
     def get_reward_period(self):
@@ -15,17 +14,17 @@ class Constants(BaseContract):
     def get_delta_period(self):
         return self.contract.functions.deltaPeriod().call()
 
-    def set_check_time(self, new_check_time, wallet):
+    def set_check_time(self, new_check_time):
         op = self.contract.functions.setCheckTime(new_check_time)
-        tx = sign_and_send(self.skale, op, GAS['set_check_time'], wallet)
+        tx = self.skale.send_tx(op, GAS['set_check_time'])
         return {'tx': tx}
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
 
-    def set_latency(self, new_allowable_latency, wallet):
+    def set_latency(self, new_allowable_latency):
         op = self.contract.functions.setLatency(new_allowable_latency)
-        tx = sign_and_send(self.skale, op, GAS['set_latency'], wallet)
+        tx = self.skale.send_tx(op, GAS['set_latency'])
         return {'tx': tx}
 
     def get_latency(self):

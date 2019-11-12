@@ -65,9 +65,9 @@ def test_get_active_node_ips(skale):
     assert Helper.is_valid_ipv4_address(test_ip)
 
 
-def test_get_active_node_ids_by_address(skale, wallet):
+def test_get_active_node_ids_by_address(skale):
     active_node_ids = skale.nodes_data.get_active_node_ids_by_address(
-        wallet['address']
+        skale.wallet.address
     )
     assert isinstance(active_node_ids, list)
 

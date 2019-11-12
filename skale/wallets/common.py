@@ -1,4 +1,4 @@
-#   -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 #   This file is part of SKALE.py
 #
@@ -16,21 +16,21 @@
 #
 #   You should have received a copy of the GNU Lesser General Public License
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE config test """
 
-import pytest
-from web3.auto import w3
-
-from skale import Skale
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
+from abc import ABC, abstractmethod
 
 
-@pytest.fixture
-def skale():
-    '''Returns a SKALE instance with provider from config'''
-    return Skale(ENDPOINT, TEST_ABI_FILEPATH)
+class BaseWallet(ABC):
+    @abstractmethod
+    def sign(self, tx):
+        pass
 
+    @property
+    @abstractmethod
+    def address(self):
+        pass
 
-@pytest.fixture
-def empty_account():
-    return w3.eth.account.create()
+    @property
+    @abstractmethod
+    def public_key(self):
+        pass

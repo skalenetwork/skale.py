@@ -1,17 +1,25 @@
+import os
 import logging
 
 from web3 import Web3
 import skale.contracts as contracts
 from skale.contracts_info import CONTRACTS_INFO
+from skale.transactions.manager import TransactionsManager
+from skale.transactions.tools import send_to_tx_manager, sign_and_send
+from skale.utils.account_tools import create_wallet
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
-from skale.transactions_manager import TransactionsManager
 
 logger = logging.getLogger(__name__)
 
 
+class EmptyPrivateKey(Exception):
+    pass
+
+
 class Skale:
-    def __init__(self, endpoint, abi_filepath, transactions_manager_url=None):
+    def __init__(self, endpoint, abi_filepath, wallet=None,
+                 tx_manager_url=None):
         logger.info(f'Init skale-py, connecting to {endpoint}')
         provider = get_provider(endpoint)
         self.web3 = Web3(provider)
@@ -19,8 +27,15 @@ class Skale:
         self.__contracts = {}
         self.__contracts_info = {}
         self.nonces = {}
-        if transactions_manager_url:
-            self.transactions_manager = TransactionsManager(transactions_manager_url)
+        if tx_manager_url:
+            self.tx_manager = TransactionsManager(tx_manager_url)
+        else:
+            private_key = os.getenv('ETH_PRIVATE_KEY')
+            if not private_key:
+                raise EmptyPrivateKey()
+            self.wallet = wallet or create_wallet(web3=self.web3,
+                                                  private_key=private_key)
+
         self.__init_contracts_info()
         self.__init_contracts()
 
@@ -69,6 +84,12 @@ class Skale:
 
     def get_contract_by_name(self, name):
         return self.__contracts[name]
+
+    def send_tx(self, operation, gas_amount):
+        if self.transactions_manager:
+            return send_to_tx_manager(self.tx_manager, operation, gas_amount)
+        else:
+            return sign_and_send(self.web3, operation, gas_amount, self.wallet)
 
     def __getattr__(self, name):
         if name not in self.__contracts:

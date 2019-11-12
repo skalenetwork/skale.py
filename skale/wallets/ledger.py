@@ -1,4 +1,25 @@
+#   -*- coding: utf-8 -*-
+#
+#   This file is part of SKALE.py
+#
+#   Copyright (C) 2019 SKALE Labs
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Lesser General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Lesser General Public License for more details.
+#
+#   You should have received a copy of the GNU Lesser General Public License
+#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import logging
+import os
+import struct
 
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
@@ -8,12 +29,41 @@ from eth_account._utils.transactions import \
 from eth_utils.crypto import keccak
 from ledgerblue.comm import getDongle
 from rlp import encode
+
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
                                    to_checksum_address
 
-from skale.utils.wallets.common import chunks, BaseWallet, derivation_path_prefix
+from skale.wallets.common import BaseWallet
 
 logger = logging.getLogger(__name__)
+
+
+DEFAULT_BIP32_PATH = "44'/60'/0'/0/0"
+
+
+def encode_bip32_path(path=DEFAULT_BIP32_PATH):
+    if len(path) == 0:
+        return b''
+    encoded_chunks = []
+    for bip32_chunk in path.split('/'):
+        chunk = bip32_chunk.split('\'')
+        if len(chunk) == 1:
+            encoded_chunk = struct.pack('>I', int(chunk[0]))
+        else:
+            encoded_chunk = struct.pack('>I', 0x80000000 | int(chunk[0]))
+        encoded_chunks.append(encoded_chunk)
+
+    return b''.join(encoded_chunks)
+
+
+def derivation_path_prefix(bin32_path=DEFAULT_BIP32_PATH):
+    encoded_path = encode_bip32_path(bin32_path)
+    encoded_path_len_bytes = (len(encoded_path) // 4).to_bytes(1, 'big')
+    return encoded_path_len_bytes + encoded_path
+
+
+def chunks(sequence, size):
+    return (sequence[pos:pos + size] for pos in range(0, len(sequence), size))
 
 
 class LedgerWallet(BaseWallet):
@@ -48,7 +98,6 @@ class LedgerWallet(BaseWallet):
         sign_v = exchange_result[0]
         sign_r = int((exchange_result[1:1 + 32]).hex(), 16)
         sign_s = int((exchange_result[1 + 32: 1 + 32 + 32]).hex(), 16)
-
         enctx = encode_transaction(tx, (sign_v, sign_r, sign_s))
         transaction_hash = keccak(enctx)
 
@@ -78,6 +127,8 @@ class LedgerWallet(BaseWallet):
         return exchange_result
 
     def sign(self, tx_dict):
+        if os.getenv('ENV') == 'dev':
+            tx_dict['chainId'] = None
         tx = tx_from_dict(tx_dict)
         payload = LedgerWallet.make_payload(tx)
         exchange_result = self.exchange_sign_payload_by_chunks(payload)
@@ -108,16 +159,16 @@ class LedgerWallet(BaseWallet):
         return LedgerWallet.parse_derive_result(exchange_result)
 
 
-def hardware_sign_and_send(skale, method, gas_amount, wallet):
+def hardware_sign_and_send(web3, method, gas_amount, wallet):
     address_from = wallet['address']
-    eth_nonce = get_eth_nonce(skale.web3, address_from)
+    eth_nonce = get_eth_nonce(web3, address_from)
     tx_dict = method.buildTransaction({
         'gas': gas_amount,
         'nonce': eth_nonce
     })
     signed_txn = wallet.sign(tx_dict)
-    tx = skale.web3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
     logger.info(
-        f'{method.__class__.__name__} - transaction_hash: {skale.web3.toHex(tx)}'
+        f'{method.__class__.__name__} - transaction_hash: {web3.toHex(tx)}'
     )
     return tx
