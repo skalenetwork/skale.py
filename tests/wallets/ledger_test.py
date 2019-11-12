@@ -1,6 +1,6 @@
 import mock
 
-from skale.wallets.ledger import LedgerWallet
+from skale.wallets.ledger_wallet import LedgerWallet
 
 
 def get_dongle_mock(debug):
