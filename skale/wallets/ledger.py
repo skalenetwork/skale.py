@@ -29,10 +29,11 @@ from eth_account._utils.transactions import \
 from eth_utils.crypto import keccak
 from ledgerblue.comm import getDongle
 from rlp import encode
+
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
                                    to_checksum_address
 
-from skale.utils.wallets.common import BaseWallet
+from skale.wallets.common import BaseWallet
 
 logger = logging.getLogger(__name__)
 

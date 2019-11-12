@@ -20,17 +20,17 @@
 
 import logging
 
-from skale.utils.tx import send_eth
+from skale.transactions.tools import send_eth
 from skale.utils.constants import LONG_LINE
-from skale.utils.wallets import ledger, web3_wallet
+from skale.wallets import LedgerWallet, Web3Wallet
 from skale.utils.web3_utils import check_receipt, wait_receipt
 
 logger = logging.getLogger(__name__)
 
 
 WALLET_TYPE_TO_CLASS = {
-    'ledger': ledger.LedgerWallet,
-    'web3': web3_wallet.Web3Wallet
+    'ledger': LedgerWallet,
+    'web3': Web3Wallet
 }
 
 

@@ -20,7 +20,7 @@
 from eth_keys import keys
 from web3 import Web3
 
-from skale.utils.wallets.common import BaseWallet
+from skale.wallets.common import BaseWallet
 
 
 def private_key_to_public(pr):

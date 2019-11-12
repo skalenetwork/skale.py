@@ -4,11 +4,11 @@ import logging
 from web3 import Web3
 import skale.contracts as contracts
 from skale.contracts_info import CONTRACTS_INFO
-from skale.utils.helper import get_abi
-from skale.utils.tx import send_to_tx_manager, sign_and_send
-from skale.utils.web3_utils import get_provider
-from skale.transactions_manager import TransactionsManager
+from skale.transactions.manager import TransactionsManager
+from skale.transactions.tools import send_to_tx_manager, sign_and_send
 from skale.utils.account_tools import create_wallet
+from skale.utils.helper import get_abi
+from skale.utils.web3_utils import get_provider
 
 logger = logging.getLogger(__name__)
 
