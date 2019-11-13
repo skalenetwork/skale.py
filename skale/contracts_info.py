@@ -22,5 +22,6 @@ CONTRACTS_INFO = [
     ContractInfo('schains_data', 'SchainsData', contracts.SChainsData,
                  ContractTypes.DATA, True),
     ContractInfo('validators_data', 'ValidatorsData', contracts.ValidatorsData,
-                 ContractTypes.DATA, True)
+                 ContractTypes.DATA, True),
+    ContractInfo('dkg', 'Dkg', contracts.DKG, ContractTypes.API, True),
 ]

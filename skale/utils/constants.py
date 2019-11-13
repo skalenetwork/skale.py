@@ -13,7 +13,11 @@ GAS = {
     'set_periods': 200000,
     'delete_node': 6000000,
     'delete_node_by_root': 6000000,
-    'delete_schain': 6000000
+    'delete_schain': 6000000,
+    'dkg_broadcast': 8000000,
+    'dkg_response': 8000000,
+    'dkg_allright': 1000000,
+    'dkg_complaint': 1000000,
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}
