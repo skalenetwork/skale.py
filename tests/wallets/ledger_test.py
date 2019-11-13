@@ -18,7 +18,7 @@ def get_dongle_mock(debug):
 
 
 def test_hardware_sign_and_send():
-    with mock.patch('skale.wallets.ledger.getDongle',
+    with mock.patch('skale.wallets.ledger_wallet.getDongle',
                     new=get_dongle_mock):
         wallet = LedgerWallet()
         tx_dict = {
