@@ -24,8 +24,11 @@ from skale.wallets.common import BaseWallet
 class SgxWallet(BaseWallet):
     def __init__(self, sgx_endpoint, key_name=None):
         self.sgx_client = SgxClient(sgx_endpoint)
-        self.key_name = key_name
-        self._address, self._public_key = self._generate()
+        if key_name is None:
+            self.key_name, self._address, self._public_key = self._generate()
+        else:
+            self.key_name = key_name
+            self._address, self._public_key = self._get_account(key_name)
 
     def sign(self, tx):
         return self.sgx_client.sign(tx, self.key_name)
@@ -38,6 +41,14 @@ class SgxWallet(BaseWallet):
     def public_key(self):
         return self._public_key
 
+    def rename_key(self, new_key):
+        self.sgx_client.rename_key(self.key_name, new_key)
+        self.key_name = new_key
+
     def _generate(self):
-        account = self.sgx_client.generate_key(self.key_name)
-        return (account.address, account.public_key)
+        account = self.sgx_client.generate_key()
+        return account.keyName, account.address, account.publicKey
+
+    def _get_account(self, key_name):
+        account = self.sgx_client.get_account(key_name)
+        return account.address, account.publicKey
