@@ -12,7 +12,7 @@ extras_require = {
     ],
     'dev': [
         "bumpversion==0.5.3",
-        "pytest==5.2.1",
+        "pytest==5.2.2",
         "click==7.0",
         "twine==1.12.1",
         "when-changed",
