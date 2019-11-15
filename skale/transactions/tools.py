@@ -40,7 +40,6 @@ def send_to_tx_manager(tx_manager, operation, gas_amount):
 def sign_and_send(web3, method, gas_amount, wallet):
     nonce = get_eth_nonce(web3, wallet.address)
     tx_dict = build_tx_dict(method, gas_amount, nonce)
-    print(f'IVD tx_dict {tx_dict}')
     signed_tx = wallet.sign(tx_dict)
     tx = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
     return tx
