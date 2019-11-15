@@ -12,7 +12,7 @@ Python client library used in SKALE network components.
 ### Installation
 
 ```bash
-pip install skale
+pip install skale.py
 ```
 
 ### Usage
