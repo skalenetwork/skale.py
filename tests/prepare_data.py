@@ -21,10 +21,12 @@
 import click
 
 from skale import Skale
+from skale.wallets import Web3Wallet
+from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
 from skale.utils.web3_utils import wait_receipt, check_receipt
 from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
-                             ENDPOINT, TEST_ABI_FILEPATH)
+                             ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY)
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
@@ -75,7 +77,9 @@ def create_schain(skale):
 @click.option('--cleanup-only', is_flag=True)
 def prepare_data(cleanup_only):
     init_default_logger()
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
+    web3 = init_web3(ENDPOINT)
+    wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
     cleanup_nodes_schains(skale)
     if not cleanup_only:
         try:

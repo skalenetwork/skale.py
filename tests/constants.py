@@ -50,7 +50,12 @@ N_TEST_WALLETS = 2
 
 ENDPOINT = os.environ['ENDPOINT']
 TEST_ABI_FILEPATH = os.path.join(DIR_PATH, os.pardir, 'test_abi.json')
+ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 
 # constants contract
 NEW_REWARD_PERIOD = 500
 NEW_DELTA_PERIOD = 400
+
+TEST_RPC_WALLET_URL = 'http://localhost:3000'
+NOT_EXISTING_RPC_WALLET_URL = 'http://abc:9999'
+EMPTY_HEX_STR = '0x0'

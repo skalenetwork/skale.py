@@ -31,10 +31,9 @@ def build_tx_dict(method, gas_amount, nonce=None):
     })
 
 
-def send_to_tx_manager(tx_manager, operation, gas_amount):
-    tx_dict = build_tx_dict(operation, gas_amount)
-    res = tx_manager.send_transaction(tx_dict)
-    return res['tx']
+def post_transaction(wallet, method, gas_amount, nonce=None):
+    tx_dict = build_tx_dict(method, gas_amount, nonce)
+    return wallet.sign_and_send(tx_dict)
 
 
 def sign_and_send(web3, method, gas_amount, wallet):

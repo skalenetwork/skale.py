@@ -21,6 +21,7 @@ from eth_keys import keys
 from web3 import Web3
 
 from skale.wallets.common import BaseWallet
+from skale.utils.web3_utils import get_eth_nonce
 
 
 def private_key_to_public(pr):
@@ -52,10 +53,16 @@ class Web3Wallet(BaseWallet):
         self._web3 = web3
 
     def sign(self, tx_dict):
+        if not tx_dict.get('nonce'):
+            tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         return self._web3.eth.account.sign_transaction(
             tx_dict,
             private_key=self._private_key
         )
+
+    def sign_and_send(self, tx_dict):
+        signed_tx = self.sign(tx_dict)
+        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
     @property
     def address(self):
@@ -63,4 +70,4 @@ class Web3Wallet(BaseWallet):
 
     @property
     def public_key(self):
-        return self._public_key
+        return str(self._public_key)

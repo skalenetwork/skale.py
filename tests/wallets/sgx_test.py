@@ -3,6 +3,9 @@ import mock
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
 from skale.wallets.sgx_wallet import SgxWallet
+from skale.utils.web3_utils import init_web3
+
+from tests.constants import ENDPOINT
 
 
 class SgxClient:
@@ -38,7 +41,8 @@ class SgxClient:
 def test_sgx_sign():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
                     new=SgxClient):
-        wallet = SgxWallet('TEST_ENDPOINT')
+        web3 = init_web3(ENDPOINT)
+        wallet = SgxWallet('TEST_ENDPOINT', web3)
         tx_dict = {
             'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
             'value': 9,
@@ -54,7 +58,8 @@ def test_sgx_sign():
 def test_sgx_sign_with_key():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
                     new=SgxClient):
-        wallet = SgxWallet('TEST_ENDPOINT', 'TEST_KEY')
+        web3 = init_web3(ENDPOINT)
+        wallet = SgxWallet('TEST_ENDPOINT', web3, key_name='TEST_KEY')
         tx_dict = {
             'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
             'value': 9,
@@ -70,7 +75,8 @@ def test_sgx_sign_with_key():
 def test_sgx_sign_with_rename():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
                     new=SgxClient):
-        wallet = SgxWallet('TEST_ENDPOINT')
+        web3 = init_web3(ENDPOINT)
+        wallet = SgxWallet('TEST_ENDPOINT', web3)
         wallet.rename_key('NEW_KEY')
         tx_dict = {
             'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',

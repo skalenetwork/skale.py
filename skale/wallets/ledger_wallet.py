@@ -70,8 +70,9 @@ class LedgerWallet(BaseWallet):
     CHUNK_SIZE = 255
     CLA = b'\xe0'
 
-    def __init__(self, debug=False):
+    def __init__(self, web3, debug=False):
         self.dongle = getDongle(debug)
+        self._web3 = web3
         self._address, self._public_key = self.get_address_with_public_key()
 
     @property
@@ -133,6 +134,10 @@ class LedgerWallet(BaseWallet):
         payload = LedgerWallet.make_payload(tx)
         exchange_result = self.exchange_sign_payload_by_chunks(payload)
         return LedgerWallet.parse_sign_result(tx, exchange_result)
+
+    def sign_and_send(self, tx):
+        signed_tx = self.sign(tx)
+        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
     @classmethod
     def parse_derive_result(cls, exchange_result):

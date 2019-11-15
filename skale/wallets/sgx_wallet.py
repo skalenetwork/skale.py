@@ -22,8 +22,9 @@ from skale.wallets.common import BaseWallet
 
 
 class SgxWallet(BaseWallet):
-    def __init__(self, sgx_endpoint, key_name=None):
+    def __init__(self, sgx_endpoint, web3, key_name=None):
         self.sgx_client = SgxClient(sgx_endpoint)
+        self._web3 = web3
         if key_name is None:
             self.key_name, self._address, self._public_key = self._generate()
         else:
@@ -32,6 +33,10 @@ class SgxWallet(BaseWallet):
 
     def sign(self, tx):
         return self.sgx_client.sign(tx, self.key_name)
+
+    def sign_and_send(self, tx):
+        signed_tx = self.sgx_client.sign(tx, self.key_name)
+        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
     @property
     def address(self):
