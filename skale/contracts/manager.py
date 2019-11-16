@@ -121,7 +121,7 @@ class Manager(BaseContract):
     def send_verdicts(self, validator, nodes_ids, downtimes, latencies):
         op = self.contract.functions.sendVerdicts(validator, nodes_ids,
                                                   downtimes, latencies)
-        tx = self.skale.send_tx(op, GAS['send_verdict'])
+        tx = self.skale.send_tx(op, GAS['send_verdicts'])
         return {'tx': tx}
 
     def deregister(self, node_id):
