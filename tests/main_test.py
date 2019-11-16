@@ -23,15 +23,19 @@ import pytest
 from web3 import HTTPProvider, WebsocketProvider
 
 from skale import Skale
+from skale.wallets import Web3Wallet
+from skale.utils.web3_utils import init_web3
 from skale.contracts import BaseContract
 from skale.contracts.functionality.nodes import Nodes
 from skale.contracts_info import CONTRACTS_INFO
 from skale.utils.contract_info import ContractInfo
-from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH
+from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 
 
 def test_lib_init():
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
+    web3 = init_web3(ENDPOINT)
+    wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
 
     lib_contracts_info = skale._Skale__contracts_info
     for contract_info in CONTRACTS_INFO:
@@ -53,13 +57,13 @@ def test_lib_init():
 
     http_endpoint = 'http://localhost:8080'
     with mock.patch.object(Skale, '_Skale__init_contracts'):
-        skale = Skale(http_endpoint, TEST_ABI_FILEPATH)
+        skale = Skale(http_endpoint, TEST_ABI_FILEPATH, wallet)
         provider = skale.web3.provider
         assert isinstance(provider, HTTPProvider)
 
     file_endpoint = 'file://local_file:1001'
     with pytest.raises(Exception):
-        Skale(file_endpoint, TEST_ABI_FILEPATH)
+        Skale(file_endpoint, TEST_ABI_FILEPATH, wallet)
 
 
 def test_get_contract_address(skale):

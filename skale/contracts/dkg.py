@@ -18,6 +18,7 @@
 #   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts import BaseContract
+from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
 
 
@@ -27,20 +28,20 @@ class DKG(BaseContract):
         op = self.contract.functions.broadcast(group_index, node_index,
                                                verification_vector,
                                                secret_key_conribution)
-        return self.skale.send_tx(op, GAS['dkg_broadcast'])
+        return post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'])
 
     def response(self, group_index, from_node_index,
                  secret_number, multiplied_share):
         op = self.contract.functions.response(group_index, from_node_index,
                                               secret_number,
                                               multiplied_share)
-        return self.skale.send_tx(op, GAS['dkg_response'])
+        return post_transaction(self.skale.wallet, op, GAS['dkg_response'])
 
     def allright(self, group_index, from_node_index):
         op = self.contract.functions.allright(group_index, from_node_index)
-        return self.skale.send_tx(op, GAS['dkg_allright'])
+        return post_transaction(self.skale.wallet, op, GAS['dkg_allright'])
 
     def complaint(self, group_index, from_node_index, to_node_index):
         op = self.contract.functions.complaint(group_index, from_node_index,
                                                to_node_index)
-        return self.skale.send_tx(op, GAS['dkg_complaint'])
+        return post_transaction(self.skale.wallet, op, GAS['dkg_complaint'])
