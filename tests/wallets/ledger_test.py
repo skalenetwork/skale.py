@@ -1,6 +1,9 @@
 import mock
 
+from skale.utils.web3_utils import init_web3
 from skale.wallets.ledger_wallet import LedgerWallet
+
+from tests.constants import ENDPOINT
 
 
 def get_dongle_mock(debug):
@@ -20,7 +23,8 @@ def get_dongle_mock(debug):
 def test_hardware_sign_and_send():
     with mock.patch('skale.wallets.ledger_wallet.getDongle',
                     new=get_dongle_mock):
-        wallet = LedgerWallet()
+        web3 = init_web3(ENDPOINT)
+        wallet = LedgerWallet(web3)
         tx_dict = {
             'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
             'value': 9,
