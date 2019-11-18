@@ -19,11 +19,14 @@ extras_require = {
         "when-changed",
         "Random-Word==1.0.4",
         "pytest-cov==2.8.1"
+    ],
+    'hw-wallet': [
+        "ledgerblue==0.1.29"
     ]
 }
 
 extras_require['dev'] = (
-    extras_require['linter'] + extras_require['dev']
+    extras_require['linter'] + extras_require['dev'] + extras_require['hw-wallet']
 )
 
 setup(
@@ -39,7 +42,6 @@ setup(
         "web3==5.2.2",
         "asyncio==3.4.3",
         "pyyaml==5.1.2",
-        "ledgerblue==0.1.29",
         "sgx.py>=0.2.dev1",
     ],
 
