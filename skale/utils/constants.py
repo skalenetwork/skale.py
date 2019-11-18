@@ -6,6 +6,7 @@ GAS = {
     'create_schain': 7500000,
     'get_bounty': 4500000,
     'send_verdict': 200000,
+    'send_verdicts': 500000,
     'set_check_time': 200000,
     'set_latency': 200000,
     'token_transfer': 600000,
