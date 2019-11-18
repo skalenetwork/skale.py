@@ -122,7 +122,7 @@ class Manager(BaseContract):
     def send_verdicts(self, validator, nodes_ids, downtimes, latencies):
         op = self.contract.functions.sendVerdicts(validator, nodes_ids,
                                                   downtimes, latencies)
-        tx = post_transaction(self.skale.wallet, op, GAS['send_verdict'])
+        tx = post_transaction(self.skale.wallet, op, GAS['send_verdicts'])
         return {'tx': tx}
 
     def deregister(self, node_id):

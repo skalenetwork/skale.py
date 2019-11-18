@@ -23,5 +23,5 @@ CONTRACTS_INFO = [
                  ContractTypes.DATA, True),
     ContractInfo('validators_data', 'ValidatorsData', contracts.ValidatorsData,
                  ContractTypes.DATA, True),
-    ContractInfo('dkg', 'Dkg', contracts.DKG, ContractTypes.API, True),
+    ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
 ]
