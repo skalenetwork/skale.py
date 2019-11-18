@@ -7,7 +7,8 @@
 
 Python client library used in SKALE network components.
 
--   Python 3.6+ support
+- Python 3.6+ support
+- Compatibility with `web3.py` v5
 
 ### Installation
 
@@ -17,11 +18,35 @@ pip install skale.py
 
 ### Usage
 
-Library initialization
+#### Supported wallets
+
+- Ledger Wallet (works with Ledger Nano S and other models)
+- RPC Wallet (works with [SKALE Transactions Manager](https://github.com/skalenetwork/transactions-manager))
+- SGX Wallet (works with [SKALE SGX Wallet](https://github.com/skalenetwork/sgxwallet))
+- Web3 Wallet (works with `web3.py` embeded functions)
+
+#### Library initialization
+
+With embeded Web3Wallet
 
 ```python
 from skale import Skale
-skale = Skale('RPC_ENDPOINT', 'JSON_ABI_FILEPATH')
+from skale.wallets import Web3Wallet
+
+web3 = init_web3(ENDPOINT)
+wallet = Web3Wallet(private_key, web3)
+skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
+```
+
+With external transactions manager:
+
+```python
+from skale import Skale
+from skale.wallets import RPCWallet
+
+web3 = init_web3(ENDPOINT)
+wallet = RPCWallet(TM_URL)
+skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
 ```
 
 Interactions with SKALE contracts
