@@ -32,6 +32,7 @@ With embeded Web3Wallet
 ```python
 from skale import Skale
 from skale.wallets import Web3Wallet
+from skale.utils.web3_utils import init_web3
 
 web3 = init_web3(ENDPOINT)
 wallet = Web3Wallet(private_key, web3)
