@@ -27,7 +27,6 @@ from eth_account._utils.transactions import encode_transaction
 from eth_account._utils.transactions import \
     serializable_unsigned_transaction_from_dict as tx_from_dict
 from eth_utils.crypto import keccak
-from ledgerblue.comm import getDongle
 from rlp import encode
 
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
@@ -71,6 +70,7 @@ class LedgerWallet(BaseWallet):
     CLA = b'\xe0'
 
     def __init__(self, web3, debug=False):
+        from ledgerblue.comm import getDongle
         self.dongle = getDongle(debug)
         self._web3 = web3
         self._address, self._public_key = self.get_address_with_public_key()
