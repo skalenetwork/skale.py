@@ -2,9 +2,11 @@ import logging
 
 from web3 import Web3
 import skale.contracts as contracts
+from skale.wallets import BaseWallet
 from skale.contracts_info import CONTRACTS_INFO
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
+from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ class EmptyPrivateKey(Exception):
 
 
 class Skale:
-    def __init__(self, endpoint, abi_filepath, wallet):
+    def __init__(self, endpoint, abi_filepath, wallet=None):
         logger.info(f'Init skale-py, connecting to {endpoint}')
         provider = get_provider(endpoint)
         self.web3 = Web3(provider)
@@ -22,9 +24,24 @@ class Skale:
         self.__contracts = {}
         self.__contracts_info = {}
         self.nonces = {}
-        self.wallet = wallet
+        if wallet:
+            self.wallet = wallet
         self.__init_contracts_info()
         self.__init_contracts()
+
+    @property
+    def wallet(self):
+        if not self._wallet:
+            raise EmptyWalletError('No wallet provided')
+        return self._wallet
+
+    @wallet.setter
+    def wallet(self, wallet):
+        if issubclass(type(wallet), BaseWallet):
+            self._wallet = wallet
+        else:
+            raise InvalidWalletError(f'Wrong wallet class: {type(wallet).__name__}. \
+                                       Must be one of the BaseWallet subclasses')
 
     def __init_contracts_info(self):
         for contract_info in CONTRACTS_INFO:
