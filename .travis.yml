@@ -29,7 +29,7 @@ jobs:
         - git clone https://${CI_USER_TOKEN}@github.com/skalenetwork/skale-manager.git
         - cd skale-manager/
         - yarn install
-        - ENDPOINT=http://dev1.geth.skalenodes.com:1919 PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY truffle migrate --network SKALE_private_testnet
+        - ENDPOINT=$ENDPOINT_HTTP PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY npx truffle migrate --network SKALE_private_testnet
         - cp data/SKALE_private_testnet.json ../test_abi.json && cd ..
         - ./scripts/run-tests.sh
       after_script:
