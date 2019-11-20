@@ -14,15 +14,15 @@ class SgxClient:
 
     def generate_key(self):
         return AttributeDict({
-            'keyName': 'tmp_NEK:aaabbb',
+            'key_name': 'NEK:aaabbb',
             'address': '0xAB00000000000000000000000000000000000000',
-            'publicKey': 'ab00000000000000000000000000000000000000',
+            'public_key': 'ab00000000000000000000000000000000000000',
         })
 
     def get_account(self, key_name):
         return AttributeDict({
             'address': '0xAB00000000000000000000000000000000000000',
-            'publicKey': 'ab00000000000000000000000000000000000000',
+            'public_key': 'ab00000000000000000000000000000000000000',
         })
 
     def sign(self, transaction_dict, key_name):
