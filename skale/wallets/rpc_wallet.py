@@ -24,6 +24,7 @@ import requests
 import functools
 
 from skale.wallets.common import BaseWallet
+from skale.utils.exceptions import RPCWalletError
 
 
 LOGGER = logging.getLogger(__name__)
@@ -42,14 +43,10 @@ def rpc_request(func):
         res = func(*args, **kwargs)
         res_json = res.json()
         if res_json['error']:
-            raise RPCWalletException(res_json['error'])
+            raise RPCWalletError(res_json['error'])
         else:
             return res_json['data']
     return wrapper_decorator
-
-
-class RPCWalletException(Exception):
-    """Raised when remote wallet retured an error"""
 
 
 class RPCWallet(BaseWallet):

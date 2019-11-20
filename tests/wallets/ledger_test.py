@@ -8,7 +8,7 @@ from tests.constants import ENDPOINT
 
 def get_dongle_mock(debug):
     class DongleMock:
-        def __init__(debug):
+        def __init__(self):
             pass
 
         def exchange(self, apdu):
@@ -21,7 +21,7 @@ def get_dongle_mock(debug):
 
 
 def test_hardware_sign_and_send():
-    with mock.patch('skale.wallets.ledger_wallet.getDongle',
+    with mock.patch('ledgerblue.comm.getDongle',
                     new=get_dongle_mock):
         web3 = init_web3(ENDPOINT)
         wallet = LedgerWallet(web3)
