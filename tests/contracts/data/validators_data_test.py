@@ -14,6 +14,5 @@ def test_get_delta_period(skale):
 
 
 def test_get_validated_array(skale):
-    validated_array = skale.validators_data.get_validated_array(
-        DEFAULT_NODE_ID, skale.wallet.address)
+    validated_array = skale.validators_data.get_validated_array(DEFAULT_NODE_ID)
     assert type(validated_array) is list

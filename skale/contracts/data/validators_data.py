@@ -30,7 +30,6 @@ class ValidatorsData(BaseContract):
         constants = self.skale.get_contract_by_name('constants')
         return constants.contract.functions.deltaPeriod().call()
 
-    def get_validated_array(self, node_id, account):
+    def get_validated_array(self, node_id):
         node_id_bytes = Web3.sha3(node_id)
-        return self.contract.functions.getValidatedArray(node_id_bytes).call(
-            {'from': account})
+        return self.contract.functions.getValidatedArray(node_id_bytes).call()
