@@ -25,8 +25,11 @@ from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
 from skale.utils.web3_utils import wait_receipt, check_receipt
-from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
-                             ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY)
+from tests.constants import (
+    DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
+    ENDPOINT, SECOND_NODE_NAME, TEST_ABI_FILEPATH,
+    ETH_PRIVATE_KEY
+)
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
@@ -48,7 +51,7 @@ def cleanup_nodes_schains(skale):
 def create_nodes(skale):
     # create couple of nodes
     print('Creating two nodes')
-    node_names = [DEFAULT_NODE_NAME, 'test_node_2']
+    node_names = [DEFAULT_NODE_NAME, SECOND_NODE_NAME]
     for name in node_names:
         ip, public_ip, port, _ = generate_random_node_data()
         res = skale.manager.create_node(ip, port, name, public_ip)
