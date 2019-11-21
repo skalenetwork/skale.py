@@ -26,7 +26,25 @@ import skale.utils.helper as helper
 from skale.utils.constants import GAS
 from skale.utils.web3_utils import wait_receipt, private_key_to_public
 
+from tests.constants import DEFAULT_NODE_NAME, SECOND_NODE_NAME
 from tests.utils import generate_random_node_data, generate_random_schain_data
+
+
+def test_get_validated_array(skale):
+    # Temporary put this test here
+    # TODO: move it to validators_data_test.py
+    node_id_a = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_id_b = skale.nodes_data.node_name_to_index(SECOND_NODE_NAME)
+
+    validated_array = skale.validators_data.get_validated_array(node_id_a)
+    assert len(validated_array) == 1
+
+    node_in_bytes = validated_array[0]
+    validated_node_id = int.from_bytes(node_in_bytes[:14], byteorder='big')
+    assert validated_node_id == node_id_b
+
+    validated_array = skale.validators_data.get_validated_array(node_id_b)
+    assert validated_array == []
 
 
 def test_create_node_data_to_bytes(skale):
