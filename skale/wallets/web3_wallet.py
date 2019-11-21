@@ -31,7 +31,7 @@ def private_key_to_public(pr):
 
 
 def public_key_to_address(pk):
-    hash = Web3.sha3(hexstr=str(pk))
+    hash = Web3.keccak(hexstr=str(pk))
     return to_checksum_address(Web3.toHex(hash[-20:]))
 
 
