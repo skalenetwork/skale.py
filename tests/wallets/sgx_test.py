@@ -34,9 +34,6 @@ class SgxClient:
             'v': 37,
         })
 
-    def rename_key(self, temp_key_name, new_key_name):
-        pass
-
 
 def test_sgx_sign():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
