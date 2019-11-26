@@ -14,7 +14,7 @@ class SgxClient:
 
     def generate_key(self):
         return AttributeDict({
-            'key_name': 'NEK:aaabbb',
+            'name': 'NEK:aaabbb',
             'address': '0xAB00000000000000000000000000000000000000',
             'public_key': 'ab00000000000000000000000000000000000000',
         })
