@@ -5,7 +5,8 @@ from http import HTTPStatus
 import pytest
 import mock
 import requests
-from skale.wallets.rpc_wallet import RPCWallet, RPCWalletException
+from skale.wallets.rpc_wallet import RPCWallet
+from skale.utils.exceptions import RPCWalletError
 
 from tests.constants import (EMPTY_ETH_ACCOUNT, NOT_EXISTING_RPC_WALLET_URL, EMPTY_HEX_STR,
                              TEST_RPC_WALLET_URL)
@@ -42,7 +43,7 @@ def test_sign_and_send_fail():
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
     res_mock = response_mock(HTTPStatus.BAD_REQUEST, {'data': None, 'error': 'Insufficient funds'})
     with mock.patch('requests.post', new=request_mock(res_mock)):
-        with pytest.raises(RPCWalletException):
+        with pytest.raises(RPCWalletError):
             wallet.sign_and_send(TX_DICT)
 
 
