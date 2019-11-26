@@ -14,7 +14,7 @@ class SgxClient:
 
     def generate_key(self):
         return AttributeDict({
-            'key_name': 'NEK:aaabbb',
+            'name': 'NEK:aaabbb',
             'address': '0xAB00000000000000000000000000000000000000',
             'public_key': 'ab00000000000000000000000000000000000000',
         })
@@ -33,9 +33,6 @@ class SgxClient:
             's': 100000000000,
             'v': 37,
         })
-
-    def rename_key(self, temp_key_name, new_key_name):
-        pass
 
 
 def test_sgx_sign():
