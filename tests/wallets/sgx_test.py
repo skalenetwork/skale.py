@@ -59,7 +59,7 @@ def test_sgx_sign_with_key():
         wallet = SgxWallet('TEST_ENDPOINT', web3, key_name='TEST_KEY')
         tx_dict = {
             'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
-            'value': 9,
+            'value': 10,
             'gas': 200000,
             'gasPrice': 1,
             'nonce': 7,
