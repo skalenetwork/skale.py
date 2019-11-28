@@ -45,7 +45,7 @@ class SChainsData(BaseContract):
         res = self.__get_raw(id)
         hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
         hash_str = "0x" + hash_obj.hexdigest()[:13]
-        res.append(hash)
+        res.append(hash_str)
         return res
 
     @format_fields(FIELDS)
@@ -54,7 +54,7 @@ class SChainsData(BaseContract):
         res = self.__get_raw(id)
         hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
         hash_str = "0x" + hash_obj.hexdigest()[:13]
-        res.append(hash)
+        res.append(hash_str)
         return res
 
     def get_schains_for_owner(self, account):
