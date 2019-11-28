@@ -42,7 +42,7 @@ setup(
         "web3==5.2.2",
         "asyncio==3.4.3",
         "pyyaml==5.1.2",
-        "sgx.py>=0.2.dev1",
+        "sgx.py>=0.2.dev5",
     ],
 
     python_requires='>=3.6,<4',
@@ -55,7 +55,7 @@ setup(
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+        'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.6',
     ],

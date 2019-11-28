@@ -1,21 +1,3 @@
-#   -*- coding: utf-8 -*-
-#
-#   This file is part of SKALE.py
-#
-#   Copyright (C) 2019 SKALE Labs
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE RPCWallet test """
 
 
@@ -23,7 +5,8 @@ from http import HTTPStatus
 import pytest
 import mock
 import requests
-from skale.wallets.rpc_wallet import RPCWallet, RPCWalletException
+from skale.wallets.rpc_wallet import RPCWallet
+from skale.utils.exceptions import RPCWalletError
 
 from tests.constants import (EMPTY_ETH_ACCOUNT, NOT_EXISTING_RPC_WALLET_URL, EMPTY_HEX_STR,
                              TEST_RPC_WALLET_URL)
@@ -60,7 +43,7 @@ def test_sign_and_send_fail():
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
     res_mock = response_mock(HTTPStatus.BAD_REQUEST, {'data': None, 'error': 'Insufficient funds'})
     with mock.patch('requests.post', new=request_mock(res_mock)):
-        with pytest.raises(RPCWalletException):
+        with pytest.raises(RPCWalletError):
             wallet.sign_and_send(TX_DICT)
 
 
