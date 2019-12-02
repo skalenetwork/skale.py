@@ -26,10 +26,11 @@ def test_lib_init():
     lib_contracts = skale._Skale__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO)
 
-    for contract_name in lib_contracts:
-        lib_contract = lib_contracts[contract_name]
+    for lib_contract in lib_contracts.values():
         assert issubclass(type(lib_contract), BaseContract)
         assert lib_contract.address is not None
+        assert int(lib_contract.address, 16) != 0
+        assert web3.eth.getCode(lib_contract.address)
         assert lib_contract.abi is not None
 
     assert skale.abi is not None
