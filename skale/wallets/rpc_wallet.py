@@ -2,20 +2,20 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019 SKALE Labs
+#   Copyright (C) 2019-Present SKALE Labs
 #
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
+#   SKALE.py is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
+#   GNU Affero General Public License for more details.
 #
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import json
 import logging
@@ -24,6 +24,7 @@ import requests
 import functools
 
 from skale.wallets.common import BaseWallet
+from skale.utils.exceptions import RPCWalletError
 
 
 LOGGER = logging.getLogger(__name__)
@@ -42,14 +43,10 @@ def rpc_request(func):
         res = func(*args, **kwargs)
         res_json = res.json()
         if res_json['error']:
-            raise RPCWalletException(res_json['error'])
+            raise RPCWalletError(res_json['error'])
         else:
             return res_json['data']
     return wrapper_decorator
-
-
-class RPCWalletException(Exception):
-    """Raised when remote wallet retured an error"""
 
 
 class RPCWallet(BaseWallet):

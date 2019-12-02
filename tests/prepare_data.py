@@ -1,21 +1,3 @@
-#   -*- coding: utf-8 -*-
-#
-#   This file is part of SKALE.py
-#
-#   Copyright (C) 2019 SKALE Labs
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE data prep for testing """
 
 import click
@@ -25,8 +7,11 @@ from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
 from skale.utils.web3_utils import wait_receipt, check_receipt
-from tests.constants import (DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
-                             ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY)
+from tests.constants import (
+    DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
+    ENDPOINT, SECOND_NODE_NAME, TEST_ABI_FILEPATH,
+    ETH_PRIVATE_KEY
+)
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
@@ -48,7 +33,7 @@ def cleanup_nodes_schains(skale):
 def create_nodes(skale):
     # create couple of nodes
     print('Creating two nodes')
-    node_names = [DEFAULT_NODE_NAME, 'test_node_2']
+    node_names = [DEFAULT_NODE_NAME, SECOND_NODE_NAME]
     for name in node_names:
         ip, public_ip, port, _ = generate_random_node_data()
         res = skale.manager.create_node(ip, port, name, public_ip)

@@ -2,20 +2,20 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019 SKALE Labs
+#   Copyright (C) 2019-Present SKALE Labs
 #
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
+#   SKALE.py is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
+#   GNU Affero General Public License for more details.
 #
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
 import os
@@ -27,7 +27,6 @@ from eth_account._utils.transactions import encode_transaction
 from eth_account._utils.transactions import \
     serializable_unsigned_transaction_from_dict as tx_from_dict
 from eth_utils.crypto import keccak
-from ledgerblue.comm import getDongle
 from rlp import encode
 
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
@@ -71,6 +70,7 @@ class LedgerWallet(BaseWallet):
     CLA = b'\xe0'
 
     def __init__(self, web3, debug=False):
+        from ledgerblue.comm import getDongle
         self.dongle = getDongle(debug)
         self._web3 = web3
         self._address, self._public_key = self.get_address_with_public_key()
