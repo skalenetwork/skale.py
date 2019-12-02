@@ -34,10 +34,16 @@ class EmptyPrivateKey(Exception):
     pass
 
 
+def spawn_skale_lib(skale):
+    return Skale(skale._abi_filepath, skale._endpoint, skale.wallet)
+
+
 class Skale:
     def __init__(self, endpoint, abi_filepath, wallet=None):
         logger.info(f'Init skale-py, connecting to {endpoint}')
         provider = get_provider(endpoint)
+        self._abi_filepath = abi_filepath
+        self._endpoint = endpoint
         self.web3 = Web3(provider)
         self.abi = get_abi(abi_filepath)
         self.__contracts = {}
