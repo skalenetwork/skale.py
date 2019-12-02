@@ -44,6 +44,12 @@ def to_checksum_address(address):
     return Web3.toChecksumAddress(address)
 
 
+def generate_wallet(web3):
+    account = web3.eth.account.create()
+    private_key = account.privateKey.hex()
+    return Web3Wallet(private_key, web3)
+
+
 class Web3Wallet(BaseWallet):
     def __init__(self, private_key, web3):
         self._private_key = private_key
