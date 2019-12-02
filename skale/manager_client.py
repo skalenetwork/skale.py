@@ -35,7 +35,7 @@ class EmptyPrivateKey(Exception):
 
 
 def spawn_skale_lib(skale):
-    return Skale(skale._abi_filepath, skale._endpoint, skale.wallet)
+    return Skale(skale._endpoint, skale._abi_filepath, skale.wallet)
 
 
 class Skale:
