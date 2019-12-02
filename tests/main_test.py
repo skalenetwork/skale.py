@@ -26,9 +26,6 @@ def test_lib_init():
     lib_contracts = skale._Skale__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO)
 
-#    addresses = [c.address for c in lib_contracts.values()]
-#    print(addresses)
-#     assert False, addresses
     for lib_contract in lib_contracts.values():
         assert issubclass(type(lib_contract), BaseContract)
         assert lib_contract.address is not None
