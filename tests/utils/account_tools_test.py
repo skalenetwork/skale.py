@@ -3,6 +3,9 @@
 from skale.utils.account_tools import (check_ether_balance, generate_account,
                                        generate_accounts, send_ether,
                                        send_tokens, check_skale_balance)
+
+from skale.wallets.web3_wallet import generate_wallet, Web3Wallet
+
 from tests.constants import (TOKEN_TRANSFER_VALUE,
                              ETH_TRANSFER_VALUE,
                              N_TEST_WALLETS)
@@ -67,3 +70,10 @@ def test_generate_accounts(skale):
     assert TOKEN_TRANSFER_VALUE == token_balance_test
     assert eth_balance == ETH_TRANSFER_VALUE
     assert token_balance == token_transfer_value_wei
+
+
+def test_generate_wallet(skale):
+    wallet = generate_wallet(skale.web3)
+    assert isinstance(wallet, Web3Wallet)
+    assert wallet.address
+    assert wallet.address != skale.wallet.address
