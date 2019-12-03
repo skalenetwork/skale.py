@@ -16,10 +16,15 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE validator functions """
-
-from skale.contracts import BaseContract
 
 
-class Validators(BaseContract):
-    pass
+class RPCWalletError(Exception):
+    """Raised when remote wallet retured an error"""
+
+
+class InvalidWalletError(Exception):
+    """Raised when wrong wallet class passed"""
+
+
+class EmptyWalletError(Exception):
+    """Raised when wrong wallet class passed"""

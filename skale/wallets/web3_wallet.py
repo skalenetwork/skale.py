@@ -2,20 +2,20 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019 SKALE Labs
+#   Copyright (C) 2019-Present SKALE Labs
 #
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
+#   SKALE.py is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
+#   GNU Affero General Public License for more details.
 #
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from eth_keys import keys
 from web3 import Web3
@@ -31,7 +31,7 @@ def private_key_to_public(pr):
 
 
 def public_key_to_address(pk):
-    hash = Web3.sha3(hexstr=str(pk))
+    hash = Web3.keccak(hexstr=str(pk))
     return to_checksum_address(Web3.toHex(hash[-20:]))
 
 
@@ -42,6 +42,12 @@ def private_key_to_address(pr):
 
 def to_checksum_address(address):
     return Web3.toChecksumAddress(address)
+
+
+def generate_wallet(web3):
+    account = web3.eth.account.create()
+    private_key = account.privateKey.hex()
+    return Web3Wallet(private_key, web3)
 
 
 class Web3Wallet(BaseWallet):

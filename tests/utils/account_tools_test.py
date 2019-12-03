@@ -1,26 +1,11 @@
-#   -*- coding: utf-8 -*-
-#
-#   This file is part of SKALE.py
-#
-#   Copyright (C) 2019 SKALE Labs
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE account tools test """
 
 from skale.utils.account_tools import (check_ether_balance, generate_account,
                                        generate_accounts, send_ether,
                                        send_tokens, check_skale_balance)
+
+from skale.wallets.web3_wallet import generate_wallet, Web3Wallet
+
 from tests.constants import (TOKEN_TRANSFER_VALUE,
                              ETH_TRANSFER_VALUE,
                              N_TEST_WALLETS)
@@ -85,3 +70,10 @@ def test_generate_accounts(skale):
     assert TOKEN_TRANSFER_VALUE == token_balance_test
     assert eth_balance == ETH_TRANSFER_VALUE
     assert token_balance == token_transfer_value_wei
+
+
+def test_generate_wallet(skale):
+    wallet = generate_wallet(skale.web3)
+    assert isinstance(wallet, Web3Wallet)
+    assert wallet.address
+    assert wallet.address != skale.wallet.address
