@@ -1,12 +1,31 @@
+#   -*- coding: utf-8 -*-
+#
+#   This file is part of SKALE.py
+#
+#   Copyright (C) 2019-Present SKALE Labs
+#
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   SKALE.py is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Affero General Public License for more details.
+#
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
+
 from skale.contracts import BaseContract
+from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
-from skale.utils.helper import sign_and_send
 
 
 class Constants(BaseContract):
-    def set_periods(self, new_reward_period, new_delta_period, wallet):
+    def set_periods(self, new_reward_period, new_delta_period):
         op = self.contract.functions.setPeriods(new_reward_period, new_delta_period)
-        tx = sign_and_send(self.skale, op, GAS['set_periods'], wallet)
+        tx = post_transaction(self.skale.wallet, op, GAS['set_periods'])
         return {'tx': tx}
 
     def get_reward_period(self):
@@ -15,17 +34,17 @@ class Constants(BaseContract):
     def get_delta_period(self):
         return self.contract.functions.deltaPeriod().call()
 
-    def set_check_time(self, new_check_time, wallet):
+    def set_check_time(self, new_check_time):
         op = self.contract.functions.setCheckTime(new_check_time)
-        tx = sign_and_send(self.skale, op, GAS['set_check_time'], wallet)
+        tx = post_transaction(self.skale.wallet, op, GAS['set_check_time'])
         return {'tx': tx}
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
 
-    def set_latency(self, new_allowable_latency, wallet):
+    def set_latency(self, new_allowable_latency):
         op = self.contract.functions.setLatency(new_allowable_latency)
-        tx = sign_and_send(self.skale, op, GAS['set_latency'], wallet)
+        tx = post_transaction(self.skale.wallet, op, GAS['set_latency'])
         return {'tx': tx}
 
     def get_latency(self):

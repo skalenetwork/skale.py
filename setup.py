@@ -7,28 +7,31 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        "flake8==3.4.1",
-        "isort>=4.2.15,<4.3.5",
+        "flake8==3.7.8",
+        "isort>=4.2.15,<4.3.22",
     ],
     'dev': [
         "bumpversion==0.5.3",
-        "pytest==3.8.1",
+        "pytest==5.2.1",
         "click==7.0",
         "twine==2.0.0",
+        "mock==3.0.5",
         "when-changed",
         "Random-Word==1.0.4",
-        "pytest-cov==2.7.1"
+        "pytest-cov==2.8.1"
+    ],
+    'hw-wallet': [
+        "ledgerblue==0.1.29"
     ]
 }
 
 extras_require['dev'] = (
-    extras_require['linter'] + extras_require['dev']
+    extras_require['linter'] + extras_require['dev'] + extras_require['hw-wallet']
 )
 
 setup(
     name='skale.py',
-    # *IMPORTANT*: Don't manually change the version here. Use the 'bumpversion' utility.
-    version='1.1',
+    version='2.0',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -36,9 +39,10 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==4.9.2",
+        "web3==5.2.2",
         "asyncio==3.4.3",
-        "pyyaml==5.1.2"
+        "pyyaml==5.1.2",
+        "sgx.py>=0.2.dev5",
     ],
 
     python_requires='>=3.6,<4',
@@ -51,7 +55,7 @@ setup(
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+        'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.6',
     ],

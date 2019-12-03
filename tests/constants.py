@@ -1,21 +1,3 @@
-#   -*- coding: utf-8 -*-
-#
-#   This file is part of SKALE.py
-#
-#   Copyright (C) 2019 SKALE Labs
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE test constants """
 
 import os
@@ -24,7 +6,7 @@ from decimal import Decimal
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 DEFAULT_NODE_NAME = 'test_node'
-DEFAULT_NODE_ID = 0
+SECOND_NODE_NAME = 'test_node_2'
 DEFAULT_NODE_HASH = '23bdf46c41fa300e431425baff124dc31625b34ec09b829f61aa16ab0102ca8d'
 
 TEST_CONTRACT_NAME = 'NodesFunctionality'
@@ -50,7 +32,12 @@ N_TEST_WALLETS = 2
 
 ENDPOINT = os.environ['ENDPOINT']
 TEST_ABI_FILEPATH = os.path.join(DIR_PATH, os.pardir, 'test_abi.json')
+ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 
 # constants contract
 NEW_REWARD_PERIOD = 500
 NEW_DELTA_PERIOD = 400
+
+TEST_RPC_WALLET_URL = 'http://localhost:3000'
+NOT_EXISTING_RPC_WALLET_URL = 'http://abc:9999'
+EMPTY_HEX_STR = '0x0'

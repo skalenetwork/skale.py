@@ -2,26 +2,27 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019 SKALE Labs
+#   Copyright (C) 2019-Present SKALE Labs
 #
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
+#   SKALE.py is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
+#   GNU Affero General Public License for more details.
 #
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ Get SKALE chain data """
 
 from Crypto.Hash import keccak
 
 from skale.contracts import BaseContract
-from skale.utils.helper import format, ip_from_bytes, public_key_to_address
+from skale.utils.helper import format_fields, ip_from_bytes
+from skale.utils.web3_utils import public_key_to_address
 
 from skale.dataclasses.current_node_info import CurrentNodeInfo
 from skale.dataclasses.schain_node_info import SchainNodeInfo
@@ -39,11 +40,11 @@ class SChainsData(BaseContract):
     def __get_raw(self, name):
         return self.contract.functions.schains(name).call()
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get(self, id):
         return self.__get_raw(id)
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get_by_name(self, name):
         id = self.name_to_id(name)
         return self.__get_raw(id)
@@ -147,6 +148,6 @@ class SChainsData(BaseContract):
         return self.contract.functions.numberOfSchains().call()
 
     def schain_active(self, schain):
-        if schain['name'] is not '' and \
-                schain['owner'] is not '0x0000000000000000000000000000000000000000':
+        if schain['name'] != '' and \
+                schain['owner'] != '0x0000000000000000000000000000000000000000':
             return True

@@ -2,31 +2,31 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019 SKALE Labs
+#   Copyright (C) 2019-Present SKALE Labs
 #
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
+#   SKALE.py is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
+#   GNU Affero General Public License for more details.
 #
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE token operations """
 
 from skale.contracts import BaseContract
+from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
-from skale.utils.helper import sign_and_send
 
 
 class Token(BaseContract):
-    def transfer(self, address, value, wallet):
+    def transfer(self, address, value):
         op = self.contract.functions.send(address, value, b'')
-        tx = sign_and_send(self.skale, op, GAS['token_transfer'], wallet)
+        tx = post_transaction(self.skale.wallet, op, GAS['token_transfer'])
         return {'tx': tx}
 
     def get_balance(self, address):
@@ -34,5 +34,5 @@ class Token(BaseContract):
 
     def add_authorized(self, address, wallet):  # pragma: no cover
         op = self.contract.functions.addAuthorized(address)
-        tx = sign_and_send(self.skale, op, GAS['token_transfer'], wallet)
+        tx = post_transaction(self.skale.wallet, op, GAS['token_transfer'])
         return {'tx': tx}

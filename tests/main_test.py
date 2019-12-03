@@ -1,21 +1,3 @@
-#   -*- coding: utf-8 -*-
-#
-#   This file is part of SKALE.py
-#
-#   Copyright (C) 2019 SKALE Labs
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE main test """
 
 import mock
@@ -23,15 +5,19 @@ import pytest
 from web3 import HTTPProvider, WebsocketProvider
 
 from skale import Skale
+from skale.wallets import Web3Wallet
+from skale.utils.web3_utils import init_web3
 from skale.contracts import BaseContract
 from skale.contracts.functionality.nodes import Nodes
 from skale.contracts_info import CONTRACTS_INFO
 from skale.utils.contract_info import ContractInfo
-from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH
+from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 
 
 def test_lib_init():
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
+    web3 = init_web3(ENDPOINT)
+    wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
 
     lib_contracts_info = skale._Skale__contracts_info
     for contract_info in CONTRACTS_INFO:
@@ -40,26 +26,27 @@ def test_lib_init():
     lib_contracts = skale._Skale__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO)
 
-    for contract_name in lib_contracts:
-        lib_contract = lib_contracts[contract_name]
+    for lib_contract in lib_contracts.values():
         assert issubclass(type(lib_contract), BaseContract)
         assert lib_contract.address is not None
+        assert int(lib_contract.address, 16) != 0
+        assert web3.eth.getCode(lib_contract.address)
         assert lib_contract.abi is not None
 
     assert skale.abi is not None
 
-    provider = skale.web3.providers[0]
+    provider = skale.web3.provider
     assert isinstance(provider, WebsocketProvider)
 
     http_endpoint = 'http://localhost:8080'
     with mock.patch.object(Skale, '_Skale__init_contracts'):
-        skale = Skale(http_endpoint, TEST_ABI_FILEPATH)
-        provider = skale.web3.providers[0]
+        skale = Skale(http_endpoint, TEST_ABI_FILEPATH, wallet)
+        provider = skale.web3.provider
         assert isinstance(provider, HTTPProvider)
 
     file_endpoint = 'file://local_file:1001'
     with pytest.raises(Exception):
-        Skale(file_endpoint, TEST_ABI_FILEPATH)
+        Skale(file_endpoint, TEST_ABI_FILEPATH, wallet)
 
 
 def test_get_contract_address(skale):
@@ -70,8 +57,8 @@ def test_get_contract_address(skale):
 
 
 def test_get_attr(skale):
-    with pytest.raises(AttributeError):
-        skale.t123_random_attr
+    random_attr = skale.t123_random_attr
+    assert random_attr is None
     skale_py_nodes_contract = skale.nodes
     assert issubclass(type(skale_py_nodes_contract), BaseContract)
     assert isinstance(skale_py_nodes_contract, Nodes)
