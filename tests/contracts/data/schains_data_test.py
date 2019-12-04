@@ -1,21 +1,3 @@
-#   -*- coding: utf-8 -*-
-#
-#   This file is part of SKALE.py
-#
-#   Copyright (C) 2019 SKALE Labs
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE chain data test """
 
 import ipaddress
@@ -32,7 +14,7 @@ DEFAULT_NODE_PORT = 3000
 
 def test_get_raw(skale):
     schain_arr = skale.schains_data._SChainsData__get_raw(DEFAULT_SCHAIN_ID)
-    assert len(FIELDS) == len(schain_arr)
+    assert len(FIELDS) == len(schain_arr)+1  # +1 for chainId
 
 
 def test_get_raw_not_exist(skale):
@@ -56,28 +38,28 @@ def test_get_by_name(skale):
     assert schain == schain_by_name
 
 
-def test_get_schains_for_owner(skale, wallet, empty_account):
-    schains = skale.schains_data.get_schains_for_owner(wallet['address'])
+def test_get_schains_for_owner(skale, empty_account):
+    schains = skale.schains_data.get_schains_for_owner(skale.wallet.address)
 
     assert isinstance(schains, list)
     assert set(schains[-1].keys()) == set(FIELDS)
 
 
-def test_get_schain_list_size(skale, wallet, empty_account):
-    list_size = skale.schains_data.get_schain_list_size(wallet['address'])
+def test_get_schain_list_size(skale, empty_account):
+    list_size = skale.schains_data.get_schain_list_size(skale.wallet.address)
     empty_list_size = skale.schains_data.get_schain_list_size(empty_account.address)
 
     assert list_size != 0
     assert empty_list_size == 0
 
 
-def test_get_schain_id_by_index_for_owner(skale, wallet):
+def test_get_schain_id_by_index_for_owner(skale):
     schain_id = skale.schains_data.get_schain_id_by_index_for_owner(
-        wallet['address'], 0
+        skale.wallet.address, 0
     )
     schain = skale.schains_data.get(schain_id)
 
-    assert schain['owner'] == wallet['address']
+    assert schain['owner'] == skale.wallet.address
 
 
 def test_get_nodes_for_schain_config(skale):

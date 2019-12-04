@@ -2,33 +2,34 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019 SKALE Labs
+#   Copyright (C) 2019-Present SKALE Labs
 #
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
+#   SKALE.py is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
+#   GNU Affero General Public License for more details.
 #
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ Get SKALE chain data """
 
 from Crypto.Hash import keccak
 
 from skale.contracts import BaseContract
-from skale.utils.helper import format, ip_from_bytes, public_key_to_address
+from skale.utils.helper import format_fields, ip_from_bytes
+from skale.utils.web3_utils import public_key_to_address
 
 from skale.dataclasses.current_node_info import CurrentNodeInfo
 from skale.dataclasses.schain_node_info import SchainNodeInfo
 
 FIELDS = [
     'name', 'owner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate',
-    'deposit', 'index'
+    'deposit', 'index', 'chainId'
 ]
 
 PORTS_PER_SCHAIN = 11
@@ -39,14 +40,22 @@ class SChainsData(BaseContract):
     def __get_raw(self, name):
         return self.contract.functions.schains(name).call()
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get(self, id):
-        return self.__get_raw(id)
+        res = self.__get_raw(id)
+        hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
+        hash_str = "0x" + hash_obj.hexdigest()[:13]
+        res.append(hash_str)
+        return res
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get_by_name(self, name):
         id = self.name_to_id(name)
-        return self.__get_raw(id)
+        res = self.__get_raw(id)
+        hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
+        hash_str = "0x" + hash_obj.hexdigest()[:13]
+        res.append(hash_str)
+        return res
 
     def get_schains_for_owner(self, account):
         schains = []

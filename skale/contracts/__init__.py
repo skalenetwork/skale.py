@@ -15,3 +15,5 @@ from skale.contracts.data.validators_data import ValidatorsData
 from skale.contracts.functionality.schains import SChains
 from skale.contracts.functionality.nodes import Nodes
 from skale.contracts.functionality.validators import Validators
+
+from skale.contracts.dkg import DKG

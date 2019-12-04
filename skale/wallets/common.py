@@ -16,10 +16,25 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE validator functions """
 
-from skale.contracts import BaseContract
+from abc import ABC, abstractmethod
 
 
-class Validators(BaseContract):
-    pass
+class BaseWallet(ABC):
+    @abstractmethod
+    def sign(self, tx):
+        pass
+
+    @abstractmethod
+    def sign_and_send(self, tx_dict):
+        pass
+
+    @property
+    @abstractmethod
+    def address(self):
+        pass
+
+    @property
+    @abstractmethod
+    def public_key(self):
+        pass

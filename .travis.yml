@@ -12,6 +12,9 @@ env:
     - ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
 
 install:
+  - sudo apt-get install libudev-dev
+  - sudo apt-get install libusb-1.0-0-dev
+  - sudo apt-get install python3-dev
   - pip install codecov pytest-cov
   - pip install -e .
   - pip install -e .[dev]
@@ -25,8 +28,8 @@ jobs:
       script:
         - git clone https://${CI_USER_TOKEN}@github.com/skalenetwork/skale-manager.git
         - cd skale-manager/
-        - npm i
-        - PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY npx truffle migrate --network SKALE_private_testnet
+        - yarn install
+        - ENDPOINT=$ENDPOINT_HTTP PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY npx truffle migrate --network SKALE_private_testnet
         - cp data/SKALE_private_testnet.json ../test_abi.json && cd ..
         - ./scripts/run-tests.sh
       after_script:
