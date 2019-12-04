@@ -29,7 +29,7 @@ from skale.dataclasses.schain_node_info import SchainNodeInfo
 
 FIELDS = [
     'name', 'owner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate',
-    'deposit', 'index'
+    'deposit', 'index', 'chainId'
 ]
 
 PORTS_PER_SCHAIN = 11
@@ -42,12 +42,20 @@ class SChainsData(BaseContract):
 
     @format_fields(FIELDS)
     def get(self, id):
-        return self.__get_raw(id)
+        res = self.__get_raw(id)
+        hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
+        hash_str = "0x" + hash_obj.hexdigest()[:13]
+        res.append(hash_str)
+        return res
 
     @format_fields(FIELDS)
     def get_by_name(self, name):
         id = self.name_to_id(name)
-        return self.__get_raw(id)
+        res = self.__get_raw(id)
+        hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
+        hash_str = "0x" + hash_obj.hexdigest()[:13]
+        res.append(hash_str)
+        return res
 
     def get_schains_for_owner(self, account):
         schains = []
