@@ -24,15 +24,6 @@ from skale.utils.web3_utils import public_key_to_address
 from skale.schain_config.base_config import update_base_config
 
 
-def generate_node_info(node_name: str, node_id: int, schain_base_port: int, bind_ip: str):
-    return CurrentNodeInfo(
-        node_name=node_name,
-        node_id=node_id,
-        base_port=schain_base_port,
-        bind_ip=ip_from_bytes(bind_ip)
-    ).to_config()
-
-
 def generate_schain_info(schain, schain_nodes):
     return {
         'schainID': 1,  # todo: remove this later (should be removed from the skaled first)
@@ -86,7 +77,8 @@ def generate_schain_config(base_config, node_info, schain_info):
     }
 
 
-def generate_skale_schain_config(skale, schain_name, node_id, base_config=None):
+def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, ima_mainnet=None,
+                                 ima_mp_schain=None, ima_mp_mainnet=None, wallets=None):
     node = skale.nodes_data.get(node_id)
     schain = skale.schains_data.get_by_name(schain_name)
 
@@ -95,7 +87,16 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None):
                                                             node['port'])
     schain_nodes = get_nodes_for_schain_config(skale, schain_name)
 
-    node_info = generate_node_info(node['name'], node_id, schain_base_port_on_node, node['ip'])
+    node_info = CurrentNodeInfo(
+        node_name=node['name'],
+        node_id=node_id,
+        base_port=schain_base_port_on_node,
+        bind_ip=ip_from_bytes(node['ip']),
+        ima_mainnet=ima_mainnet,
+        ima_mp_schain=ima_mp_schain,
+        ima_mp_mainnet=ima_mp_mainnet,
+        wallets=wallets
+    ).to_config()
     schain_info = generate_schain_info(schain, schain_nodes)
 
     if base_config:
@@ -103,7 +104,7 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None):
     else:
         base_config = {}
     return generate_schain_config(
-            base_config=base_config,
-            node_info=node_info,
-            schain_info=schain_info
-           )
+        base_config=base_config,
+        node_info=node_info,
+        schain_info=schain_info
+        )
