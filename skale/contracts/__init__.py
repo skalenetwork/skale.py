@@ -1,6 +1,6 @@
 # flake8: noqa
 
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import BaseContract, transaction_method
 
 from skale.contracts.manager import Manager
 from skale.contracts.contract_manager import ContractManager
