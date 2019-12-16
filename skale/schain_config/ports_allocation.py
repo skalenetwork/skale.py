@@ -17,7 +17,21 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-# flake8: noqa: F401
+from skale.utils.exceptions import SChainNotFoundException
+from skale.schain_config import PORTS_PER_SCHAIN
 
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
+
+def calc_schain_base_port(node_base_port, schain_index):
+    return node_base_port + schain_index * PORTS_PER_SCHAIN
+
+
+def get_schain_index_in_node(schain_name, node_schains):
+    for index, schain in enumerate(node_schains):
+        if schain_name == schain['name']:
+            return index
+    raise SChainNotFoundException(f'sChain {schain_name} is not found in the list: {node_schains}')
+
+
+def get_schain_base_port_on_node(schains_on_node, schain_name, node_base_port):
+    schain_index = get_schain_index_in_node(schain_name, schains_on_node)
+    return calc_schain_base_port(node_base_port, schain_index)

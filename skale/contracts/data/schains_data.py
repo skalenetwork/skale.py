@@ -21,19 +21,13 @@
 from Crypto.Hash import keccak
 
 from skale.contracts import BaseContract
-from skale.utils.helper import format_fields, ip_from_bytes
-from skale.utils.web3_utils import public_key_to_address
+from skale.utils.helper import format_fields
 
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
 
 FIELDS = [
     'name', 'owner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate',
     'deposit', 'index', 'chainId'
 ]
-
-PORTS_PER_SCHAIN = 11
-NUMBER_OF_PORTS = 3
 
 
 class SChainsData(BaseContract):
@@ -41,8 +35,8 @@ class SChainsData(BaseContract):
         return self.contract.functions.schains(name).call()
 
     @format_fields(FIELDS)
-    def get(self, id):
-        res = self.__get_raw(id)
+    def get(self, id_):
+        res = self.__get_raw(id_)
         hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
         hash_str = "0x" + hash_obj.hexdigest()[:13]
         res.append(hash_str)
@@ -50,8 +44,8 @@ class SChainsData(BaseContract):
 
     @format_fields(FIELDS)
     def get_by_name(self, name):
-        id = self.name_to_id(name)
-        res = self.__get_raw(id)
+        id_ = self.name_to_id(name)
+        res = self.__get_raw(id_)
         hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
         hash_str = "0x" + hash_obj.hexdigest()[:13]
         res.append(hash_str)
@@ -62,8 +56,8 @@ class SChainsData(BaseContract):
         list_size = self.get_schain_list_size(account)
 
         for i in range(0, list_size):
-            id = self.get_schain_id_by_index_for_owner(account, i)
-            schain = self.get(id)
+            id_ = self.get_schain_id_by_index_for_owner(account, i)
+            schain = self.get(id_)
             schains.append(schain)
         return schains
 
@@ -74,64 +68,9 @@ class SChainsData(BaseContract):
     def get_schain_id_by_index_for_owner(self, account, index):
         return self.contract.functions.schainIndexes(account, index).call()
 
-    def get_current_node_for_schain_config(self, schain_name: str, node_id: int) -> CurrentNodeInfo:
-        node = self.skale.nodes_data.get(node_id)
-        schain_base_port = self.get_schain_base_port_on_node(schain_name, node_id, node['port'])
-        return CurrentNodeInfo(
-            node_name=node['name'],
-            node_id=node_id,
-            base_port=schain_base_port,
-            bind_ip=ip_from_bytes(node['ip'])
-        ).to_config()
-
-    def get_nodes_for_schain_config(self, name):
-        nodes_info = []
-        nodes = self.get_nodes_for_schain(name)
-
-        for i, node in enumerate(nodes, 1):
-            pk = node['publicKey'].hex()
-            base_port = self.get_schain_base_port_on_node(name, node['id'], node['port'])
-
-            node_info = SchainNodeInfo(
-                node_name=node['name'],
-                node_id=node['id'],
-                base_port=base_port,
-
-                schain_index=i,
-                ip=ip_from_bytes(node['ip']),
-                public_key=pk,
-                public_ip=ip_from_bytes(node['publicIP']),
-                owner=public_key_to_address(pk)
-            ).to_config()
-            nodes_info.append(node_info)
-        return nodes_info
-
-    def get_schain_base_port_on_node(self, schain_name, node_id, node_port):
-        schains = self.get_schains_for_node(node_id)
-        schain_index = self.get_schain_index_in_node(schain_name, schains)
-        return self.calc_schain_base_port(node_port, schain_index)
-
-    def get_schain_index_in_node(self, schain_name, node_schains):
-        for index, schain in enumerate(node_schains):
-            if schain_name == schain['name']:
-                return index
-        return -1
-
-    def calc_schain_base_port(self, node_base_port, schain_index):
-        return node_base_port + schain_index * PORTS_PER_SCHAIN
-
-    def get_nodes_for_schain(self, name):
-        nodes = []
-        ids = self.get_node_ids_for_schain(name)
-        for id in ids:
-            node = self.skale.nodes_data.get(id)
-            node['id'] = id
-            nodes.append(node)
-        return nodes
-
     def get_node_ids_for_schain(self, name):
-        id = self.name_to_id(name)
-        return self.contract.functions.getNodesInGroup(id).call()
+        id_ = self.name_to_id(name)
+        return self.contract.functions.getNodesInGroup(id_).call()
 
     def get_schain_ids_for_node(self, node_id):
         return self.contract.functions.getSchainIdsForNode(node_id).call()
