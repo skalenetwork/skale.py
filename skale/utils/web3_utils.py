@@ -29,6 +29,10 @@ from web3.exceptions import TransactionNotFound
 logger = logging.getLogger(__name__)
 
 
+class TransactionFailedError(Exception):
+    pass
+
+
 def get_provider(endpoint):
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':

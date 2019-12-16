@@ -1,12 +1,14 @@
 """ SKALE manager test """
 
 import mock
+import pytest
 import web3
 from hexbytes import HexBytes
 
 import skale.utils.helper as helper
 from skale.utils.constants import GAS
-from skale.utils.web3_utils import wait_receipt, private_key_to_public
+from skale.utils.web3_utils import (wait_receipt, private_key_to_public,
+                                    TransactionFailedError)
 
 from tests.constants import DEFAULT_NODE_NAME, SECOND_NODE_NAME
 from tests.utils import generate_random_node_data, generate_random_schain_data
@@ -232,3 +234,43 @@ def test_create_delete_schain(skale):
         for sid in schains_ids_after
     ]
     assert name not in schains_names
+
+
+def test_create_delete_default_schain(skale):
+    schains_ids = skale.schains_data.get_all_schains_ids()
+    name = 'default-schain'
+    res = skale.manager.create_default_schain(name)
+    assert res['status'] == 1
+
+    schains_ids_number_after = skale.schains_data.get_schains_number()
+    assert schains_ids_number_after == len(schains_ids) + 1
+    schains_ids_after = skale.schains_data.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains_data.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name in schains_names
+
+    res = skale.manager.delete_schain(name, wait_for=True)
+    assert res['status'] == 1
+
+    schains_ids_number_after = skale.schains_data.get_schains_number()
+    assert schains_ids_number_after == len(schains_ids)
+    schains_ids_after = skale.schains_data.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains_data.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name not in schains_names
+
+
+def test_create_node_status_0(skale):
+    ip, public_ip, port, name = generate_random_node_data()
+    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        send_tx_mock.return_value = b'hexstring'
+        with mock.patch('skale.contracts.base_contract.wait_receipt',
+                        return_value={'status': 0}):
+            with pytest.raises(TransactionFailedError):
+                skale.manager.create_node(ip, port, name, wait_for=True)
