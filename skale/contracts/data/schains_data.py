@@ -94,6 +94,9 @@ class SChainsData(BaseContract):
     def get_schains_number(self):
         return self.contract.functions.numberOfSchains().call()
 
+    def get_groups_public_key(self, group_index):
+        return self.contract.functions.getGroupsPublicKey(group_index).call()
+
     def schain_active(self, schain):
         if schain['name'] != '' and \
                 schain['owner'] != '0x0000000000000000000000000000000000000000':
