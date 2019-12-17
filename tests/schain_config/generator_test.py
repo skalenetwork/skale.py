@@ -1,8 +1,11 @@
+import skale.contracts.data.nodes_data as nodes_data
 from skale.dataclasses import CurrentNodeInfo
+from skale.schain_config.generator import get_nodes_for_schain
 from skale.schain_config.generator import (generate_schain_info, generate_schain_config,
                                            generate_skale_schain_config)
 from skale.utils.helper import ip_from_bytes
-from tests.constants import DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAME, TEST_URL
+from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAME, TEST_URL,
+                             MIN_NODES_IN_SCHAIN)
 
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
@@ -67,6 +70,15 @@ def test_generate_schain_config():
     assert isinstance(config['params'], dict)
     assert isinstance(config['skaleConfig']['nodeInfo'], dict)
     assert isinstance(config['skaleConfig']['sChain'], dict)
+
+
+def test_get_nodes_for_schain(skale):
+    schain_nodes = get_nodes_for_schain(skale, DEFAULT_SCHAIN_NAME)
+    fields_with_id = nodes_data.FIELDS.copy()
+    fields_with_id.append('id')
+
+    assert len(schain_nodes) >= MIN_NODES_IN_SCHAIN
+    assert list(schain_nodes[0].keys()) == fields_with_id
 
 
 def test_generate_skale_schain_config(skale):
