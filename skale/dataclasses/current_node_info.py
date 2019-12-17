@@ -31,10 +31,10 @@ class CurrentNodeInfo(NodeInfo):
         super().__init__(node_id, node_name, base_port)
 
     def to_config(self):
-        return {**super().to_config(), **{
-            'bindIP': self.bind_ip,
-            'imaMainNet': self.ima_mainnet,
-            'imaMessageProxySChain': self.ima_mp_schain,
-            'imaMessageProxyMainNet': self.ima_mp_mainnet,
-            'wallets': self.wallets,
-        }}
+        config = super().to_config()
+        config['bindIP'] = self.bind_ip
+        config['imaMainNet'] = self.ima_mainnet
+        config['imaMessageProxySChain'] = self.ima_mp_schain
+        config['imaMessageProxyMainNet'] = self.ima_mp_mainnet
+        config['wallets'] = self.wallets
+        return config

@@ -24,8 +24,8 @@ from skale.schain_config import NODE_OWNER_ALLOC, SCHAIN_OWNER_ALLOC
 
 
 def add_to_accounts(allocation, account, amount, code=None, storage={}, nonce=0):
-    assert type(code) is str or code is None
-    assert type(storage) is dict or storage is None
+    assert isinstance(code, str) or code is None
+    assert isinstance(storage, dict) or storage is None
     acc_fx = Web3.toChecksumAddress(account)
     if str(acc_fx) not in allocation:
         allocation[acc_fx] = {"balance": str(amount)}
