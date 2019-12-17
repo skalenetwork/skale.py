@@ -17,12 +17,13 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts import BaseContract
+from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
 
 
 class Constants(BaseContract):
+    @transaction_method
     def set_periods(self, new_reward_period, new_delta_period):
         op = self.contract.functions.setPeriods(new_reward_period, new_delta_period)
         tx = post_transaction(self.skale.wallet, op, GAS['set_periods'])
@@ -34,6 +35,7 @@ class Constants(BaseContract):
     def get_delta_period(self):
         return self.contract.functions.deltaPeriod().call()
 
+    @transaction_method
     def set_check_time(self, new_check_time):
         op = self.contract.functions.setCheckTime(new_check_time)
         tx = post_transaction(self.skale.wallet, op, GAS['set_check_time'])
@@ -42,6 +44,7 @@ class Constants(BaseContract):
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
 
+    @transaction_method
     def set_latency(self, new_allowable_latency):
         op = self.contract.functions.setLatency(new_allowable_latency)
         tx = post_transaction(self.skale.wallet, op, GAS['set_latency'])
