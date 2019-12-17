@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from sgx import SgxClient
+from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.common import BaseWallet
 
 
@@ -31,8 +32,10 @@ class SgxWallet(BaseWallet):
             self._key_name = key_name
             self._address, self._public_key = self._get_account(key_name)
 
-    def sign(self, tx):
-        return self.sgx_client.sign(tx, self.key_name)
+    def sign(self, tx_dict):
+        if not tx_dict.get('nonce'):
+            tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
+        return self.sgx_client.sign(tx_dict, self.key_name)
 
     def sign_and_send(self, tx):
         signed_tx = self.sgx_client.sign(tx, self.key_name)
