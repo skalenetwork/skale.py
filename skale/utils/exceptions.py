@@ -28,3 +28,7 @@ class InvalidWalletError(Exception):
 
 class EmptyWalletError(Exception):
     """Raised when wrong wallet class passed"""
+
+
+class SChainNotFoundException(Exception):
+    """Raised when requested sChain is not found"""

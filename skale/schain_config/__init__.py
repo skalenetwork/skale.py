@@ -17,7 +17,11 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-# flake8: noqa: F401
+# flake8: noqa: E402, F401
 
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
+SCHAIN_OWNER_ALLOC = 1000000000000000000000  # todo: tmp!
+NODE_OWNER_ALLOC = 1000000000000000000000  # todo: tmp!
+
+PORTS_PER_SCHAIN = 11
+
+from skale.schain_config.generator import generate_skale_schain_config
