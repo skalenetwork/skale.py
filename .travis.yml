@@ -26,12 +26,8 @@ jobs:
   include:
     - stage: test
       script:
-        - git clone https://${CI_USER_TOKEN}@github.com/skalenetwork/skale-manager.git
-        - cd skale-manager/
-        - yarn install
-        - ENDPOINT=$ENDPOINT_HTTP PRIVATE_KEY=$SKALE_PY_TESTNET_PRIVATE_KEY npx truffle migrate --network SKALE_private_testnet
-        - cp data/SKALE_private_testnet.json ../test_abi.json && cd ..
-        - ./scripts/run-tests.sh
+        - ./scripts/deploy_manager.sh
+        - ./scripts/run_tests.sh
       after_script:
         - codecov -t $CODECOV_TOKEN
     - stage: deploy
