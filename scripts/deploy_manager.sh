@@ -2,6 +2,11 @@
 
 set -e
 
+: "${USERNAME?Need to set USERNAME}"
+: "${PASSWORD?Need to set PASSWORD}"
+
+echo "$PASSWORD" | docker login --username $USERNAME --password-stdin
+
 : "${MANAGER_BRANCH?Need to set MANAGER_BRANCH}"
 : "${ETH_PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
 : "${ENDPOINT_HTTP?Need to set ENDPOINT_HTTP}"
