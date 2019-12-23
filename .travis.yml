@@ -26,8 +26,8 @@ jobs:
   include:
     - stage: test
       script:
-        - ./scripts/deploy_manager.sh
-        - ./scripts/run_tests.sh
+        - bash ./scripts/deploy_manager.sh
+        - bash ./scripts/run_tests.sh
       after_script:
         - codecov -t $CODECOV_TOKEN
     - stage: deploy
