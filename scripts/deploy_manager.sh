@@ -7,11 +7,8 @@ set -e
 : "${DOCKER_PASSWORD?Need to set DOCKER_PASSWORD}"
 : "${MANAGER_BRANCH?Need to set MANAGER_BRANCH}"
 
-docker run -d -p 8545:8545 --name ganache trufflesuite/ganache-cli:latest  \
+docker run -d --network host --name ganache trufflesuite/ganache-cli:latest  \
     --account="${ETH_PRIVATE_KEY},100000000000000000000000000" -l 80000000
-
-docker ps -a
-curl 127.0.0.1:8545
 
 echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
