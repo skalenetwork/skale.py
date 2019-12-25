@@ -3,9 +3,17 @@ import mock
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
 from skale.wallets import SgxWallet
-from skale.utils.web3_utils import init_web3
+from skale.utils.web3_utils import (
+    init_web3,
+    private_key_to_address,
+    to_checksum_address
+)
 
-from tests.constants import ENDPOINT
+from tests.constants import ENDPOINT, ETH_PRIVATE_KEY
+
+ADDRESS = to_checksum_address(
+    private_key_to_address(ETH_PRIVATE_KEY)
+)
 
 
 class SgxClient:
@@ -15,13 +23,13 @@ class SgxClient:
     def generate_key(self):
         return AttributeDict({
             'name': 'NEK:aaabbb',
-            'address': '0xAB00000000000000000000000000000000000000',
+            'address': ADDRESS,
             'public_key': 'ab00000000000000000000000000000000000000',
         })
 
     def get_account(self, key_name):
         return AttributeDict({
-            'address': '0xAB00000000000000000000000000000000000000',
+            'address': ADDRESS,
             'public_key': 'ab00000000000000000000000000000000000000',
         })
 
@@ -52,6 +60,22 @@ def test_sgx_sign():
         wallet.sign(tx_dict)
 
 
+def test_sgx_sign_without_nonce():
+    with mock.patch('skale.wallets.sgx_wallet.SgxClient',
+                    new=SgxClient):
+        web3 = init_web3(ENDPOINT)
+        wallet = SgxWallet('TEST_ENDPOINT', web3)
+        tx_dict = {
+            'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
+            'value': 9,
+            'gas': 200000,
+            'gasPrice': 1,
+            'chainId': None,
+            'data': b'\x9b\xd9\xbb\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x95qY\xc4i\xfc;\xba\xa8\xe3\x9e\xe0\xa3$\xc28\x8a\xd6Q\xe5\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\xe0\xb6\xb3\xa7d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x006\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa8\xc0\x04/Rglamorous-kitalpha\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'  # noqa
+        }
+        wallet.sign(tx_dict)
+
+
 def test_sgx_sign_with_key():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
                     new=SgxClient):
@@ -75,5 +99,5 @@ def test_sgx_key_init():
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3, 'TEST_KEY')
         assert wallet.key_name == 'TEST_KEY'
-        assert wallet.address == '0xAB00000000000000000000000000000000000000'
+        assert wallet.address == ADDRESS
         assert wallet.public_key == 'ab00000000000000000000000000000000000000'

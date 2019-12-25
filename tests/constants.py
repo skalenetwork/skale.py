@@ -8,6 +8,7 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 DEFAULT_NODE_HASH = '23bdf46c41fa300e431425baff124dc31625b34ec09b829f61aa16ab0102ca8d'
+DEFAULT_NODE_PORT = 3000
 
 TEST_CONTRACT_NAME = 'NodesFunctionality'
 TEST_CONTRACT_NAME_HASH = 'f88bdb637038c4be9f72381c0db0b0d7b7f369cfdd49619ee7e48aa7940482b9'
@@ -38,6 +39,7 @@ ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 NEW_REWARD_PERIOD = 500
 NEW_DELTA_PERIOD = 400
 
+TEST_URL = 'http://localhost:3030'
 TEST_RPC_WALLET_URL = 'http://localhost:3000'
 NOT_EXISTING_RPC_WALLET_URL = 'http://abc:9999'
 EMPTY_HEX_STR = '0x0'
