@@ -2,20 +2,21 @@
 
 set -e
 
+: "${ETH_PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
 : "${USERNAME?Need to set USERNAME}"
 : "${PASSWORD?Need to set PASSWORD}"
+: "${MANAGER_BRANCH?Need to set MANAGER_BRANCH}"
+
+docker run -d -p 8545:8545 --name ganache trufflesuite/ganache-cli:latest  \
+    --account="${ETH_PRIVATE_KEY},100000000000000000000000000" -l 80000000
 
 echo "$PASSWORD" | docker login --username $USERNAME --password-stdin
 
-: "${MANAGER_BRANCH?Need to set MANAGER_BRANCH}"
-: "${ETH_PRIVATE_KEY?Need to set ETH_PRIVATE_KEY}"
-: "${ENDPOINT_HTTP?Need to set ENDPOINT_HTTP}"
-
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-docker run -ti -e PRIVATE_KEY=$ETH_PRIVATE_KEY -e ENDPOINT=$ENDPOINT_HTTP \
+docker run -ti \
     -v $DIR/contracts_data:/usr/src/manager/data \
     skalelabshub/skale-manager:$MANAGER_BRANCH-latest \
-    npx truffle migrate --network unique
+    npx truffle migrate --network test
 
-cp $DIR/contracts_data/unique.json $DIR/../test_abi.json
+cp $DIR/contracts_data/test.json $DIR/../test_abi.json
