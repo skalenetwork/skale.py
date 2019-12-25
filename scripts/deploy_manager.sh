@@ -15,8 +15,8 @@ echo "$PASSWORD" | docker login --username $USERNAME --password-stdin
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 docker run -ti \
-    --network host
     -v $DIR/contracts_data:/usr/src/manager/data \
+    --network host
     skalelabshub/skale-manager:$MANAGER_BRANCH-latest \
     npx truffle migrate --network test
 
