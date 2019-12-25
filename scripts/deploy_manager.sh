@@ -10,6 +10,8 @@ set -e
 docker run -d -p 8545:8545 --name ganache trufflesuite/ganache-cli:latest  \
     --account="${ETH_PRIVATE_KEY},100000000000000000000000000" -l 80000000
 
+docker ps -a
+
 echo "$PASSWORD" | docker login --username $USERNAME --password-stdin
 
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
