@@ -17,7 +17,7 @@ ADDRESS = to_checksum_address(
 
 
 class SgxClient:
-    def __init__(self, endpoint):
+    def __init__(self, endpoint, path_to_cert=None):
         pass
 
     def generate_key(self):

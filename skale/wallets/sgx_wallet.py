@@ -23,8 +23,8 @@ from skale.wallets.common import BaseWallet
 
 
 class SgxWallet(BaseWallet):
-    def __init__(self, sgx_endpoint, web3, key_name=None):
-        self.sgx_client = SgxClient(sgx_endpoint)
+    def __init__(self, sgx_endpoint, web3, key_name=None, path_to_cert=None):
+        self.sgx_client = SgxClient(sgx_endpoint, path_to_cert=path_to_cert)
         self._web3 = web3
         if key_name is None:
             self._key_name, self._address, self._public_key = self._generate()
