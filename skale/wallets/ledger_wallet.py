@@ -135,9 +135,9 @@ class LedgerWallet(BaseWallet):
         exchange_result = self.exchange_sign_payload_by_chunks(payload)
         return LedgerWallet.parse_sign_result(tx, exchange_result)
 
-    def sign_and_send(self, tx):
+    def sign_and_send(self, tx) -> str:
         signed_tx = self.sign(tx)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     @classmethod
     def parse_derive_result(cls, exchange_result):
@@ -164,7 +164,7 @@ class LedgerWallet(BaseWallet):
         return LedgerWallet.parse_derive_result(exchange_result)
 
 
-def hardware_sign_and_send(web3, method, gas_amount, wallet):
+def hardware_sign_and_send(web3, method, gas_amount, wallet) -> str:
     address_from = wallet['address']
     eth_nonce = get_eth_nonce(web3, address_from)
     tx_dict = method.buildTransaction({
@@ -172,7 +172,7 @@ def hardware_sign_and_send(web3, method, gas_amount, wallet):
         'nonce': eth_nonce
     })
     signed_txn = wallet.sign(tx_dict)
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()
     logger.info(
         f'{method.__class__.__name__} - transaction_hash: {web3.toHex(tx)}'
     )
