@@ -26,7 +26,7 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def sign_and_send(self, tx_dict):
+    def sign_and_send(self, tx_dict) -> str:
         pass
 
     @property
