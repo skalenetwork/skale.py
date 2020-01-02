@@ -33,13 +33,13 @@ class SgxWallet(BaseWallet):
             self._address, self._public_key = self._get_account(key_name)
 
     def sign(self, tx_dict):
-        if not tx_dict.get('nonce'):
+        if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         return self.sgx_client.sign(tx_dict, self.key_name)
 
-    def sign_and_send(self, tx) -> str:
+    def sign_and_send(self, tx):
         signed_tx = self.sgx_client.sign(tx, self.key_name)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
     @property
     def address(self):
