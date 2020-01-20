@@ -58,7 +58,7 @@ def get_eth_nonce(web3, address):
     return web3.eth.getTransactionCount(address)
 
 
-def wait_receipt(web3, tx, retries=10, timeout=5):
+def wait_receipt(web3, tx, retries=30, timeout=5):
     for _ in range(0, retries):
         try:
             receipt = get_receipt(web3, tx)
