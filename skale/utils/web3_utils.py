@@ -73,7 +73,7 @@ def wait_for_receipt_by_blocks(web3, tx, timeout=3, blocks_to_wait=2):
     raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
 
 
-def wait_receipt(web3, tx, retries=10, timeout=5):
+def wait_receipt(web3, tx, retries=30, timeout=5):
     for _ in range(0, retries):
         try:
             receipt = get_receipt(web3, tx)
