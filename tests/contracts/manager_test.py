@@ -63,11 +63,10 @@ def test_create_schain_data_to_bytes(skale):
 def test_get_bounty(skale):
     node_id = 0
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-    gas_price = skale.web3.eth.gasPrice
     contract_address = skale.manager.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': GAS['get_bounty'], 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -85,11 +84,10 @@ def test_get_bounty(skale):
 
 def test_send_verdict(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-    gas_price = skale.web3.eth.gasPrice
     contract_address = skale.manager.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': 200000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -116,11 +114,10 @@ def test_send_verdict(skale):
 
 def test_send_verdicts(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-    gas_price = skale.web3.eth.gasPrice
     contract_address = skale.manager.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': 500000, 'nonce': nonce,
         'to': contract_address,
         'data': ('0x25b2114b000000000000000000000000000000000000000000'
@@ -270,7 +267,9 @@ def test_create_node_status_0(skale):
     ip, public_ip, port, name = generate_random_node_data()
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
-        with mock.patch('skale.contracts.base_contract.wait_receipt',
-                        return_value={'status': 0}):
+        with mock.patch(
+            'skale.contracts.base_contract.wait_for_receipt_by_blocks',
+            return_value={'status': 0}
+        ):
             with pytest.raises(TransactionFailedError):
                 skale.manager.create_node(ip, port, name, wait_for=True)

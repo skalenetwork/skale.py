@@ -58,6 +58,10 @@ class Skale:
         self.__init_contracts()
 
     @property
+    def gas_price(self):
+        return self.web3.eth.gasPrice * 3 // 2
+
+    @property
     def wallet(self):
         if not self._wallet:
             raise EmptyWalletError('No wallet provided')

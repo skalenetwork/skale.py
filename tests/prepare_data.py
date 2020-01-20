@@ -6,7 +6,7 @@ from skale import Skale
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
-from skale.utils.web3_utils import wait_receipt, check_receipt
+from skale.utils.web3_utils import check_receipt
 from tests.constants import (
     DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME,
     ENDPOINT, SECOND_NODE_NAME, TEST_ABI_FILEPATH,
@@ -21,12 +21,10 @@ def cleanup_nodes_schains(skale):
         schain_data = skale.schains_data.get(schain_id)
         schain_name = schain_data.get('name', None)
         if schain_name is not None:
-            res = skale.manager.delete_schain(schain_name)
-            receipt = wait_receipt(skale.web3, res['tx'])
+            receipt = skale.manager.delete_schain(schain_name, wait_for=True)
             check_receipt(receipt)
     for node_id in skale.nodes_data.get_active_node_ids():
-        res = skale.manager.deregister(node_id)
-        receipt = wait_receipt(skale.web3, res['tx'])
+        receipt = skale.manager.deregister(node_id, wait_for=True)
         check_receipt(receipt)
 
 
@@ -36,9 +34,9 @@ def create_nodes(skale):
     node_names = [DEFAULT_NODE_NAME, SECOND_NODE_NAME]
     for name in node_names:
         ip, public_ip, port, _ = generate_random_node_data()
-        res = skale.manager.create_node(ip, port, name, public_ip)
-        receipt = wait_receipt(skale.web3, res['tx'])
-        check_receipt(receipt)
+        res = skale.manager.create_node(ip, port, name, public_ip,
+                                        wait_for=True)
+        check_receipt(res)
 
 
 def create_schain(skale):
@@ -48,13 +46,13 @@ def create_schain(skale):
     price_in_wei = skale.schains.get_schain_price(type_of_nodes,
                                                   lifetime_seconds)
 
-    res = skale.manager.create_schain(
+    receipt = skale.manager.create_schain(
         lifetime_seconds,
         type_of_nodes,
         price_in_wei,
         DEFAULT_SCHAIN_NAME,
+        wait_for=True
     )
-    receipt = wait_receipt(skale.web3, res['tx'])
     check_receipt(receipt)
 
 

@@ -58,6 +58,21 @@ def get_eth_nonce(web3, address):
     return web3.eth.getTransactionCount(address)
 
 
+def wait_for_receipt_by_blocks(web3, tx, timeout=3, blocks_to_wait=2):
+    previous_block = web3.eth.blockNumber
+    current_block = previous_block
+    while current_block <= previous_block + blocks_to_wait:
+        try:
+            receipt = get_receipt(web3, tx)
+        except TransactionNotFound:
+            receipt = None
+        if receipt is not None:
+            return receipt
+        current_block = web3.eth.blockNumber
+        sleep(timeout)
+    raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
+
+
 def wait_receipt(web3, tx, retries=30, timeout=5):
     for _ in range(0, retries):
         try:

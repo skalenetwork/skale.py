@@ -24,15 +24,19 @@ from skale.utils.web3_utils import get_eth_nonce
 logger = logging.getLogger(__name__)
 
 
-def build_tx_dict(method, gas_amount, nonce=None):
-    return method.buildTransaction({
-        'gas': gas_amount,
+def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
+    tx_dict_fields = {
+        'gas': gas_limit,
         'nonce': nonce
-    })
+    }
+    if gas_price is not None:
+        tx_dict_fields.update({'gasPrice': gas_price})
+
+    return method.buildTransaction(tx_dict_fields)
 
 
-def post_transaction(wallet, method, gas_amount, nonce=None):
-    tx_dict = build_tx_dict(method, gas_amount, nonce)
+def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None):
+    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
     return wallet.sign_and_send(tx_dict)
 
 
@@ -51,7 +55,7 @@ def send_eth(web3, account, amount, wallet):
         'to': account,
         'from': wallet.address,
         'value': amount,
-        'gasPrice': web3.eth.gasPrice,
+        'gasPrice': web3.eth.gasPrice * 3 // 2,
         'gas': 22000,
         'nonce': eth_nonce
     }

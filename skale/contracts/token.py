@@ -27,7 +27,8 @@ class Token(BaseContract):
     @transaction_method
     def transfer(self, address, value):
         op = self.contract.functions.send(address, value, b'')
-        tx = post_transaction(self.skale.wallet, op, GAS['token_transfer'])
+        tx = post_transaction(self.skale.wallet, op, GAS['token_transfer'],
+                              self.skale.gas_price)
         return {'tx': tx}
 
     def get_balance(self, address):
@@ -36,5 +37,6 @@ class Token(BaseContract):
     @transaction_method
     def add_authorized(self, address, wallet):  # pragma: no cover
         op = self.contract.functions.addAuthorized(address)
-        tx = post_transaction(self.skale.wallet, op, GAS['token_transfer'])
+        tx = post_transaction(self.skale.wallet, op, GAS['token_transfer'],
+                              self.skale.gas_price)
         return {'tx': tx}
