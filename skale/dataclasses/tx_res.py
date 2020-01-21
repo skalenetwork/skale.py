@@ -17,38 +17,16 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-NODE_DEPOSIT = 100000000000000000000
 
-GAS = {
-    'add_validator': 4500000,
-    'create_node': 4500000,
-    'create_schain': 7500000,
-    'get_bounty': 4500000,
-    'send_verdict': 200000,
-    'send_verdicts': 500000,
-    'set_check_time': 200000,
-    'set_latency': 200000,
-    'token_transfer': 600000,
-    'add_authorized': 100000,
-    'set_periods': 200000,
-    'delete_node': 6000000,
-    'delete_node_by_root': 6000000,
-    'delete_schain': 6000000,
-    'dkg_broadcast': 8000000,
-    'dkg_response': 8000000,
-    'dkg_allright': 1000000,
-    'dkg_complaint': 1000000,
+class TxRes():
+    def __init__(self, tx_hash, data=None):
+        self._hash = tx_hash
+        self._data = data
 
-    'register_validator': 3000000
-}
+    @property
+    def hash(self):
+        return self._hash
 
-OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}
-
-LONG_LINE = '=' * 100
-
-SCHAIN_TYPES = {
-    'tiny': 1,
-    'small': 2,
-    'medium': 3,
-    'test': 4,
-}
+    @property
+    def data(self):
+        return self._data

@@ -16,4 +16,7 @@ from skale.contracts.functionality.schains import SChains
 from skale.contracts.functionality.nodes import Nodes
 from skale.contracts.functionality.validators import Validators
 
+from skale.contracts.delegation.delegation_service import DelegationService
+from skale.contracts.delegation.validator_service import ValidatorService
+
 from skale.contracts.dkg import DKG

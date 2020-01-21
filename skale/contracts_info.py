@@ -43,4 +43,9 @@ CONTRACTS_INFO = [
     ContractInfo('validators_data', 'ValidatorsData', contracts.ValidatorsData,
                  ContractTypes.DATA, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
+
+    ContractInfo('delegation_service', 'DelegationService', contracts.DelegationService,
+                 ContractTypes.API, False),
+    ContractInfo('validator_service', 'ValidatorService', contracts.ValidatorService,
+                 ContractTypes.API, False),
 ]
