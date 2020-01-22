@@ -64,5 +64,7 @@ class ValidatorService(BaseContract):
         validators = []
         number_of_validators = self.number_of_validators()
         for val_id in range(1, number_of_validators+1):
-            validators.append(self.get(val_id))
+            val = self.get(val_id)
+            val['id'] = val_id
+            validators.append(val)
         return validators
