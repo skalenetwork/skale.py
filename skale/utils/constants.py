@@ -39,7 +39,8 @@ GAS = {
     'dkg_allright': 1000000,
     'dkg_complaint': 1000000,
 
-    'register_validator': 3000000
+    'register_validator': 3000000,
+    'delegate': 3000000,
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}

@@ -46,6 +46,8 @@ CONTRACTS_INFO = [
 
     ContractInfo('delegation_service', 'DelegationService', contracts.DelegationService,
                  ContractTypes.API, False),
-    ContractInfo('validator_service', 'ValidatorService', contracts.ValidatorService,
+    ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,
                  ContractTypes.API, False),
+    ContractInfo('validator_service', 'ValidatorService', contracts.ValidatorService,
+                 ContractTypes.API, False)
 ]
