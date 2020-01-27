@@ -41,6 +41,7 @@ GAS = {
 
     'register_validator': 3000000,
     'delegate': 3000000,
+    'accept_pending_delegation': 1000000,
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}

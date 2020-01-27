@@ -124,6 +124,7 @@ class DelegationService(BaseContract):
 
         :param address: Ethereum address
         :type address: str
+        :returns: List of formatted delegation requests
         :rtype: list
         """
         return self.get_all_delegations(address, 'holder')
@@ -133,6 +134,19 @@ class DelegationService(BaseContract):
 
         :param address: Ethereum address
         :type address: str
+        :returns: List of formatted delegation requests
         :rtype: list
         """
         return self.get_all_delegations(address, 'validator')
+
+    def accept_pending_delegation(self, delegation_id: int) -> TxRes:
+        """Accepts a pending delegation by delegation ID.
+
+        :param delegation_id: Delegation ID to accept
+        :type delegation_id: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.acceptPendingDelegation(delegation_id)
+        tx_hash = post_transaction(self.skale.wallet, func, GAS['accept_pending_delegation'])
+        return TxRes(tx_hash=tx_hash)
