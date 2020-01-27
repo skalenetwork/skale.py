@@ -67,8 +67,8 @@ class DelegationService(BaseContract):
         return TxRes(tx_hash=tx_hash)
 
     def _get_delegation_ids_by_validator(self, address: str, status: DelegationStatus) -> list:
-        # return self.contract.functions.getDelegationsForValidator(status.value).call({
-        return self.contract.functions.getDelegationsByValidator(status.value).call({  # todo: tmp
+        # return self.contract.functions.getDelegationsByValidator(status.value).call({  # todo: tmp
+        return self.contract.functions.getDelegationsForValidator(status.value).call({
             'from': address
         })
 
