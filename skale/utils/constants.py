@@ -38,6 +38,7 @@ GAS = {
     'dkg_response': 8000000,
     'dkg_allright': 1000000,
     'dkg_complaint': 1000000,
+    'node_exit': 5000000,
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}

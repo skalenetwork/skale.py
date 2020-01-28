@@ -80,3 +80,6 @@ class NodesData(BaseContract):
     def node_name_to_index(self, name):
         name_hash = self.name_to_id(name)
         return self.contract.functions.nodesNameToIndex(name_hash).call()
+
+    def get_node_status(self, node_id):
+        return self.contract.functions.getNodeStatus(node_id).call()
