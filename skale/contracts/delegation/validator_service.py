@@ -20,6 +20,9 @@
 from skale.contracts import BaseContract
 from skale.utils.helper import format_fields
 
+from skale.transactions.tools import post_transaction
+from skale.dataclasses.tx_res import TxRes
+from skale.utils.constants import GAS
 
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
@@ -68,3 +71,26 @@ class ValidatorService(BaseContract):
             val['id'] = val_id
             validators.append(val)
         return validators
+
+    def get_linked_addresses_by_validator_address(self, address: str) -> list:
+        """Returns list of node addresses linked to the validator address.
+
+        :returns: List of node addresses
+        :rtype: list
+        """
+        return self.contract.functions.getMyAddresses().call({
+            'from': address
+        })
+
+    def get_linked_addresses_by_validator_id(self, validator_id: str) -> list:
+        """Returns list of node addresses linked to the validator ID.
+
+        :returns: List of node addresses
+        :rtype: list
+        """
+        return self.contract.functions.getValidatorAddresses(validator_id).call()
+
+    def _enable_validator(self, validator_id: int) -> TxRes:  # internal function
+        func = self.contract.functions.enableValidator(validator_id)
+        tx_hash = post_transaction(self.skale.wallet, func, GAS['enable_validator'])
+        return TxRes(tx_hash=tx_hash)

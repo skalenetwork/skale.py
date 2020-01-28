@@ -10,11 +10,10 @@ from skale.contracts.constants import Constants
 
 from skale.contracts.data.schains_data import SChainsData
 from skale.contracts.data.nodes_data import NodesData
-from skale.contracts.data.validators_data import ValidatorsData
+from skale.contracts.data.monitors_data import MonitorsData
 
 from skale.contracts.functionality.schains import SChains
 from skale.contracts.functionality.nodes import Nodes
-from skale.contracts.functionality.validators import Validators
 
 from skale.contracts.delegation.delegation_service import DelegationService
 from skale.contracts.delegation.delegation_controller import DelegationController

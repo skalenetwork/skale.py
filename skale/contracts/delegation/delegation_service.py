@@ -150,3 +150,27 @@ class DelegationService(BaseContract):
         func = self.contract.functions.acceptPendingDelegation(delegation_id)
         tx_hash = post_transaction(self.skale.wallet, func, GAS['accept_pending_delegation'])
         return TxRes(tx_hash=tx_hash)
+
+    def link_node_address(self, node_address: str) -> TxRes:
+        """Link node address to your validator account.
+
+        :param node_address: Address of the node to link
+        :type node_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.linkNodeAddress(node_address)
+        tx_hash = post_transaction(self.skale.wallet, func, GAS['link_node_address'])
+        return TxRes(tx_hash=tx_hash)
+
+    def unlink_node_address(self, node_address: str) -> TxRes:
+        """Unlink node address from your validator account.
+
+        :param node_address: Address of the node to unlink
+        :type node_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.unlinkNodeAddress(node_address)
+        tx_hash = post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])
+        return TxRes(tx_hash=tx_hash)

@@ -16,10 +16,20 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE validator functions """
-
+""" Get SKALE validator data """
+from web3 import Web3
 from skale.contracts import BaseContract
 
 
-class Validators(BaseContract):
-    pass
+class MonitorsData(BaseContract):
+    def get_reward_period(self):
+        constants = self.skale.get_contract_by_name('constants')
+        return constants.contract.functions.rewardPeriod().call()
+
+    def get_delta_period(self):
+        constants = self.skale.get_contract_by_name('constants')
+        return constants.contract.functions.deltaPeriod().call()
+
+    def get_validated_array(self, node_id):
+        node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
+        return self.contract.functions.getValidatedArray(node_id_bytes).call()
