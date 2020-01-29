@@ -55,7 +55,7 @@ def send_eth(web3, account, amount, wallet):
         'to': account,
         'from': wallet.address,
         'value': amount,
-        'gasPrice': web3.eth.gasPrice * 3 // 2,
+        'gasPrice': web3.eth.gasPrice,
         'gas': 22000,
         'nonce': eth_nonce
     }
