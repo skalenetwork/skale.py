@@ -59,7 +59,7 @@ class Skale:
 
     @property
     def gas_price(self):
-        return self.web3.eth.gasPrice * 3 // 2
+        return self.web3.eth.gasPrice
 
     @property
     def wallet(self):
