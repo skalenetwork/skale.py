@@ -174,3 +174,15 @@ class DelegationService(BaseContract):
         func = self.contract.functions.unlinkNodeAddress(node_address)
         tx_hash = post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])
         return TxRes(tx_hash=tx_hash)
+
+    def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
+        """Cancel pending delegation request.
+
+        :param delegation_id: ID of the delegation to cancel
+        :type delegation_id: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.cancelPendingDelegation(delegation_id)
+        tx_hash = post_transaction(self.skale.wallet, func, GAS['cancel_pending_delegation'])
+        return TxRes(tx_hash=tx_hash)

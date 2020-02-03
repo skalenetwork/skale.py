@@ -45,6 +45,7 @@ GAS = {
     'enable_validator': 1000000,
     'link_node_address': 1000000,
     'unlink_node_address': 1000000,
+    'cancel_pending_delegation': 1000000,
 
     'skip_transition_delay': 1000000
 }
