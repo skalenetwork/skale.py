@@ -90,6 +90,16 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorAddresses(validator_id).call()
 
+    def is_main_address(self, validator_address: str) -> bool:
+        """Checks if provided address is the main validator address
+
+        :returns: True if provided address is the main validator address, otherwise False
+        :rtype: bool
+        """
+        validator_id = self.validator_id_by_address(validator_address)
+        validator = self.get(validator_id)
+        return validator_address == validator['validator_address']
+
     def validator_address_exists(self, validator_address: str) -> bool:
         """Checks if there is a validator with provided address
 
