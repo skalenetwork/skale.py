@@ -90,6 +90,22 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorAddresses(validator_id).call()
 
+    def validator_address_exists(self, validator_address: str) -> bool:
+        """Checks if there is a validator with provided address
+
+        :returns: True if validator exists, otherwise False
+        :rtype: bool
+        """
+        return self.contract.functions.validatorAddressExists(validator_address).call()
+
+    def validator_id_by_address(self, validator_address: str) -> int:
+        """Returns validator ID by validator address
+
+        :returns: Validator ID
+        :rtype: int
+        """
+        return self.contract.functions.getValidatorId(validator_address).call()
+
     def _enable_validator(self, validator_id: int) -> TxRes:  # internal function
         func = self.contract.functions.enableValidator(validator_id)
         tx_hash = post_transaction(self.skale.wallet, func, GAS['enable_validator'])
