@@ -186,3 +186,9 @@ class DelegationService(BaseContract):
         func = self.contract.functions.cancelPendingDelegation(delegation_id)
         tx_hash = post_transaction(self.skale.wallet, func, GAS['cancel_pending_delegation'])
         return TxRes(tx_hash=tx_hash)
+
+    def get_delegated_amount(self, validator_id: int) -> int:
+        return self.contract.functions.getDelegatedAmount(validator_id).call()
+
+    def get_delegated_of(self, address: str) -> int:
+        return self.contract.functions.getDelegatedOf(address).call()
