@@ -99,7 +99,12 @@ class SChainsData(BaseContract):
 
     def get_rotation(self, schain_name):
         schain_id = self.name_to_id(schain_name)
-        return self.contract.functions.getRotation(schain_id).call()
+        rotation_data = self.contract.functions.getRotation(schain_id).call()
+        return {
+            'leaving_node': rotation_data[0],
+            'new_node': rotation_data[1],
+            'finish_ts': rotation_data[2]
+        }
 
     def schain_active(self, schain):
         if schain['name'] != '' and \

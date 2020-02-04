@@ -103,4 +103,8 @@ def test_get_schains_number(skale):
 
 
 def test_get_rotation(skale):
-    assert skale.schains_data.get_rotation(DEFAULT_SCHAIN_NAME) == (0, 0, 0)
+    assert skale.schains_data.get_rotation(DEFAULT_SCHAIN_NAME) == {
+        'leaving_node': 0,
+        'new_node': 0,
+        'finish_ts': 0,
+    }
