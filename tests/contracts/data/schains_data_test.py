@@ -103,5 +103,4 @@ def test_get_schains_number(skale):
 
 
 def test_get_rotation(skale):
-    schain_id = skale.schains_data.name_to_id(DEFAULT_SCHAIN_NAME)
-    assert skale.schains_data.get_rotation(schain_id) == (0, 0, 0)
+    assert skale.schains_data.get_rotation(DEFAULT_SCHAIN_NAME) == (0, 0, 0)

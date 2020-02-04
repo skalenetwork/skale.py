@@ -97,7 +97,8 @@ class SChainsData(BaseContract):
     def get_groups_public_key(self, group_index):
         return self.contract.functions.getGroupsPublicKey(group_index).call()
 
-    def get_rotation(self, schain_id):
+    def get_rotation(self, schain_name):
+        schain_id = self.name_to_id(schain_name)
         return self.contract.functions.getRotation(schain_id).call()
 
     def schain_active(self, schain):
