@@ -83,3 +83,6 @@ class NodesData(BaseContract):
 
     def get_node_status(self, node_id):
         return self.contract.functions.getNodeStatus(node_id).call()
+
+    def get_node_finish_time(self, node_id):
+        return self.contract.functions.getNodeFinishTime(node_id).call()
