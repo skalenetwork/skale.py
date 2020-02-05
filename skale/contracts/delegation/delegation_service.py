@@ -192,3 +192,29 @@ class DelegationService(BaseContract):
 
     def get_delegated_of(self, address: str) -> int:
         return self.contract.functions.getDelegatedOf(address).call()
+
+    def withdraw_bounty(self, bounty_collection_address: str, amount: int) -> TxRes:
+        """Withdraw earned validator bounty.
+
+        :param bounty_collection_address: Address to transfer funds
+        :type bounty_collection_address: str
+        :param amount: Amount of tokens to withdraw
+        :type amount: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.withdrawBounty(bounty_collection_address, amount)
+        tx_hash = post_transaction(self.skale.wallet, func, GAS['withdraw_bounty'])
+        return TxRes(tx_hash=tx_hash)
+
+    def get_earned_bounty_amount(self, address: str) -> int:
+        """Returns earned bounty amount for validator.
+
+        :param address: Ethereum address
+        :type address: str
+        :returns: Amount of earned bounty
+        :rtype: int
+        """
+        return self.contract.functions.getEarnedBountyAmount().call({
+            'from': address
+        })

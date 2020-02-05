@@ -55,3 +55,11 @@ class Constants(BaseContract):
 
     def get_latency(self):
         return self.contract.functions.allowableLatency().call()
+
+    def msr(self) -> int:
+        """Minimum staking requirement to create a node.
+
+        :returns: MSR (in wei)
+        :rtype: int
+        """
+        return self.contract.functions.msr().call()
