@@ -58,7 +58,7 @@ def get_eth_nonce(web3, address):
     return web3.eth.getTransactionCount(address)
 
 
-def wait_for_receipt_by_blocks(web3, tx, timeout=3, blocks_to_wait=2):
+def wait_for_receipt_by_blocks(web3, tx, timeout=5, blocks_to_wait=5):
     previous_block = web3.eth.blockNumber
     current_block = previous_block
     while current_block <= previous_block + blocks_to_wait:
