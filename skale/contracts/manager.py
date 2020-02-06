@@ -26,7 +26,7 @@ import socket
 from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils import helper
-from skale.utils.constants import GAS, NODE_DEPOSIT, OP_TYPES
+from skale.utils.constants import GAS, OP_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +36,6 @@ class Manager(BaseContract):
     def create_node(self, ip, port, name, public_ip=None):
         logger.info(
             f'create_node: {ip}:{port}, public ip: {public_ip} name: {name}')
-
-        token = self.skale.get_contract_by_name('token')
         skale_nonce = helper.generate_nonce()
         pk = self.skale.wallet.public_key
 
@@ -47,8 +45,7 @@ class Manager(BaseContract):
         transaction_data = self.create_node_data_to_bytes(
             ip, public_ip, port, name, pk, skale_nonce)
 
-        op = token.contract.functions.send(self.address, NODE_DEPOSIT,
-                                           transaction_data)
+        op = self.contract.functions.createNode(transaction_data)
         tx = post_transaction(self.skale.wallet, op, GAS['create_node'],
                               self.skale.gas_price)
         return {'tx': tx, 'nonce': skale_nonce}
