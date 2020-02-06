@@ -155,3 +155,10 @@ class Manager(BaseContract):
         op = self.contract.functions.deleteNodeByRoot(node_id)
         tx = post_transaction(self.skale.wallet, op, GAS['delete_node_by_root'])
         return {'tx': tx}
+
+    @transaction_method
+    def node_exit(self, node_id):
+        op = self.contract.functions.nodeExit(node_id)
+        tx = post_transaction(self.skale.wallet, op, GAS['node_exit'],
+                              self.skale.gas_price)
+        return {'tx': tx}

@@ -36,8 +36,8 @@ def transaction_method(transaction):
                 return receipt
             else:
                 raise TransactionFailedError(
-                    'Transaction {transaction_method.__name__} failed with '
-                    'receipt {receipt}'
+                    f'Transaction {transaction_method.__name__} failed with '
+                    f'receipt {receipt}'
                 )
         else:
             return res

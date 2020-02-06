@@ -10,7 +10,7 @@ env:
   global:
     - NODE_OPTIONS="--max_old_space_size=4096"
     - ETH_PRIVATE_KEY=$TEST_ETH_PRIVATE_KEY
-    - MANAGER_BRANCH="feature/SKALE-2060"
+    - MANAGER_BRANCH=develop
 
 install:
   - sudo apt-get install libudev-dev
