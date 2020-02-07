@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts import BaseContract
+from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.dataclasses.tx_res import TxRes
 from skale.utils.constants import GAS
@@ -28,11 +28,12 @@ from skale.dataclasses.delegation_status import DelegationStatus
 class DelegationService(BaseContract):
     """Wrapper for DelegationService.sol functions"""
 
+    @transaction_method
     def register_validator(self, name: str, description: str, fee_rate: int,
                            min_delegation_amount: int) -> TxRes:
         """Registers a new validator in the SKALE Manager contracts.
 
-        :param name: Validator name
+        :param name:z Validator name
         :type name: str
         :param description: Validator description
         :type description: str
@@ -48,6 +49,7 @@ class DelegationService(BaseContract):
         tx_hash = post_transaction(self.skale.wallet, func, GAS['register_validator'])
         return TxRes(tx_hash=tx_hash)
 
+    @transaction_method
     def delegate(self, validator_id: int, amount: int, delegation_period: int, info: str) -> TxRes:
         """Creates request to delegate amount of tokens to validator_id.
 
@@ -139,6 +141,7 @@ class DelegationService(BaseContract):
         """
         return self.get_all_delegations(address, 'validator')
 
+    @transaction_method
     def accept_pending_delegation(self, delegation_id: int) -> TxRes:
         """Accepts a pending delegation by delegation ID.
 
@@ -151,6 +154,7 @@ class DelegationService(BaseContract):
         tx_hash = post_transaction(self.skale.wallet, func, GAS['accept_pending_delegation'])
         return TxRes(tx_hash=tx_hash)
 
+    @transaction_method
     def link_node_address(self, node_address: str) -> TxRes:
         """Link node address to your validator account.
 
@@ -163,6 +167,7 @@ class DelegationService(BaseContract):
         tx_hash = post_transaction(self.skale.wallet, func, GAS['link_node_address'])
         return TxRes(tx_hash=tx_hash)
 
+    @transaction_method
     def unlink_node_address(self, node_address: str) -> TxRes:
         """Unlink node address from your validator account.
 
@@ -175,6 +180,7 @@ class DelegationService(BaseContract):
         tx_hash = post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])
         return TxRes(tx_hash=tx_hash)
 
+    @transaction_method
     def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
         """Cancel pending delegation request.
 
@@ -193,6 +199,7 @@ class DelegationService(BaseContract):
     def get_delegated_of(self, address: str) -> int:
         return self.contract.functions.getDelegatedOf(address).call()
 
+    @transaction_method
     def withdraw_bounty(self, bounty_collection_address: str, amount: int) -> TxRes:
         """Withdraw earned validator bounty.
 

@@ -36,7 +36,7 @@ def test_lib_init():
     assert skale.abi is not None
 
     provider = skale.web3.provider
-    assert isinstance(provider, WebsocketProvider)
+    assert isinstance(provider, WebsocketProvider) or isinstance(provider, HTTPProvider)
 
     http_endpoint = 'http://localhost:8080'
     with mock.patch.object(Skale, '_Skale__init_contracts'):

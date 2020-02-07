@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts import BaseContract
+from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
 from skale.transactions.tools import post_transaction
@@ -116,6 +116,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorId(validator_address).call()
 
+    @transaction_method
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         func = self.contract.functions.enableValidator(validator_id)

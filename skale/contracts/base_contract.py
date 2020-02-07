@@ -29,18 +29,18 @@ from skale.utils.web3_utils import (TransactionFailedError,
 def transaction_method(transaction):
     @wraps(transaction_method)
     def wrapper(self, *args, wait_for=False, **kwargs):
-        res = transaction(self, *args, **kwargs)
+        tx_res = transaction(self, *args, **kwargs)
         if wait_for:
-            receipt = wait_for_receipt_by_blocks(self.skale.web3, res['tx'])
-            if receipt.get('status') == 1:
-                return receipt
+            tx_res.receipt = wait_for_receipt_by_blocks(self.skale.web3, tx_res.hash)
+            if tx_res.receipt.get('status') == 1:
+                return tx_res
             else:
                 raise TransactionFailedError(
-                    'Transaction {transaction_method.__name__} failed with '
-                    'receipt {receipt}'
+                    f'Transaction {transaction_method.__name__} failed with '
+                    f'receipt {tx_res.receipt}'
                 )
         else:
-            return res
+            return tx_res
     return wrapper
 
 

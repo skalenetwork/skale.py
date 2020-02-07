@@ -36,7 +36,7 @@ GAS = {
     'delete_schain': 6000000,
     'dkg_broadcast': 8000000,
     'dkg_response': 8000000,
-    'dkg_allright': 1000000,
+    'dkg_alright': 1000000,
     'dkg_complaint': 1000000,
 
     'register_validator': 3000000,

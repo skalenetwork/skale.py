@@ -30,6 +30,6 @@ class MonitorsData(BaseContract):
         constants = self.skale.get_contract_by_name('constants')
         return constants.contract.functions.deltaPeriod().call()
 
-    def get_validated_array(self, node_id):
+    def get_checked_array(self, node_id):
         node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
-        return self.contract.functions.getValidatedArray(node_id_bytes).call()
+        return self.contract.functions.getCheckedArray(node_id_bytes).call()

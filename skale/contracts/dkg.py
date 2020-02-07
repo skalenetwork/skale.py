@@ -20,6 +20,7 @@
 from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
+from skale.dataclasses.tx_res import TxRes
 
 
 class DKG(BaseContract):
@@ -29,9 +30,9 @@ class DKG(BaseContract):
         op = self.contract.functions.broadcast(group_index, node_index,
                                                verification_vector,
                                                secret_key_conribution)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'],
-                              self.skale.gas_price * 3 // 2)
-        return {'tx': tx}
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'],
+                                   self.skale.gas_price * 3 // 2)
+        return TxRes(tx_hash=tx_hash)
 
     @transaction_method
     def response(self, group_index, from_node_index,
@@ -39,21 +40,21 @@ class DKG(BaseContract):
         op = self.contract.functions.response(group_index, from_node_index,
                                               secret_number,
                                               multiplied_share)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_response'],
-                              self.skale.gas_price * 3 // 2)
-        return {'tx': tx}
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_response'],
+                                   self.skale.gas_price * 3 // 2)
+        return TxRes(tx_hash=tx_hash)
 
     @transaction_method
-    def allright(self, group_index, from_node_index):
-        op = self.contract.functions.allright(group_index, from_node_index)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_allright'],
-                              self.skale.gas_price * 3 // 2)
-        return {'tx': tx}
+    def alright(self, group_index, from_node_index):
+        op = self.contract.functions.alright(group_index, from_node_index)
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_alright'],
+                                   self.skale.gas_price * 3 // 2)
+        return TxRes(tx_hash=tx_hash)
 
     @transaction_method
     def complaint(self, group_index, from_node_index, to_node_index):
         op = self.contract.functions.complaint(group_index, from_node_index,
                                                to_node_index)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_complaint'],
-                              self.skale.gas_price * 3 // 2)
-        return {'tx': tx}
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_complaint'],
+                                   self.skale.gas_price * 3 // 2)
+        return TxRes(tx_hash=tx_hash)

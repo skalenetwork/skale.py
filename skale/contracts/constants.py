@@ -20,14 +20,15 @@
 from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
+from skale.dataclasses.tx_res import TxRes
 
 
 class Constants(BaseContract):
     @transaction_method
     def set_periods(self, new_reward_period, new_delta_period):
         op = self.contract.functions.setPeriods(new_reward_period, new_delta_period)
-        tx = post_transaction(self.skale.wallet, op, GAS['set_periods'])
-        return {'tx': tx}
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_periods'])
+        return TxRes(tx_hash=tx_hash)
 
     def get_reward_period(self):
         return self.contract.functions.rewardPeriod().call()
@@ -38,8 +39,8 @@ class Constants(BaseContract):
     @transaction_method
     def set_check_time(self, new_check_time):
         op = self.contract.functions.setCheckTime(new_check_time)
-        tx = post_transaction(self.skale.wallet, op, GAS['set_check_time'])
-        return {'tx': tx}
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_check_time'])
+        return TxRes(tx_hash=tx_hash)
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
@@ -47,8 +48,8 @@ class Constants(BaseContract):
     @transaction_method
     def set_latency(self, new_allowable_latency):
         op = self.contract.functions.setLatency(new_allowable_latency)
-        tx = post_transaction(self.skale.wallet, op, GAS['set_latency'])
-        return {'tx': tx}
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_latency'])
+        return TxRes(tx_hash=tx_hash)
 
     def get_latency(self):
         return self.contract.functions.allowableLatency().call()

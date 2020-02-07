@@ -19,9 +19,10 @@
 
 
 class TxRes():
-    def __init__(self, tx_hash, data=None):
+    def __init__(self, tx_hash, data=None, receipt=None):
         self._hash = tx_hash
         self._data = data
+        self._receipt = receipt
 
     @property
     def hash(self):
@@ -30,3 +31,11 @@ class TxRes():
     @property
     def data(self):
         return self._data
+
+    @property
+    def receipt(self):
+        return self._receipt
+
+    @receipt.setter
+    def receipt(self, receipt: dict) -> None:
+        self._receipt = receipt
