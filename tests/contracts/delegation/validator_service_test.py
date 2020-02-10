@@ -15,9 +15,14 @@ def test_get_raw_not_exist(skale):
 
 
 def test_get(skale):
-    delegation = skale.validator_service.get(D_VALIDATOR_ID)
-    assert list(delegation.keys()) == FIELDS
-    assert [k for k, v in delegation.items() if v is None] == []
+    validator = skale.validator_service.get(D_VALIDATOR_ID)
+    assert list(validator.keys()) == FIELDS
+    assert [k for k, v in validator.items() if v is None] == []
+
+
+def test_get_with_id(skale):
+    validator = skale.validator_service.get_with_id(D_VALIDATOR_ID)
+    assert validator['id'] == D_VALIDATOR_ID
 
 
 def test_number_of_validators(skale):

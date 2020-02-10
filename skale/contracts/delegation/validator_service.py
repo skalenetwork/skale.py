@@ -50,6 +50,16 @@ class ValidatorService(BaseContract):
         """
         return self.__get_raw(_id)
 
+    def get_with_id(self, _id) -> dict:
+        """Returns validator info with ID.
+
+        :returns: Validator info with ID
+        :rtype: dict
+        """
+        validator = self.get(_id)
+        validator['id'] = _id
+        return validator
+
     def number_of_validators(self):
         """Returns number of registered validators.
 
@@ -64,12 +74,11 @@ class ValidatorService(BaseContract):
         :returns: List of validators
         :rtype: list
         """
-        validators = []
         number_of_validators = self.number_of_validators()
-        for val_id in range(1, number_of_validators+1):
-            val = self.get(val_id)
-            val['id'] = val_id
-            validators.append(val)
+        validators = [
+            self.get_with_id(val_id)
+            for val_id in range(1, number_of_validators+1)
+        ]
         return validators
 
     def get_linked_addresses_by_validator_address(self, address: str) -> list:
