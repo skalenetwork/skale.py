@@ -34,12 +34,11 @@ def validator_exist(skale):
 
 def setup_validator(skale):
     """Create and activate a validator"""
-    delegation_id = len(skale.delegation_service.get_all_delegations_by_validator(
-        skale.wallet.address))
     if not validator_exist(skale):
         create_validator(skale)
         enable_validator(skale)
-        # link_address_to_validator(skale)
+    delegation_id = len(skale.delegation_service.get_all_delegations_by_validator(
+        skale.wallet.address))
     delegate_to_validator(skale)
     accept_pending_delegation(skale, delegation_id)
     skip_delegation_delay(skale, delegation_id)
