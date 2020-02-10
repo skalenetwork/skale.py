@@ -46,13 +46,10 @@ def send_tokens(skale, sender_wallet, receiver_account, amount,
     )
 
     wei_amount = skale.web3.toWei(amount, 'ether')
-    res = skale.token.transfer(receiver_account, wei_amount)
+    tx_res = skale.token.transfer(receiver_account, wei_amount, wait_for=wait_for)
     if wait_for:
-        receipt = wait_for_receipt_by_blocks(skale.web3, res['tx'])
-        check_receipt(receipt)
-        return receipt
-    else:  # pragma: no cover
-        return res['tx']
+        check_receipt(tx_res.receipt)
+    return tx_res
 
 
 def send_ether(web3, sender_wallet, receiver_account, amount,

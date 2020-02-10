@@ -85,9 +85,12 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
     raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
 
 
-def check_receipt(receipt):
+def check_receipt(receipt, raise_error=True):
     if receipt['status'] != 1:  # pragma: no cover
-        raise ValueError("Transaction failed, see receipt", receipt)
+        if raise_error:
+            raise ValueError("Transaction failed, see receipt", receipt)
+        else:
+            return False
     return True
 
 

@@ -108,12 +108,10 @@ For more details see: <https://semver.org/>
 
 #### Testing
 
-For running full test suite you will need `skale-manager` repo cloned alongside with `skale-py` directory
-
 Running full test suite:
 
 ```bash
-bash test_runner.sh
+bash scripts/run_tests.sh
 ```
 
 Running test suite manually:
