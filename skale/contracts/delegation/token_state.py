@@ -30,5 +30,4 @@ class TokenState(BaseContract):
     @transaction_method
     def _skip_transition_delay(self, delegation_id: int) -> TxRes:  # internal function
         func = self.contract.functions.skipTransitionDelay(delegation_id)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['skip_transition_delay'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['skip_transition_delay'])

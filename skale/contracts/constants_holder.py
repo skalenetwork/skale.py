@@ -20,15 +20,13 @@
 from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
-from skale.dataclasses.tx_res import TxRes
 
 
 class ConstantsHolder(BaseContract):
     @transaction_method
     def set_periods(self, new_reward_period, new_delta_period):
         op = self.contract.functions.setPeriods(new_reward_period, new_delta_period)
-        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_periods'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, op, GAS['set_periods'])
 
     def get_reward_period(self):
         return self.contract.functions.rewardPeriod().call()
@@ -39,8 +37,7 @@ class ConstantsHolder(BaseContract):
     @transaction_method
     def set_check_time(self, new_check_time):
         op = self.contract.functions.setCheckTime(new_check_time)
-        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_check_time'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, op, GAS['set_check_time'])
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
@@ -48,8 +45,7 @@ class ConstantsHolder(BaseContract):
     @transaction_method
     def set_latency(self, new_allowable_latency):
         op = self.contract.functions.setLatency(new_allowable_latency)
-        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_latency'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, op, GAS['set_latency'])
 
     def get_latency(self):
         return self.contract.functions.allowableLatency().call()
@@ -66,5 +62,4 @@ class ConstantsHolder(BaseContract):
     def _set_msr(self, new_msr: int) -> None:
         """For internal usage only"""
         op = self.contract.functions.setMSR(new_msr)
-        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_msr'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, op, GAS['set_msr'])

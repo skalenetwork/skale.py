@@ -120,8 +120,7 @@ class ValidatorService(BaseContract):
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         func = self.contract.functions.enableValidator(validator_id)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['enable_validator'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['enable_validator'])
 
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""

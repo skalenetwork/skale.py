@@ -21,15 +21,13 @@
 from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
-from skale.dataclasses.tx_res import TxRes
 
 
 class Token(BaseContract):
     @transaction_method
     def transfer(self, address, value):
         op = self.contract.functions.send(address, value, b'')
-        tx_hash = post_transaction(self.skale.wallet, op, GAS['token_transfer'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])
 
     def get_balance(self, address):
         return self.contract.functions.balanceOf(address).call()
@@ -37,5 +35,4 @@ class Token(BaseContract):
     @transaction_method
     def add_authorized(self, address, wallet):  # pragma: no cover
         op = self.contract.functions.addAuthorized(address)
-        tx_hash = post_transaction(self.skale.wallet, op, GAS['token_transfer'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])

@@ -46,8 +46,7 @@ class DelegationService(BaseContract):
         """
         func = self.contract.functions.registerValidator(
             name, description, fee_rate, min_delegation_amount)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['register_validator'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['register_validator'])
 
     @transaction_method
     def delegate(self, validator_id: int, amount: int, delegation_period: int, info: str) -> TxRes:
@@ -65,8 +64,7 @@ class DelegationService(BaseContract):
         :rtype: TxRes
         """
         func = self.contract.functions.delegate(validator_id, amount, delegation_period, info)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['delegate'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['delegate'])
 
     def _get_delegation_ids_by_validator(self, address: str, status: DelegationStatus) -> list:
         # return self.contract.functions.getDelegationsByValidator(status.value).call({  # todo: tmp
@@ -151,8 +149,7 @@ class DelegationService(BaseContract):
         :rtype: TxRes
         """
         func = self.contract.functions.acceptPendingDelegation(delegation_id)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['accept_pending_delegation'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['accept_pending_delegation'])
 
     @transaction_method
     def link_node_address(self, node_address: str) -> TxRes:
@@ -164,8 +161,7 @@ class DelegationService(BaseContract):
         :rtype: TxRes
         """
         func = self.contract.functions.linkNodeAddress(node_address)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['link_node_address'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['link_node_address'])
 
     @transaction_method
     def unlink_node_address(self, node_address: str) -> TxRes:
@@ -177,8 +173,7 @@ class DelegationService(BaseContract):
         :rtype: TxRes
         """
         func = self.contract.functions.unlinkNodeAddress(node_address)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])
 
     @transaction_method
     def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
@@ -190,8 +185,7 @@ class DelegationService(BaseContract):
         :rtype: TxRes
         """
         func = self.contract.functions.cancelPendingDelegation(delegation_id)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['cancel_pending_delegation'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['cancel_pending_delegation'])
 
     def get_delegated_amount(self, validator_id: int) -> int:
         return self.contract.functions.getDelegatedAmount(validator_id).call()
@@ -211,8 +205,7 @@ class DelegationService(BaseContract):
         :rtype: TxRes
         """
         func = self.contract.functions.withdrawBounty(bounty_collection_address, amount)
-        tx_hash = post_transaction(self.skale.wallet, func, GAS['withdraw_bounty'])
-        return TxRes(tx_hash=tx_hash)
+        return post_transaction(self.skale.wallet, func, GAS['withdraw_bounty'])
 
     def get_earned_bounty_amount(self, address: str) -> int:
         """Returns earned bounty amount for validator.
