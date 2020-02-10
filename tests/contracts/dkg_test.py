@@ -8,7 +8,7 @@ def test_broadcast(skale):
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 3 // 2, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -34,7 +34,7 @@ def test_response(skale):
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 3 // 2, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -60,7 +60,7 @@ def test_allright(skale):
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 3 // 2, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 1000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -83,7 +83,7 @@ def test_complaint(skale):
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 3 // 2, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 1000000, 'nonce': nonce,
         'to': contract_address,
         'data': (

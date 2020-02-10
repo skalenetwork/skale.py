@@ -23,6 +23,10 @@ from skale.utils.constants import GAS
 from skale.dataclasses.tx_res import TxRes
 
 
+def dkg_gas_price(gas_price):
+    return gas_price * 5 // 4
+
+
 class DKG(BaseContract):
     @transaction_method
     def broadcast(self, group_index, node_index,
@@ -31,7 +35,7 @@ class DKG(BaseContract):
                                                verification_vector,
                                                secret_key_conribution)
         tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'],
-                                   self.skale.gas_price * 3 // 2)
+                                   dkg_gas_price(self.skale.gas_price))
         return TxRes(tx_hash=tx_hash)
 
     @transaction_method
@@ -41,14 +45,14 @@ class DKG(BaseContract):
                                               secret_number,
                                               multiplied_share)
         tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_response'],
-                                   self.skale.gas_price * 3 // 2)
+                                   dkg_gas_price(self.skale.gas_price))
         return TxRes(tx_hash=tx_hash)
 
     @transaction_method
     def alright(self, group_index, from_node_index):
         op = self.contract.functions.alright(group_index, from_node_index)
         tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_alright'],
-                                   self.skale.gas_price * 3 // 2)
+                                   dkg_gas_price(self.skale.gas_price))
         return TxRes(tx_hash=tx_hash)
 
     @transaction_method
@@ -56,5 +60,5 @@ class DKG(BaseContract):
         op = self.contract.functions.complaint(group_index, from_node_index,
                                                to_node_index)
         tx_hash = post_transaction(self.skale.wallet, op, GAS['dkg_complaint'],
-                                   self.skale.gas_price * 3 // 2)
+                                   dkg_gas_price(self.skale.gas_price))
         return TxRes(tx_hash=tx_hash)
