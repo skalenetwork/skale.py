@@ -4,8 +4,8 @@ import pytest
 
 from skale.utils.web3_utils import check_receipt
 from skale.dataclasses.delegation_status import DelegationStatus
-from skale.utils.account_tools import generate_account, send_ether
-from skale.wallets import Web3Wallet
+from skale.utils.account_tools import send_ether
+from skale.wallets.web3_wallet import generate_wallet
 
 from tests.constants import (
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL, D_VALIDATOR_ID,
@@ -24,15 +24,12 @@ def test_register_existing_validator(skale):
         )
 
 
-def test_register_new_validator(skale):
+def _generate_new_validator(skale):
     eth_amount = 0.1
     main_wallet = skale.wallet
-    wallet_dict = generate_account(skale.web3)
-    wallet = Web3Wallet(wallet_dict['private_key'], skale.web3)
+    wallet = generate_wallet(skale.web3)
     send_ether(skale.web3, skale.wallet, wallet.address, eth_amount)
     skale.wallet = wallet
-
-    n_of_validators_before = skale.validator_service.number_of_validators()
     tx_res = skale.delegation_service.register_validator(
         name=D_VALIDATOR_NAME,
         description=D_VALIDATOR_DESC,
@@ -41,10 +38,14 @@ def test_register_new_validator(skale):
         wait_for=True
     )
     check_receipt(tx_res.receipt)
+    skale.wallet = main_wallet
+
+
+def test_register_new_validator(skale):
+    n_of_validators_before = skale.validator_service.number_of_validators()
+    _generate_new_validator(skale)
     n_of_validators_after = skale.validator_service.number_of_validators()
     assert n_of_validators_after == n_of_validators_before + 1
-
-    skale.wallet = main_wallet
 
 
 def _get_number_of_pending_delegations(skale):
@@ -130,14 +131,14 @@ def test_accept_pending_delegation(skale):
 
 
 def test_link_node_address(skale):
-    wallet_dict = generate_account(skale.web3)
+    wallet = generate_wallet(skale.web3)
     addresses = skale.validator_service.get_linked_addresses_by_validator_address(
         skale.wallet.address
     )
-    assert wallet_dict['address'] not in addresses
+    assert wallet.address not in addresses
 
     tx_res = skale.delegation_service.link_node_address(
-        node_address=wallet_dict['address'],
+        node_address=wallet.address,
         wait_for=True
     )
     check_receipt(tx_res.receipt)
@@ -145,13 +146,13 @@ def test_link_node_address(skale):
     addresses = skale.validator_service.get_linked_addresses_by_validator_address(
         skale.wallet.address
     )
-    assert wallet_dict['address'] in addresses
+    assert wallet.address in addresses
 
 
 def test_unlink_node_address(skale):
-    wallet_dict = generate_account(skale.web3)
+    wallet = generate_wallet(skale.web3)
     tx_res = skale.delegation_service.link_node_address(
-        node_address=wallet_dict['address'],
+        node_address=wallet.address,
         wait_for=True
     )
     check_receipt(tx_res.receipt)
@@ -159,17 +160,17 @@ def test_unlink_node_address(skale):
     addresses = skale.validator_service.get_linked_addresses_by_validator_address(
         skale.wallet.address
     )
-    assert wallet_dict['address'] in addresses
+    assert wallet.address in addresses
 
     tx_res = skale.delegation_service.unlink_node_address(
-        node_address=wallet_dict['address'],
+        node_address=wallet.address,
         wait_for=True
     )
     check_receipt(tx_res.receipt)
     addresses = skale.validator_service.get_linked_addresses_by_validator_address(
         skale.wallet.address
     )
-    assert wallet_dict['address'] not in addresses
+    assert wallet.address not in addresses
 
 
 def test_cancel_pending_delegation(skale):
