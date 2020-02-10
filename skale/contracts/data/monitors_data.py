@@ -22,14 +22,6 @@ from skale.contracts import BaseContract
 
 
 class MonitorsData(BaseContract):
-    def get_reward_period(self):
-        constants = self.skale.get_contract_by_name('constants')
-        return constants.contract.functions.rewardPeriod().call()
-
-    def get_delta_period(self):
-        constants = self.skale.get_contract_by_name('constants')
-        return constants.contract.functions.deltaPeriod().call()
-
     def get_checked_array(self, node_id):
         node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
         return self.contract.functions.getCheckedArray(node_id_bytes).call()

@@ -28,7 +28,7 @@ CONTRACTS_INFO = [
                  False),
     ContractInfo('manager', 'SkaleManager', contracts.Manager,
                  ContractTypes.API, True),
-    ContractInfo('constants', 'Constants', contracts.Constants,
+    ContractInfo('constants_holder', 'ConstantsHolder', contracts.ConstantsHolder,
                  ContractTypes.INTERNAL, True),
     ContractInfo('nodes', 'NodesFunctionality', contracts.Nodes,
                  ContractTypes.API, True),
@@ -41,7 +41,6 @@ CONTRACTS_INFO = [
     ContractInfo('monitors_data', 'MonitorsData', contracts.MonitorsData,
                  ContractTypes.DATA, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
-
     ContractInfo('delegation_service', 'DelegationService', contracts.DelegationService,
                  ContractTypes.API, False),
     ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,

@@ -23,7 +23,7 @@ from skale.utils.constants import GAS
 from skale.dataclasses.tx_res import TxRes
 
 
-class Constants(BaseContract):
+class ConstantsHolder(BaseContract):
     @transaction_method
     def set_periods(self, new_reward_period, new_delta_period):
         op = self.contract.functions.setPeriods(new_reward_period, new_delta_period)
@@ -61,3 +61,10 @@ class Constants(BaseContract):
         :rtype: int
         """
         return self.contract.functions.msr().call()
+
+    @transaction_method
+    def _set_msr(self, new_msr: int) -> None:
+        """For internal usage only"""
+        op = self.contract.functions.setMSR(new_msr)
+        tx_hash = post_transaction(self.skale.wallet, op, GAS['set_msr'])
+        return TxRes(tx_hash=tx_hash)

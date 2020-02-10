@@ -10,7 +10,7 @@ from skale.utils.web3_utils import check_receipt
 from tests.constants import (
     DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME, ENDPOINT, SECOND_NODE_NAME, TEST_ABI_FILEPATH,
     D_VALIDATOR_ID, ETH_PRIVATE_KEY, D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE,
-    D_VALIDATOR_MIN_DEL, D_DELEGATION_AMOUNT, D_DELEGATION_PERIOD, D_DELEGATION_INFO
+    D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO
 )
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
@@ -39,6 +39,7 @@ def setup_validator(skale):
         enable_validator(skale)
     delegation_id = len(skale.delegation_service.get_all_delegations_by_validator(
         skale.wallet.address))
+    set_test_msr(skale)
     delegate_to_validator(skale)
     accept_pending_delegation(skale, delegation_id)
     skip_delegation_delay(skale, delegation_id)
@@ -71,11 +72,23 @@ def accept_pending_delegation(skale, delegation_id):
     check_receipt(tx_res.receipt)
 
 
+def get_test_delegation_amount(skale):
+    msr = skale.constants_holder.msr()
+    return msr * 10
+
+
+def set_test_msr(skale):
+    skale.constants_holder._set_msr(
+        new_msr=D_VALIDATOR_MIN_DEL,
+        wait_for=True
+    )
+
+
 def delegate_to_validator(skale):
     print(f'Delegating tokens to validator ID: {D_VALIDATOR_ID}')
     tx_res = skale.delegation_service.delegate(
         validator_id=D_VALIDATOR_ID,
-        amount=D_DELEGATION_AMOUNT,
+        amount=get_test_delegation_amount(skale),
         delegation_period=D_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
         wait_for=True

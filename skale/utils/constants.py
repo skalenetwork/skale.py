@@ -48,7 +48,8 @@ GAS = {
     'cancel_pending_delegation': 1000000,
     'withdraw_bounty': 3000000,
 
-    'skip_transition_delay': 1000000
+    'skip_transition_delay': 1000000,
+    'set_msr': 200000
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}

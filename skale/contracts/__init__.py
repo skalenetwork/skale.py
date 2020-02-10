@@ -6,7 +6,7 @@ from skale.contracts.manager import Manager
 from skale.contracts.contract_manager import ContractManager
 from skale.contracts.token import Token
 from skale.contracts.groups import Groups
-from skale.contracts.constants import Constants
+from skale.contracts.constants_holder import ConstantsHolder
 
 from skale.contracts.data.schains_data import SChainsData
 from skale.contracts.data.nodes_data import NodesData
