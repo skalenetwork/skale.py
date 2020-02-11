@@ -50,6 +50,7 @@ class Manager(BaseContract):
         op = token.contract.functions.send(self.address, NODE_DEPOSIT,
                                            transaction_data)
         tx = post_transaction(self.skale.wallet, op, GAS['create_node'])
+
         return {'tx': tx, 'nonce': skale_nonce}
 
     def create_node_data_to_bytes(self, ip, public_ip, port, name, pk, nonce):

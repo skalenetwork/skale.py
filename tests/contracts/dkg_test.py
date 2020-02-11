@@ -5,11 +5,10 @@ from hexbytes import HexBytes
 
 def test_broadcast(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-    gas_price = skale.web3.eth.gasPrice
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -32,11 +31,10 @@ def test_broadcast(skale):
 
 def test_response(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-    gas_price = skale.web3.eth.gasPrice
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -59,11 +57,10 @@ def test_response(skale):
 
 def test_allright(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-    gas_price = skale.web3.eth.gasPrice
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 1000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -83,11 +80,10 @@ def test_allright(skale):
 
 def test_complaint(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-    gas_price = skale.web3.eth.gasPrice
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
         'gas': 1000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
