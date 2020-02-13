@@ -21,7 +21,7 @@ extras_require = {
         "pytest-cov==2.8.1"
     ],
     'hw-wallet': [
-        "ledgerblue==0.1.29"
+        "ledgerblue==0.1.31"
     ]
 }
 
