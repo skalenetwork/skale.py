@@ -28,10 +28,13 @@ from skale.utils.web3_utils import (TransactionFailedError,
 
 def transaction_method(transaction):
     @wraps(transaction_method)
-    def wrapper(self, *args, wait_for=False, **kwargs):
+    def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, **kwargs):
         tx_res = transaction(self, *args, **kwargs)
         if wait_for:
-            tx_res.receipt = wait_for_receipt_by_blocks(self.skale.web3, tx_res.hash)
+            tx_res.receipt = wait_for_receipt_by_blocks(self.skale.web3,
+                                                        tx_res.hash,
+                                                        timeout=timeout,
+                                                        blocks_to_wait=blocks_to_wait)
             if tx_res.receipt.get('status') == 1:
                 return tx_res
             else:
