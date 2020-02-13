@@ -33,9 +33,8 @@ class DKG(BaseContract):
         op = self.contract.functions.broadcast(group_index, node_index,
                                                verification_vector,
                                                secret_key_conribution)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'],
-                              dkg_gas_price(self.skale.gas_price))
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'],
+                                dkg_gas_price(self.skale.gas_price))
 
     @transaction_method
     def response(self, group_index, from_node_index,
@@ -43,21 +42,18 @@ class DKG(BaseContract):
         op = self.contract.functions.response(group_index, from_node_index,
                                               secret_number,
                                               multiplied_share)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_response'],
-                              dkg_gas_price(self.skale.gas_price))
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['dkg_response'],
+                                dkg_gas_price(self.skale.gas_price))
 
     @transaction_method
-    def allright(self, group_index, from_node_index):
-        op = self.contract.functions.allright(group_index, from_node_index)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_allright'],
-                              dkg_gas_price(self.skale.gas_price))
-        return {'tx': tx}
+    def alright(self, group_index, from_node_index):
+        op = self.contract.functions.alright(group_index, from_node_index)
+        return post_transaction(self.skale.wallet, op, GAS['dkg_alright'],
+                                dkg_gas_price(self.skale.gas_price))
 
     @transaction_method
     def complaint(self, group_index, from_node_index, to_node_index):
         op = self.contract.functions.complaint(group_index, from_node_index,
                                                to_node_index)
-        tx = post_transaction(self.skale.wallet, op, GAS['dkg_complaint'],
-                              dkg_gas_price(self.skale.gas_price))
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['dkg_complaint'],
+                                dkg_gas_price(self.skale.gas_price))

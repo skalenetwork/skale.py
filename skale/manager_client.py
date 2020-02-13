@@ -101,9 +101,13 @@ class Skale:
             self.abi, name)
         logger.info(f'Initialized: {name} at {address}')
         abi = self.get_contract_abi_by_name(self.abi, name)
+        if name == 'dkg':  # todo: tmp fix
+            abi = self.get_contract_abi_by_name(self.abi, 'd_k_g')
         self.add_contract(name, contract_class(self, name, address, abi))
 
     def get_contract_address_by_name(self, abi, name):
+        if name == 'dkg':  # todo: tmp fix
+            return abi.get(f'skale_d_k_g_address')
         return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
 
     def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names

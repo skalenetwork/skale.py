@@ -16,20 +16,18 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Get SKALE validator data """
-from web3 import Web3
-from skale.contracts import BaseContract
+
+from skale.contracts import BaseContract, transaction_method
+
+from skale.transactions.tools import post_transaction
+from skale.dataclasses.tx_res import TxRes
+from skale.utils.constants import GAS
 
 
-class ValidatorsData(BaseContract):
-    def get_reward_period(self):
-        constants = self.skale.get_contract_by_name('constants')
-        return constants.contract.functions.rewardPeriod().call()
+class TokenState(BaseContract):
+    """Wrapper for TokenState.sol functions"""
 
-    def get_delta_period(self):
-        constants = self.skale.get_contract_by_name('constants')
-        return constants.contract.functions.deltaPeriod().call()
-
-    def get_validated_array(self, node_id):
-        node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
-        return self.contract.functions.getValidatedArray(node_id_bytes).call()
+    @transaction_method
+    def _skip_transition_delay(self, delegation_id: int) -> TxRes:  # internal function
+        func = self.contract.functions.skipTransitionDelay(delegation_id)
+        return post_transaction(self.skale.wallet, func, GAS['skip_transition_delay'])
