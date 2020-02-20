@@ -35,7 +35,7 @@ def transaction_method(transaction):
     def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1, **kwargs):
         for retry in range(retries):
             logging.info(
-                f'Posting transaction {transaction_method.__name__}, try {retry} out of {retries}')
+                f'Posting transaction {transaction.__name__}, try {retry+1} out of {retries}')
             tx_res = transaction(self, *args, **kwargs)
             if wait_for:
                 tx_res.receipt = wait_for_receipt_by_blocks(
@@ -49,7 +49,7 @@ def transaction_method(transaction):
             else:
                 return tx_res
         raise TransactionFailedError(
-            f'Transaction {transaction_method.__name__} failed with '
+            f'Transaction {transaction.__name__} failed with '
             f'receipt {tx_res.receipt}'
         )
     return wrapper
