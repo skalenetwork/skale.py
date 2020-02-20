@@ -35,7 +35,10 @@ def transaction_method(transaction):
     def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1, **kwargs):
         for retry in range(retries):
             logging.info(
-                f'Posting transaction {transaction.__name__}, try {retry+1} out of {retries}')
+                f'transaction_method: {transaction.__name__}, try {retry+1}/{retries}, '
+                f'wallet: {self.skale.wallet.__class__.__name__}, '
+                f'sender: {self.skale.wallet.address}'
+            )
             tx_res = transaction(self, *args, **kwargs)
             if wait_for:
                 tx_res.receipt = wait_for_receipt_by_blocks(
@@ -49,8 +52,8 @@ def transaction_method(transaction):
             else:
                 return tx_res
         raise TransactionFailedError(
-            f'Transaction {transaction.__name__} failed with '
-            f'receipt {tx_res.receipt}'
+            f'transaction_method failed: {transaction.__name__}, '
+            f'receipt: {tx_res.receipt}'
         )
     return wrapper
 
