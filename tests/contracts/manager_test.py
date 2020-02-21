@@ -251,8 +251,31 @@ def test_create_node_status_0(skale):
 
 
 def test_empty_node_exit(skale):
-    skale.manager.node_exit()
     ip, public_ip, port, name = generate_random_node_data()
     skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
     node_idx = skale.nodes_data.node_name_to_index(name)
-    skale.manager.node_exit(node_idx, wait_for=True)
+    tx_res = skale.manager.node_exit(node_idx, wait_for=True)
+    assert tx_res.receipt['status'] == 1
+    assert skale.nodes_data.get_node_status(node_idx) == 2
+
+
+def test_one_schain_node_exit(skale):
+    schains_ids = skale.schains_data.get_all_schains_ids()
+    schain_name = skale.schains_data.get(schains_ids[0])['name']
+    exit_node_id = skale.schains_data.get_node_ids_for_schain(schain_name)[0]
+    with pytest.raises(ValueError):
+        skale.manager.node_exit(exit_node_id, wait_for=True)
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+    new_node_id = skale.nodes_data.node_name_to_index(name)
+    tx_res = skale.manager.node_exit(exit_node_id, wait_for=True)
+    assert tx_res.receipt['status'] == 1
+    assert skale.nodes_data.get_node_status(exit_node_id) == 2
+
+    assert len(skale.schains_data.get_schain_ids_for_node(exit_node_id)) == 0
+    assert len(skale.schains_data.get_schain_ids_for_node(new_node_id)) == 1
+
+    history = skale.schains_data.get_leaving_history(exit_node_id)
+    assert len(history) == 1
+    assert history[0][1]
+    assert skale.schains_data.get(history[0][0])['name'] == schain_name
