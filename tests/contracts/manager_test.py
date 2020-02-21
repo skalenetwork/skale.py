@@ -279,3 +279,22 @@ def test_one_schain_node_exit(skale):
     assert len(history) == 1
     assert history[0][1]
     assert skale.schains_data.get(history[0][0])['name'] == schain_name
+
+
+def test_get_rotation(skale):
+    schains_ids = skale.schains_data.get_all_schains_ids()
+    schain_name = skale.schains_data.get(schains_ids[0])['name']
+    exit_node_id = skale.schains_data.get_node_ids_for_schain(schain_name)[0]
+
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+    new_node_id = skale.nodes_data.node_name_to_index(name)
+    skale.manager.node_exit(exit_node_id, wait_for=True)
+    rotation = skale.schains_data.get_rotation(schain_name)
+    history = skale.schains_data.get_leaving_history(exit_node_id)
+    assert rotation['leaving_node'] == exit_node_id
+    assert rotation['new_node'] == new_node_id
+    assert rotation['finish_ts'] == history[0][1]
+
+    last_rotation = skale.schains_data.get_last_rotation_id(schain_name)
+    assert rotation['rotation_id'] == last_rotation
