@@ -248,3 +248,11 @@ def test_create_node_status_0(skale):
         ):
             with pytest.raises(TransactionFailedError):
                 skale.manager.create_node(ip, port, name, wait_for=True)
+
+
+def test_empty_node_exit(skale):
+    skale.manager.node_exit()
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+    node_idx = skale.nodes_data.node_name_to_index(name)
+    skale.manager.node_exit(node_idx, wait_for=True)
