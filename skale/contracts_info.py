@@ -44,3 +44,10 @@ CONTRACTS_INFO = [
                  ContractTypes.DATA, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
 ]
+
+
+def get_contracts_info():
+    contracts_info = {}
+    for contract_info in CONTRACTS_INFO:
+        contracts_info[contract_info.name] = contract_info
+    return contracts_info

@@ -17,7 +17,6 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE base contract class """
-
 from functools import wraps
 
 from web3 import Web3
@@ -47,9 +46,6 @@ def transaction_method(transaction):
 class BaseContract:
     def __init__(self, skale, name, address, abi):
         self.skale = skale
-        self.web3 = skale.web3
         self.name = name
         self.address = Web3.toChecksumAddress(address)
-        self.abi = abi
-        self.contract = self.web3.eth.contract(
-            address=self.address, abi=self.abi)
+        self.contract = skale.web3.eth.contract(address=self.address, abi=abi)

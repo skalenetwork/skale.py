@@ -10,7 +10,6 @@ from skale.utils.web3_utils import init_web3
 from skale.contracts import BaseContract
 from skale.contracts.functionality.nodes import Nodes
 from skale.contracts_info import CONTRACTS_INFO
-from skale.utils.contract_info import ContractInfo
 from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 
 
@@ -18,10 +17,6 @@ def test_lib_init():
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
     skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
-
-    lib_contracts_info = skale._Skale__contracts_info
-    for contract_info in CONTRACTS_INFO:
-        assert isinstance(lib_contracts_info[contract_info.name], ContractInfo)
 
     lib_contracts = skale._Skale__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO)
@@ -31,9 +26,6 @@ def test_lib_init():
         assert lib_contract.address is not None
         assert int(lib_contract.address, 16) != 0
         assert web3.eth.getCode(lib_contract.address)
-        assert lib_contract.abi is not None
-
-    assert skale.abi is not None
 
     provider = skale.web3.provider
     assert isinstance(provider, WebsocketProvider)
