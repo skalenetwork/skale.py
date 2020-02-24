@@ -38,6 +38,5 @@ jobs:
       run: |
         bash ./scripts/run_tests.sh
     - name: Codecov
-    - name: Codecov
       run: |
         codecov -t $CODECOV_TOKEN
