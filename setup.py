@@ -14,7 +14,7 @@ extras_require = {
         "bumpversion==0.5.3",
         "pytest==5.3.5",
         "click==7.0",
-        "twine==1.12.1",
+        "twine==3.1.1",
         "mock==4.0.1",
         "when-changed",
         "Random-Word==1.0.4",
