@@ -89,8 +89,6 @@ class Skale:
     def add_lib_contract(self, name, contract_class, abi, contract_address=None):
         address = contract_address or self.get_contract_address_by_name(abi, name)
         logger.info(f'Initialized: {name} at {address}')
-        contract_abi = self.get_contract_abi_by_name(abi, name)
-        self.add_contract(name, contract_class(self, name, address, contract_abi))
         if name == 'dkg':  # todo: tmp fix
             contract_abi = self.get_contract_abi_by_name(abi, 'd_k_g')
         else:
