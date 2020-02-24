@@ -39,14 +39,13 @@ WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 def get_provider(endpoint, timeout=10, request_kwargs={}):
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
-        kwargs = request_kwargs
-        if not kwargs:
-            kwargs = {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
+        kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
         return WebsocketProvider(endpoint, websocket_timeout=timeout,
                                  websocket_kwargs=kwargs)
 
     if scheme == 'http' or scheme == 'https':
-        return HTTPProvider(endpoint, {'timeout': timeout})
+        kwargs = {'timeout': timeout, **request_kwargs}
+        return HTTPProvider(endpoint, request_kwargs=kwargs)
 
     raise Exception(
         'Wrong endpoint option.'
