@@ -1,17 +1,16 @@
 name: Build and publish
-on: push  # todo: tmp
-# on:
-#   pull_request:
-#     types: [closed]
-#     branches:
-#       - master
-#       - develop
-#       - beta
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+      - develop
+      - beta
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # if: github.event.pull_request.merged
+    if: github.event.pull_request.merged
     strategy:
       matrix:
         python-version: [3.7]
