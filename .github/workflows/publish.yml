@@ -36,7 +36,7 @@ jobs:
         pip install -e .[dev]
     - name: Build library
       run: |
-        export VERSION=$(BRANCH=$TRAVIS_BRANCH bash ./scripts/calculate_version.sh)
+        export VERSION=$(BRANCH=${GITHUB_REF##*/} bash ./scripts/calculate_version.sh)
         echo "Version $VERSION"
         bash ./scripts/build.sh
     - name: Checkout code
