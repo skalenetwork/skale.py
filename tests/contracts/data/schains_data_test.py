@@ -107,4 +107,5 @@ def test_get_rotation(skale):
         'leaving_node': 0,
         'new_node': 0,
         'finish_ts': 0,
+        'rotation_id': 0
     }

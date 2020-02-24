@@ -142,6 +142,17 @@ def create_schain(skale):
     check_receipt(tx_res.receipt)
 
 
+def clean_and_restart(skale):
+    cleanup_nodes_schains(skale)
+    try:
+        setup_validator(skale)
+        create_nodes(skale)
+        create_schain(skale)
+    except Exception as err:
+        cleanup_nodes_schains(skale)
+        raise err
+
+
 @click.command()
 @click.option('--cleanup-only', is_flag=True)
 def prepare_data(cleanup_only):
