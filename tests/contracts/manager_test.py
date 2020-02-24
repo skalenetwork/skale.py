@@ -10,6 +10,7 @@ from skale.utils.constants import GAS
 from skale.utils.web3_utils import (private_key_to_public, TransactionFailedError)
 
 from tests.utils import generate_random_node_data, generate_random_schain_data
+from tests.prepare_data import clean_and_restart
 
 
 def test_create_node_data_to_bytes(skale):
@@ -280,6 +281,8 @@ def test_one_schain_node_exit(skale):
     assert history[0][1]
     assert skale.schains_data.get(history[0][0])['name'] == schain_name
 
+    clean_and_restart(skale)
+
 
 def test_get_rotation(skale):
     schains_ids = skale.schains_data.get_all_schains_ids()
@@ -298,3 +301,5 @@ def test_get_rotation(skale):
 
     last_rotation = skale.schains_data.get_last_rotation_id(schain_name)
     assert rotation['rotation_id'] == last_rotation
+
+    clean_and_restart(skale)
