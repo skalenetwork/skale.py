@@ -7,15 +7,15 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        "flake8==3.7.8",
+        "flake8==3.7.9",
         "isort>=4.2.15,<4.3.22",
     ],
     'dev': [
         "bumpversion==0.5.3",
-        "pytest==5.2.1",
+        "pytest==5.3.5",
         "click==7.0",
         "twine==1.12.1",
-        "mock==3.0.5",
+        "mock==4.0.1",
         "when-changed",
         "Random-Word==1.0.4",
         "pytest-cov==2.8.1"
