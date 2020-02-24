@@ -23,6 +23,8 @@ elif [[ $BRANCH == 'develop' ]]; then
     POSTFIX="dev"
 elif [[ $BRANCH == 'beta' ]]; then
     POSTFIX="b"
+elif [[ $BRANCH == 'fix/restore-validators-functionality-contract' ]]; then # todo: tmp
+    POSTFIX="dev"
 else
     echo "Branch is not valid, couldn't calculate version"
     exit 1
