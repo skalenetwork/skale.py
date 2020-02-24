@@ -16,10 +16,13 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE validator functions """
 
-from skale.contracts import BaseContract
+from enum import Enum
 
 
-class Validators(BaseContract):
-    pass
+class DelegationStatus(Enum):
+    PROPOSED = 0
+    ACCEPTED = 1
+    DELEGATED = 2
+    ENDING_DELEGATED = 3
+    COMPLETED = 4
