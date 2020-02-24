@@ -29,6 +29,10 @@ from web3.exceptions import TransactionNotFound
 logger = logging.getLogger(__name__)
 
 
+class TransactionFailedError(Exception):
+    pass
+
+
 def get_provider(endpoint):
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
@@ -54,7 +58,22 @@ def get_eth_nonce(web3, address):
     return web3.eth.getTransactionCount(address)
 
 
-def wait_receipt(web3, tx, retries=10, timeout=5):
+def wait_for_receipt_by_blocks(web3, tx, timeout=4, blocks_to_wait=50):
+    previous_block = web3.eth.blockNumber
+    current_block = previous_block
+    while current_block <= previous_block + blocks_to_wait:
+        try:
+            receipt = get_receipt(web3, tx)
+        except TransactionNotFound:
+            receipt = None
+        if receipt is not None:
+            return receipt
+        current_block = web3.eth.blockNumber
+        sleep(timeout)
+    raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
+
+
+def wait_receipt(web3, tx, retries=30, timeout=5):
     for _ in range(0, retries):
         try:
             receipt = get_receipt(web3, tx)
@@ -66,9 +85,12 @@ def wait_receipt(web3, tx, retries=10, timeout=5):
     raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
 
 
-def check_receipt(receipt):
+def check_receipt(receipt, raise_error=True):
     if receipt['status'] != 1:  # pragma: no cover
-        raise ValueError("Transaction failed, see receipt", receipt)
+        if raise_error:
+            raise ValueError("Transaction failed, see receipt", receipt)
+        else:
+            return False
     return True
 
 

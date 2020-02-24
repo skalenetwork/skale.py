@@ -17,7 +17,16 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-# flake8: noqa: F401
+from enum import Enum
 
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
+
+class SkaledPorts(Enum):
+    PROPOSAL = 0
+    CATCHUP = 1
+    WS_JSON = 2
+    HTTP_JSON = 3
+    BINARY_CONSENSUS = 4
+    ZMQ_BROADCAST = 5
+    MTA = 6
+    WSS_JSON = 7
+    HTTPS_JSON = 8

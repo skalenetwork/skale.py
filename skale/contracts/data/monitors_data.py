@@ -16,8 +16,12 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
+""" Get SKALE validator data """
+from web3 import Web3
+from skale.contracts import BaseContract
 
-# flake8: noqa: F401
 
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
+class MonitorsData(BaseContract):
+    def get_checked_array(self, node_id):
+        node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
+        return self.contract.functions.getCheckedArray(node_id_bytes).call()

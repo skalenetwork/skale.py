@@ -17,7 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-# flake8: noqa: F401
+from skale.contracts import BaseContract
 
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
+
+class MonitorsFunctionality(BaseContract):
+    """Wrapper for MonitorsFunctionality.sol functions"""

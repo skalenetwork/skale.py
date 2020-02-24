@@ -20,6 +20,8 @@
 import logging
 
 from web3 import Web3
+from web3.middleware import geth_poa_middleware
+
 import skale.contracts as contracts
 from skale.wallets import BaseWallet
 from skale.contracts_info import CONTRACTS_INFO
@@ -45,6 +47,7 @@ class Skale:
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
         self.web3 = Web3(provider)
+        self.web3.middleware_onion.inject(geth_poa_middleware, layer=0)  # todo: may cause issues
         self.abi = get_abi(abi_filepath)
         self.__contracts = {}
         self.__contracts_info = {}
@@ -53,6 +56,10 @@ class Skale:
             self.wallet = wallet
         self.__init_contracts_info()
         self.__init_contracts()
+
+    @property
+    def gas_price(self):
+        return self.web3.eth.gasPrice
 
     @property
     def wallet(self):
@@ -94,9 +101,13 @@ class Skale:
             self.abi, name)
         logger.info(f'Initialized: {name} at {address}')
         abi = self.get_contract_abi_by_name(self.abi, name)
+        if name == 'dkg':  # todo: tmp fix
+            abi = self.get_contract_abi_by_name(self.abi, 'd_k_g')
         self.add_contract(name, contract_class(self, name, address, abi))
 
     def get_contract_address_by_name(self, abi, name):
+        if name == 'dkg':  # todo: tmp fix
+            return abi.get(f'skale_d_k_g_address')
         return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
 
     def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names

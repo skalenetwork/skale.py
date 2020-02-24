@@ -18,12 +18,13 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from sgx import SgxClient
+from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.common import BaseWallet
 
 
 class SgxWallet(BaseWallet):
-    def __init__(self, sgx_endpoint, web3, key_name=None):
-        self.sgx_client = SgxClient(sgx_endpoint)
+    def __init__(self, sgx_endpoint, web3, key_name=None, path_to_cert=None):
+        self.sgx_client = SgxClient(sgx_endpoint, path_to_cert=path_to_cert)
         self._web3 = web3
         if key_name is None:
             self._key_name, self._address, self._public_key = self._generate()
@@ -31,12 +32,14 @@ class SgxWallet(BaseWallet):
             self._key_name = key_name
             self._address, self._public_key = self._get_account(key_name)
 
-    def sign(self, tx):
-        return self.sgx_client.sign(tx, self.key_name)
+    def sign(self, tx_dict):
+        if tx_dict.get('nonce') is None:
+            tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
+        return self.sgx_client.sign(tx_dict, self.key_name)
 
-    def sign_and_send(self, tx):
-        signed_tx = self.sgx_client.sign(tx, self.key_name)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    def sign_and_send(self, tx_dict) -> str:
+        signed_tx = self.sign(tx_dict)
+        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     @property
     def address(self):

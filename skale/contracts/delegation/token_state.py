@@ -17,16 +17,17 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from enum import Enum
+from skale.contracts import BaseContract, transaction_method
+
+from skale.transactions.tools import post_transaction
+from skale.dataclasses.tx_res import TxRes
+from skale.utils.constants import GAS
 
 
-class SkaledPorts(Enum):
-    PROPOSAL = 0
-    CATCHUP = 1
-    HTTP_JSON = 2
-    WS_JSON = 3
-    BINARY_CONSENSUS = 4
-    ZMQ_BROADCAST = 5
-    MTA = 6
-    HTTPS_JSON = 7
-    WSS_JSON = 8
+class TokenState(BaseContract):
+    """Wrapper for TokenState.sol functions"""
+
+    @transaction_method
+    def _skip_transition_delay(self, delegation_id: int) -> TxRes:  # internal function
+        func = self.contract.functions.skipTransitionDelay(delegation_id)
+        return post_transaction(self.skale.wallet, func, GAS['skip_transition_delay'])

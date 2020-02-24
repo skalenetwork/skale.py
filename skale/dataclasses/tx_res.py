@@ -17,7 +17,25 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-# flake8: noqa: F401
 
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
+class TxRes():
+    def __init__(self, tx_hash, data=None, receipt=None):
+        self._hash = tx_hash
+        self._data = data
+        self._receipt = receipt
+
+    @property
+    def hash(self):
+        return self._hash
+
+    @property
+    def data(self):
+        return self._data
+
+    @property
+    def receipt(self):
+        return self._receipt
+
+    @receipt.setter
+    def receipt(self, receipt: dict) -> None:
+        self._receipt = receipt

@@ -19,21 +19,27 @@
 
 import logging
 
+from skale.dataclasses.tx_res import TxRes
 from skale.utils.web3_utils import get_eth_nonce
 
 logger = logging.getLogger(__name__)
 
 
-def build_tx_dict(method, gas_amount, nonce=None):
-    return method.buildTransaction({
-        'gas': gas_amount,
+def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
+    tx_dict_fields = {
+        'gas': gas_limit,
         'nonce': nonce
-    })
+    }
+    if gas_price is not None:
+        tx_dict_fields.update({'gasPrice': gas_price})
+
+    return method.buildTransaction(tx_dict_fields)
 
 
-def post_transaction(wallet, method, gas_amount, nonce=None):
-    tx_dict = build_tx_dict(method, gas_amount, nonce)
-    return wallet.sign_and_send(tx_dict)
+def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> TxRes:
+    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
+    tx_hash = wallet.sign_and_send(tx_dict)
+    return TxRes(tx_hash=tx_hash)
 
 
 def sign_and_send(web3, method, gas_amount, wallet):

@@ -17,31 +17,43 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts import BaseContract
+from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
 
 
+def dkg_gas_price(gas_price):
+    return gas_price * 5 // 4
+
+
 class DKG(BaseContract):
+    @transaction_method
     def broadcast(self, group_index, node_index,
                   verification_vector, secret_key_conribution):
         op = self.contract.functions.broadcast(group_index, node_index,
                                                verification_vector,
                                                secret_key_conribution)
-        return post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'])
+        return post_transaction(self.skale.wallet, op, GAS['dkg_broadcast'],
+                                dkg_gas_price(self.skale.gas_price))
 
+    @transaction_method
     def response(self, group_index, from_node_index,
                  secret_number, multiplied_share):
         op = self.contract.functions.response(group_index, from_node_index,
                                               secret_number,
                                               multiplied_share)
-        return post_transaction(self.skale.wallet, op, GAS['dkg_response'])
+        return post_transaction(self.skale.wallet, op, GAS['dkg_response'],
+                                dkg_gas_price(self.skale.gas_price))
 
-    def allright(self, group_index, from_node_index):
-        op = self.contract.functions.allright(group_index, from_node_index)
-        return post_transaction(self.skale.wallet, op, GAS['dkg_allright'])
+    @transaction_method
+    def alright(self, group_index, from_node_index):
+        op = self.contract.functions.alright(group_index, from_node_index)
+        return post_transaction(self.skale.wallet, op, GAS['dkg_alright'],
+                                dkg_gas_price(self.skale.gas_price))
 
+    @transaction_method
     def complaint(self, group_index, from_node_index, to_node_index):
         op = self.contract.functions.complaint(group_index, from_node_index,
                                                to_node_index)
-        return post_transaction(self.skale.wallet, op, GAS['dkg_complaint'])
+        return post_transaction(self.skale.wallet, op, GAS['dkg_complaint'],
+                                dkg_gas_price(self.skale.gas_price))
