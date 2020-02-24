@@ -32,22 +32,20 @@ def test_lib_init():
         assert int(lib_contract.address, 16) != 0
         assert web3.eth.getCode(lib_contract.address)
         assert lib_contract.abi is not None
-        assert skale.web3.provider.websocket_timeout == 20
-        assert skale.web3.provider.conn.websocket_kwargs == {
-            'max_size': 5 * 1024 * 1024
-        }
+        assert skale.web3.provider._request_kwargs == {'timeout': 20}
 
     assert skale.abi is not None
 
-    provider = skale.web3.provider
-    assert isinstance(provider, WebsocketProvider) or isinstance(provider, HTTPProvider)
+    isinstance(skale.web3.provider, HTTPProvider)
 
-    http_endpoint = 'http://localhost:8080'
+    ws_endpoint = 'ws://localhost:8080'
     with mock.patch.object(Skale, '_Skale__init_contracts'):
-        skale = Skale(http_endpoint, TEST_ABI_FILEPATH, wallet)
-        provider = skale.web3.provider
-        assert provider._request_kwargs == {'timeout': 30}
-        assert isinstance(provider, HTTPProvider)
+        skale = Skale(ws_endpoint, TEST_ABI_FILEPATH, wallet)
+        assert skale.web3.provider.websocket_timeout == 30
+        assert skale.web3.provider.conn.websocket_kwargs == {
+            'max_size': 5 * 1024 * 1024
+        }
+        assert isinstance(skale.web3.provider, WebsocketProvider)
 
     file_endpoint = 'file://local_file:1001'
     with pytest.raises(Exception):
