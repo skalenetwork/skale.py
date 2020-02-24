@@ -17,7 +17,7 @@ from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH
 def test_lib_init():
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet, provider_timeout=20)
 
     lib_contracts_info = skale._Skale__contracts_info
     for contract_info in CONTRACTS_INFO:
@@ -32,6 +32,10 @@ def test_lib_init():
         assert int(lib_contract.address, 16) != 0
         assert web3.eth.getCode(lib_contract.address)
         assert lib_contract.abi is not None
+        assert skale.web3.provider.websocket_timeout == 20
+        assert skale.web3.provider.conn.websocket_kwargs == {
+            'max_size': 5 * 1024 * 1024
+        }
 
     assert skale.abi is not None
 
@@ -42,6 +46,7 @@ def test_lib_init():
     with mock.patch.object(Skale, '_Skale__init_contracts'):
         skale = Skale(http_endpoint, TEST_ABI_FILEPATH, wallet)
         provider = skale.web3.provider
+        assert provider._request_kwargs == {'timeout': 30}
         assert isinstance(provider, HTTPProvider)
 
     file_endpoint = 'file://local_file:1001'
