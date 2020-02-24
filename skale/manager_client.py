@@ -41,9 +41,9 @@ def spawn_skale_lib(skale):
 
 
 class Skale:
-    def __init__(self, endpoint, abi_filepath, wallet=None):
+    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30):
         logger.info(f'Init skale-py, connecting to {endpoint}')
-        provider = get_provider(endpoint)
+        provider = get_provider(endpoint, timeout=provider_timeout)
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
         self.web3 = Web3(provider)
