@@ -34,6 +34,8 @@ CONTRACTS_INFO = [
                  ContractTypes.API, True),
     ContractInfo('schains', 'SchainsFunctionality', contracts.SChains,
                  ContractTypes.API, True),
+    ContractInfo('monitors', 'MonitorsFunctionality', contracts.MonitorsFunctionality,
+                 ContractTypes.API, True),
     ContractInfo('nodes_data', 'NodesData', contracts.NodesData,
                  ContractTypes.DATA, True),
     ContractInfo('schains_data', 'SchainsData', contracts.SChainsData,
