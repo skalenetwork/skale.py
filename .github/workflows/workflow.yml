@@ -6,7 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.7]
+    env:
+      ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
+      ENDPOINT: ${{ secrets.ENDPOINT }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
