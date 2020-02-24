@@ -26,3 +26,9 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 .
+    - name: Deploy manager contracts
+      run: |
+        bash ./scripts/deploy_manager.sh
+    - name: Run tests
+      run: |
+        bash ./scripts/run_tests.sh
