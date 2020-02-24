@@ -40,6 +40,7 @@ jobs:
         export BRANCH=${GITHUB_REF##*/}
         echo "Branch $BRANCH"
         export VERSION=$(bash ./scripts/calculate_version.sh)
+        ::set-env name=VERSION::$VERSION
         echo "Version $VERSION"
         bash ./scripts/build.sh
     - name: Checkout code
