@@ -43,6 +43,9 @@ jobs:
         echo "::set-env name=VERSION::$VERSION"
         echo "Version $VERSION"
         bash ./scripts/build.sh
+    - name: Publish to pip
+      run: |
+        bash ./scripts/publish.sh
     - name: Checkout code
       uses: actions/checkout@master
     - name: Create Release

@@ -10,6 +10,7 @@ jobs:
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       MANAGER_BRANCH: "delegation-manual"
     steps:
     - uses: actions/checkout@v2
@@ -36,3 +37,7 @@ jobs:
     - name: Run tests
       run: |
         bash ./scripts/run_tests.sh
+    - name: Codecov
+    - name: Codecov
+      run: |
+        codecov -t $CODECOV_TOKEN
