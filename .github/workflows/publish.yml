@@ -19,6 +19,8 @@ jobs:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
       MANAGER_BRANCH: "delegation-manual"
+      PIP_USERNAME: ${{ secrets.PIP_USERNAME }}
+      PIP_PASSWORD: ${{ secrets.PIP_PASSWORD }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
