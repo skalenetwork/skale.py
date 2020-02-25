@@ -16,7 +16,7 @@ from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH
 def test_lib_init():
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
+    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet, provider_timeout=20)
 
     lib_contracts = skale._Skale__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO)
@@ -26,15 +26,18 @@ def test_lib_init():
         assert lib_contract.address is not None
         assert int(lib_contract.address, 16) != 0
         assert web3.eth.getCode(lib_contract.address)
+        assert skale.web3.provider._request_kwargs == {'timeout': 20}
 
-    provider = skale.web3.provider
-    assert isinstance(provider, WebsocketProvider) or isinstance(provider, HTTPProvider)
+    isinstance(skale.web3.provider, HTTPProvider)
 
-    http_endpoint = 'http://localhost:8080'
+    ws_endpoint = 'ws://localhost:8080'
     with mock.patch.object(Skale, '_Skale__init_contracts'):
-        skale = Skale(http_endpoint, TEST_ABI_FILEPATH, wallet)
-        provider = skale.web3.provider
-        assert isinstance(provider, HTTPProvider)
+        skale = Skale(ws_endpoint, TEST_ABI_FILEPATH, wallet)
+        assert skale.web3.provider.websocket_timeout == 30
+        assert skale.web3.provider.conn.websocket_kwargs == {
+            'max_size': 5 * 1024 * 1024
+        }
+        assert isinstance(skale.web3.provider, WebsocketProvider)
 
     file_endpoint = 'file://local_file:1001'
     with pytest.raises(Exception):
