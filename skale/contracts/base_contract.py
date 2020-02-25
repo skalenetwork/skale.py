@@ -34,7 +34,7 @@ def transaction_method(transaction):
     @wraps(transaction_method)
     def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1, **kwargs):
         for retry in range(retries):
-            logging.info(
+            logger.info(
                 f'transaction_method: {transaction.__name__}, try {retry+1}/{retries}, '
                 f'wallet: {self.skale.wallet.__class__.__name__}, '
                 f'sender: {self.skale.wallet.address}'
@@ -61,9 +61,6 @@ def transaction_method(transaction):
 class BaseContract:
     def __init__(self, skale, name, address, abi):
         self.skale = skale
-        self.web3 = skale.web3
         self.name = name
         self.address = Web3.toChecksumAddress(address)
-        self.abi = abi
-        self.contract = self.web3.eth.contract(
-            address=self.address, abi=self.abi)
+        self.contract = skale.web3.eth.contract(address=self.address, abi=abi)
