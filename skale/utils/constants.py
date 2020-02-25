@@ -33,7 +33,7 @@ GAS = {
     'set_periods': 200000,
     'delete_node': 6000000,
     'delete_node_by_root': 6000000,
-    'delete_schain': 6000000,
+    'delete_schain': 8000000,
     'dkg_broadcast': 8000000,
     'dkg_response': 8000000,
     'dkg_alright': 1000000,
