@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def transaction_method(transaction):
-    @wraps(transaction_method)
+    @wraps(transaction)
     def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1, **kwargs):
         for retry in range(retries):
             logger.info(
