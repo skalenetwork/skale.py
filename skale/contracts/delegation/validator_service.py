@@ -26,7 +26,8 @@ from skale.utils.constants import GAS
 
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
-    'registration_time', 'minimum_delegation_amount', 'last_bounty_collection_month'
+    'registration_time', 'minimum_delegation_amount', 'last_bounty_collection_month',
+    'trusted'
 ]
 
 
@@ -48,7 +49,9 @@ class ValidatorService(BaseContract):
         :returns: Validator info
         :rtype: dict
         """
-        return self.__get_raw(_id)
+        validator = self.__get_raw(_id)
+        validator.append(self._is_validator_trusted(_id))
+        return validator
 
     def get_with_id(self, _id) -> dict:
         """Returns validator info with ID.
@@ -68,17 +71,19 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.numberOfValidators().call()
 
-    def ls(self):
+    def ls(self, trusted_only=False):
         """Returns list of registered validators.
 
         :returns: List of validators
         :rtype: list
         """
         number_of_validators = self.number_of_validators()
-        validators = [
-            self.get_with_id(val_id)
-            for val_id in range(1, number_of_validators+1)
-        ]
+        validators = []
+        for val_id in range(1, number_of_validators + 1):
+            validator = self.get_with_id(val_id)
+            if trusted_only and not validator['trusted']:
+                continue
+            validators.append(validator)
         return validators
 
     def get_linked_addresses_by_validator_address(self, address: str) -> list:
