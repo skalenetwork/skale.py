@@ -78,12 +78,13 @@ class ValidatorService(BaseContract):
         :rtype: list
         """
         number_of_validators = self.number_of_validators()
-        validators = []
-        for val_id in range(1, number_of_validators + 1):
-            validator = self.get_with_id(val_id)
-            if trusted_only and not validator['trusted']:
-                continue
-            validators.append(validator)
+        validators = [
+            self.get_with_id(val_id)
+            for val_id in self.get_trusted_validators_id()
+        ] if trusted_only else [
+            self.get_with_id(val_id)
+            for val_id in range(1, number_of_validators+1)
+        ]
         return validators
 
     def get_linked_addresses_by_validator_address(self, address: str) -> list:
@@ -129,6 +130,14 @@ class ValidatorService(BaseContract):
         :rtype: int
         """
         return self.contract.functions.getValidatorId(validator_address).call()
+
+    def get_trusted_validators_id(self) -> list:
+        """Returns list of trusted validators id.
+
+        :returns: List of trusted validators id
+        :rtype: list
+        """
+        return self.contract.functions.getTrustedValidators().call()
 
     @transaction_method
     def _enable_validator(self, validator_id: int) -> TxRes:
