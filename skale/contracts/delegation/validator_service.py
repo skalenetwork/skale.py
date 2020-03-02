@@ -26,8 +26,7 @@ from skale.utils.constants import GAS
 
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
-    'registration_time', 'minimum_delegation_amount', 'last_bounty_collection_month',
-    'trusted'
+    'registration_time', 'minimum_delegation_amount', 'trusted'
 ]
 
 
