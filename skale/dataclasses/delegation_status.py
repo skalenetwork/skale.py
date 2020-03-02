@@ -23,6 +23,8 @@ from enum import Enum
 class DelegationStatus(Enum):
     PROPOSED = 0
     ACCEPTED = 1
-    DELEGATED = 2
-    ENDING_DELEGATED = 3
-    COMPLETED = 4
+    CANCELED = 2
+    REJECTED = 3
+    DELEGATED = 4
+    UNDELEGATION_REQUESTED = 5
+    COMPLETED = 6

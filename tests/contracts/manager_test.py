@@ -9,7 +9,9 @@ import skale.utils.helper as helper
 from skale.utils.constants import GAS
 from skale.utils.web3_utils import (private_key_to_public, TransactionFailedError)
 
-from tests.utils import generate_random_node_data, generate_random_schain_data
+from skale.utils.contracts_provision.main import (
+    generate_random_node_data, generate_random_schain_data
+)
 
 
 def test_create_node_data_to_bytes(skale):
