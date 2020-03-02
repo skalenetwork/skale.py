@@ -47,6 +47,7 @@ GAS = {
     'unlink_node_address': 1000000,
     'cancel_pending_delegation': 1000000,
     'withdraw_bounty': 3000000,
+    'withdraw_fee': 3000000,
 
     'skip_transition_delay': 1000000,
     'set_msr': 200000

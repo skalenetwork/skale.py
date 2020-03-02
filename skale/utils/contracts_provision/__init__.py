@@ -17,8 +17,18 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts import BaseContract
+DEFAULT_NODE_NAME = 'test_node'
+SECOND_NODE_NAME = 'test_node_2'
 
+DEFAULT_SCHAIN_NAME = 'test_schain'
 
-class TokenState(BaseContract):
-    """Wrapper for TokenState.sol functions"""
+D_VALIDATOR_ID = 1
+D_VALIDATOR_NAME = 'test'
+D_VALIDATOR_DESC = 'test'
+D_VALIDATOR_FEE = 10
+D_VALIDATOR_MIN_DEL = 1000
+
+D_DELEGATION_PERIOD = 3
+D_DELEGATION_INFO = 'test'
+
+MONTH_IN_SECONDS = (60 * 60 * 24 * 31) + 100
