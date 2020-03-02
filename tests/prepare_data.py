@@ -10,9 +10,9 @@ from skale.utils.web3_utils import check_receipt
 from tests.constants import (
     DEFAULT_SCHAIN_NAME, DEFAULT_NODE_NAME, ENDPOINT, SECOND_NODE_NAME, TEST_ABI_FILEPATH,
     D_VALIDATOR_ID, ETH_PRIVATE_KEY, D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE,
-    D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO
+    D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO, MONTH_IN_SECONDS
 )
-from tests.utils import generate_random_node_data, generate_random_schain_data
+from tests.utils import generate_random_node_data, generate_random_schain_data, skip_evm_time
 
 
 def cleanup_nodes_schains(skale):
@@ -37,12 +37,13 @@ def setup_validator(skale):
     if not validator_exist(skale):
         create_validator(skale)
         enable_validator(skale)
-    delegation_id = len(skale.delegation_service.get_all_delegations_by_validator(
-        skale.wallet.address))
+    else:
+        print('Skipping default validator creation')
+    delegation_id = skale.delegation_controller._get_delegation_ids_len_by_validator(D_VALIDATOR_ID)
     set_test_msr(skale)
     delegate_to_validator(skale)
     accept_pending_delegation(skale, delegation_id)
-    skip_delegation_delay(skale, delegation_id)
+    skip_evm_time(skale.web3, MONTH_IN_SECONDS)
 
 
 def link_address_to_validator(skale):
@@ -65,7 +66,7 @@ def skip_delegation_delay(skale, delegation_id):
 
 def accept_pending_delegation(skale, delegation_id):
     print(f'Accepting delegation with ID: {delegation_id}')
-    tx_res = skale.delegation_service.accept_pending_delegation(
+    tx_res = skale.delegation_controller.accept_pending_delegation(
         delegation_id=delegation_id,
         wait_for=True
     )
@@ -86,7 +87,7 @@ def set_test_msr(skale):
 
 def delegate_to_validator(skale):
     print(f'Delegating tokens to validator ID: {D_VALIDATOR_ID}')
-    tx_res = skale.delegation_service.delegate(
+    tx_res = skale.delegation_controller.delegate(
         validator_id=D_VALIDATOR_ID,
         amount=get_test_delegation_amount(skale),
         delegation_period=D_DELEGATION_PERIOD,

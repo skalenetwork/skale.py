@@ -42,3 +42,9 @@ def response_mock(status_code=0, json_data=None, cookies=None,
 def request_mock(response_mock):
     request_mock = Mock(return_value=response_mock)
     return request_mock
+
+
+def skip_evm_time(web3, seconds) -> int:
+    res = web3.provider.make_request("evm_increaseTime", [seconds])
+    web3.provider.make_request("evm_mine", [])
+    return res['result']
