@@ -11,7 +11,7 @@ from skale.contracts import BaseContract
 from skale.contracts.functionality.nodes import Nodes
 from skale.contracts_info import CONTRACTS_INFO
 from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
-from tests.utils import skip_evm_time
+from skale.utils.contracts_provision.main import _skip_evm_time
 
 
 def test_lib_init():
@@ -62,6 +62,6 @@ def test_get_attr(skale):
 
 def test_skip_evm_time(skale):
     seconds = 10
-    old_time = skip_evm_time(skale.web3, 0)
-    new_time = skip_evm_time(skale.web3, seconds)
+    old_time = _skip_evm_time(skale.web3, 0)
+    new_time = _skip_evm_time(skale.web3, seconds)
     assert new_time == old_time + seconds

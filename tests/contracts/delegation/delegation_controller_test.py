@@ -6,7 +6,7 @@ from tests.constants import (NOT_EXISTING_ID, D_DELEGATION_ID, D_DELEGATION_INFO
                              MONTH_IN_SECONDS)
 
 from skale.contracts.delegation.delegation_controller import FIELDS
-from tests.utils import skip_evm_time
+from skale.utils.contracts_provision.main import _skip_evm_time
 
 
 def _get_number_of_delegations(skale):
@@ -91,7 +91,7 @@ def test_accept_pending_delegation(skale):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'ACCEPTED'
-    skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
 
 
 def test_cancel_pending_delegation(skale):
@@ -116,7 +116,7 @@ def test_cancel_pending_delegation(skale):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'CANCELED'
-    skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
 
 
 def _delegate_and_activate(skale):
@@ -134,7 +134,7 @@ def _delegate_and_activate(skale):
         delegation_ids[-1],
         wait_for=True
     )
-    skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
 
 
 def test_get_delegated_to_validator_now(skale):
