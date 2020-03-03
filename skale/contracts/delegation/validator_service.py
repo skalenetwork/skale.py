@@ -144,6 +144,12 @@ class ValidatorService(BaseContract):
         func = self.contract.functions.enableValidator(validator_id)
         return post_transaction(self.skale.wallet, func, GAS['enable_validator'])
 
+    @transaction_method
+    def _disable_validator(self, validator_id: int) -> TxRes:
+        """For internal usage only"""
+        func = self.contract.functions.disableValidator(validator_id)
+        return post_transaction(self.skale.wallet, func, GAS['disable_validator'])
+
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.trustedValidators(validator_id).call()

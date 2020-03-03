@@ -43,6 +43,7 @@ GAS = {
     'delegate': 3000000,
     'accept_pending_delegation': 1000000,
     'enable_validator': 1000000,
+    'disable_validator': 1000000,
     'link_node_address': 1000000,
     'unlink_node_address': 1000000,
     'cancel_pending_delegation': 1000000,
