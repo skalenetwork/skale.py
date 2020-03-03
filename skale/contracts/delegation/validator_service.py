@@ -79,7 +79,7 @@ class ValidatorService(BaseContract):
         number_of_validators = self.number_of_validators()
         validators = [
             self.get_with_id(val_id)
-            for val_id in self.get_trusted_validators_id()
+            for val_id in self.get_trusted_validator_ids()
         ] if trusted_only else [
             self.get_with_id(val_id)
             for val_id in range(1, number_of_validators+1)
@@ -130,7 +130,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorId(validator_address).call()
 
-    def get_trusted_validators_id(self) -> list:
+    def get_trusted_validator_ids(self) -> list:
         """Returns list of trusted validators id.
 
         :returns: List of trusted validators id
