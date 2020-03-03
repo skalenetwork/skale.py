@@ -37,6 +37,8 @@ def test_ls(skale):
     validators = skale.validator_service.ls()
     assert all([validator['name'] == D_VALIDATOR_NAME for validator in validators])
     assert n_of_validators == len(validators)
+    trusted_validators = skale.validator_service.ls(trusted_only=True)
+    assert trusted_validators == [v for v in validators if v['trusted']]
 
 
 def test_get_linked_addresses_by_validator_address(skale):
