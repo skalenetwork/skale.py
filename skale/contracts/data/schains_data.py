@@ -97,6 +97,9 @@ class SChainsData(BaseContract):
     def get_groups_public_key(self, group_index):
         return self.contract.functions.getGroupsPublicKey(group_index).call()
 
+    def get_previous_groups_public_key(self, group_index):
+        return self.contract.functions.getPreviousGroupsPublicKey(group_index).call()
+
     def get_leaving_history(self, node_id):
         return self.contract.functions.getLeavingHistory(node_id).call()
 
