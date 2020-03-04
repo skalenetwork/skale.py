@@ -138,11 +138,25 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getTrustedValidators().call()
 
+    def get_validator_node_indices(self, validator_id: int) -> list:
+        """Returns list of node indices to the validator
+
+        :returns: List of trusted node indices
+        :rtype: list
+        """
+        return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
+
     @transaction_method
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         func = self.contract.functions.enableValidator(validator_id)
         return post_transaction(self.skale.wallet, func, GAS['enable_validator'])
+
+    @transaction_method
+    def _disable_validator(self, validator_id: int) -> TxRes:
+        """For internal usage only"""
+        func = self.contract.functions.disableValidator(validator_id)
+        return post_transaction(self.skale.wallet, func, GAS['disable_validator'])
 
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""

@@ -97,6 +97,14 @@ def test_validator_id_by_address(skale):
     assert validator_id == D_VALIDATOR_ID
 
 
+def test_get_validator_node_indices(skale):
+    node_indices = skale.validator_service.get_validator_node_indices(
+        validator_id=D_VALIDATOR_ID
+    )
+    assert 0 in node_indices
+    assert 1 in node_indices
+
+
 def test_enable_validator(skale):
     _generate_new_validator(skale)
     latest_id = skale.validator_service.number_of_validators()
@@ -112,6 +120,30 @@ def test_enable_validator(skale):
 
     is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
     assert is_validator_trusted
+
+
+def test_disable_validator(skale):
+    _generate_new_validator(skale)
+    latest_id = skale.validator_service.number_of_validators()
+
+    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    assert not is_validator_trusted
+
+    tx_res = skale.validator_service._enable_validator(
+        validator_id=latest_id,
+        wait_for=True
+    )
+    check_receipt(tx_res.receipt)
+
+    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    assert is_validator_trusted
+
+    tx_res = skale.validator_service._disable_validator(
+        validator_id=latest_id,
+        wait_for=True
+    )
+    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    assert not is_validator_trusted
 
 
 def test_is_validator_trusted(skale):
