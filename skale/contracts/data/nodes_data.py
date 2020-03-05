@@ -28,8 +28,9 @@ from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'ip', 'publicIP', 'port', 'publicKey', 'start_date',
-    'leaving_date', 'last_reward_date', 'second_address'
+    'last_reward_date', 'finish_time', 'status', 'validator_id'
 ]
+
 COMPACT_FIELDS = ['schainIndex', 'nodeID', 'ip', 'basePort']
 SCHAIN_CONFIG_FIELDS = [
     'schainIndex', 'nodeID', 'nodeName', 'ip', 'basePort',
