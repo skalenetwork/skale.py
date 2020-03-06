@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.utils.contracts_provision import (
-    D_VALIDATOR_ID, MONTH_IN_SECONDS, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
+    D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
     DEFAULT_SCHAIN_NAME
 )
@@ -60,7 +60,6 @@ def setup_validator(skale):
     set_test_msr(skale)
     delegate_to_validator(skale)
     accept_pending_delegation(skale, delegation_id)
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
 
 
 def link_address_to_validator(skale):
