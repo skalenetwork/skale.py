@@ -10,7 +10,7 @@ from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAM
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
 TEST_NODE_IP = '10.10.10.10'
-NODE_INFO_LEN = 12
+NODE_INFO_LEN = 13
 SCHAIN_INFO_LEN = 4
 TEST_ACCOUNTS_LEN = 2  # because we're creating eveything from one account
 
@@ -46,6 +46,7 @@ def test_generate_node_info():
     assert isinstance(node_info['wallets'], dict)
     assert node_info['imaMessageProxySChain'] == ZERO_ADDRESS
     assert node_info['imaMessageProxyMainNet'] == ZERO_ADDRESS
+    assert node_info['rotateAfterBlock'] == 64
 
     assert len(node_info) == NODE_INFO_LEN
 
