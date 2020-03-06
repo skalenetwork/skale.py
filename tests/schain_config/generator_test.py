@@ -30,7 +30,8 @@ def test_generate_node_info():
         ima_mainnet=TEST_URL,
         ima_mp_schain=ZERO_ADDRESS,
         ima_mp_mainnet=ZERO_ADDRESS,
-        wallets={}
+        wallets={},
+        rotate_after_block=128
     ).to_config()
 
     assert isinstance(node_info['bindIP'], str)
@@ -46,7 +47,7 @@ def test_generate_node_info():
     assert isinstance(node_info['wallets'], dict)
     assert node_info['imaMessageProxySChain'] == ZERO_ADDRESS
     assert node_info['imaMessageProxyMainNet'] == ZERO_ADDRESS
-    assert node_info['rotateAfterBlock'] == 64
+    assert node_info['rotateAfterBlock'] == 128
 
     assert len(node_info) == NODE_INFO_LEN
 

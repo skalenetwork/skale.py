@@ -96,7 +96,8 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
         ima_mainnet=ima_mainnet,
         ima_mp_schain=ima_mp_schain,
         ima_mp_mainnet=ima_mp_mainnet,
-        wallets=wallets
+        wallets=wallets,
+        rotate_after_block=rotate_after_block
     ).to_config()
     schain_info = generate_schain_info(schain, schain_nodes)
 
