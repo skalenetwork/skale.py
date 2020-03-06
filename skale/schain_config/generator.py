@@ -78,7 +78,8 @@ def generate_schain_config(base_config, node_info, schain_info):
 
 
 def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, ima_mainnet=None,
-                                 ima_mp_schain=None, ima_mp_mainnet=None, wallets=None):
+                                 ima_mp_schain=None, ima_mp_mainnet=None, wallets=None,
+                                 rotate_after_block=64):
     node = skale.nodes_data.get(node_id)
     schain = skale.schains_data.get_by_name(schain_name)
 
@@ -107,4 +108,4 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
         base_config=base_config,
         node_info=node_info,
         schain_info=schain_info
-        )
+    )
