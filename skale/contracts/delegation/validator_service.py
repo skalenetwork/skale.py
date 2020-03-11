@@ -161,3 +161,47 @@ class ValidatorService(BaseContract):
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.trustedValidators(validator_id).call()
+
+    @transaction_method
+    def register_validator(self, name: str, description: str, fee_rate: int,
+                           min_delegation_amount: int) -> TxRes:
+        """Registers a new validator in the SKALE Manager contracts.
+
+        :param name:z Validator name
+        :type name: str
+        :param description: Validator description
+        :type description: str
+        :param fee_rate: Validator fee rate
+        :type fee_rate: int
+        :param min_delegation_amount: Minimal delegation amount
+        :type min_delegation_amount: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.registerValidator(
+            name, description, fee_rate, min_delegation_amount)
+        return post_transaction(self.skale.wallet, func, GAS['register_validator'])
+
+    @transaction_method
+    def link_node_address(self, node_address: str) -> TxRes:
+        """Link node address to your validator account.
+
+        :param node_address: Address of the node to link
+        :type node_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.linkNodeAddress(node_address)
+        return post_transaction(self.skale.wallet, func, GAS['link_node_address'])
+
+    @transaction_method
+    def unlink_node_address(self, node_address: str) -> TxRes:
+        """Unlink node address from your validator account.
+
+        :param node_address: Address of the node to unlink
+        :type node_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.unlinkNodeAddress(node_address)
+        return post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])

@@ -11,7 +11,7 @@ jobs:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      MANAGER_BRANCH: "delegation-v2"
+      MANAGER_BRANCH: "develop"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}

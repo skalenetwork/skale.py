@@ -15,6 +15,7 @@ docker run -d --network testnet -p 8545:8545 -p 8546:8546 \
     --name ganache trufflesuite/ganache-cli:v6.8.1-beta.0 \
     --account="0x${ETH_PRIVATE_KEY},100000000000000000000000000" -l 80000000
 
+docker pull skalenetwork/skale-manager:$MANAGER_BRANCH-latest
 docker run \
     -v $DIR/contracts_data:/usr/src/manager/data \
     --network testnet \

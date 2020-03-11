@@ -64,7 +64,7 @@ def setup_validator(skale):
 
 def link_address_to_validator(skale):
     print('Linking address to validator')
-    skale.delegation_service.link_node_address(
+    skale.validator_service.link_node_address(
         node_address=skale.wallet.address,
         wait_for=True
     )
@@ -116,7 +116,7 @@ def enable_validator(skale):
 
 def create_validator(skale):
     print('Creating default validator')
-    skale.delegation_service.register_validator(
+    skale.validator_service.register_validator(
         name=D_VALIDATOR_NAME,
         description=D_VALIDATOR_DESC,
         fee_rate=D_VALIDATOR_FEE,
