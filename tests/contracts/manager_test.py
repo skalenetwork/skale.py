@@ -7,28 +7,11 @@ from hexbytes import HexBytes
 
 import skale.utils.helper as helper
 from skale.utils.constants import GAS
-from skale.utils.web3_utils import (wait_receipt, private_key_to_public,
-                                    TransactionFailedError)
+from skale.utils.web3_utils import (private_key_to_public, TransactionFailedError)
 
-from tests.constants import DEFAULT_NODE_NAME, SECOND_NODE_NAME
-from tests.utils import generate_random_node_data, generate_random_schain_data
-
-
-def test_get_validated_array(skale):
-    # Temporary put this test here
-    # TODO: move it to validators_data_test.py
-    node_id_a = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
-    node_id_b = skale.nodes_data.node_name_to_index(SECOND_NODE_NAME)
-
-    validated_array = skale.validators_data.get_validated_array(node_id_a)
-    assert len(validated_array) == 1
-
-    node_in_bytes = validated_array[0]
-    validated_node_id = int.from_bytes(node_in_bytes[:14], byteorder='big')
-    assert validated_node_id == node_id_b
-
-    validated_array = skale.validators_data.get_validated_array(node_id_b)
-    assert validated_array == []
+from skale.utils.contracts_provision.main import (
+    generate_random_node_data, generate_random_schain_data
+)
 
 
 def test_create_node_data_to_bytes(skale):
@@ -158,18 +141,16 @@ def test_create_node_delete_node_by_root(skale):
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
 
     ip, public_ip, port, name = generate_random_node_data()
-    res = skale.manager.create_node(ip, port, name)
-    receipt = wait_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
+    tx_res = skale.manager.create_node(ip, port, name, wait_for=True)
+    assert tx_res.receipt['status'] == 1
 
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
 
     node_idx = skale.nodes_data.node_name_to_index(name)
 
-    res = skale.manager.delete_node_by_root(node_idx)
-    receipt = wait_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
+    tx_res = skale.manager.delete_node_by_root(node_idx, wait_for=True)
+    assert tx_res.receipt['status'] == 1
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
@@ -179,9 +160,8 @@ def test_create_deregister_node(skale):
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
 
     ip, public_ip, port, name = generate_random_node_data()
-    res = skale.manager.create_node(ip, port, name, public_ip)
-    receipt = wait_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
+    tx_res = skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+    assert tx_res.receipt['status'] == 1
 
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
@@ -190,9 +170,8 @@ def test_create_deregister_node(skale):
 
     # Deregister node
 
-    res = skale.manager.deregister(node_idx)
-    receipt = wait_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
+    tx_res = skale.manager.deregister(node_idx, wait_for=True)
+    assert tx_res.receipt['status'] == 1
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
@@ -203,10 +182,9 @@ def test_create_delete_schain(skale):
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes,
                                                   lifetime_seconds)
-    res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
-                                      price_in_wei, name)
-    receipt = wait_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
+    tx_res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
+                                         price_in_wei, name, wait_for=True)
+    assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_data.get_schains_number()
     assert schains_ids_number_after == len(schains_ids) + 1
@@ -218,9 +196,8 @@ def test_create_delete_schain(skale):
     ]
     assert name in schains_names
 
-    res = skale.manager.delete_schain(name)
-    receipt = wait_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
+    tx_res = skale.manager.delete_schain(name, wait_for=True)
+    assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_data.get_schains_number()
     assert schains_ids_number_after == len(schains_ids)
@@ -236,8 +213,8 @@ def test_create_delete_schain(skale):
 def test_create_delete_default_schain(skale):
     schains_ids = skale.schains_data.get_all_schains_ids()
     name = 'default-schain'
-    res = skale.manager.create_default_schain(name)
-    assert res['status'] == 1
+    tx_res = skale.manager.create_default_schain(name)
+    assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_data.get_schains_number()
     assert schains_ids_number_after == len(schains_ids) + 1
@@ -249,8 +226,8 @@ def test_create_delete_default_schain(skale):
     ]
     assert name in schains_names
 
-    res = skale.manager.delete_schain(name, wait_for=True)
-    assert res['status'] == 1
+    tx_res = skale.manager.delete_schain(name, wait_for=True)
+    assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_data.get_schains_number()
     assert schains_ids_number_after == len(schains_ids)

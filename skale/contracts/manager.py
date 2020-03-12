@@ -26,7 +26,7 @@ import socket
 from skale.contracts import BaseContract, transaction_method
 from skale.transactions.tools import post_transaction
 from skale.utils import helper
-from skale.utils.constants import GAS, NODE_DEPOSIT, OP_TYPES
+from skale.utils.constants import GAS, OP_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +36,6 @@ class Manager(BaseContract):
     def create_node(self, ip, port, name, public_ip=None):
         logger.info(
             f'create_node: {ip}:{port}, public ip: {public_ip} name: {name}')
-
-        token = self.skale.get_contract_by_name('token')
         skale_nonce = helper.generate_nonce()
         pk = self.skale.wallet.public_key
 
@@ -47,11 +45,8 @@ class Manager(BaseContract):
         transaction_data = self.create_node_data_to_bytes(
             ip, public_ip, port, name, pk, skale_nonce)
 
-        op = token.contract.functions.send(self.address, NODE_DEPOSIT,
-                                           transaction_data)
-        tx = post_transaction(self.skale.wallet, op, GAS['create_node'])
-
-        return {'tx': tx, 'nonce': skale_nonce}
+        op = self.contract.functions.createNode(transaction_data)
+        return post_transaction(self.skale.wallet, op, GAS['create_node'])
 
     def create_node_data_to_bytes(self, ip, public_ip, port, name, pk, nonce):
         pk_fix = str(pk)[2:]
@@ -98,8 +93,7 @@ class Manager(BaseContract):
 
         op = token.contract.functions.send(self.address, deposit,
                                            transaction_data)
-        tx = post_transaction(self.skale.wallet, op, GAS['create_schain'])
-        return {'tx': tx, 'nonce': skale_nonce}
+        return post_transaction(self.skale.wallet, op, GAS['create_schain'])
 
     def create_schain_data_to_bytes(self, lifetime, type_of_nodes, name,
                                     nonce):
@@ -121,37 +115,31 @@ class Manager(BaseContract):
     @transaction_method
     def get_bounty(self, node_id):
         op = self.contract.functions.getBounty(node_id)
-        tx = post_transaction(self.skale.wallet, op, GAS['get_bounty'])
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['get_bounty'])
 
     @transaction_method
     def send_verdict(self, validator, node_id, downtime, latency):
         op = self.contract.functions.sendVerdict(validator, node_id, downtime,
                                                  latency)
-        tx = post_transaction(self.skale.wallet, op, GAS['send_verdict'])
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['send_verdict'])
 
     @transaction_method
     def send_verdicts(self, validator, nodes_ids, downtimes, latencies):
         op = self.contract.functions.sendVerdicts(validator, nodes_ids,
                                                   downtimes, latencies)
-        tx = post_transaction(self.skale.wallet, op, GAS['send_verdicts'])
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['send_verdicts'])
 
     @transaction_method
     def deregister(self, node_id):
         op = self.contract.functions.deleteNode(node_id)
-        tx = post_transaction(self.skale.wallet, op, GAS['delete_node'])
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['delete_node'])
 
     @transaction_method
     def delete_schain(self, schain_name):
         op = self.contract.functions.deleteSchain(schain_name)
-        tx = post_transaction(self.skale.wallet, op, GAS['delete_schain'])
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['delete_schain'])
 
     @transaction_method
     def delete_node_by_root(self, node_id):
         op = self.contract.functions.deleteNodeByRoot(node_id)
-        tx = post_transaction(self.skale.wallet, op, GAS['delete_node_by_root'])
-        return {'tx': tx}
+        return post_transaction(self.skale.wallet, op, GAS['delete_node_by_root'])

@@ -16,23 +16,19 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE token operations """
 
-from skale.contracts import BaseContract, transaction_method
-from skale.transactions.tools import post_transaction
-from skale.utils.constants import GAS
+DEFAULT_NODE_NAME = 'test_node'
+SECOND_NODE_NAME = 'test_node_2'
 
+DEFAULT_SCHAIN_NAME = 'test_schain'
 
-class Token(BaseContract):
-    @transaction_method
-    def transfer(self, address, value):
-        op = self.contract.functions.send(address, value, b'')
-        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])
+D_VALIDATOR_ID = 1
+D_VALIDATOR_NAME = 'test'
+D_VALIDATOR_DESC = 'test'
+D_VALIDATOR_FEE = 10
+D_VALIDATOR_MIN_DEL = 1000
 
-    def get_balance(self, address):
-        return self.contract.functions.balanceOf(address).call()
+D_DELEGATION_PERIOD = 3
+D_DELEGATION_INFO = 'test'
 
-    @transaction_method
-    def add_authorized(self, address, wallet):  # pragma: no cover
-        op = self.contract.functions.addAuthorized(address)
-        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])
+MONTH_IN_SECONDS = (60 * 60 * 24 * 31) + 100

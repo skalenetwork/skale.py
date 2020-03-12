@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE base contract class """
 
+import logging
 from functools import wraps
 
 from web3 import Web3
@@ -26,30 +27,40 @@ from skale.utils.web3_utils import (TransactionFailedError,
                                     wait_for_receipt_by_blocks)
 
 
+logger = logging.getLogger(__name__)
+
+
 def transaction_method(transaction):
-    @wraps(transaction_method)
-    def wrapper(self, *args, wait_for=False, **kwargs):
-        res = transaction(self, *args, **kwargs)
-        if wait_for:
-            receipt = wait_for_receipt_by_blocks(self.skale.web3, res['tx'])
-            if receipt.get('status') == 1:
-                return receipt
-            else:
-                raise TransactionFailedError(
-                    'Transaction {transaction_method.__name__} failed with '
-                    'receipt {receipt}'
+    @wraps(transaction)
+    def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1, **kwargs):
+        for retry in range(retries):
+            logger.info(
+                f'transaction_method: {transaction.__name__}, try {retry+1}/{retries}, '
+                f'wallet: {self.skale.wallet.__class__.__name__}, '
+                f'sender: {self.skale.wallet.address}'
+            )
+            tx_res = transaction(self, *args, **kwargs)
+            if wait_for:
+                tx_res.receipt = wait_for_receipt_by_blocks(
+                    self.skale.web3,
+                    tx_res.hash,
+                    timeout=timeout,
+                    blocks_to_wait=blocks_to_wait
                 )
-        else:
-            return res
+                if tx_res.receipt['status'] == 1:
+                    return tx_res
+            else:
+                return tx_res
+        raise TransactionFailedError(
+            f'transaction_method failed: {transaction.__name__}, '
+            f'receipt: {tx_res.receipt}'
+        )
     return wrapper
 
 
 class BaseContract:
     def __init__(self, skale, name, address, abi):
         self.skale = skale
-        self.web3 = skale.web3
         self.name = name
         self.address = Web3.toChecksumAddress(address)
-        self.abi = abi
-        self.contract = self.web3.eth.contract(
-            address=self.address, abi=self.abi)
+        self.contract = skale.web3.eth.contract(address=self.address, abi=abi)

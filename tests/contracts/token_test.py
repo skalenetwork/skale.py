@@ -1,7 +1,5 @@
 """ SKALE token test """
 
-from skale.utils.web3_utils import wait_receipt
-
 from tests.constants import TOKEN_TRANSFER_VALUE
 
 
@@ -12,10 +10,8 @@ def test_transfer(skale, empty_account):
     assert receiver_balance == 0
     assert sender_balance != 0
 
-    res = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE)
-    receipt = wait_receipt(skale.web3, res['tx'])
-
-    assert receipt['status'] == 1
+    tx_res = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE, wait_for=True)
+    assert tx_res.receipt['status'] == 1
 
     receiver_balance_after = skale.token.get_balance(empty_account.address)
     sender_balance_after = skale.token.get_balance(skale.wallet.address)
@@ -31,10 +27,10 @@ def test_transfer_wait_for(skale, empty_account):
     assert receiver_balance == 0
     assert sender_balance != 0
 
-    receipt = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE,
-                                   wait_for=True)
+    tx_res = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE,
+                                  wait_for=True)
 
-    assert receipt['status'] == 1
+    assert tx_res.receipt['status'] == 1
 
     receiver_balance_after = skale.token.get_balance(empty_account.address)
     sender_balance_after = skale.token.get_balance(skale.wallet.address)
