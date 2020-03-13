@@ -22,12 +22,13 @@ from skale.dataclasses.node_info import NodeInfo
 
 class CurrentNodeInfo(NodeInfo):
     def __init__(self, node_id, node_name, base_port, bind_ip, ima_mainnet=None,
-                 ima_mp_schain=None, ima_mp_mainnet=None, wallets=None):
+                 ima_mp_schain=None, ima_mp_mainnet=None, wallets=None, rotate_after_block=64):
         self.bind_ip = bind_ip
         self.ima_mainnet = ima_mainnet
         self.ima_mp_schain = ima_mp_schain
         self.ima_mp_mainnet = ima_mp_mainnet
         self.wallets = wallets
+        self.rotate_after_block = rotate_after_block
         super().__init__(node_id, node_name, base_port)
 
     def to_config(self):
@@ -37,4 +38,5 @@ class CurrentNodeInfo(NodeInfo):
         config['imaMessageProxySChain'] = self.ima_mp_schain
         config['imaMessageProxyMainNet'] = self.ima_mp_mainnet
         config['wallets'] = self.wallets
+        config['rotateAfterBlock'] = self.rotate_after_block
         return config
