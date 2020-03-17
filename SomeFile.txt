@@ -1,0 +1,767 @@
+2020-03-17 16:49:31,199 - skale.manager_client - INFO - Init skale-py, connecting to http://localhost:8545
+2020-03-17 16:49:31,203 - skale.manager_client - INFO - Initialized: contract_manager at 0x7A2Ae9AB1810dbA71D26B210EEeB4247358fAAA5
+2020-03-17 16:49:31,214 - skale.manager_client - INFO - Initialized: contract_manager at 0x7A2Ae9AB1810dbA71D26B210EEeB4247358fAAA5
+2020-03-17 16:49:31,221 - skale.manager_client - INFO - Initialized: token at 0xc47af109D566f1FFDA7313BB85e374d28F160Df4
+2020-03-17 16:49:31,304 - skale.manager_client - INFO - Initialized: manager at 0x6fb24A01266e4943304A0EE3D892eD56D5608e95
+2020-03-17 16:49:31,341 - skale.manager_client - INFO - Initialized: constants_holder at 0x051A82406986024d21F92b3E9a3151a1636FeB1c
+2020-03-17 16:49:31,386 - skale.manager_client - INFO - Initialized: nodes at 0x1855560022a42d41Dd53BA5543b415a775160234
+2020-03-17 16:49:31,432 - skale.manager_client - INFO - Initialized: schains at 0x8d6b612f0C51725A83B417f32f209e55c2D17E0d
+2020-03-17 16:49:31,479 - skale.manager_client - INFO - Initialized: monitors at 0x1A7F35eaC3cE6705B0276633e10531face9B13B5
+2020-03-17 16:49:31,519 - skale.manager_client - INFO - Initialized: nodes_data at 0xB3cc482072d68BAfca8C9000d5Db4830e2dF4Eb5
+2020-03-17 16:49:31,564 - skale.manager_client - INFO - Initialized: schains_data at 0xDeB95D6800EfF6643765bE741D28b35b32c5f8a6
+2020-03-17 16:49:31,610 - skale.manager_client - INFO - Initialized: monitors_data at 0x7Fe273Fb9500981D5bC2502e19A29171cAabf19A
+2020-03-17 16:49:31,654 - skale.manager_client - INFO - Initialized: dkg at 0x36b0AbA6F9410bc8987df09aA919274D5b9D6CA2
+2020-03-17 16:49:31,667 - skale.manager_client - INFO - Initialized: delegation_controller at 0xC3344a1b8A05967e4eea4b7433d3ba56B77330d0
+2020-03-17 16:49:31,681 - skale.manager_client - INFO - Initialized: validator_service at 0x43f4372e76CDeb319FbC70e84Ae77Ca4c1910036
+2020-03-17 16:49:31,697 - skale.manager_client - INFO - Initialized: token_state at 0x5ccbf9debFF4620C780fca30c6Cf98250cef93Af
+2020-03-17 16:49:31,709 - skale.manager_client - INFO - Initialized: distributor at 0xFFB0184c52CFaEAA34aAE011DBfd631B48e7E0a7
+2020-03-17 16:49:31,842 - skale.contracts.base_contract - INFO - transaction_method: register_validator, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:31,992 - skale.contracts.base_contract - INFO - transaction_method: _enable_validator, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:32,122 - skale.contracts.base_contract - INFO - transaction_method: _set_msr, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:32,259 - skale.contracts.base_contract - INFO - transaction_method: delegate, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:33,346 - skale.contracts.base_contract - INFO - transaction_method: accept_pending_delegation, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:33,901 - skale.contracts.base_contract - INFO - transaction_method: create_node, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:33,901 - skale.contracts.manager - INFO - create_node: 161.150.172.50:58571, public ip: 2.102.96.87 name: test_node
+2020-03-17 16:49:33,901 - skale.contracts.manager - INFO - create_node_data_to_bytes bytes: 0x01e4cb66a9a196ac3202666057f925c203a30ec6cad5a263db3efab7ed4c1fd74c8688167e10a5a22e15ab5018d8553df0ac54ea105a3d21845e5660bc3d4e7c82e7af1daa3baad393b1521467746573745f6e6f6465
+2020-03-17 16:49:35,570 - skale.contracts.base_contract - INFO - transaction_method: create_node, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:35,570 - skale.contracts.manager - INFO - create_node: 11.216.40.9:52455, public ip: 201.156.104.15 name: test_node_2
+2020-03-17 16:49:35,570 - skale.contracts.manager - INFO - create_node_data_to_bytes bytes: 0x01cce73c000bd82809c99c680ff925c203a30ec6cad5a263db3efab7ed4c1fd74c8688167e10a5a22e15ab5018d8553df0ac54ea105a3d21845e5660bc3d4e7c82e7af1daa3baad393b1521467746573745f6e6f64655f32
+2020-03-17 16:49:37,444 - skale.contracts.base_contract - INFO - transaction_method: create_schain, try 1/1, wallet: Web3Wallet, sender: 0x5112cE768917E907191557D7E9521c2590Cdd3A0
+2020-03-17 16:49:37,444 - skale.contracts.manager - INFO - create_schain: type_of_nodes: 4, name: test_schain
+2020-03-17 16:49:37,444 - skale.contracts.manager - INFO - create_schain_data_to_bytes bytes:0x100000000000000000000000000000000000000000000000000000000000000e10048b40746573745f73636861696e
+Cleanup nodes and schains
+Creating default validator
+Enabling validator ID: 1
+Delegating tokens to validator ID: 1
+Accepting delegation with ID: 0
+Creating two nodes
+Creating schain
+============================= test session starts ==============================
+platform darwin -- Python 3.6.7, pytest-5.2.1, py-1.8.0, pluggy-0.13.0
+rootdir: /Users/dmytro/skalenetwork/skale.py
+plugins: web3-5.2.2, cov-2.8.1
+collected 117 items
+
+tests/helper_test.py ..                                                  [  1%]
+tests/main_test.py ....                                                  [  5%]
+tests/multithreading_test.py .                                           [  5%]
+tests/contracts/constants_test.py ...                                    [  8%]
+tests/contracts/contract_manager_test.py ..                              [ 10%]
+tests/contracts/dkg_test.py ....                                         [ 13%]
+tests/contracts/manager_test.py .............                            [ 24%]
+tests/contracts/token_test.py ...                                        [ 27%]
+tests/contracts/data/nodes_data_test.py ..........                       [ 35%]
+tests/contracts/data/schains_data_test.py ...............                [ 48%]
+tests/contracts/data/validators_data_test.py s                           [ 49%]
+tests/contracts/delegation/delegation_controller_test.py ...........     [ 58%]
+tests/contracts/delegation/distributor_test.py ....                      [ 62%]
+tests/contracts/delegation/validator_service_test.py ..................  [ 77%]
+tests/contracts/functionality/schains_test.py .                          [ 78%]
+tests/schain_config/generator_test.py .....                              [ 82%]
+tests/schain_config/ports_allocation_test.py ...                         [ 85%]
+tests/utils/account_tools_test.py .....                                  [ 89%]
+tests/wallets/ledger_test.py .                                           [ 90%]
+tests/wallets/rpc_test.py ......                                         [ 95%]
+tests/wallets/sgx_test.py .....                                          [100%]
+
+=============================== warnings summary ===============================
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/multithreading_test.py::test_multithead_calls
+tests/contracts/dkg_test.py::test_response
+tests/contracts/dkg_test.py::test_response
+tests/contracts/dkg_test.py::test_allright
+tests/contracts/dkg_test.py::test_allright
+tests/contracts/dkg_test.py::test_complaint
+tests/contracts/dkg_test.py::test_complaint
+tests/contracts/manager_test.py::test_create_node_delete_node_by_root
+tests/contracts/manager_test.py::test_create_node_delete_node_by_root
+tests/contracts/manager_test.py::test_create_deregister_node
+tests/contracts/manager_test.py::test_create_deregister_node
+tests/contracts/manager_test.py::test_empty_node_exit
+tests/contracts/manager_test.py::test_empty_node_exit
+tests/contracts/manager_test.py::test_one_schain_node_exit
+tests/contracts/manager_test.py::test_one_schain_node_exit
+tests/contracts/manager_test.py::test_one_schain_node_exit
+tests/contracts/manager_test.py::test_one_schain_node_exit
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/manager_test.py::test_get_rotation
+tests/contracts/data/nodes_data_test.py::test_get
+tests/contracts/data/nodes_data_test.py::test_get
+tests/contracts/data/nodes_data_test.py::test_get
+tests/contracts/data/nodes_data_test.py::test_get
+tests/contracts/data/nodes_data_test.py::test_get_by_name
+tests/contracts/data/nodes_data_test.py::test_get_by_name
+tests/contracts/data/nodes_data_test.py::test_is_node_name_available
+tests/contracts/data/nodes_data_test.py::test_is_node_name_available
+tests/contracts/data/nodes_data_test.py::test_is_node_name_available
+tests/contracts/data/nodes_data_test.py::test_is_node_name_available
+tests/contracts/data/nodes_data_test.py::test_is_node_name_available
+tests/contracts/data/nodes_data_test.py::test_is_node_name_available
+tests/contracts/data/nodes_data_test.py::test_is_node_ip_available
+tests/contracts/data/nodes_data_test.py::test_is_node_ip_available
+tests/contracts/data/nodes_data_test.py::test_is_node_ip_available
+tests/contracts/data/nodes_data_test.py::test_is_node_ip_available
+tests/contracts/data/nodes_data_test.py::test_node_name_to_index
+tests/contracts/data/nodes_data_test.py::test_node_name_to_index
+tests/contracts/data/nodes_data_test.py::test_node_name_to_index
+tests/contracts/data/nodes_data_test.py::test_node_name_to_index
+tests/contracts/data/schains_data_test.py::test_get_raw
+tests/contracts/data/schains_data_test.py::test_get_raw
+tests/contracts/data/schains_data_test.py::test_get
+tests/contracts/data/schains_data_test.py::test_get
+tests/contracts/data/schains_data_test.py::test_get_by_name
+tests/contracts/data/schains_data_test.py::test_get_by_name
+tests/contracts/data/schains_data_test.py::test_get_by_name
+tests/contracts/data/schains_data_test.py::test_get_by_name
+tests/contracts/data/schains_data_test.py::test_get_node_ids_for_schain
+tests/contracts/data/schains_data_test.py::test_get_node_ids_for_schain
+tests/contracts/data/schains_data_test.py::test_get_schain_ids_for_node
+tests/contracts/data/schains_data_test.py::test_get_schain_ids_for_node
+tests/contracts/data/schains_data_test.py::test_get_schains_for_node
+tests/contracts/data/schains_data_test.py::test_get_schains_for_node
+tests/contracts/data/schains_data_test.py::test_get_schains_for_node
+tests/contracts/data/schains_data_test.py::test_get_schains_for_node
+tests/contracts/data/schains_data_test.py::test_get_rotation
+tests/contracts/data/schains_data_test.py::test_get_rotation
+tests/schain_config/generator_test.py::test_get_nodes_for_schain
+tests/schain_config/generator_test.py::test_get_nodes_for_schain
+tests/schain_config/generator_test.py::test_generate_skale_schain_config
+tests/schain_config/generator_test.py::test_generate_skale_schain_config
+tests/schain_config/generator_test.py::test_generate_skale_schain_config
+tests/schain_config/generator_test.py::test_generate_skale_schain_config
+tests/schain_config/generator_test.py::test_generate_skale_schain_config
+tests/schain_config/generator_test.py::test_generate_skale_schain_config
+tests/schain_config/ports_allocation_test.py::test_get_schain_base_port_on_node
+tests/schain_config/ports_allocation_test.py::test_get_schain_base_port_on_node
+tests/schain_config/ports_allocation_test.py::test_get_schain_index_in_node
+tests/schain_config/ports_allocation_test.py::test_get_schain_index_in_node
+  /Users/dmytro/skalenetwork/skale.py/venv/lib/python3.6/site-packages/web3/_utils/abi.py:204: DeprecationWarning: in v6 it will be invalid to pass a hex string without the "0x" prefix
+    category=DeprecationWarning
+
+tests/contracts/dkg_test.py::test_broadcast
+tests/contracts/dkg_test.py::test_response
+tests/contracts/dkg_test.py::test_allright
+tests/contracts/dkg_test.py::test_complaint
+tests/contracts/manager_test.py::test_get_bounty
+tests/contracts/manager_test.py::test_send_verdict
+tests/contracts/manager_test.py::test_send_verdicts
+  /Users/dmytro/skalenetwork/skale.py/venv/lib/python3.6/site-packages/eth_account/account.py:490: DeprecationWarning: signTransaction is deprecated in favor of sign_transaction
+    category=DeprecationWarning,
+
+tests/contracts/data/schains_data_test.py::test_get_previous_groups_public_key
+  /Users/dmytro/skalenetwork/skale.py/venv/lib/python3.6/site-packages/web3/_utils/decorators.py:55: DeprecationWarning: sha3 is deprecated in favor of keccak
+    category=DeprecationWarning)
+
+tests/contracts/delegation/validator_service_test.py::test_number_of_validators
+tests/contracts/delegation/validator_service_test.py::test_get_linked_addresses_by_validator_address
+tests/contracts/delegation/validator_service_test.py::test_is_main_address
+tests/contracts/delegation/validator_service_test.py::test_validator_address_exists
+tests/contracts/delegation/validator_service_test.py::test_enable_validator
+tests/contracts/delegation/validator_service_test.py::test_disable_validator
+tests/contracts/delegation/validator_service_test.py::test_register_new_validator
+tests/contracts/delegation/validator_service_test.py::test_link_node_address
+tests/contracts/delegation/validator_service_test.py::test_unlink_node_address
+tests/utils/account_tools_test.py::test_generate_account
+tests/utils/account_tools_test.py::test_generate_accounts
+tests/utils/account_tools_test.py::test_generate_accounts
+tests/utils/account_tools_test.py::test_generate_wallet
+  /Users/dmytro/skalenetwork/skale.py/venv/lib/python3.6/site-packages/eth_account/signers/local.py:54: DeprecationWarning: privateKey is deprecated in favor of key
+    category=DeprecationWarning,
+
+-- Docs: https://docs.pytest.org/en/latest/warnings.html
+
+---------- coverage: platform darwin, python 3.6.7-final-0 -----------
+Name                                                                          Stmts   Miss  Cover
+-------------------------------------------------------------------------------------------------
+skale/contracts/__init__.py                                                      17      0   100%
+skale/contracts/base_contract.py                                                 25      0   100%
+skale/contracts/constants_holder.py                                              27      0   100%
+skale/contracts/contract_manager.py                                              11      0   100%
+skale/contracts/data/__init__.py                                                  0      0   100%
+skale/contracts/data/monitors_data.py                                             7      2    71%
+skale/contracts/data/nodes_data.py                                               43      1    98%
+skale/contracts/data/schains_data.py                                             69      1    99%
+skale/contracts/delegation/__init__.py                                            0      0   100%
+skale/contracts/delegation/delegation_controller.py                              58      0   100%
+skale/contracts/delegation/distributor.py                                        25      0   100%
+skale/contracts/delegation/token_state.py                                         2      0   100%
+skale/contracts/delegation/validator_service.py                                  62      1    98%
+skale/contracts/dkg.py                                                           18      0   100%
+skale/contracts/functionality/__init__.py                                         0      0   100%
+skale/contracts/functionality/monitors.py                                         2      0   100%
+skale/contracts/functionality/nodes.py                                            4      0   100%
+skale/contracts/functionality/schains.py                                          5      0   100%
+skale/contracts/groups.py                                                         4      0   100%
+skale/contracts/manager.py                                                       73      0   100%
+skale/contracts/token.py                                                         11      0   100%
+skale/contracts_info.py                                                           9      0   100%
+skale/dataclasses/__init__.py                                                     2      0   100%
+skale/dataclasses/current_node_info.py                                           19      0   100%
+skale/dataclasses/delegation_status.py                                            9      0   100%
+skale/dataclasses/node_info.py                                                   14      0   100%
+skale/dataclasses/schain_node_info.py                                            11      0   100%
+skale/dataclasses/skaled_ports.py                                                11      0   100%
+skale/dataclasses/tx_res.py                                                      14      1    93%
+skale/manager_client.py                                                          71      4    94%
+skale/schain_config/__init__.py                                                   4      0   100%
+skale/schain_config/base_config.py                                               55     11    80%
+skale/schain_config/generator.py                                                 39      1    97%
+skale/schain_config/ports_allocation.py                                          12      0   100%
+skale/transactions/__init__.py                                                    0      0   100%
+skale/transactions/tools.py                                                      27      5    81%
+skale/utils/__init__.py                                                           2      0   100%
+skale/utils/account_tools.py                                                     53      1    98%
+skale/utils/constants.py                                                          5      0   100%
+skale/utils/contract_info.py                                                     10      0   100%
+skale/utils/contract_types.py                                                     6      0   100%
+skale/utils/contracts_provision/__init__.py                                      11      0   100%
+skale/utils/contracts_provision/main.py                                          60     10    83%
+skale/utils/contracts_provision/utils.py                                         14      0   100%
+skale/utils/exceptions.py                                                         4      0   100%
+skale/utils/helper.py                                                            38      3    92%
+skale/utils/web3_utils.py                                                        67     16    76%
+skale/wallets/__init__.py                                                         5      0   100%
+skale/wallets/common.py                                                          13      4    69%
+skale/wallets/ledger_wallet.py                                                  105     15    86%
+skale/wallets/rpc_wallet.py                                                      43      0   100%
+skale/wallets/sgx_wallet.py                                                      30      0   100%
+skale/wallets/web3_wallet.py                                                     37      2    95%
+venv/lib/python3.6/site-packages/Crypto/Hash/keccak.py                           53     13    75%
+venv/lib/python3.6/site-packages/Crypto/Util/_file_system.py                      8      3    62%
+venv/lib/python3.6/site-packages/Crypto/Util/_raw_api.py                        157    132    16%
+venv/lib/python3.6/site-packages/Crypto/Util/py3compat.py                        75     73     3%
+venv/lib/python3.6/site-packages/_pytest/_argcomplete.py                         34     33     3%
+venv/lib/python3.6/site-packages/_pytest/_code/code.py                          613    536    13%
+venv/lib/python3.6/site-packages/_pytest/_code/source.py                        210    203     3%
+venv/lib/python3.6/site-packages/_pytest/assertion/__init__.py                   70     61    13%
+venv/lib/python3.6/site-packages/_pytest/assertion/rewrite.py                   574    492    14%
+venv/lib/python3.6/site-packages/_pytest/cacheprovider.py                       228    192    16%
+venv/lib/python3.6/site-packages/_pytest/capture.py                             458    382    17%
+venv/lib/python3.6/site-packages/_pytest/compat.py                              141    105    26%
+venv/lib/python3.6/site-packages/_pytest/config/__init__.py                     638    509    20%
+venv/lib/python3.6/site-packages/_pytest/config/argparsing.py                   238    192    19%
+venv/lib/python3.6/site-packages/_pytest/config/findpaths.py                    104    102     2%
+venv/lib/python3.6/site-packages/_pytest/debugging.py                           191    183     4%
+venv/lib/python3.6/site-packages/_pytest/doctest.py                             303    294     3%
+venv/lib/python3.6/site-packages/_pytest/faulthandler.py                         43     33    23%
+venv/lib/python3.6/site-packages/_pytest/fixtures.py                            764    470    38%
+venv/lib/python3.6/site-packages/_pytest/helpconfig.py                          121    112     7%
+venv/lib/python3.6/site-packages/_pytest/junitxml.py                            338    336     1%
+venv/lib/python3.6/site-packages/_pytest/logging.py                             314    209    33%
+venv/lib/python3.6/site-packages/_pytest/main.py                                409    223    45%
+venv/lib/python3.6/site-packages/_pytest/mark/__init__.py                        80     66    18%
+venv/lib/python3.6/site-packages/_pytest/mark/evaluate.py                        91     79    13%
+venv/lib/python3.6/site-packages/_pytest/mark/structures.py                     173    127    27%
+venv/lib/python3.6/site-packages/_pytest/monkeypatch.py                         146    134     8%
+venv/lib/python3.6/site-packages/_pytest/nodes.py                               209    137    34%
+venv/lib/python3.6/site-packages/_pytest/nose.py                                 20      9    55%
+venv/lib/python3.6/site-packages/_pytest/outcomes.py                             67     57    15%
+venv/lib/python3.6/site-packages/_pytest/pastebin.py                             60     59     2%
+venv/lib/python3.6/site-packages/_pytest/pathlib.py                             193    179     7%
+venv/lib/python3.6/site-packages/_pytest/python.py                              785    558    29%
+venv/lib/python3.6/site-packages/_pytest/python_api.py                          227    207     9%
+venv/lib/python3.6/site-packages/_pytest/reports.py                             224    189    16%
+venv/lib/python3.6/site-packages/_pytest/resultlog.py                            67     65     3%
+venv/lib/python3.6/site-packages/_pytest/runner.py                              259    147    43%
+venv/lib/python3.6/site-packages/_pytest/setuponly.py                            47     40    15%
+venv/lib/python3.6/site-packages/_pytest/setupplan.py                            12     10    17%
+venv/lib/python3.6/site-packages/_pytest/skipping.py                             96     60    38%
+venv/lib/python3.6/site-packages/_pytest/stepwise.py                             58     46    21%
+venv/lib/python3.6/site-packages/_pytest/terminal.py                            709    535    25%
+venv/lib/python3.6/site-packages/_pytest/tmpdir.py                               75     68     9%
+venv/lib/python3.6/site-packages/_pytest/unittest.py                            190    180     5%
+venv/lib/python3.6/site-packages/_pytest/warnings.py                             66     44    33%
+venv/lib/python3.6/site-packages/attr/converters.py                              27     25     7%
+venv/lib/python3.6/site-packages/attr/validators.py                             116    115     1%
+venv/lib/python3.6/site-packages/attrdict/dictionary.py                          23     20    13%
+venv/lib/python3.6/site-packages/attrdict/mixins.py                              55     48    13%
+venv/lib/python3.6/site-packages/click/__init__.py                               13      0   100%
+venv/lib/python3.6/site-packages/click/_compat.py                               433    347    20%
+venv/lib/python3.6/site-packages/click/_unicodefun.py                            71     60    15%
+venv/lib/python3.6/site-packages/click/core.py                                  877    653    26%
+venv/lib/python3.6/site-packages/click/decorators.py                            147     96    35%
+venv/lib/python3.6/site-packages/click/exceptions.py                            115     82    29%
+venv/lib/python3.6/site-packages/click/formatting.py                            134    112    16%
+venv/lib/python3.6/site-packages/click/globals.py                                18     12    33%
+venv/lib/python3.6/site-packages/click/parser.py                                236    204    14%
+venv/lib/python3.6/site-packages/click/termui.py                                195    165    15%
+venv/lib/python3.6/site-packages/click/types.py                                 318    219    31%
+venv/lib/python3.6/site-packages/click/utils.py                                 179    140    22%
+venv/lib/python3.6/site-packages/coverage/collector.py                          197    191     3%
+venv/lib/python3.6/site-packages/coverage/control.py                            534    532     1%
+venv/lib/python3.6/site-packages/ens/main.py                                    141    136     4%
+venv/lib/python3.6/site-packages/ens/utils.py                                    90     82     9%
+venv/lib/python3.6/site-packages/eth_abi/base.py                                 48     24    50%
+venv/lib/python3.6/site-packages/eth_abi/codec.py                                49     36    27%
+venv/lib/python3.6/site-packages/eth_abi/decoding.py                            263    168    36%
+venv/lib/python3.6/site-packages/eth_abi/encoding.py                            345    253    27%
+venv/lib/python3.6/site-packages/eth_abi/grammar.py                             160     93    42%
+venv/lib/python3.6/site-packages/eth_abi/registry.py                            232    154    34%
+venv/lib/python3.6/site-packages/eth_abi/utils/numeric.py                        37     35     5%
+venv/lib/python3.6/site-packages/eth_abi/utils/padding.py                        13     11    15%
+venv/lib/python3.6/site-packages/eth_account/_utils/signing.py                   65     49    25%
+venv/lib/python3.6/site-packages/eth_account/_utils/transactions.py              66     41    38%
+venv/lib/python3.6/site-packages/eth_account/_utils/validation.py                 7      4    43%
+venv/lib/python3.6/site-packages/eth_account/account.py                         120    101    16%
+venv/lib/python3.6/site-packages/eth_account/signers/local.py                    29     21    28%
+venv/lib/python3.6/site-packages/eth_hash/backends/auto.py                       16     10    38%
+venv/lib/python3.6/site-packages/eth_hash/backends/pycryptodome.py               17      6    65%
+venv/lib/python3.6/site-packages/eth_hash/main.py                                24     18    25%
+venv/lib/python3.6/site-packages/eth_hash/utils.py                               26     18    31%
+venv/lib/python3.6/site-packages/eth_keys/backends/__init__.py                   18     11    39%
+venv/lib/python3.6/site-packages/eth_keys/backends/coincurve.py                  59     55     7%
+venv/lib/python3.6/site-packages/eth_keys/backends/native/ecdsa.py               85     62    27%
+venv/lib/python3.6/site-packages/eth_keys/backends/native/jacobian.py            66     21    68%
+venv/lib/python3.6/site-packages/eth_keys/backends/native/main.py                28     22    21%
+venv/lib/python3.6/site-packages/eth_keys/datatypes.py                          246    205    17%
+venv/lib/python3.6/site-packages/eth_keys/utils/address.py                        3      2    33%
+venv/lib/python3.6/site-packages/eth_keys/utils/module_loading.py                31     26    16%
+venv/lib/python3.6/site-packages/eth_keys/utils/padding.py                        2      1    50%
+venv/lib/python3.6/site-packages/eth_keys/validation.py                          55     37    33%
+venv/lib/python3.6/site-packages/eth_rlp/main.py                                 18     12    33%
+venv/lib/python3.6/site-packages/eth_utils/abi.py                                23     11    52%
+venv/lib/python3.6/site-packages/eth_utils/address.py                            70     41    41%
+venv/lib/python3.6/site-packages/eth_utils/applicators.py                        57     40    30%
+venv/lib/python3.6/site-packages/eth_utils/conversions.py                        75     42    44%
+venv/lib/python3.6/site-packages/eth_utils/crypto.py                              5      4    20%
+venv/lib/python3.6/site-packages/eth_utils/currency.py                           70     40    43%
+venv/lib/python3.6/site-packages/eth_utils/decorators.py                         60     39    35%
+venv/lib/python3.6/site-packages/eth_utils/encoding.py                            4      2    50%
+venv/lib/python3.6/site-packages/eth_utils/functional.py                         30     29     3%
+venv/lib/python3.6/site-packages/eth_utils/hexadecimal.py                        44     22    50%
+venv/lib/python3.6/site-packages/eth_utils/types.py                              29     20    31%
+venv/lib/python3.6/site-packages/hexbytes/main.py                                21     15    29%
+venv/lib/python3.6/site-packages/importlib_metadata/__init__.py                 194    189     3%
+venv/lib/python3.6/site-packages/importlib_metadata/_compat.py                   24     23     4%
+venv/lib/python3.6/site-packages/ledgerblue/Dongle.py                            25     10    60%
+venv/lib/python3.6/site-packages/ledgerblue/__init__.py                           0      0   100%
+venv/lib/python3.6/site-packages/ledgerblue/comm.py                             196    162    17%
+venv/lib/python3.6/site-packages/ledgerblue/commException.py                      8      5    38%
+venv/lib/python3.6/site-packages/ledgerblue/commHTTP.py                          62     45    27%
+venv/lib/python3.6/site-packages/ledgerblue/commTCP.py                           36     26    28%
+venv/lib/python3.6/site-packages/ledgerblue/commU2F.py                          206    156    24%
+venv/lib/python3.6/site-packages/ledgerblue/ledgerWrapper.py                     80     76     5%
+venv/lib/python3.6/site-packages/mock/__init__.py                                 4      0   100%
+venv/lib/python3.6/site-packages/mock/mock.py                                  1390    866    38%
+venv/lib/python3.6/site-packages/more_itertools/more.py                         667    654     2%
+venv/lib/python3.6/site-packages/parsimonious/exceptions.py                      33     30     9%
+venv/lib/python3.6/site-packages/parsimonious/expressions.py                    189    128    32%
+venv/lib/python3.6/site-packages/parsimonious/grammar.py                        154    151     2%
+venv/lib/python3.6/site-packages/parsimonious/nodes.py                           82     68    17%
+venv/lib/python3.6/site-packages/pkg_resources/_vendor/six.py                   444    442     1%
+venv/lib/python3.6/site-packages/pkg_resources/extern/__init__.py                35     32     9%
+venv/lib/python3.6/site-packages/pluggy/_tracing.py                              41     31    24%
+venv/lib/python3.6/site-packages/pluggy/callers.py                              122     81    34%
+venv/lib/python3.6/site-packages/pluggy/hooks.py                                175    101    42%
+venv/lib/python3.6/site-packages/pluggy/manager.py                              195    149    24%
+venv/lib/python3.6/site-packages/py/_builtin.py                                 112    105     6%
+venv/lib/python3.6/site-packages/py/_code/__init__.py                             0      0   100%
+venv/lib/python3.6/site-packages/py/_code/code.py                               524    408    22%
+venv/lib/python3.6/site-packages/py/_error.py                                    52     49     6%
+venv/lib/python3.6/site-packages/py/_io/capture.py                              266    215    19%
+venv/lib/python3.6/site-packages/py/_io/terminalwriter.py                       266    197    26%
+venv/lib/python3.6/site-packages/py/_path/common.py                             274    184    33%
+venv/lib/python3.6/site-packages/py/_path/local.py                              690    545    21%
+venv/lib/python3.6/site-packages/py/_vendored_packages/apipkg.py                148    129    13%
+venv/lib/python3.6/site-packages/py/_xmlgen.py                                  170    168     1%
+venv/lib/python3.6/site-packages/pytest_cov/compat.py                            27     22    19%
+venv/lib/python3.6/site-packages/pytest_cov/embed.py                             77     71     8%
+venv/lib/python3.6/site-packages/pytest_cov/engine.py                           202    189     6%
+venv/lib/python3.6/site-packages/pytest_cov/plugin.py                           194    177     9%
+venv/lib/python3.6/site-packages/requests/_internal_utils.py                     16      9    44%
+venv/lib/python3.6/site-packages/requests/adapters.py                           222    153    31%
+venv/lib/python3.6/site-packages/requests/api.py                                 22     18    18%
+venv/lib/python3.6/site-packages/requests/cookies.py                            238    211    11%
+venv/lib/python3.6/site-packages/requests/exceptions.py                          35     30    14%
+venv/lib/python3.6/site-packages/requests/hooks.py                               15     10    33%
+venv/lib/python3.6/site-packages/requests/models.py                             446    295    34%
+venv/lib/python3.6/site-packages/requests/sessions.py                           284    189    33%
+venv/lib/python3.6/site-packages/requests/structures.py                          39     30    23%
+venv/lib/python3.6/site-packages/requests/utils.py                              443    364    18%
+venv/lib/python3.6/site-packages/rlp/codec.py                                   145    109    25%
+venv/lib/python3.6/site-packages/rlp/sedes/big_endian_int.py                     26     18    31%
+venv/lib/python3.6/site-packages/rlp/sedes/binary.py                             30     25    17%
+venv/lib/python3.6/site-packages/rlp/sedes/lists.py                              63     56    11%
+venv/lib/python3.6/site-packages/rlp/sedes/serializable.py                      241    210    13%
+venv/lib/python3.6/site-packages/rlp/sedes/text.py                               35     30    14%
+venv/lib/python3.6/site-packages/sgx/__init__.py                                  1      0   100%
+venv/lib/python3.6/site-packages/sgx/constants.py                                11      0   100%
+venv/lib/python3.6/site-packages/sgx/sgx.py                                      76     50    34%
+venv/lib/python3.6/site-packages/sgx/sgxRPCHandler.py                           111     93    16%
+venv/lib/python3.6/site-packages/sgx/sgx_utils.py                                 4      2    50%
+venv/lib/python3.6/site-packages/sgx/ssl_utils.py                                61     41    33%
+venv/lib/python3.6/site-packages/six.py                                         472    470     1%
+venv/lib/python3.6/site-packages/toolz/_signatures.py                           169    167     1%
+venv/lib/python3.6/site-packages/toolz/functoolz.py                             472    454     4%
+venv/lib/python3.6/site-packages/u2flib_host/__init__.py                          1      0   100%
+venv/lib/python3.6/site-packages/u2flib_host/appid.py                            73     55    25%
+venv/lib/python3.6/site-packages/u2flib_host/constants.py                         6      0   100%
+venv/lib/python3.6/site-packages/u2flib_host/device.py                           44     31    30%
+venv/lib/python3.6/site-packages/u2flib_host/exc.py                               8      4    50%
+venv/lib/python3.6/site-packages/u2flib_host/hid_transport.py                   135     96    29%
+venv/lib/python3.6/site-packages/u2flib_host/u2f.py                              29     19    34%
+venv/lib/python3.6/site-packages/u2flib_host/u2f_v2.py                           40     31    22%
+venv/lib/python3.6/site-packages/u2flib_host/utils.py                            21     14    33%
+venv/lib/python3.6/site-packages/u2flib_host/yubicommon/__init__.py               1      0   100%
+venv/lib/python3.6/site-packages/u2flib_host/yubicommon/compat.py                19     10    47%
+venv/lib/python3.6/site-packages/urllib3/__init__.py                             33     32     3%
+venv/lib/python3.6/site-packages/urllib3/_collections.py                        181    139    23%
+venv/lib/python3.6/site-packages/urllib3/connection.py                          175    154    12%
+venv/lib/python3.6/site-packages/urllib3/connectionpool.py                      316    196    38%
+venv/lib/python3.6/site-packages/urllib3/exceptions.py                           96     89     7%
+venv/lib/python3.6/site-packages/urllib3/packages/six.py                        473    462     2%
+venv/lib/python3.6/site-packages/urllib3/poolmanager.py                         170    117    31%
+venv/lib/python3.6/site-packages/urllib3/request.py                              39     38     3%
+venv/lib/python3.6/site-packages/urllib3/response.py                            397    282    29%
+venv/lib/python3.6/site-packages/urllib3/util/connection.py                      66     39    41%
+venv/lib/python3.6/site-packages/urllib3/util/queue.py                           14     10    29%
+venv/lib/python3.6/site-packages/urllib3/util/request.py                         50     47     6%
+venv/lib/python3.6/site-packages/urllib3/util/response.py                        35     22    37%
+venv/lib/python3.6/site-packages/urllib3/util/retry.py                          150    106    29%
+venv/lib/python3.6/site-packages/urllib3/util/timeout.py                         59     36    39%
+venv/lib/python3.6/site-packages/urllib3/util/url.py                            207    133    36%
+venv/lib/python3.6/site-packages/urllib3/util/wait.py                            77     56    27%
+venv/lib/python3.6/site-packages/web3/_utils/abi.py                             345    261    24%
+venv/lib/python3.6/site-packages/web3/_utils/caching.py                          15      6    60%
+venv/lib/python3.6/site-packages/web3/_utils/contracts.py                        99     60    39%
+venv/lib/python3.6/site-packages/web3/_utils/datatypes.py                        17      7    59%
+venv/lib/python3.6/site-packages/web3/_utils/decorators.py                       33     18    45%
+venv/lib/python3.6/site-packages/web3/_utils/encoding.py                        177    147    17%
+venv/lib/python3.6/site-packages/web3/_utils/ens.py                              30     27    10%
+venv/lib/python3.6/site-packages/web3/_utils/formatters.py                       79     49    38%
+venv/lib/python3.6/site-packages/web3/_utils/http.py                              4      1    75%
+venv/lib/python3.6/site-packages/web3/_utils/module.py                           11      3    73%
+venv/lib/python3.6/site-packages/web3/_utils/normalizers.py                      97     60    38%
+venv/lib/python3.6/site-packages/web3/_utils/request.py                          17      8    53%
+venv/lib/python3.6/site-packages/web3/_utils/rpc_abi.py                          21     11    48%
+venv/lib/python3.6/site-packages/web3/_utils/transactions.py                     88     78    11%
+venv/lib/python3.6/site-packages/web3/_utils/validation.py                       76     62    18%
+venv/lib/python3.6/site-packages/web3/auto/__init__.py                            2      0   100%
+venv/lib/python3.6/site-packages/web3/contract.py                               582    485    17%
+venv/lib/python3.6/site-packages/web3/datastructures.py                         121     90    26%
+venv/lib/python3.6/site-packages/web3/eth.py                                    194    169    13%
+venv/lib/python3.6/site-packages/web3/main.py                                   103     86    17%
+venv/lib/python3.6/site-packages/web3/manager.py                                 61     43    30%
+venv/lib/python3.6/site-packages/web3/middleware/__init__.py                     20     19     5%
+venv/lib/python3.6/site-packages/web3/middleware/attrdict.py                     13      4    69%
+venv/lib/python3.6/site-packages/web3/middleware/exception_retry_request.py      23     10    57%
+venv/lib/python3.6/site-packages/web3/middleware/formatting.py                   25      7    72%
+venv/lib/python3.6/site-packages/web3/middleware/gas_price_strategy.py           12      8    33%
+venv/lib/python3.6/site-packages/web3/middleware/names.py                         6      4    33%
+venv/lib/python3.6/site-packages/web3/middleware/normalize_errors.py             11      6    45%
+venv/lib/python3.6/site-packages/web3/middleware/pythonic.py                     56     50    11%
+venv/lib/python3.6/site-packages/web3/middleware/stalecheck.py                   21     18    14%
+venv/lib/python3.6/site-packages/web3/middleware/validation.py                   30     25    17%
+venv/lib/python3.6/site-packages/web3/module.py                                  32     23    28%
+venv/lib/python3.6/site-packages/web3/providers/auto.py                          49     47     4%
+venv/lib/python3.6/site-packages/web3/providers/base.py                          41     28    32%
+venv/lib/python3.6/site-packages/web3/providers/rpc.py                           38     23    39%
+venv/lib/python3.6/site-packages/web3/providers/websocket.py                     66     46    30%
+-------------------------------------------------------------------------------------------------
+TOTAL                                                                         34307  26127    24%
+
+=========== 116 passed, 1 skipped, 395 warnings in 135.67s (0:02:15) ===========

@@ -88,7 +88,7 @@ def accept_pending_delegation(skale, delegation_id):
 
 def get_test_delegation_amount(skale):
     msr = skale.constants_holder.msr()
-    return msr * 10
+    return msr * 100
 
 
 def set_test_msr(skale):
