@@ -7,21 +7,21 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        "flake8==3.7.8",
+        "flake8==3.7.9",
         "isort>=4.2.15,<4.3.22",
     ],
     'dev': [
         "bumpversion==0.5.3",
-        "pytest==5.2.1",
+        "pytest==5.3.5",
         "click==7.0",
-        "twine==1.12.1",
-        "mock==3.0.5",
+        "twine==3.1.1",
+        "mock==4.0.1",
         "when-changed",
         "Random-Word==1.0.4",
         "pytest-cov==2.8.1"
     ],
     'hw-wallet': [
-        "ledgerblue==0.1.29"
+        "ledgerblue==0.1.31"
     ]
 }
 
@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='3.0',
+    version='3.2',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -39,10 +39,10 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==5.2.2",
+        "web3==5.5.1",
         "asyncio==3.4.3",
-        "pyyaml==5.1.2",
-        "sgx.py==0.3dev0",
+        "pyyaml==5.3",
+        "sgx.py==0.4dev3",
     ],
 
     python_requires='>=3.6,<4',

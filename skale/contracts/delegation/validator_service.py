@@ -26,7 +26,7 @@ from skale.utils.constants import GAS
 
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
-    'registration_time', 'minimum_delegation_amount', 'last_bounty_collection_month'
+    'registration_time', 'minimum_delegation_amount', 'trusted'
 ]
 
 
@@ -48,7 +48,9 @@ class ValidatorService(BaseContract):
         :returns: Validator info
         :rtype: dict
         """
-        return self.__get_raw(_id)
+        validator = self.__get_raw(_id)
+        validator.append(self._is_validator_trusted(_id))
+        return validator
 
     def get_with_id(self, _id) -> dict:
         """Returns validator info with ID.
@@ -68,7 +70,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.numberOfValidators().call()
 
-    def ls(self):
+    def ls(self, trusted_only=False):
         """Returns list of registered validators.
 
         :returns: List of validators
@@ -76,6 +78,9 @@ class ValidatorService(BaseContract):
         """
         number_of_validators = self.number_of_validators()
         validators = [
+            self.get_with_id(val_id)
+            for val_id in self.get_trusted_validator_ids()
+        ] if trusted_only else [
             self.get_with_id(val_id)
             for val_id in range(1, number_of_validators+1)
         ]
@@ -125,12 +130,78 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorId(validator_address).call()
 
+    def get_trusted_validator_ids(self) -> list:
+        """Returns list of trusted validators id.
+
+        :returns: List of trusted validators id
+        :rtype: list
+        """
+        return self.contract.functions.getTrustedValidators().call()
+
+    def get_validator_node_indices(self, validator_id: int) -> list:
+        """Returns list of node indices to the validator
+
+        :returns: List of trusted node indices
+        :rtype: list
+        """
+        return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
+
     @transaction_method
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         func = self.contract.functions.enableValidator(validator_id)
         return post_transaction(self.skale.wallet, func, GAS['enable_validator'])
 
+    @transaction_method
+    def _disable_validator(self, validator_id: int) -> TxRes:
+        """For internal usage only"""
+        func = self.contract.functions.disableValidator(validator_id)
+        return post_transaction(self.skale.wallet, func, GAS['disable_validator'])
+
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.trustedValidators(validator_id).call()
+
+    @transaction_method
+    def register_validator(self, name: str, description: str, fee_rate: int,
+                           min_delegation_amount: int) -> TxRes:
+        """Registers a new validator in the SKALE Manager contracts.
+
+        :param name:z Validator name
+        :type name: str
+        :param description: Validator description
+        :type description: str
+        :param fee_rate: Validator fee rate
+        :type fee_rate: int
+        :param min_delegation_amount: Minimal delegation amount
+        :type min_delegation_amount: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.registerValidator(
+            name, description, fee_rate, min_delegation_amount)
+        return post_transaction(self.skale.wallet, func, GAS['register_validator'])
+
+    @transaction_method
+    def link_node_address(self, node_address: str) -> TxRes:
+        """Link node address to your validator account.
+
+        :param node_address: Address of the node to link
+        :type node_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.linkNodeAddress(node_address)
+        return post_transaction(self.skale.wallet, func, GAS['link_node_address'])
+
+    @transaction_method
+    def unlink_node_address(self, node_address: str) -> TxRes:
+        """Unlink node address from your validator account.
+
+        :param node_address: Address of the node to unlink
+        :type node_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        func = self.contract.functions.unlinkNodeAddress(node_address)
+        return post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])

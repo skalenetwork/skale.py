@@ -14,10 +14,11 @@ from skale.contracts.data.monitors_data import MonitorsData
 
 from skale.contracts.functionality.schains import SChains
 from skale.contracts.functionality.nodes import Nodes
+from skale.contracts.functionality.monitors import MonitorsFunctionality
 
-from skale.contracts.delegation.delegation_service import DelegationService
 from skale.contracts.delegation.delegation_controller import DelegationController
 from skale.contracts.delegation.validator_service import ValidatorService
 from skale.contracts.delegation.token_state import TokenState
+from skale.contracts.delegation.distributor import Distributor
 
 from skale.contracts.dkg import DKG

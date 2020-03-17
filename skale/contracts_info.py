@@ -34,6 +34,8 @@ CONTRACTS_INFO = [
                  ContractTypes.API, True),
     ContractInfo('schains', 'SchainsFunctionality', contracts.SChains,
                  ContractTypes.API, True),
+    ContractInfo('monitors', 'MonitorsFunctionality', contracts.MonitorsFunctionality,
+                 ContractTypes.API, True),
     ContractInfo('nodes_data', 'NodesData', contracts.NodesData,
                  ContractTypes.DATA, True),
     ContractInfo('schains_data', 'SchainsData', contracts.SChainsData,
@@ -41,12 +43,19 @@ CONTRACTS_INFO = [
     ContractInfo('monitors_data', 'MonitorsData', contracts.MonitorsData,
                  ContractTypes.DATA, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
-    ContractInfo('delegation_service', 'DelegationService', contracts.DelegationService,
-                 ContractTypes.API, False),
     ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,
                  ContractTypes.API, False),
     ContractInfo('validator_service', 'ValidatorService', contracts.ValidatorService,
                  ContractTypes.API, False),
     ContractInfo('token_state', 'TokenState', contracts.TokenState,
+                 ContractTypes.API, False),
+    ContractInfo('distributor', 'Distributor', contracts.Distributor,
                  ContractTypes.API, False)
 ]
+
+
+def get_contracts_info():
+    contracts_info = {}
+    for contract_info in CONTRACTS_INFO:
+        contracts_info[contract_info.name] = contract_info
+    return contracts_info

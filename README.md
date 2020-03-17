@@ -1,8 +1,9 @@
 # skale.py
 
 [![PyPI version](https://badge.fury.io/py/skale.py.svg)](https://badge.fury.io/py/skale.py)
-[![Build Status](https://travis-ci.com/skalenetwork/skale.py.svg?token=tLesVRTSHvWZxoyqXdoA&branch=develop)](https://travis-ci.com/skalenetwork/skale.py) 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/skalenetwork/skale.py/Test) 
 [![codecov](https://codecov.io/gh/skalenetwork/skale.py/branch/develop/graph/badge.svg?token=XHiZ15ijpa)](https://codecov.io/gh/skalenetwork/skale.py)
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/skalenetwork/skale.py)
 [![Discord](https://img.shields.io/discord/534485763354787851.svg)](https://discord.gg/vvUtWJB)
 
 Python client library used in SKALE network components.
@@ -70,9 +71,11 @@ You can find usage examples [here](https://github.com/skalenetwork/skale.py-exam
 
 ##### Install local version (with hot reload)
 
-    virtualenv venv
-    . venv/bin/activate 
-    pip install -e .[dev]
+```bash
+virtualenv venv
+. venv/bin/activate 
+pip install -e .[dev]
+```
 
 #### Build and publish library
 
@@ -90,7 +93,7 @@ bash build_and_publish.sh major/minor/patch
 
 Show flake8 errors on file change:
 
-```sh
+```bash
 # Test flake8
 WHEN_CHANGED_EVENT=file_modified when-changed -v -s -r -1 skale/ tests/ examples/ -c "clear; flake8 web3 tests ens && echo 'flake8 success' || echo 'error'"
 ```

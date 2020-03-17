@@ -33,7 +33,7 @@ GAS = {
     'set_periods': 200000,
     'delete_node': 6000000,
     'delete_node_by_root': 6000000,
-    'delete_schain': 6000000,
+    'delete_schain': 8000000,
     'dkg_broadcast': 8000000,
     'dkg_response': 8000000,
     'dkg_alright': 1000000,
@@ -43,10 +43,12 @@ GAS = {
     'delegate': 3000000,
     'accept_pending_delegation': 1000000,
     'enable_validator': 1000000,
+    'disable_validator': 1000000,
     'link_node_address': 1000000,
     'unlink_node_address': 1000000,
     'cancel_pending_delegation': 1000000,
     'withdraw_bounty': 3000000,
+    'withdraw_fee': 3000000,
 
     'skip_transition_delay': 1000000,
     'set_msr': 200000

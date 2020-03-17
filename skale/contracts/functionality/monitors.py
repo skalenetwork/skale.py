@@ -20,5 +20,5 @@
 from skale.contracts import BaseContract
 
 
-class TokenState(BaseContract):
-    """Wrapper for TokenState.sol functions"""
+class MonitorsFunctionality(BaseContract):
+    """Wrapper for MonitorsFunctionality.sol functions"""
