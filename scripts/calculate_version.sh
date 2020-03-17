@@ -18,7 +18,7 @@ fi
 
 if [[ $BRANCH == 'master' ]]; then
     echo $VERSION
-    exit 1
+    exit 0
 elif [[ $BRANCH == 'develop' ]]; then
     POSTFIX="dev"
 elif [[ $BRANCH == 'beta' ]]; then
@@ -33,7 +33,7 @@ git fetch --tags > /dev/null
 for (( NUMBER=0; ; NUMBER++ ))
 do
     FULL_VERSION="$VERSION$POSTFIX$NUMBER"
-    if ! [ $(git tag -l | grep $FULL_VERSION) ]; then
+    if ! [[ $(git tag -l | grep $FULL_VERSION) ]]; then
         echo "$FULL_VERSION" | tr / -
         break
     fi

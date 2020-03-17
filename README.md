@@ -7,21 +7,47 @@
 
 Python client library used in SKALE network components.
 
--   Python 3.6+ support
+- Python 3.6+ support
+- Compatibility with `web3.py` v5
 
 ### Installation
 
 ```bash
-pip install skale
+pip install skale.py
 ```
 
 ### Usage
 
-Library initialization
+#### Supported wallets
+
+- Ledger Wallet (works with Ledger Nano S and other models)
+- RPC Wallet (works with [SKALE Transactions Manager](https://github.com/skalenetwork/transactions-manager))
+- SGX Wallet (works with [SKALE SGX Wallet](https://github.com/skalenetwork/sgxwallet))
+- Web3 Wallet (works with `web3.py` embeded functions)
+
+#### Library initialization
+
+With embeded Web3Wallet
 
 ```python
-from skale import Skale, BlockchainEnv
-skale = Skale(BlockchainEnv.DO)
+from skale import Skale
+from skale.wallets import Web3Wallet
+from skale.utils.web3_utils import init_web3
+
+web3 = init_web3(ENDPOINT)
+wallet = Web3Wallet(private_key, web3)
+skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
+```
+
+With external transactions manager:
+
+```python
+from skale import Skale
+from skale.wallets import RPCWallet
+
+web3 = init_web3(ENDPOINT)
+wallet = RPCWallet(TM_URL)
+skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
 ```
 
 Interactions with SKALE contracts
@@ -30,6 +56,15 @@ Interactions with SKALE contracts
 active_nodes = skale.nodes_data.get_active_node_ips()
 schains = skale.schains_data.get_schains_for_owner('0x...')
 ```
+
+#### Working in multiple threads
+
+Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.  
+Take a look on the `tests/multithreading_test.py` for the reference.
+
+#### Code samples
+
+You can find usage examples [here](https://github.com/skalenetwork/skale.py-examples).
 
 ### Development
 
@@ -89,4 +124,4 @@ See `tests/README.md`
 
 ![GitHub](https://img.shields.io/github/license/skalenetwork/skale.py.svg)
 
-All contributions are made under the [GNU Lesser General Public License v3](https://www.gnu.org/licenses/lgpl-3.0.en.html). See [LICENSE](LICENSE).
+All contributions are made under the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html). See [LICENSE](LICENSE).

@@ -1,21 +1,3 @@
-#   -*- coding: utf-8 -*-
-#
-#   This file is part of SKALE.py
-#
-#   Copyright (C) 2019 SKALE Labs
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
-#
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE manager test """
 
 import mock
@@ -24,15 +6,35 @@ import web3
 from hexbytes import HexBytes
 
 import skale.utils.helper as helper
+from skale.utils.constants import GAS
+from skale.utils.web3_utils import (wait_receipt, private_key_to_public,
+                                    TransactionFailedError)
 
-from tests.constants import DEFAULT_NODE_NAME
+from tests.constants import DEFAULT_NODE_NAME, SECOND_NODE_NAME
 from tests.utils import generate_random_node_data, generate_random_schain_data
 
 
-def test_create_node_data_to_bytes(skale, wallet):
+def test_get_validated_array(skale):
+    # Temporary put this test here
+    # TODO: move it to validators_data_test.py
+    node_id_a = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_id_b = skale.nodes_data.node_name_to_index(SECOND_NODE_NAME)
+
+    validated_array = skale.validators_data.get_validated_array(node_id_a)
+    assert len(validated_array) == 1
+
+    node_in_bytes = validated_array[0]
+    validated_node_id = int.from_bytes(node_in_bytes[:14], byteorder='big')
+    assert validated_node_id == node_id_b
+
+    validated_array = skale.validators_data.get_validated_array(node_id_b)
+    assert validated_array == []
+
+
+def test_create_node_data_to_bytes(skale):
     ip, public_ip, port, name = generate_random_node_data()
     skale_nonce = helper.generate_nonce()
-    pk = helper.private_key_to_public(wallet['private_key'])
+    pk = private_key_to_public(skale.wallet._private_key)
 
     bytes_data = skale.manager.create_node_data_to_bytes(
         ip, public_ip, port, name, pk, skale_nonce)
@@ -58,14 +60,14 @@ def test_create_schain_data_to_bytes(skale):
     assert bytes_data.find(name_bytes) != -1
 
 
-def test_get_bounty(skale, wallet):
-    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
-    nonce = skale.web3.eth.getTransactionCount(wallet['address'])
-    gas_price = skale.web3.eth.gasPrice
+def test_get_bounty(skale):
+    node_id = 0
+    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.manager.address
+    chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': None,
-        'gas': 4500000, 'nonce': nonce,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
+        'gas': GAS['get_bounty'], 'nonce': nonce,
         'to': contract_address,
         'data': (
             '0xee8c4bbf00000000000000000000000000000000000000000000'
@@ -73,20 +75,19 @@ def test_get_bounty(skale, wallet):
         )
     }
     exp = skale.web3.eth.account.signTransaction(
-        expected_txn, wallet['private_key']).rawTransaction
+        expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
-        skale.manager.get_bounty(node_id, wallet)
+        skale.manager.get_bounty(node_id)
         send_tx_mock.assert_called_with(HexBytes(exp))
 
 
-def test_send_verdict(skale, wallet):
-    nonce = skale.web3.eth.getTransactionCount(wallet['address'])
-    gas_price = skale.web3.eth.gasPrice
+def test_send_verdict(skale):
+    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.manager.address
-
+    chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': None,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': 200000, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -99,7 +100,7 @@ def test_send_verdict(skale, wallet):
         )
     }
     exp = skale.web3.eth.account.signTransaction(
-        expected_txn, wallet['private_key']).rawTransaction
+        expected_txn, skale.wallet._private_key).rawTransaction
     validator_id = 0
     another_node_id = 123
     downtime = 20
@@ -107,18 +108,17 @@ def test_send_verdict(skale, wallet):
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
         skale.manager.send_verdict(validator_id, another_node_id, downtime,
-                                   latency, wallet)
+                                   latency)
         send_tx_mock.assert_called_with(HexBytes(exp))
 
 
-def test_send_verdicts(skale, wallet):
-    nonce = skale.web3.eth.getTransactionCount(wallet['address'])
-    gas_price = skale.web3.eth.gasPrice
+def test_send_verdicts(skale):
+    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.manager.address
-
+    chain_id = skale.web3.eth.chainId
     expected_txn = {
-        'value': 0, 'gasPrice': gas_price, 'chainId': None,
-        'gas': 200000, 'nonce': nonce,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
+        'gas': 500000, 'nonce': nonce,
         'to': contract_address,
         'data': ('0x25b2114b000000000000000000000000000000000000000000'
                  '0000000000000000000000000000000000000000000000000000'
@@ -142,7 +142,7 @@ def test_send_verdicts(skale, wallet):
                  '000000000000000000000000000000000000000000001e')
     }
     exp = skale.web3.eth.account.signTransaction(
-        expected_txn, wallet['private_key']).rawTransaction
+        expected_txn, skale.wallet._private_key).rawTransaction
     validator_id = 0
     another_node_ids = [123, 231, 451]
     downtimes = [1, 2, 3]
@@ -150,16 +150,16 @@ def test_send_verdicts(skale, wallet):
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
         skale.manager.send_verdicts(validator_id, another_node_ids, downtimes,
-                                    latencies, wallet)
+                                    latencies)
         send_tx_mock.assert_called_with(HexBytes(exp))
 
 
-def test_create_node_delete_node_by_root(skale, wallet):
+def test_create_node_delete_node_by_root(skale):
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
 
     ip, public_ip, port, name = generate_random_node_data()
-    res = skale.manager.create_node(ip, port, name, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
+    res = skale.manager.create_node(ip, port, name)
+    receipt = wait_receipt(skale.web3, res['tx'])
     assert receipt['status'] == 1
 
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
@@ -167,20 +167,20 @@ def test_create_node_delete_node_by_root(skale, wallet):
 
     node_idx = skale.nodes_data.node_name_to_index(name)
 
-    res = skale.manager.delete_node_by_root(node_idx, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
+    res = skale.manager.delete_node_by_root(node_idx)
+    receipt = wait_receipt(skale.web3, res['tx'])
     assert receipt['status'] == 1
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
-def test_create_deregister_node_create_schain(skale, wallet):
+def test_create_deregister_node(skale):
     # Create node
     active_node_ids_before = skale.nodes_data.get_active_node_ids()
 
     ip, public_ip, port, name = generate_random_node_data()
-    res = skale.manager.create_node(ip, port, name, wallet, public_ip)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
+    res = skale.manager.create_node(ip, port, name, public_ip)
+    receipt = wait_receipt(skale.web3, res['tx'])
     assert receipt['status'] == 1
 
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
@@ -188,62 +188,24 @@ def test_create_deregister_node_create_schain(skale, wallet):
 
     node_idx = skale.nodes_data.node_name_to_index(name)
 
-    # Create schain
-
-    schains_ids = skale.schains_data.get_all_schains_ids()
-
-    type_, lifetime_seconds, name = generate_random_schain_data()
-    price_in_wei = skale.schains.get_schain_price(type_, lifetime_seconds)
-    res = skale.manager.create_schain(lifetime_seconds, type_,
-                                      price_in_wei, name, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
-
-    schains_ids_number_after = skale.schains_data.get_schains_number()
-    assert schains_ids_number_after == len(schains_ids) + 1
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
-
-    schains_names = [
-        skale.schains_data.get(sid)['name']
-        for sid in schains_ids_after
-    ]
-    assert name in schains_names
-
-    res = skale.manager.delete_schain(name, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
-    assert receipt['status'] == 1
-
-    schains_ids_number_after = skale.schains_data.get_schains_number()
-    assert schains_ids_number_after == len(schains_ids)
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
-
-    schains_names = [
-        skale.schains_data.get(sid)['name']
-        for sid in schains_ids_after
-    ]
-    assert name not in schains_names
-
     # Deregister node
 
-    res = skale.manager.deregister(node_idx, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
+    res = skale.manager.deregister(node_idx)
+    receipt = wait_receipt(skale.web3, res['tx'])
     assert receipt['status'] == 1
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
-@pytest.mark.skip('Manager is currently unstable for this case,'
-                  'so as a workaround this functionallity is tested in'
-                  'test_create_deregister_node_create_schain')
-def test_create_delete_schain(skale, wallet):
+def test_create_delete_schain(skale):
     schains_ids = skale.schains_data.get_all_schains_ids()
 
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes,
                                                   lifetime_seconds)
     res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
-                                      price_in_wei, name, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
+                                      price_in_wei, name)
+    receipt = wait_receipt(skale.web3, res['tx'])
     assert receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_data.get_schains_number()
@@ -256,8 +218,8 @@ def test_create_delete_schain(skale, wallet):
     ]
     assert name in schains_names
 
-    res = skale.manager.delete_schain(name, wallet)
-    receipt = helper.await_receipt(skale.web3, res['tx'])
+    res = skale.manager.delete_schain(name)
+    receipt = wait_receipt(skale.web3, res['tx'])
     assert receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_data.get_schains_number()
@@ -269,3 +231,45 @@ def test_create_delete_schain(skale, wallet):
         for sid in schains_ids_after
     ]
     assert name not in schains_names
+
+
+def test_create_delete_default_schain(skale):
+    schains_ids = skale.schains_data.get_all_schains_ids()
+    name = 'default-schain'
+    res = skale.manager.create_default_schain(name)
+    assert res['status'] == 1
+
+    schains_ids_number_after = skale.schains_data.get_schains_number()
+    assert schains_ids_number_after == len(schains_ids) + 1
+    schains_ids_after = skale.schains_data.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains_data.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name in schains_names
+
+    res = skale.manager.delete_schain(name, wait_for=True)
+    assert res['status'] == 1
+
+    schains_ids_number_after = skale.schains_data.get_schains_number()
+    assert schains_ids_number_after == len(schains_ids)
+    schains_ids_after = skale.schains_data.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains_data.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name not in schains_names
+
+
+def test_create_node_status_0(skale):
+    ip, public_ip, port, name = generate_random_node_data()
+    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        send_tx_mock.return_value = b'hexstring'
+        with mock.patch(
+            'skale.contracts.base_contract.wait_for_receipt_by_blocks',
+            return_value={'status': 0}
+        ):
+            with pytest.raises(TransactionFailedError):
+                skale.manager.create_node(ip, port, name, wait_for=True)

@@ -3,7 +3,7 @@
 set -e
 
 CURRENT_VERSION="$(python setup.py --version)"
-sed -i "s/${CURRENT_VERSION}/${VERSION}/g" setup.py
+sed -i "s/version='${CURRENT_VERSION}/version='${VERSION}/g" setup.py
 
 rm -rf ./dist/*
 

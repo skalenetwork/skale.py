@@ -2,20 +2,20 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019 SKALE Labs
+#   Copyright (C) 2019-Present SKALE Labs
 #
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Lesser General Public License as published by
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
 #
-#   This program is distributed in the hope that it will be useful,
+#   SKALE.py is distributed in the hope that it will be useful,
 #   but WITHOUT ANY WARRANTY; without even the implied warranty of
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Lesser General Public License for more details.
+#   GNU Affero General Public License for more details.
 #
-#   You should have received a copy of the GNU Lesser General Public License
-#   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ Get SKALE node data """
 
 import socket
@@ -24,7 +24,7 @@ from Crypto.Hash import keccak
 from web3.exceptions import BadFunctionCallOutput
 
 from skale.contracts import BaseContract
-from skale.utils.helper import format
+from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'ip', 'publicIP', 'port', 'publicKey', 'start_date',
@@ -45,11 +45,11 @@ class NodesData(BaseContract):
         except (ValueError, BadFunctionCallOutput):
             return None
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get(self, node_id):
         return self.__get_raw(node_id)
 
-    @format(FIELDS)
+    @format_fields(FIELDS)
     def get_by_name(self, name):
         name_hash = self.name_to_id(name)
         id = self.contract.functions.nodesNameToIndex(name_hash).call()
