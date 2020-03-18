@@ -16,23 +16,9 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE token operations """
 
-from skale.contracts import BaseContract, transaction_method
-from skale.transactions.tools import post_transaction
-from skale.utils.constants import GAS
+from skale.contracts import BaseContract
 
 
-class Token(BaseContract):
-    @transaction_method
-    def transfer(self, address, value):
-        op = self.contract.functions.send(address, value, b'')
-        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])
-
-    def get_balance(self, address):
-        return self.contract.functions.balanceOf(address).call()
-
-    @transaction_method
-    def add_authorized(self, address, wallet):  # pragma: no cover
-        op = self.contract.functions.addAuthorized(address)
-        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])
+class MonitorsFunctionality(BaseContract):
+    """Wrapper for MonitorsFunctionality.sol functions"""
