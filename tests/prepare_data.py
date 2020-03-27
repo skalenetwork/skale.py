@@ -25,6 +25,10 @@ def prepare_data(cleanup_only):
     if not cleanup_only:
         try:
             setup_validator(skale)
+            skale.validator_service.link_node_address(
+                node_address=skale.wallet.address,
+                wait_for=True
+            )
             _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
             create_nodes(skale)
             create_schain(skale)
