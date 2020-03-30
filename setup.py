@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='3.2',
+    version='3.3',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -47,8 +47,6 @@ setup(
 
     python_requires='>=3.6,<4',
     extras_require=extras_require,
-
-
 
     keywords='skale',
     packages=find_packages(exclude=['tests']),
