@@ -23,6 +23,7 @@ from functools import wraps
 
 from web3 import Web3
 
+from skale.transactions.tools import post_transaction, make_call
 from skale.utils.web3_utils import (TransactionFailedError,
                                     wait_for_receipt_by_blocks)
 
@@ -30,32 +31,50 @@ from skale.utils.web3_utils import (TransactionFailedError,
 logger = logging.getLogger(__name__)
 
 
-def transaction_method(transaction):
-    @wraps(transaction)
-    def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1, **kwargs):
-        for retry in range(retries):
-            logger.info(
-                f'transaction_method: {transaction.__name__}, try {retry+1}/{retries}, '
-                f'wallet: {self.skale.wallet.__class__.__name__}, '
-                f'sender: {self.skale.wallet.address}'
-            )
-            tx_res = transaction(self, *args, **kwargs)
-            if wait_for:
-                tx_res.receipt = wait_for_receipt_by_blocks(
-                    self.skale.web3,
-                    tx_res.hash,
-                    timeout=timeout,
-                    blocks_to_wait=blocks_to_wait
+def transaction_method(gas_limit):
+    def real_decorator(transaction):
+        @wraps(transaction)
+        def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1,
+                    gas_price=None, nonce=None, dry_run=False, **kwargs):
+            method = transaction(self, *args, **kwargs)
+            if dry_run:
+                opts = {
+                    'from': self.skale.wallet.address,
+                    'gas': gas_limit
+                }
+                logger.info(
+                    f'transaction_method: {transaction.__name__} - dry_run, '
+                    f'sender: {self.skale.wallet.address}, '
+                    f'gas: {gas_limit}'
                 )
-                if tx_res.receipt['status'] == 1:
-                    return tx_res
+                return make_call(method, opts)
             else:
-                return tx_res
-        raise TransactionFailedError(
-            f'transaction_method failed: {transaction.__name__}, '
-            f'receipt: {tx_res.receipt}'
-        )
-    return wrapper
+                for retry in range(retries):
+                    logger.info(
+                        f'transaction_method: {transaction.__name__}, try {retry+1}/{retries}, '
+                        f'wallet: {self.skale.wallet.__class__.__name__}, '
+                        f'sender: {self.skale.wallet.address}, '
+                        f'gas: {gas_limit}'
+                    )
+                    tx_res = post_transaction(self.skale.wallet, method, gas_limit, gas_price,
+                                              nonce)
+                    if wait_for:
+                        tx_res.receipt = wait_for_receipt_by_blocks(
+                            self.skale.web3,
+                            tx_res.hash,
+                            timeout=timeout,
+                            blocks_to_wait=blocks_to_wait
+                        )
+                        if tx_res.receipt['status'] == 1:
+                            return tx_res
+                    else:
+                        return tx_res
+                raise TransactionFailedError(
+                    f'transaction_method failed: {transaction.__name__}, '
+                    f'receipt: {tx_res.receipt}'
+                )
+        return wrapper
+    return real_decorator
 
 
 class BaseContract:

@@ -19,20 +19,17 @@
 """ SKALE token operations """
 
 from skale.contracts import BaseContract, transaction_method
-from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
 
 
 class Token(BaseContract):
-    @transaction_method
+    @transaction_method(GAS['token_transfer'])
     def transfer(self, address, value):
-        op = self.contract.functions.send(address, value, b'')
-        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])
+        return self.contract.functions.send(address, value, b'')
 
     def get_balance(self, address):
         return self.contract.functions.balanceOf(address).call()
 
-    @transaction_method
+    @transaction_method(GAS['token_transfer'])
     def add_authorized(self, address, wallet):  # pragma: no cover
-        op = self.contract.functions.addAuthorized(address)
-        return post_transaction(self.skale.wallet, op, GAS['token_transfer'])
+        return self.contract.functions.addAuthorized(address)

@@ -24,8 +24,8 @@ def test_broadcast(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
-        skale.dkg.broadcast(group_index, node_index,
-                            validation_vector, secret_key_conribution)
+        skale.dkg.broadcast(group_index, node_index, validation_vector, secret_key_conribution,
+                            gas_price=skale.dkg.gas_price())
         send_tx_mock.assert_called_with(HexBytes(exp))
 
 
@@ -50,8 +50,8 @@ def test_response(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
-        skale.dkg.response(group_index, from_node_index,
-                           secret_number, multiplied_share)
+        skale.dkg.response(group_index, from_node_index, secret_number, multiplied_share,
+                           gas_price=skale.dkg.gas_price())
         send_tx_mock.assert_called_with(HexBytes(exp))
 
 
@@ -74,7 +74,7 @@ def test_allright(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
-        skale.dkg.alright(group_index, from_node_index)
+        skale.dkg.alright(group_index, from_node_index, gas_price=skale.dkg.gas_price())
         send_tx_mock.assert_called_with(HexBytes(exp))
 
 
@@ -98,5 +98,6 @@ def test_complaint(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
-        skale.dkg.complaint(group_index, from_node_index, to_node_index)
+        skale.dkg.complaint(group_index, from_node_index, to_node_index,
+                            gas_price=skale.dkg.gas_price())
         send_tx_mock.assert_called_with(HexBytes(exp))

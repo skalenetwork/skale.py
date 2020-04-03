@@ -106,8 +106,8 @@ def test_get_validator_node_indices(skale):
     node_indices = skale.validator_service.get_validator_node_indices(
         validator_id=D_VALIDATOR_ID
     )
-    assert 0 in node_indices
-    assert 1 in node_indices
+    all_active_node_ids = skale.nodes_data.get_active_node_ids()
+    assert set(all_active_node_ids).issubset(node_indices)
 
 
 def test_enable_validator(skale):
