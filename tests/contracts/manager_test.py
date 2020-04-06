@@ -101,7 +101,7 @@ def test_send_verdicts(skale):
     chain_id = skale.web3.eth.chainId
     expected_txn = {
         'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
-        'gas': 500000, 'nonce': nonce,
+        'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
         'data': ('0x25b2114b000000000000000000000000000000000000000000'
                  '0000000000000000000000000000000000000000000000000000'
