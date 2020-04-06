@@ -20,7 +20,6 @@
 from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
-from skale.transactions.tools import post_transaction
 from skale.dataclasses.tx_res import TxRes
 from skale.utils.constants import GAS
 
@@ -146,23 +145,21 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
 
-    @transaction_method
+    @transaction_method(GAS['enable_validator'])
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
-        func = self.contract.functions.enableValidator(validator_id)
-        return post_transaction(self.skale.wallet, func, GAS['enable_validator'])
+        return self.contract.functions.enableValidator(validator_id)
 
-    @transaction_method
+    @transaction_method(GAS['disable_validator'])
     def _disable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
-        func = self.contract.functions.disableValidator(validator_id)
-        return post_transaction(self.skale.wallet, func, GAS['disable_validator'])
+        return self.contract.functions.disableValidator(validator_id)
 
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.trustedValidators(validator_id).call()
 
-    @transaction_method
+    @transaction_method(GAS['register_validator'])
     def register_validator(self, name: str, description: str, fee_rate: int,
                            min_delegation_amount: int) -> TxRes:
         """Registers a new validator in the SKALE Manager contracts.
@@ -178,11 +175,10 @@ class ValidatorService(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.registerValidator(
+        return self.contract.functions.registerValidator(
             name, description, fee_rate, min_delegation_amount)
-        return post_transaction(self.skale.wallet, func, GAS['register_validator'])
 
-    @transaction_method
+    @transaction_method(GAS['link_node_address'])
     def link_node_address(self, node_address: str) -> TxRes:
         """Link node address to your validator account.
 
@@ -191,10 +187,9 @@ class ValidatorService(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.linkNodeAddress(node_address)
-        return post_transaction(self.skale.wallet, func, GAS['link_node_address'])
+        return self.contract.functions.linkNodeAddress(node_address)
 
-    @transaction_method
+    @transaction_method(GAS['unlink_node_address'])
     def unlink_node_address(self, node_address: str) -> TxRes:
         """Unlink node address from your validator account.
 
@@ -203,5 +198,4 @@ class ValidatorService(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.unlinkNodeAddress(node_address)
-        return post_transaction(self.skale.wallet, func, GAS['unlink_node_address'])
+        return self.contract.functions.unlinkNodeAddress(node_address)

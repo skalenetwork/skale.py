@@ -18,15 +18,13 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts import BaseContract, transaction_method
-from skale.transactions.tools import post_transaction
 from skale.utils.constants import GAS
 
 
 class ConstantsHolder(BaseContract):
-    @transaction_method
+    @transaction_method(GAS['set_periods'])
     def set_periods(self, new_reward_period, new_delta_period):
-        op = self.contract.functions.setPeriods(new_reward_period, new_delta_period)
-        return post_transaction(self.skale.wallet, op, GAS['set_periods'])
+        return self.contract.functions.setPeriods(new_reward_period, new_delta_period)
 
     def get_reward_period(self):
         return self.contract.functions.rewardPeriod().call()
@@ -34,18 +32,16 @@ class ConstantsHolder(BaseContract):
     def get_delta_period(self):
         return self.contract.functions.deltaPeriod().call()
 
-    @transaction_method
+    @transaction_method(GAS['set_check_time'])
     def set_check_time(self, new_check_time):
-        op = self.contract.functions.setCheckTime(new_check_time)
-        return post_transaction(self.skale.wallet, op, GAS['set_check_time'])
+        return self.contract.functions.setCheckTime(new_check_time)
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
 
-    @transaction_method
+    @transaction_method(GAS['set_latency'])
     def set_latency(self, new_allowable_latency):
-        op = self.contract.functions.setLatency(new_allowable_latency)
-        return post_transaction(self.skale.wallet, op, GAS['set_latency'])
+        return self.contract.functions.setLatency(new_allowable_latency)
 
     def get_latency(self):
         return self.contract.functions.allowableLatency().call()
@@ -58,8 +54,7 @@ class ConstantsHolder(BaseContract):
         """
         return self.contract.functions.msr().call()
 
-    @transaction_method
+    @transaction_method(GAS['set_msr'])
     def _set_msr(self, new_msr: int) -> None:
         """For internal usage only"""
-        op = self.contract.functions.setMSR(new_msr)
-        return post_transaction(self.skale.wallet, op, GAS['set_msr'])
+        return self.contract.functions.setMSR(new_msr)
