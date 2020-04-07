@@ -70,7 +70,7 @@ def transaction_method(gas_limit):
                         return tx_res
                 return tx_res
         return wrapper
-    return
+    return real_decorator
 
 
 class BaseContract:

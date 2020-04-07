@@ -81,7 +81,7 @@ class ValidatorService(BaseContract):
             for val_id in self.get_trusted_validator_ids()
         ] if trusted_only else [
             self.get_with_id(val_id)
-            for val_id in range(1, number_of_validators+1)
+            for val_id in range(1, number_of_validators + 1)
         ]
         return validators
 
