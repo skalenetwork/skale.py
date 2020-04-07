@@ -22,8 +22,8 @@ class TransactionFailedError(Exception):
     pass
 
 
-class TxRes:
-    def __init__(self, tx_hash, data=None, receipt=None):
+class TxRes():
+    def __init__(self, tx_hash=None, data=None, receipt=None):
         self._hash = tx_hash
         self._data = data
         self._receipt = receipt

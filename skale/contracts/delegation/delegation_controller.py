@@ -19,7 +19,6 @@
 
 from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
-from skale.transactions.tools import post_transaction
 from skale.dataclasses.tx_res import TxRes
 from skale.utils.constants import GAS
 from skale.dataclasses.delegation_status import DelegationStatus
@@ -125,7 +124,7 @@ class DelegationController(BaseContract):
         delegation_ids = self._get_delegation_ids_by_validator(validator_id)
         return self.get_all_delegations(delegation_ids)
 
-    @transaction_method
+    @transaction_method(GAS['delegate'])
     def delegate(self, validator_id: int, amount: int, delegation_period: int, info: str) -> TxRes:
         """Creates request to delegate amount of tokens to validator_id.
 
@@ -140,10 +139,9 @@ class DelegationController(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.delegate(validator_id, amount, delegation_period, info)
-        return post_transaction(self.skale.wallet, func, GAS['delegate'])
+        return self.contract.functions.delegate(validator_id, amount, delegation_period, info)
 
-    @transaction_method
+    @transaction_method(GAS['accept_pending_delegation'])
     def accept_pending_delegation(self, delegation_id: int) -> TxRes:
         """Accepts a pending delegation by delegation ID.
 
@@ -152,10 +150,9 @@ class DelegationController(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.acceptPendingDelegation(delegation_id)
-        return post_transaction(self.skale.wallet, func, GAS['accept_pending_delegation'])
+        return self.contract.functions.acceptPendingDelegation(delegation_id)
 
-    @transaction_method
+    @transaction_method(GAS['cancel_pending_delegation'])
     def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
         """Cancel pending delegation request.
 
@@ -164,8 +161,7 @@ class DelegationController(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.cancelPendingDelegation(delegation_id)
-        return post_transaction(self.skale.wallet, func, GAS['cancel_pending_delegation'])
+        return self.contract.functions.cancelPendingDelegation(delegation_id)
 
     def get_delegated_to_validator_now(self, validator_id: int) -> int:
         """Amount of delegated tokens to the validator

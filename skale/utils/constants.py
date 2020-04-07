@@ -21,11 +21,11 @@ NODE_DEPOSIT = 100000000000000000000
 
 GAS = {
     'add_validator': 4500000,
-    'create_node': 4500000,
+    'create_node': 8000000,
     'create_schain': 7500000,
-    'get_bounty': 4500000,
+    'get_bounty': 8000000,
     'send_verdict': 200000,
-    'send_verdicts': 500000,
+    'send_verdicts': 8000000,
     'set_check_time': 200000,
     'set_latency': 200000,
     'token_transfer': 600000,
