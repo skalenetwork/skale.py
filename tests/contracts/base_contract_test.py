@@ -13,7 +13,7 @@ def test_dry_run(skale):
     active_node_ids_after = skale.nodes_data.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
-    tx_res = skale.manager.create_node(ip, port, name, dry_run=False)
+    tx_res = skale.manager.create_node(ip, port, name, dry_run=False, wait_for=True)
 
     assert tx_res.hash is not None
 
