@@ -24,8 +24,7 @@ from functools import wraps
 from web3 import Web3
 
 from skale.transactions.tools import post_transaction, make_call
-from skale.utils.web3_utils import (TransactionFailedError,
-                                    wait_for_receipt_by_blocks)
+from skale.utils.web3_utils import wait_for_receipt_by_blocks
 
 
 logger = logging.getLogger(__name__)
@@ -69,10 +68,7 @@ def transaction_method(gas_limit):
                             return tx_res
                     else:
                         return tx_res
-                raise TransactionFailedError(
-                    f'transaction_method failed: {transaction.__name__}, '
-                    f'receipt: {tx_res.receipt}'
-                )
+                return tx_res
         return wrapper
     return real_decorator
 

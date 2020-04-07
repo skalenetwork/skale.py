@@ -29,10 +29,6 @@ from web3.exceptions import TransactionNotFound
 logger = logging.getLogger(__name__)
 
 
-class TransactionFailedError(Exception):
-    pass
-
-
 WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 
 

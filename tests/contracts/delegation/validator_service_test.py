@@ -3,9 +3,10 @@
 import pytest
 
 from skale.contracts.delegation.validator_service import FIELDS
-from skale.wallets.web3_wallet import generate_wallet
+from skale.dataclasses.tx_res import TransactionFailedError
 from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
+from skale.wallets.web3_wallet import generate_wallet
 
 from tests.constants import (
     NOT_EXISTING_ID, D_VALIDATOR_ID, D_VALIDATOR_NAME, D_VALIDATOR_DESC,
@@ -157,14 +158,16 @@ def test_is_validator_trusted(skale):
 
 
 def test_register_existing_validator(skale):
-    with pytest.raises(ValueError):
-        skale.validator_service.register_validator(
-            name=D_VALIDATOR_NAME,
-            description=D_VALIDATOR_DESC,
-            fee_rate=D_VALIDATOR_FEE,
-            min_delegation_amount=D_VALIDATOR_MIN_DEL,
-            wait_for=True
-        )
+    tx_res = skale.validator_service.register_validator(
+        name=D_VALIDATOR_NAME,
+        description=D_VALIDATOR_DESC,
+        fee_rate=D_VALIDATOR_FEE,
+        min_delegation_amount=D_VALIDATOR_MIN_DEL,
+        wait_for=True
+    )
+    assert tx_res.receipt['status'] != 1
+    with pytest.raises(TransactionFailedError):
+        tx_res.raise_for_status()
 
 
 def _generate_new_validator(skale):
