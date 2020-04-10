@@ -1,3 +1,10 @@
 ---
+engines:
+  bandit:
+    exclude_paths:
+      - skale/utils/random_names/generator.py
+      - skale/utils/contracts_provision/utils.py
+      - skale/utils/helper.py
 exclude_paths:
   - 'tests/**'
+  - '.github/**'
