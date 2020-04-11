@@ -27,10 +27,10 @@ class DKG(BaseContract):
 
     @transaction_method(GAS['dkg_broadcast'])
     def broadcast(self, group_index, node_index,
-                  verification_vector, secret_key_conribution):
+                  verification_vector, secret_key_contribution):
         return self.contract.functions.broadcast(group_index, node_index,
                                                  verification_vector,
-                                                 secret_key_conribution)
+                                                 secret_key_contribution)
 
     @transaction_method(GAS['dkg_response'])
     def response(self, group_index, from_node_index,
