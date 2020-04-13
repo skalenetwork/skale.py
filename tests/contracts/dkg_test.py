@@ -18,13 +18,13 @@ def test_broadcast(skale):
     group_index = b'e629fa6598d732768f7c726b4b621285'
     node_index = 0
     validation_vector = b'validation-vector'
-    secret_key_conribution = b'secret-key-contrib'
+    secret_key_contribution = b'secret-key-contrib'
 
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
-        skale.dkg.broadcast(group_index, node_index, validation_vector, secret_key_conribution,
+        skale.dkg.broadcast(group_index, node_index, validation_vector, secret_key_contribution,
                             gas_price=skale.dkg.gas_price())
         send_tx_mock.assert_called_with(HexBytes(exp))
 

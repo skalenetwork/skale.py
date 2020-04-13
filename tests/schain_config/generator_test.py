@@ -12,7 +12,7 @@ TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
 TEST_NODE_IP = '10.10.10.10'
 NODE_INFO_LEN = 15
 SCHAIN_INFO_LEN = 4
-TEST_ACCOUNTS_LEN = 2  # because we're creating eveything from one account
+TEST_ACCOUNTS_LEN = 2  # because we're creating everything from one account
 
 
 TEST_BASE_CONFIG = {

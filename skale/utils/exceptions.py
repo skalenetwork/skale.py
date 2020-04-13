@@ -19,7 +19,7 @@
 
 
 class RPCWalletError(Exception):
-    """Raised when remote wallet retured an error"""
+    """Raised when remote wallet returned an error"""
 
 
 class InvalidWalletError(Exception):
