@@ -91,17 +91,17 @@ class ValidatorService(BaseContract):
         :returns: List of node addresses
         :rtype: list
         """
-        return self.contract.functions.getMyAddresses().call({
+        return self.contract.functions.getMyNodesAddresses().call({
             'from': address
         })
 
-    def get_linked_addresses_by_validator_id(self, validator_id: str) -> list:
+    def get_linked_addresses_by_validator_id(self, validator_id: int) -> list:
         """Returns list of node addresses linked to the validator ID.
 
         :returns: List of node addresses
         :rtype: list
         """
-        return self.contract.functions.getValidatorAddresses(validator_id).call()
+        return self.contract.functions.getNodeAddresses(validator_id).call()
 
     def is_main_address(self, validator_address: str) -> bool:
         """Checks if provided address is the main validator address
@@ -127,7 +127,7 @@ class ValidatorService(BaseContract):
         :returns: Validator ID
         :rtype: int
         """
-        return self.contract.functions.getValidatorId(validator_address).call()
+        return self.contract.functions.getValidatorIdByNodeAddress(validator_address).call()
 
     def get_trusted_validator_ids(self) -> list:
         """Returns list of trusted validators id.

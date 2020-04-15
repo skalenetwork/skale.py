@@ -68,9 +68,8 @@ def test_get_linked_addresses_by_validator_address(skale):
 
 
 def test_get_linked_addresses_by_validator_id(skale):
-    addresses = skale.validator_service.get_linked_addresses_by_validator_address(
-        address=skale.wallet.address
-    )
+    addresses = skale.validator_service.get_linked_addresses_by_validator_id(D_VALIDATOR_ID)
+    assert isinstance(addresses, list)
     assert skale.wallet.address in addresses
 
 
