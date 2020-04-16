@@ -109,7 +109,15 @@ class ValidatorService(BaseContract):
         :returns: True if provided address is the main validator address, otherwise False
         :rtype: bool
         """
-        validator_id = self.validator_id_by_address(validator_address)
+        if not self.validator_address_exists(validator_address):
+            return False
+
+        try:
+            # TODO: handle address that is not main in a proper way
+            validator_id = self.validator_id_by_address(validator_address)
+        except Exception:
+            validator_id = 0
+
         validator = self.get(validator_id)
         return validator_address == validator['validator_address']
 
