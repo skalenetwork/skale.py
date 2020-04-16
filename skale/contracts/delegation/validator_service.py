@@ -115,10 +115,10 @@ class ValidatorService(BaseContract):
         try:
             # TODO: handle address that is not main in a proper way
             validator_id = self.validator_id_by_address(validator_address)
+            validator = self.get(validator_id)
         except Exception:
-            validator_id = 0
+            return False
 
-        validator = self.get(validator_id)
         return validator_address == validator['validator_address']
 
     def validator_address_exists(self, validator_address: str) -> bool:
