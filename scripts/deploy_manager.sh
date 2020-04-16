@@ -23,7 +23,7 @@ docker run \
     --network testnet \
     -e ENDPOINT=$DOCKER_NETWORK_ENDPOINT \
     -e PRIVATE_KEY=$ETH_PRIVATE_KEY \
-    skalenetwork/skale-manager:$MANAGER_TAG-latest \
+    skalenetwork/skale-manager:$MANAGER_TAG \
     npx truffle migrate --network unique
 
 cp $DIR/contracts_data/unique.json $DIR/../test_abi.json
