@@ -17,6 +17,9 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3 import Web3
+from eth_account import messages
+
 from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
@@ -187,15 +190,28 @@ class ValidatorService(BaseContract):
             name, description, fee_rate, min_delegation_amount)
 
     @transaction_method(GAS['link_node_address'])
-    def link_node_address(self, node_address: str) -> TxRes:
+    def link_node_address(self, node_address: str, validator_id: int) -> TxRes:
         """Link node address to your validator account.
 
         :param node_address: Address of the node to link
         :type node_address: str
+        :param validator_id: ID of the validator to link
+        :type node_address: int
         :returns: Transaction results
         :rtype: TxRes
         """
-        return self.contract.functions.linkNodeAddress(node_address)
+        unsigned_hash = Web3.soliditySha3(['uint256', 'address'], [validator_id, node_address])
+        message = messages.encode_defunct(hexstr=unsigned_hash.hex())
+
+        signed_message = self.skale.web3.eth.account.sign_message(
+            message,
+            private_key=self.skale.wallet._private_key
+        )
+        print('unsigned_hash')
+        print(unsigned_hash)
+        print("signature =", signed_message.signature.hex())
+        signature = signed_message.signature.hex()
+        return self.contract.functions.linkNodeAddress(node_address, signature)
 
     @transaction_method(GAS['unlink_node_address'])
     def unlink_node_address(self, node_address: str) -> TxRes:

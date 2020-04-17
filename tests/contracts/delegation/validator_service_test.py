@@ -56,6 +56,7 @@ def test_get_linked_addresses_by_validator_address(skale):
     wallet = generate_wallet(skale.web3)
     tx_res = skale.validator_service.link_node_address(
         node_address=wallet.address,
+        validator_id=D_VALIDATOR_ID,
         wait_for=True
     )
     check_receipt(tx_res.receipt)
@@ -80,6 +81,7 @@ def test_is_main_address(skale):
     wallet = generate_wallet(skale.web3)
     tx_res = skale.validator_service.link_node_address(
         node_address=wallet.address,
+        validator_id=D_VALIDATOR_ID,
         wait_for=True
     )
     check_receipt(tx_res.receipt)
@@ -202,6 +204,7 @@ def test_link_node_address(skale):
 
     tx_res = skale.validator_service.link_node_address(
         node_address=wallet.address,
+        validator_id=D_VALIDATOR_ID,
         wait_for=True
     )
     check_receipt(tx_res.receipt)
@@ -216,6 +219,7 @@ def test_unlink_node_address(skale):
     wallet = generate_wallet(skale.web3)
     tx_res = skale.validator_service.link_node_address(
         node_address=wallet.address,
+        validator_id=D_VALIDATOR_ID,
         wait_for=True
     )
     check_receipt(tx_res.receipt)

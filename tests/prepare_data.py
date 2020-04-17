@@ -6,7 +6,7 @@ from skale import Skale
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
-from skale.utils.contracts_provision import MONTH_IN_SECONDS
+from skale.utils.contracts_provision import MONTH_IN_SECONDS, D_VALIDATOR_ID
 from skale.utils.contracts_provision.main import (
     cleanup_nodes_schains, setup_validator,
     create_nodes, create_schain, _skip_evm_time
@@ -27,6 +27,7 @@ def prepare_data(cleanup_only):
             setup_validator(skale)
             skale.validator_service.link_node_address(
                 node_address=skale.wallet.address,
+                validator_id=D_VALIDATOR_ID,
                 wait_for=True
             )
             _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
