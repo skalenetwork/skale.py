@@ -109,8 +109,16 @@ class ValidatorService(BaseContract):
         :returns: True if provided address is the main validator address, otherwise False
         :rtype: bool
         """
-        validator_id = self.validator_id_by_address(validator_address)
-        validator = self.get(validator_id)
+        if not self.validator_address_exists(validator_address):
+            return False
+
+        try:
+            # TODO: handle address that is not main in a proper way
+            validator_id = self.validator_id_by_address(validator_address)
+            validator = self.get(validator_id)
+        except Exception:
+            return False
+
         return validator_address == validator['validator_address']
 
     def validator_address_exists(self, validator_address: str) -> bool:
@@ -127,7 +135,7 @@ class ValidatorService(BaseContract):
         :returns: Validator ID
         :rtype: int
         """
-        return self.contract.functions.getValidatorIdByNodeAddress(validator_address).call()
+        return self.contract.functions.getValidatorId(validator_address).call()
 
     def get_trusted_validator_ids(self) -> list:
         """Returns list of trusted validators id.
