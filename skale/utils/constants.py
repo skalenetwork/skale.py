@@ -51,6 +51,7 @@ GAS = {
     'withdraw_fee': 3000000,
 
     'skip_transition_delay': 1000000,
+    'skip_time': 1000000,
     'set_msr': 200000
 }
 
