@@ -41,7 +41,7 @@ setup(
     install_requires=[
         "web3==5.5.1",
         "asyncio==3.4.3",
-        "pyyaml==5.3",
+        "pyyaml==5.3.1",
         "sgx.py==0.4.dev6",
     ],
 
