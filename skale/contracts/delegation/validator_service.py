@@ -26,6 +26,7 @@ from skale.utils.helper import format_fields
 from skale.dataclasses.tx_res import TxRes
 from skale.utils.constants import GAS
 
+
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
     'registration_time', 'minimum_delegation_amount', 'trusted'
@@ -189,28 +190,23 @@ class ValidatorService(BaseContract):
         return self.contract.functions.registerValidator(
             name, description, fee_rate, min_delegation_amount)
 
+    def get_link_node_signature(self, validator_id: int) -> str:
+        unsigned_data = Web3.soliditySha3(['uint256'], [validator_id])
+        unsigned_message = messages.encode_defunct(hexstr=unsigned_data.hex())
+        signed_message = self.skale.wallet.sign_message(unsigned_message)
+        return signed_message.signature.hex()
+
     @transaction_method(GAS['link_node_address'])
-    def link_node_address(self, node_address: str, validator_id: int) -> TxRes:
+    def link_node_address(self, node_address: str, signature: str) -> TxRes:
         """Link node address to your validator account.
 
         :param node_address: Address of the node to link
         :type node_address: str
-        :param validator_id: ID of the validator to link
-        :type node_address: int
+        :param signature: Signature - reuslt of the get_link_node_signature function
+        :type signature: str
         :returns: Transaction results
         :rtype: TxRes
         """
-        unsigned_hash = Web3.soliditySha3(['uint256', 'address'], [validator_id, node_address])
-        message = messages.encode_defunct(hexstr=unsigned_hash.hex())
-
-        signed_message = self.skale.web3.eth.account.sign_message(
-            message,
-            private_key=self.skale.wallet._private_key
-        )
-        print('unsigned_hash')
-        print(unsigned_hash)
-        print("signature =", signed_message.signature.hex())
-        signature = signed_message.signature.hex()
         return self.contract.functions.linkNodeAddress(node_address, signature)
 
     @transaction_method(GAS['unlink_node_address'])

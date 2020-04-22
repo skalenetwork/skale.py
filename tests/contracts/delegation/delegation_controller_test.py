@@ -127,14 +127,13 @@ def _delegate_and_activate(skale):
         info=D_DELEGATION_INFO,
         wait_for=True
     )
-    delegation_ids = skale.delegation_controller._get_delegation_ids_by_validator(
-        validator_id=D_VALIDATOR_ID
-    )
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
     skale.delegation_controller.accept_pending_delegation(
-        delegation_ids[-1],
+        delegations[-1]['id'],
         wait_for=True
     )
     _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    # skale.time_helpers_with_debug.skip_time(MONTH_IN_SECONDS, wait_for=True)
 
 
 def test_get_delegated_to_validator_now(skale):

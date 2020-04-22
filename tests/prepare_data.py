@@ -25,13 +25,21 @@ def prepare_data(cleanup_only):
     if not cleanup_only:
         try:
             setup_validator(skale)
-            skale.validator_service.link_node_address(
-                node_address=skale.wallet.address,
-                wait_for=True
-            )
+            # signature = skale.validator_service.get_link_node_signature(
+            #     validator_id=D_VALIDATOR_ID
+            # )
+            # skale.validator_service.link_node_address(
+            #     node_address=skale.wallet.address,
+            #     signature=signature,
+            #     wait_for=True
+            # )
+            # skale.time_helpers_with_debug.skip_time(MONTH_IN_SECONDS, wait_for=True)
             _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
             create_nodes(skale)
             create_schain(skale)
+
+            active_node_ids_before = skale.nodes_data.get_active_node_ids()
+            print(active_node_ids_before)
         except Exception as err:
             cleanup_nodes_schains(skale)
             raise err
