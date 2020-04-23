@@ -41,6 +41,9 @@ class SgxWallet(BaseWallet):
         signed_tx = self.sign(tx_dict)
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
+    def sign_hash(self, unsigned_hash: str):
+        return self.sgx_client.sign_hash(unsigned_hash, self._key_name, self._web3.eth.chainId)
+
     @property
     def address(self):
         return self._address
