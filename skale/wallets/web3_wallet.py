@@ -66,6 +66,12 @@ class Web3Wallet(BaseWallet):
             private_key=self._private_key
         )
 
+    def sign_message(self, unsigned_hash: str):
+        return self._web3.eth.account.sign_message(
+            unsigned_hash,
+            private_key=self._private_key
+        )
+
     def sign_and_send(self, tx_dict) -> str:
         signed_tx = self.sign(tx_dict)
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()

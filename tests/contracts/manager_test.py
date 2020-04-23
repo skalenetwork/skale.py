@@ -249,7 +249,8 @@ def test_create_node_status_0(skale):
             'skale.contracts.base_contract.wait_for_receipt_by_blocks',
             return_value={'status': 0}
         ):
-            tx_res = skale.manager.create_node(ip, port, name, wait_for=True)
+            tx_res = skale.manager.create_node(ip, port, name,
+                                               wait_for=True, raise_for_status=False)
             assert tx_res.receipt['status'] == 0
             with pytest.raises(TransactionFailedError):
                 tx_res.raise_for_status()

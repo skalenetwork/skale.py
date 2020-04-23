@@ -34,7 +34,7 @@ def transaction_method(gas_limit):
     def real_decorator(transaction):
         @wraps(transaction)
         def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1,
-                    gas_price=None, nonce=None, dry_run=False, **kwargs):
+                    gas_price=None, nonce=None, dry_run=False, raise_for_status=True, **kwargs):
             method = transaction(self, *args, **kwargs)
             if dry_run:
                 opts = {
@@ -66,6 +66,9 @@ def transaction_method(gas_limit):
                         )
                         if tx_res.receipt['status'] == 1:
                             return tx_res
+                        else:
+                            if raise_for_status:
+                                tx_res.raise_for_status()
                     else:
                         return tx_res
                 return tx_res
