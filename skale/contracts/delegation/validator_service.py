@@ -18,7 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from web3 import Web3
-from eth_account import messages
 
 from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
@@ -191,10 +190,9 @@ class ValidatorService(BaseContract):
             name, description, fee_rate, min_delegation_amount)
 
     def get_link_node_signature(self, validator_id: int) -> str:
-        unsigned_data = Web3.soliditySha3(['uint256'], [validator_id])
-        unsigned_message = messages.encode_defunct(hexstr=unsigned_data.hex())
-        signed_message = self.skale.wallet.sign_message(unsigned_message)
-        return signed_message.signature.hex()
+        unsigned_hash = Web3.soliditySha3(['uint256'], [validator_id])
+        signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
+        return signed_hash.signature.hex()
 
     @transaction_method(GAS['link_node_address'])
     def link_node_address(self, node_address: str, signature: str) -> TxRes:

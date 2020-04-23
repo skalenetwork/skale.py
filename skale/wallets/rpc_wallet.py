@@ -20,8 +20,11 @@
 import json
 import logging
 import urllib
-import requests
 import functools
+import requests
+
+from hexbytes import HexBytes
+from eth_account.datastructures import AttributeDict
 
 from skale.wallets.common import BaseWallet
 from skale.utils.exceptions import RPCWalletError
@@ -32,6 +35,7 @@ LOGGER = logging.getLogger(__name__)
 ROUTES = {
     'sign': '/sign',
     'sign_and_send': '/sign-and-send',
+    'sign_hash': '/sign-hash',
     'address': '/address',
     'public_key': '/public-key',
 }
@@ -78,6 +82,16 @@ class RPCWallet(BaseWallet):
     def sign_and_send(self, tx_dict):
         data = self._post(ROUTES['sign_and_send'], self._compose_tx_data(tx_dict))
         return data['transaction_hash']
+
+    def sign_hash(self, unsigned_hash: str):
+        data = self._post(ROUTES['sign_hash'], {'unsigned_hash': unsigned_hash})
+        return AttributeDict({
+            'messageHash': HexBytes(data['messageHash']),
+            'r': data['r'],
+            's': data['s'],
+            'v': data['v'],
+            'signature': HexBytes(data['signature']),
+        })
 
     @property
     def address(self):
