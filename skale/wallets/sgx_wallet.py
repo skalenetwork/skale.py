@@ -20,7 +20,7 @@
 from sgx import SgxClient
 from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.common import BaseWallet
-from eth_account import messages
+# from eth_account import messages
 
 
 class SgxWallet(BaseWallet):
@@ -43,7 +43,8 @@ class SgxWallet(BaseWallet):
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     def sign_hash(self, unsigned_hash: str):
-        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash).body.hex()
+        # unsigned_message = messages.encode_defunct(hexstr=unsigned_hash).body.hex()
+        unsigned_message = unsigned_hash
         return self.sgx_client.sign_hash(unsigned_message, self._key_name, None)
 
     @property
