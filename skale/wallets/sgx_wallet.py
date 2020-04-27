@@ -43,7 +43,7 @@ class SgxWallet(BaseWallet):
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     def sign_hash(self, unsigned_hash: str):
-        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash).body().hex()
+        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash).body.hex()
         return self.sgx_client.sign_hash(unsigned_message, self._key_name, None)
 
     @property
