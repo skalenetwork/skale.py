@@ -50,8 +50,8 @@ class SgxWallet(BaseWallet):
     def sign_hash(self, unsigned_hash: str):
         unsigned_message = messages.encode_defunct(hexstr=unsigned_hash).body
         unsigned_hash = unsigned_message.hex()
-        logger.info(f'IVD unsigned_message {unsigned_message}')
-        logger.info(f'IVD unsigned_message {unsigned_hash}')
+        logger.info(f'IVD unsigned_message bytes {unsigned_message}')
+        logger.info(f'IVD unsigned_message hex {unsigned_hash}')
         return self.sgx_client.sign_hash(unsigned_hash, self._key_name, self._web3.eth.chainId)
 
     @property
