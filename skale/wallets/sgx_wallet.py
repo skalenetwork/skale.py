@@ -52,7 +52,7 @@ class SgxWallet(BaseWallet):
         unsigned_hash = unsigned_message.hex()
         logger.info(f'IVD unsigned_message bytes {unsigned_message}')
         logger.info(f'IVD unsigned_message hex {unsigned_hash}')
-        return self.sgx_client.sign_hash(unsigned_hash, self._key_name, self._web3.eth.chainId)
+        return self.sgx_client.sign_hash(unsigned_hash, self._key_name, None)
 
     @property
     def address(self):
