@@ -15,7 +15,8 @@ def _get_number_of_delegations(skale):
 
 def test_get_raw_not_exist(skale):
     with pytest.raises(ValueError):
-        skale.delegation_controller._DelegationController__raw_get_delegation(NOT_EXISTING_ID)
+        skale.delegation_controller._DelegationController__raw_get_delegation(
+            NOT_EXISTING_ID)
 
 
 def test_get_raw(skale):
@@ -51,7 +52,8 @@ def test_get_delegation_ids_by_validator(skale):
         D_VALIDATOR_ID
     )
     assert len(delegation_ids) == delegation_ids_len
-    latest_delegation = skale.delegation_controller.get_delegation(delegation_ids[-1])
+    latest_delegation = skale.delegation_controller.get_delegation(
+        delegation_ids[-1])
     assert latest_delegation['validator_id'] == D_VALIDATOR_ID
 
 
@@ -59,14 +61,16 @@ def test_get_all_delegations_by_holder(skale):
     delegations = skale.delegation_controller.get_all_delegations_by_holder(
         skale.wallet.address
     )
-    assert all([delegation['address'] == skale.wallet.address for delegation in delegations])
+    assert all([delegation['address'] == skale.wallet.address
+                for delegation in delegations])
 
 
 def test_get_all_delegations_by_validator(skale):
     delegations = skale.delegation_controller.get_all_delegations_by_validator(
         validator_id=D_VALIDATOR_ID
     )
-    assert all([delegation['validator_id'] == D_VALIDATOR_ID for delegation in delegations])
+    assert all([delegation['validator_id'] == D_VALIDATOR_ID
+                for delegation in delegations])
 
 
 def test_accept_pending_delegation(skale):
@@ -127,7 +131,8 @@ def _delegate_and_activate(skale):
         info=D_DELEGATION_INFO,
         wait_for=True
     )
-    delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        D_VALIDATOR_ID)
     skale.delegation_controller.accept_pending_delegation(
         delegations[-1]['id'],
         wait_for=True
@@ -156,3 +161,44 @@ def test_get_delegated_amount(skale):
         skale.wallet.address
     )
     assert delegated_amount_after == delegated_amount_before + D_DELEGATION_AMOUNT
+
+
+def test_request_undelegate(skale):
+    skale.delegation_controller.delegate(
+        validator_id=D_VALIDATOR_ID,
+        amount=D_DELEGATION_AMOUNT,
+        delegation_period=D_DELEGATION_PERIOD,
+        info=D_DELEGATION_INFO,
+        wait_for=True
+    )
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        validator_id=D_VALIDATOR_ID
+    )
+    delegation_id = delegations[-1]['id']
+    assert delegations[-1]['status'] == 'PROPOSED'
+    skale.delegation_controller.accept_pending_delegation(
+        delegations[-1]['id'],
+        wait_for=True
+    )
+
+    # Skip time longer than delegation period
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * (D_DELEGATION_PERIOD + 20))
+
+    tx_res = skale.delegation_controller.request_undelegation(
+        delegation_id,
+        wait_for=True,
+        raise_for_status=False
+    )
+    tx_res.raise_for_status()
+
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        validator_id=D_VALIDATOR_ID
+    )
+    assert delegations[-1]['id'] == delegation_id
+    assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
+
+
+def test_get_and_update_locked_amount(skale):
+    res = skale.token_state.get_and_update_locked_amount(
+        skale.wallet.address)
+    assert res > 0

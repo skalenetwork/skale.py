@@ -62,9 +62,11 @@ class DelegationController(BaseContract):
         return self.contract.functions.getDelegation(delegation_id).call()
 
     def _get_delegation_ids_by_validator(self, validator_id: int) -> list:
-        delegation_ids_len = self._get_delegation_ids_len_by_validator(validator_id)
+        delegation_ids_len = self._get_delegation_ids_len_by_validator(
+            validator_id)
         return [
-            self.contract.functions.delegationsByValidator(validator_id, _id).call()
+            self.contract.functions.delegationsByValidator(
+                validator_id, _id).call()
             for _id in range(delegation_ids_len)
         ]
 
@@ -162,6 +164,18 @@ class DelegationController(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.cancelPendingDelegation(delegation_id)
+
+    @transaction_method(GAS['request_undelegation'])
+    def request_undelegation(self, delegation_id: int) -> TxRes:
+        """ This method is  for undelegating request in the end of
+            delegation period (3/6/12 months)
+
+        :param delegation_id: ID of the delegation to undelegate
+        :type delegation_id: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.requestUndelegation(delegation_id)
 
     def get_delegated_to_validator_now(self, validator_id: int) -> int:
         """Amount of delegated tokens to the validator
