@@ -1,12 +1,14 @@
 """ Tests for contracts/delegation/delegation_controller.py """
 
 import pytest
+
+from skale.contracts.delegation.delegation_controller import FIELDS
+from skale.dataclasses.tx_res import TransactionFailedError
+from skale.utils.contracts_provision.main import _skip_evm_time
+
 from tests.constants import (NOT_EXISTING_ID, D_DELEGATION_ID, D_DELEGATION_INFO, D_VALIDATOR_ID,
                              D_DELEGATION_AMOUNT, D_DELEGATION_PERIOD, DELEGATION_STRUCT_LEN,
                              MONTH_IN_SECONDS)
-
-from skale.contracts.delegation.delegation_controller import FIELDS
-from skale.utils.contracts_provision.main import _skip_evm_time
 
 
 def _get_number_of_delegations(skale):
@@ -175,14 +177,22 @@ def test_request_undelegate(skale):
         validator_id=D_VALIDATOR_ID
     )
     delegation_id = delegations[-1]['id']
-    assert delegations[-1]['status'] == 'PROPOSED'
     skale.delegation_controller.accept_pending_delegation(
         delegations[-1]['id'],
         wait_for=True
     )
 
+    # Transaction failed if delegation period is in progress
+    with pytest.raises(TransactionFailedError):
+        tx_res = skale.delegation_controller.request_undelegation(
+            delegation_id,
+            wait_for=True,
+            raise_for_status=False
+        )
+        tx_res.raise_for_status()
+
     # Skip time longer than delegation period
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * (D_DELEGATION_PERIOD + 20))
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * (D_DELEGATION_PERIOD + 1))
 
     tx_res = skale.delegation_controller.request_undelegation(
         delegation_id,
@@ -196,9 +206,3 @@ def test_request_undelegate(skale):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
-
-
-def test_get_and_update_locked_amount(skale):
-    res = skale.token_state.get_and_update_locked_amount(
-        skale.wallet.address)
-    assert res > 0
