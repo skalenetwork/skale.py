@@ -17,9 +17,16 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import logging
+
 from sgx import SgxClient
+from web3 import Web3
+
 from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.common import BaseWallet
+
+
+logger = logging.getLogger(__name__)
 
 
 class SgxWallet(BaseWallet):
@@ -42,7 +49,15 @@ class SgxWallet(BaseWallet):
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     def sign_hash(self, unsigned_hash: str):
-        return self.sgx_client.sign_hash(unsigned_hash, self._key_name, self._web3.eth.chainId)
+        if unsigned_hash.startswith('0x'):
+            unsigned_hash = unsigned_hash[2:]
+
+        body = bytes.fromhex(unsigned_hash)
+        header = b'\x19Ethereum Signed Message:\n32'
+        normalized_hash = header + body
+        hash_to_sign = Web3.keccak(hexstr='0x' + normalized_hash.hex())
+        chain_id = None
+        return self.sgx_client.sign_hash(hash_to_sign, self._key_name, chain_id)
 
     @property
     def address(self):
