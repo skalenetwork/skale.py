@@ -29,6 +29,10 @@ class BaseWallet(ABC):
     def sign_and_send(self, tx_dict) -> str:
         pass
 
+    @abstractmethod
+    def sign_hash(self, unsigned_hash: str):
+        pass
+
     @property
     @abstractmethod
     def address(self):

@@ -5,6 +5,10 @@ from http import HTTPStatus
 import pytest
 import mock
 import requests
+
+from hexbytes import HexBytes
+from eth_account.datastructures import AttributeDict
+
 from skale.wallets.rpc_wallet import RPCWallet
 from skale.utils.exceptions import RPCWalletError
 
@@ -54,6 +58,32 @@ def test_sign():
     with mock.patch('requests.post', new=request_mock(res_mock)):
         tx_hash = wallet.sign(TX_DICT)
         assert tx_hash == EMPTY_HEX_STR
+
+
+def test_sign_hash():
+    wallet = RPCWallet(TEST_RPC_WALLET_URL)
+    sign_hash_response_data = {
+        'data': {
+            'messageHash': '0x0',
+            'r': 123,
+            's': 123,
+            'v': 27,
+            'signature': '0x0'
+        },
+        'error': None
+    }
+    res_mock = response_mock(HTTPStatus.OK, sign_hash_response_data)
+    with mock.patch('requests.post', new=request_mock(res_mock)):
+        signed_hash = wallet.sign_hash(TX_DICT)
+        assert signed_hash == AttributeDict(
+            {
+                'messageHash': HexBytes('0x00'),
+                'r': 123,
+                's': 123,
+                'v': 27,
+                'signature': HexBytes('0x00')
+            }
+        )
 
 
 def test_address():

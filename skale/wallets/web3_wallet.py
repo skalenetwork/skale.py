@@ -19,6 +19,7 @@
 
 from eth_keys import keys
 from web3 import Web3
+from eth_account import messages
 
 from skale.wallets.common import BaseWallet
 from skale.utils.web3_utils import get_eth_nonce
@@ -63,6 +64,13 @@ class Web3Wallet(BaseWallet):
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         return self._web3.eth.account.sign_transaction(
             tx_dict,
+            private_key=self._private_key
+        )
+
+    def sign_hash(self, unsigned_hash: str):
+        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
+        return self._web3.eth.account.sign_message(
+            unsigned_message,
             private_key=self._private_key
         )
 

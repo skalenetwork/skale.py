@@ -6,8 +6,9 @@ import web3
 from hexbytes import HexBytes
 
 import skale.utils.helper as helper
+from skale.dataclasses.tx_res import TransactionFailedError
 from skale.utils.constants import GAS
-from skale.utils.web3_utils import (private_key_to_public, TransactionFailedError)
+from skale.utils.web3_utils import private_key_to_public
 
 from tests.prepare_data import clean_and_restart
 from skale.utils.contracts_provision.main import (
@@ -102,7 +103,7 @@ def test_send_verdicts(skale):
     chain_id = skale.web3.eth.chainId
     expected_txn = {
         'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
-        'gas': 500000, 'nonce': nonce,
+        'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
         'data': ('0x25b2114b000000000000000000000000000000000000000000'
                  '0000000000000000000000000000000000000000000000000000'
@@ -249,8 +250,11 @@ def test_create_node_status_0(skale):
             'skale.contracts.base_contract.wait_for_receipt_by_blocks',
             return_value={'status': 0}
         ):
+            tx_res = skale.manager.create_node(ip, port, name,
+                                               wait_for=True, raise_for_status=False)
+            assert tx_res.receipt['status'] == 0
             with pytest.raises(TransactionFailedError):
-                skale.manager.create_node(ip, port, name, wait_for=True)
+                tx_res.raise_for_status()
 
 
 def test_empty_node_exit(skale):

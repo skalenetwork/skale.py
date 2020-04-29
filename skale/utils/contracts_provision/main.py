@@ -56,18 +56,22 @@ def setup_validator(skale):
         enable_validator(skale)
     else:
         print('Skipping default validator creation')
-    delegation_id = skale.delegation_controller._get_delegation_ids_len_by_validator(D_VALIDATOR_ID)
     set_test_msr(skale)
+
     delegate_to_validator(skale)
-    accept_pending_delegation(skale, delegation_id)
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
+    accept_pending_delegation(skale, delegations[-1]['id'])
 
 
 def link_address_to_validator(skale):
     print('Linking address to validator')
-    skale.validator_service.link_node_address(
+    signature = skale.validator_service.get_link_node_signature(D_VALIDATOR_ID)
+    tx_res = skale.validator_service.link_node_address(
         node_address=skale.wallet.address,
+        signature=signature,
         wait_for=True
     )
+    tx_res.raise_for_status()
 
 
 def skip_delegation_delay(skale, delegation_id):
@@ -88,7 +92,7 @@ def accept_pending_delegation(skale, delegation_id):
 
 def get_test_delegation_amount(skale):
     msr = skale.constants_holder.msr()
-    return msr * 100
+    return msr * 30
 
 
 def set_test_msr(skale):
