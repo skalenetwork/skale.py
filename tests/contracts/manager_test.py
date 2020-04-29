@@ -303,5 +303,6 @@ def test_get_rotation(skale):
 
     last_rotation = skale.schains_data.get_last_rotation_id(schain_name)
     assert rotation['rotation_id'] == last_rotation
+    assert rotation['rotation_id'] == 1
 
     clean_and_restart(skale)
