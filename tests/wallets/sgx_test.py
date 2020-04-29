@@ -45,11 +45,11 @@ class SgxClient:
 
     def sign_hash(self, message, key_name, chain_id):
         return AttributeDict({
-            'messageHash': HexBytes('0x0'),
+            'messageHash': HexBytes('0x31323331'),
             'r': 123,
             's': 123,
             'v': 27,
-            'signature': HexBytes('0x0')
+            'signature': HexBytes('0x6161616161613131313131')
         })
 
 
@@ -127,9 +127,9 @@ def test_sgx_sign_hash():
                     new=SgxClient):
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3, key_name='TEST_KEY')
-        unsigned_hash = '0x0'
+        unsigned_hash = '0x31323331'
         signed_message = wallet.sign_hash(unsigned_hash)
-        assert signed_message.signature == HexBytes('0x0')
+        assert signed_message.signature == HexBytes('0x6161616161613131313131')
 
 
 def test_sgx_key_init():
