@@ -17,12 +17,14 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3 import Web3
+
 from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
-from skale.transactions.tools import post_transaction
 from skale.dataclasses.tx_res import TxRes
 from skale.utils.constants import GAS
+
 
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
@@ -82,7 +84,7 @@ class ValidatorService(BaseContract):
             for val_id in self.get_trusted_validator_ids()
         ] if trusted_only else [
             self.get_with_id(val_id)
-            for val_id in range(1, number_of_validators+1)
+            for val_id in range(1, number_of_validators + 1)
         ]
         return validators
 
@@ -92,17 +94,17 @@ class ValidatorService(BaseContract):
         :returns: List of node addresses
         :rtype: list
         """
-        return self.contract.functions.getMyAddresses().call({
+        return self.contract.functions.getMyNodesAddresses().call({
             'from': address
         })
 
-    def get_linked_addresses_by_validator_id(self, validator_id: str) -> list:
+    def get_linked_addresses_by_validator_id(self, validator_id: int) -> list:
         """Returns list of node addresses linked to the validator ID.
 
         :returns: List of node addresses
         :rtype: list
         """
-        return self.contract.functions.getValidatorAddresses(validator_id).call()
+        return self.contract.functions.getNodeAddresses(validator_id).call()
 
     def is_main_address(self, validator_address: str) -> bool:
         """Checks if provided address is the main validator address
@@ -110,8 +112,16 @@ class ValidatorService(BaseContract):
         :returns: True if provided address is the main validator address, otherwise False
         :rtype: bool
         """
-        validator_id = self.validator_id_by_address(validator_address)
-        validator = self.get(validator_id)
+        if not self.validator_address_exists(validator_address):
+            return False
+
+        try:
+            # TODO: handle address that is not main in a proper way
+            validator_id = self.validator_id_by_address(validator_address)
+            validator = self.get(validator_id)
+        except Exception:
+            return False
+
         return validator_address == validator['validator_address']
 
     def validator_address_exists(self, validator_address: str) -> bool:
@@ -146,18 +156,64 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
 
-    @transaction_method
+    @transaction_method(GAS['enable_validator'])
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
-        func = self.contract.functions.enableValidator(validator_id)
-        return post_transaction(self.skale.wallet, func, GAS['enable_validator'])
+        return self.contract.functions.enableValidator(validator_id)
 
-    @transaction_method
+    @transaction_method(GAS['disable_validator'])
     def _disable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
-        func = self.contract.functions.disableValidator(validator_id)
-        return post_transaction(self.skale.wallet, func, GAS['disable_validator'])
+        return self.contract.functions.disableValidator(validator_id)
 
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.trustedValidators(validator_id).call()
+
+    @transaction_method(GAS['register_validator'])
+    def register_validator(self, name: str, description: str, fee_rate: int,
+                           min_delegation_amount: int) -> TxRes:
+        """Registers a new validator in the SKALE Manager contracts.
+
+        :param name:z Validator name
+        :type name: str
+        :param description: Validator description
+        :type description: str
+        :param fee_rate: Validator fee rate
+        :type fee_rate: int
+        :param min_delegation_amount: Minimal delegation amount
+        :type min_delegation_amount: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.registerValidator(
+            name, description, fee_rate, min_delegation_amount)
+
+    def get_link_node_signature(self, validator_id: int) -> str:
+        unsigned_hash = Web3.soliditySha3(['uint256'], [validator_id])
+        signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
+        return signed_hash.signature.hex()
+
+    @transaction_method(GAS['link_node_address'])
+    def link_node_address(self, node_address: str, signature: str) -> TxRes:
+        """Link node address to your validator account.
+
+        :param node_address: Address of the node to link
+        :type node_address: str
+        :param signature: Signature - reuslt of the get_link_node_signature function
+        :type signature: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.linkNodeAddress(node_address, signature)
+
+    @transaction_method(GAS['unlink_node_address'])
+    def unlink_node_address(self, node_address: str) -> TxRes:
+        """Unlink node address from your validator account.
+
+        :param node_address: Address of the node to unlink
+        :type node_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.unlinkNodeAddress(node_address)

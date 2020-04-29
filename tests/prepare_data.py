@@ -6,8 +6,10 @@ from skale import Skale
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
+from skale.utils.contracts_provision import MONTH_IN_SECONDS
 from skale.utils.contracts_provision.main import (
-    cleanup_nodes_schains, setup_validator, create_nodes, create_schain
+    cleanup_nodes_schains, setup_validator,
+    create_nodes, create_schain, _skip_evm_time
 )
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 
@@ -23,8 +25,21 @@ def prepare_data(cleanup_only):
     if not cleanup_only:
         try:
             setup_validator(skale)
+            # signature = skale.validator_service.get_link_node_signature(
+            #     validator_id=D_VALIDATOR_ID
+            # )
+            # skale.validator_service.link_node_address(
+            #     node_address=skale.wallet.address,
+            #     signature=signature,
+            #     wait_for=True
+            # )
+            # skale.time_helpers_with_debug.skip_time(MONTH_IN_SECONDS, wait_for=True)
+            _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
             create_nodes(skale)
             create_schain(skale)
+
+            active_node_ids_before = skale.nodes_data.get_active_node_ids()
+            print(active_node_ids_before)
         except Exception as err:
             cleanup_nodes_schains(skale)
             raise err

@@ -12,10 +12,10 @@ extras_require = {
     ],
     'dev': [
         "bumpversion==0.5.3",
-        "pytest==5.3.5",
-        "click==7.0",
+        "pytest==5.4.1",
+        "click==7.1.1",
         "twine==3.1.1",
-        "mock==4.0.1",
+        "mock==4.0.2",
         "when-changed",
         "Random-Word==1.0.4",
         "pytest-cov==2.8.1"
@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='3.1',
+    version='3.5',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -41,14 +41,12 @@ setup(
     install_requires=[
         "web3==5.6.0",
         "asyncio==3.4.3",
-        "pyyaml==5.3",
-        "sgx.py==0.4dev3",
+        "pyyaml==5.3.1",
+        "sgx.py==0.5dev0",
     ],
 
     python_requires='>=3.6,<4',
     extras_require=extras_require,
-
-
 
     keywords='skale',
     packages=find_packages(exclude=['tests']),

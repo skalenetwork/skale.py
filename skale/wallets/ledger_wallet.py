@@ -139,6 +139,9 @@ class LedgerWallet(BaseWallet):
         signed_tx = self.sign(tx)
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
+    def sign_hash(self, unsigned_hash: str):
+        raise NotImplementedError('sign_hash is not implemented for hardware wallet')
+
     @classmethod
     def parse_derive_result(cls, exchange_result):
         pk_len = exchange_result[0]

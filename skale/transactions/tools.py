@@ -25,6 +25,11 @@ from skale.utils.web3_utils import get_eth_nonce
 logger = logging.getLogger(__name__)
 
 
+def make_call(method, opts):
+    data = method.call(opts)
+    return TxRes(data=data)
+
+
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
     tx_dict_fields = {
         'gas': gas_limit,

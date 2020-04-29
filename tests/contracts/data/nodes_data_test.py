@@ -1,5 +1,9 @@
 """ SKALE node data test """
 
+import socket
+from eth_keys import keys
+from web3 import Web3
+
 import skale.utils.helper as Helper
 from skale.contracts.data.nodes_data import FIELDS
 from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME
@@ -11,12 +15,29 @@ def test_get_raw_not_exist(skale):
     assert node_arr is None
 
 
+def public_key_from_private(key):
+    pr_bytes = Web3.toBytes(hexstr=key)
+    return keys.PrivateKey(pr_bytes)
+
+
 def test_get(skale):
     node = skale.nodes_data.get_by_name(DEFAULT_NODE_NAME)
     node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
     node_by_id = skale.nodes_data.get(node_id)
     assert list(node.keys()) == FIELDS
     assert [k for k, v in node.items() if v is None] == []
+    assert node_by_id['name'] == DEFAULT_NODE_NAME
+    socket.inet_ntoa(node_by_id['ip'])
+    socket.inet_ntoa(node_by_id['publicIP'])
+
+    assert node_by_id['publicKey'].hex() == skale.wallet.public_key[2:]
+
+    assert node_by_id['publicKey'] != b''
+    assert node_by_id['start_block'] > 0
+    assert node_by_id['last_reward_date'] > 0
+    assert node_by_id['finish_time'] == 0
+    assert node_by_id['status'] == 0
+    assert node_by_id['validator_id'] == 1
 
     assert list(node_by_id.keys()) == FIELDS
     assert node == node_by_id

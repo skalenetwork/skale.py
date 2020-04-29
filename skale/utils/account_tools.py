@@ -100,7 +100,7 @@ def generate_accounts(skale,
     n_wallets = int(n_wallets)
     results = []
 
-    for i in range(0, n_wallets):
+    for _ in range(0, n_wallets):
         wallet = generate_account(skale.web3)
 
         send_tokens(skale, skale.wallet, wallet['address'], skale_amount)

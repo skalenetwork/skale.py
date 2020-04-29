@@ -111,6 +111,12 @@ For more details see: <https://semver.org/>
 
 #### Testing
 
+Run local ganache and deploy SKALE Manager:
+
+```bash
+MANAGER_TAG=... ETH_PRIVATE_KEY=... bash scripts/deploy_manager.sh
+```
+
 Running full test suite:
 
 ```bash

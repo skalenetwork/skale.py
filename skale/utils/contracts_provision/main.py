@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.utils.contracts_provision import (
-    D_VALIDATOR_ID, MONTH_IN_SECONDS, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
+    D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
     DEFAULT_SCHAIN_NAME
 )
@@ -56,19 +56,22 @@ def setup_validator(skale):
         enable_validator(skale)
     else:
         print('Skipping default validator creation')
-    delegation_id = skale.delegation_controller._get_delegation_ids_len_by_validator(D_VALIDATOR_ID)
     set_test_msr(skale)
+
     delegate_to_validator(skale)
-    accept_pending_delegation(skale, delegation_id)
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
+    accept_pending_delegation(skale, delegations[-1]['id'])
 
 
 def link_address_to_validator(skale):
     print('Linking address to validator')
-    skale.delegation_service.link_node_address(
+    signature = skale.validator_service.get_link_node_signature(D_VALIDATOR_ID)
+    tx_res = skale.validator_service.link_node_address(
         node_address=skale.wallet.address,
+        signature=signature,
         wait_for=True
     )
+    tx_res.raise_for_status()
 
 
 def skip_delegation_delay(skale, delegation_id):
@@ -89,7 +92,7 @@ def accept_pending_delegation(skale, delegation_id):
 
 def get_test_delegation_amount(skale):
     msr = skale.constants_holder.msr()
-    return msr * 10
+    return msr * 30
 
 
 def set_test_msr(skale):
@@ -117,7 +120,7 @@ def enable_validator(skale):
 
 def create_validator(skale):
     print('Creating default validator')
-    skale.delegation_service.register_validator(
+    skale.validator_service.register_validator(
         name=D_VALIDATOR_NAME,
         description=D_VALIDATOR_DESC,
         fee_rate=D_VALIDATOR_FEE,

@@ -43,8 +43,6 @@ CONTRACTS_INFO = [
     ContractInfo('monitors_data', 'MonitorsData', contracts.MonitorsData,
                  ContractTypes.DATA, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
-    ContractInfo('delegation_service', 'DelegationService', contracts.DelegationService,
-                 ContractTypes.API, False),
     ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,
                  ContractTypes.API, False),
     ContractInfo('validator_service', 'ValidatorService', contracts.ValidatorService,
@@ -52,6 +50,8 @@ CONTRACTS_INFO = [
     ContractInfo('token_state', 'TokenState', contracts.TokenState,
                  ContractTypes.API, False),
     ContractInfo('distributor', 'Distributor', contracts.Distributor,
+                 ContractTypes.API, False),
+    ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug', contracts.TimeHelpersWithDebug,
                  ContractTypes.API, False)
 ]
 
