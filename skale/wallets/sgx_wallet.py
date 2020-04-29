@@ -49,7 +49,10 @@ class SgxWallet(BaseWallet):
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     def sign_hash(self, unsigned_hash: str):
-        body = bytes.fromhex(unsigned_hash[2:])
+        if unsigned_hash.startswith('0x'):
+            unsigned_hash = unsigned_hash[2:]
+
+        body = bytes.fromhex(unsigned_hash)
         header = b'\x19Ethereum Signed Message:\n32'
         normalized_hash = header + body
         hash_to_sign = Web3.keccak(hexstr='0x' + normalized_hash.hex())
