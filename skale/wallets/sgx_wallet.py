@@ -20,9 +20,10 @@
 import logging
 
 from sgx import SgxClient
+from web3 import Web3
+
 from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.common import BaseWallet
-from eth_account import messages
 
 
 logger = logging.getLogger(__name__)
@@ -48,11 +49,12 @@ class SgxWallet(BaseWallet):
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     def sign_hash(self, unsigned_hash: str):
-        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash).body
-        unsigned_hash = unsigned_message.hex()
-        logger.info(f'IVD unsigned_message bytes {unsigned_message}')
-        logger.info(f'IVD unsigned_message hex {unsigned_hash}')
-        return self.sgx_client.sign_hash(unsigned_hash, self._key_name, None)
+        body = bytes.fromhex(unsigned_hash[2:])
+        header = b'\x19Ethereum Signed Message:\n32'
+        normalized_hash = header + body
+        hash_to_sign = Web3.keccak(hexstr='0x' + normalized_hash.hex())
+        chain_id = None
+        return self.sgx_client.sign_hash(hash_to_sign, self._key_name, chain_id)
 
     @property
     def address(self):
