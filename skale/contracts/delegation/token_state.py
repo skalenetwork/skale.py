@@ -22,3 +22,13 @@ from skale.contracts import BaseContract
 
 class TokenState(BaseContract):
     """Wrapper for TokenState.sol functions"""
+
+    def get_and_update_locked_amount(self, holder_address: str):
+        """This method is for check quantity of `freezed` tokens
+           :param holder_address: Address of the holder
+           :type holder_address: str
+           :returns:
+           :rtype:
+        """
+
+        return self.contract.functions.getAndUpdateLockedAmount(holder_address).call()

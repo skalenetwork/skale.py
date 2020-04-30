@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2020-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -16,20 +16,30 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE token operations """
 
 from skale.contracts import BaseContract, transaction_method
+from skale.dataclasses.tx_res import TxRes
 from skale.utils.constants import GAS
 
 
-class Token(BaseContract):
-    @transaction_method(GAS['token_transfer'])
-    def transfer(self, address, value):
-        return self.contract.functions.send(address, value, b'')
+class TimeHelpersWithDebug(BaseContract):
+    """Wrapper for TimeHelpersWithDebug.sol functions (internal usage only)"""
 
-    def get_balance(self, address):
-        return self.contract.functions.balanceOf(address).call()
+    @transaction_method(GAS['skip_time'])
+    def skip_time(self, sec: int) -> TxRes:
+        """Skip time on contracts
 
-    @transaction_method(GAS['token_transfer'])
-    def add_authorized(self, address, wallet):  # pragma: no cover
-        return self.contract.functions.addAuthorized(address)
+        :param sec: Time to skip in seconds
+        :type sec: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.skipTime(sec)
+
+    def get_current_month(self) -> int:
+        """Get current month from contract
+
+        :returns: Month index
+        :rtype: int
+        """
+        return self.contract.functions.getCurrentMonth().call()

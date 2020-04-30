@@ -10,9 +10,9 @@ from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAM
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
 TEST_NODE_IP = '10.10.10.10'
-NODE_INFO_LEN = 13
+NODE_INFO_LEN = 15
 SCHAIN_INFO_LEN = 4
-TEST_ACCOUNTS_LEN = 2  # because we're creating eveything from one account
+TEST_ACCOUNTS_LEN = 2  # because we're creating everything from one account
 
 
 TEST_BASE_CONFIG = {
@@ -31,7 +31,8 @@ def test_generate_node_info():
         ima_mp_schain=ZERO_ADDRESS,
         ima_mp_mainnet=ZERO_ADDRESS,
         wallets={},
-        rotate_after_block=128
+        rotate_after_block=128,
+        schain_log_level_config='info'
     ).to_config()
 
     assert isinstance(node_info['bindIP'], str)
@@ -48,6 +49,9 @@ def test_generate_node_info():
     assert node_info['imaMessageProxySChain'] == ZERO_ADDRESS
     assert node_info['imaMessageProxyMainNet'] == ZERO_ADDRESS
     assert node_info['rotateAfterBlock'] == 128
+
+    assert node_info['logLevel'] == 'trace'
+    assert node_info['logLevelConfig'] == 'info'
 
     assert len(node_info) == NODE_INFO_LEN
 
