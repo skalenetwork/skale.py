@@ -1,5 +1,6 @@
 import mock
 import web3
+from mock import Mock
 from hexbytes import HexBytes
 
 
@@ -22,11 +23,15 @@ def test_broadcast(skale):
 
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
-    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
-        send_tx_mock.return_value = b'hexstring'
-        skale.dkg.broadcast(group_index, node_index, validation_vector, secret_key_contribution,
-                            gas_price=skale.dkg.gas_price())
-        send_tx_mock.assert_called_with(HexBytes(exp))
+    with mock.patch.object(skale.dkg.contract.functions.broadcast, 'call',
+                           new=Mock(return_value=[])):
+        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+            send_tx_mock.return_value = b'hexstring'
+            skale.dkg.broadcast(group_index, node_index, validation_vector,
+                                secret_key_contribution,
+                                gas_price=skale.dkg.gas_price(),
+                                wait_for=False)
+            send_tx_mock.assert_called_with(HexBytes(exp))
 
 
 def test_response(skale):
@@ -48,14 +53,19 @@ def test_response(skale):
 
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
-    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
-        send_tx_mock.return_value = b'hexstring'
-        skale.dkg.response(group_index, from_node_index, secret_number, multiplied_share,
-                           gas_price=skale.dkg.gas_price())
-        send_tx_mock.assert_called_with(HexBytes(exp))
+
+    with mock.patch.object(skale.dkg.contract.functions.response, 'call',
+                           new=Mock(return_value=[])):
+        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+            send_tx_mock.return_value = b'hexstring'
+            skale.dkg.response(group_index, from_node_index, secret_number,
+                               multiplied_share,
+                               gas_price=skale.dkg.gas_price(),
+                               wait_for=False)
+            send_tx_mock.assert_called_with(HexBytes(exp))
 
 
-def test_allright(skale):
+def test_alright(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.dkg.address
     chain_id = skale.web3.eth.chainId
@@ -72,10 +82,14 @@ def test_allright(skale):
 
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
-    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
-        send_tx_mock.return_value = b'hexstring'
-        skale.dkg.alright(group_index, from_node_index, gas_price=skale.dkg.gas_price())
-        send_tx_mock.assert_called_with(HexBytes(exp))
+
+    with mock.patch.object(skale.dkg.contract.functions.alright,
+                           'call', new=Mock(return_value=[])):
+        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+            send_tx_mock.return_value = b'hexstring'
+            skale.dkg.alright(group_index, from_node_index,
+                              gas_price=skale.dkg.gas_price(), wait_for=False)
+            send_tx_mock.assert_called_with(HexBytes(exp))
 
 
 def test_complaint(skale):
@@ -96,8 +110,11 @@ def test_complaint(skale):
 
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
-    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
-        send_tx_mock.return_value = b'hexstring'
-        skale.dkg.complaint(group_index, from_node_index, to_node_index,
-                            gas_price=skale.dkg.gas_price())
-        send_tx_mock.assert_called_with(HexBytes(exp))
+    with mock.patch.object(skale.dkg.contract.functions.complaint,
+                           'call', new=Mock(return_value=[])):
+        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+            send_tx_mock.return_value = b'hexstring'
+            skale.dkg.complaint(group_index, from_node_index, to_node_index,
+                                gas_price=skale.dkg.gas_price(),
+                                wait_for=False)
+            send_tx_mock.assert_called_with(HexBytes(exp))

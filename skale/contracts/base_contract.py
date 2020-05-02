@@ -23,7 +23,8 @@ from functools import wraps
 
 from web3 import Web3
 
-from skale.transactions.tools import post_transaction, make_call
+from skale.dataclasses.tx_res import TxRes
+from skale.transactions.tools import post_transaction, make_dry_run_call
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
 
 
@@ -33,45 +34,33 @@ logger = logging.getLogger(__name__)
 def transaction_method(gas_limit):
     def real_decorator(transaction):
         @wraps(transaction)
-        def wrapper(self, *args, wait_for=False, timeout=4, blocks_to_wait=50, retries=1,
-                    gas_price=None, nonce=None, dry_run=False, raise_for_status=True, **kwargs):
+        def wrapper(self, *args, wait_for=True, timeout=4, blocks_to_wait=50,
+                    gas_price=None, nonce=None,
+                    dry_run_only=False, skip_dry_run=False,
+                    raise_for_status=True, **kwargs):
             method = transaction(self, *args, **kwargs)
-            if dry_run:
-                opts = {
-                    'from': self.skale.wallet.address,
-                    'gas': gas_limit
-                }
-                logger.info(
-                    f'transaction_method: {transaction.__name__} - dry_run, '
-                    f'sender: {self.skale.wallet.address}, '
-                    f'gas: {gas_limit}'
-                )
-                return make_call(method, opts)
-            else:
-                for retry in range(retries):
-                    logger.info(
-                        f'transaction_method: {transaction.__name__}, try {retry+1}/{retries}, '
-                        f'wallet: {self.skale.wallet.__class__.__name__}, '
-                        f'sender: {self.skale.wallet.address}, '
-                        f'gas: {gas_limit}'
+            tx_res = TxRes()
+            if not skip_dry_run:
+                tx_res.dry_run_result = make_dry_run_call(self.skale.wallet,
+                                                          method, gas_limit)
+
+            if not dry_run_only and (skip_dry_run or tx_res.dry_run_passed()):
+                gas_price = gas_price or self.skale.gas_price
+                tx_res.hash = post_transaction(self.skale.wallet, method,
+                                               gas_limit, gas_price, nonce)
+                if wait_for:
+                    tx_res.receipt = wait_for_receipt_by_blocks(
+                        self.skale.web3,
+                        tx_res.hash,
+                        timeout=timeout,
+                        blocks_to_wait=blocks_to_wait
                     )
-                    tx_res = post_transaction(self.skale.wallet, method, gas_limit, gas_price,
-                                              nonce)
-                    if wait_for:
-                        tx_res.receipt = wait_for_receipt_by_blocks(
-                            self.skale.web3,
-                            tx_res.hash,
-                            timeout=timeout,
-                            blocks_to_wait=blocks_to_wait
-                        )
-                        if tx_res.receipt['status'] == 1:
-                            return tx_res
-                        else:
-                            if raise_for_status:
-                                tx_res.raise_for_status()
-                    else:
-                        return tx_res
-                return tx_res
+
+            if raise_for_status:
+                tx_res.raise_for_status()
+
+            return tx_res
+
         return wrapper
     return real_decorator
 
