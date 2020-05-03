@@ -59,11 +59,6 @@ def test_wait_for_false(skale):
     assert tx_res.receipt is None
     assert tx_res.dry_run_result == {'payload': [], 'status': 1}
 
-    balance_from_after = skale.token.get_balance(address_from)
-    assert balance_from_after == balance_from_before
-    balance_to_after = skale.token.get_balance(address_to)
-    assert balance_to_after == balance_to_before
-
     tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.hash)
     tx_res.raise_for_status()
 
