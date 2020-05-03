@@ -48,8 +48,8 @@ class TxRes:
         self._dry_run_result = dry_run_result
 
     @hash.setter
-    def hash(self, hash: str) -> None:
-        self._hash = hash
+    def hash(self, tx_hash: str) -> None:
+        self._hash = tx_hash
 
     @receipt.setter
     def receipt(self, receipt: dict) -> None:
