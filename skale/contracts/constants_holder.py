@@ -58,3 +58,10 @@ class ConstantsHolder(BaseContract):
     def _set_msr(self, new_msr: int) -> None:
         """For internal usage only"""
         return self.contract.functions.setMSR(new_msr)
+
+    def get_launch_timestamp(self) -> int:
+        return self.contract.functions.launchTimestamp().call()
+
+    @transaction_method(GAS['set_launch_timestamp'])
+    def set_launch_timestamp(self, launch_timestamp: int):
+        return self.contract.functions.setLaunchTimestamp(launch_timestamp)
