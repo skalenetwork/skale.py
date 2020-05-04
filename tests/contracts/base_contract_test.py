@@ -99,6 +99,13 @@ def test_tx_res_wait_for_false(skale):
     assert not tx_res.tx_passed()
     tx_res.raise_for_status()
 
+    tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.hash)
+    tx_res.raise_for_status()
+    assert tx_res.receipt_received()
+    assert tx_res.receipt_status() == TxRes.SUCCESS
+    assert tx_res.tx_passed()
+    tx_res.raise_for_status()
+
 
 def test_tx_res_wait_for_true(skale):
     account = generate_account(skale.web3)
