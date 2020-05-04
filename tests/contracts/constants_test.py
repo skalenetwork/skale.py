@@ -24,3 +24,13 @@ def test_get_set_latency(skale):
     assert tx_res.receipt['status'] == 1
     res = skale.constants_holder.get_latency()
     assert res == new_latency
+
+
+def get_set_launch_timestamp(skale):
+    launch_ts = skale.constants_holder.get_set_launch_timestamp()
+    assert launch_ts == 0
+    new_launch_ts = 10000000000
+    new_launch_ts = 1588600214
+    skale.constants_holder.get_set_launch_timestamp(new_launch_ts, wait_for=True)
+    launch_ts = skale.constants_holder.get_set_launch_timestamp()
+    assert launch_ts == new_launch_ts
