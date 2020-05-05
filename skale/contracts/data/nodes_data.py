@@ -27,7 +27,7 @@ from skale.contracts import BaseContract
 from skale.utils.helper import format_fields
 
 FIELDS = [
-    'name', 'ip', 'publicIP', 'port', 'publicKey', 'start_date',
+    'name', 'ip', 'publicIP', 'port', 'publicKey', 'start_block',
     'last_reward_date', 'finish_time', 'status', 'validator_id'
 ]
 

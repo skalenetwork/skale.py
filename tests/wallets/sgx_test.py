@@ -43,6 +43,15 @@ class SgxClient:
             'v': 37,
         })
 
+    def sign_hash(self, message, key_name, chain_id):
+        return AttributeDict({
+            'messageHash': HexBytes('0x31323331'),
+            'r': 123,
+            's': 123,
+            'v': 27,
+            'signature': HexBytes('0x6161616161613131313131')
+        })
+
 
 def test_sgx_sign():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
@@ -111,6 +120,16 @@ def test_sgx_sign_with_key():
             'data': b'\x9b\xd9\xbb\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x95qY\xc4i\xfc;\xba\xa8\xe3\x9e\xe0\xa3$\xc28\x8a\xd6Q\xe5\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\xe0\xb6\xb3\xa7d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x006\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa8\xc0\x04/Rglamorous-kitalpha\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'  # noqa
         }
         wallet.sign(tx_dict)
+
+
+def test_sgx_sign_hash():
+    with mock.patch('skale.wallets.sgx_wallet.SgxClient',
+                    new=SgxClient):
+        web3 = init_web3(ENDPOINT)
+        wallet = SgxWallet('TEST_ENDPOINT', web3, key_name='TEST_KEY')
+        unsigned_hash = '0x31323331'
+        signed_message = wallet.sign_hash(unsigned_hash)
+        assert signed_message.signature == HexBytes('0x6161616161613131313131')
 
 
 def test_sgx_key_init():

@@ -18,8 +18,12 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 
+class TransactionFailedError(Exception):
+    pass
+
+
 class TxRes():
-    def __init__(self, tx_hash, data=None, receipt=None):
+    def __init__(self, tx_hash=None, data=None, receipt=None):
         self._hash = tx_hash
         self._data = data
         self._receipt = receipt
@@ -39,3 +43,8 @@ class TxRes():
     @receipt.setter
     def receipt(self, receipt: dict) -> None:
         self._receipt = receipt
+
+    def raise_for_status(self) -> None:
+        if self._receipt and self._receipt['status'] != 1:
+            raise TransactionFailedError(f'Transaction failed with receipt '
+                                         f'{self._receipt}')

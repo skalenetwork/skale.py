@@ -20,7 +20,6 @@
 from functools import wraps
 
 from skale.contracts import BaseContract, transaction_method
-from skale.transactions.tools import post_transaction
 from skale.dataclasses.tx_res import TxRes
 from skale.utils.constants import GAS
 
@@ -63,7 +62,7 @@ class Distributor(BaseContract):
             'from': address
         })
 
-    @transaction_method
+    @transaction_method(GAS['withdraw_bounty'])
     def withdraw_bounty(self, validator_id: int, to: str) -> TxRes:
         """Withdraw earned bounty to specified address
 
@@ -74,10 +73,9 @@ class Distributor(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.withdrawBounty(validator_id, to)
-        return post_transaction(self.skale.wallet, func, GAS['withdraw_bounty'])
+        return self.contract.functions.withdrawBounty(validator_id, to)
 
-    @transaction_method
+    @transaction_method(GAS['withdraw_fee'])
     def withdraw_fee(self, to: str) -> TxRes:
         """Withdraw earned fee to specified address
 
@@ -86,5 +84,4 @@ class Distributor(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        func = self.contract.functions.withdrawFee(to)
-        return post_transaction(self.skale.wallet, func, GAS['withdraw_fee'])
+        return self.contract.functions.withdrawFee(to)
