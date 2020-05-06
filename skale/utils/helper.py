@@ -25,9 +25,11 @@ import random
 import socket
 import string
 import sys
+from functools import wraps
 from logging import Formatter, StreamHandler
 from random import randint
 
+from skale.dataclasses.tx_res import TransactionFailedError, TxRes
 
 logger = logging.getLogger(__name__)
 
@@ -128,10 +130,6 @@ def init_default_logger():  # pragma: no cover
     handlers.append(stream_handler)
 
     logging.basicConfig(level=logging.DEBUG, handlers=handlers)
-
-
-from functools import wraps
-from skale.dataclasses.tx_res import TransactionFailedError, TxRes
 
 
 def retry_tx(max_retries=3):
