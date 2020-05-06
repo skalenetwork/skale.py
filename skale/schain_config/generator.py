@@ -24,13 +24,16 @@ from skale.utils.web3_utils import public_key_to_address
 from skale.schain_config.base_config import update_base_config
 
 
-def generate_schain_info(schain, schain_nodes):
-    return {
+def generate_schain_info(schain, schain_nodes, snapshot_interval_ms):
+    schain_info = {
         'schainID': 1,  # todo: remove this later (should be removed from the skaled first)
         'schainName': schain['name'],
         'schainOwner': schain['owner'],
         'nodes': schain_nodes
     }
+    if snapshot_interval_ms:
+        schain_info['snapshotIntervalMs'] = snapshot_interval_ms
+    return schain_info
 
 
 def get_nodes_for_schain(skale, name):
@@ -79,8 +82,9 @@ def generate_schain_config(base_config, node_info, schain_info):
 
 def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, ima_mainnet=None,
                                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None,
-                                 rotate_after_block=64, snapshot_interval_ms=30, schain_log_level='trace',
-                                 schain_log_level_config='trace'):
+                                 rotate_after_block=64, storage_limit=1000000000,
+                                 empty_block_interval_ms=None, snapshot_interval_ms=None,
+                                 schain_log_level='trace', schain_log_level_config='trace'):
     node = skale.nodes_data.get(node_id)
     schain = skale.schains_data.get_by_name(schain_name)
 
@@ -99,11 +103,14 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
         ima_mp_mainnet=ima_mp_mainnet,
         wallets=wallets,
         rotate_after_block=rotate_after_block,
-        snapshot_interval_ms=snapshot_interval_ms,
         schain_log_level=schain_log_level,
         schain_log_level_config=schain_log_level_config
     ).to_config()
-    schain_info = generate_schain_info(schain, schain_nodes)
+    schain_info = generate_schain_info(
+        schain=schain,
+        schain_nodes=schain_nodes,
+        snapshot_interval_ms=snapshot_interval_ms
+    )
 
     if base_config:
         update_base_config(base_config, schain, schain_nodes)

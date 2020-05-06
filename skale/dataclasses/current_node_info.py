@@ -23,7 +23,7 @@ from skale.dataclasses.node_info import NodeInfo
 class CurrentNodeInfo(NodeInfo):
     def __init__(self, node_id, node_name, base_port, bind_ip, ima_mainnet=None,
                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None, rotate_after_block=64,
-                 snapshot_interval_ms=30, schain_log_level='trace', schain_log_level_config='trace'):
+                 schain_log_level='trace', schain_log_level_config='trace'):
         self.bind_ip = bind_ip
         self.schain_log_level = schain_log_level
         self.schain_log_level_config = schain_log_level_config
@@ -34,7 +34,6 @@ class CurrentNodeInfo(NodeInfo):
         self.wallets = wallets
 
         self.rotate_after_block = rotate_after_block
-        self.snapshot_interval_ms = snapshot_interval_ms
         super().__init__(node_id, node_name, base_port)
 
     def to_config(self):
@@ -49,5 +48,4 @@ class CurrentNodeInfo(NodeInfo):
         config['wallets'] = self.wallets
 
         config['rotateAfterBlock'] = self.rotate_after_block
-        config['snapshotIntervalMs'] = self.snapshot_interval_ms
         return config
