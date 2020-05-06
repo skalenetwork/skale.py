@@ -31,6 +31,9 @@ logger = logging.getLogger(__name__)
 
 
 class Manager(BaseContract):
+    from skale.utils.helper import retry_tx
+
+    @retry_tx(max_retries=3)
     @transaction_method(GAS['create_node'])
     def create_node(self, ip, port, name, public_ip=None):
         logger.info(
@@ -74,7 +77,8 @@ class Manager(BaseContract):
     def create_default_schain(self, name):
         lifetime = 3600
         nodes_type = 4
-        price_in_wei = self.skale.schains.get_schain_price(nodes_type, lifetime)
+        price_in_wei = self.skale.schains.get_schain_price(
+            nodes_type, lifetime)
         return self.create_schain(lifetime, nodes_type, price_in_wei, name,
                                   wait_for=True)
 
