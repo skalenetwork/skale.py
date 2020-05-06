@@ -10,7 +10,7 @@ from skale.dataclasses.tx_res import TransactionFailedError
 from skale.utils.constants import GAS
 from skale.utils.web3_utils import private_key_to_public
 
-from tests.prepare_data import clean_and_restart
+# from tests.prepare_data import clean_and_restart
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data
 )
