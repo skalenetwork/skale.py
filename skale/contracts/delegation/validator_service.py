@@ -28,7 +28,7 @@ from skale.utils.constants import GAS
 
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
-    'registration_time', 'minimum_delegation_amount', 'trusted'
+    'registration_time', 'minimum_delegation_amount', 'accept_new_requests', 'trusted'
 ]
 
 
@@ -51,7 +51,8 @@ class ValidatorService(BaseContract):
         :rtype: dict
         """
         validator = self.__get_raw(_id)
-        validator.append(self._is_validator_trusted(_id))
+        trusted = self._is_validator_trusted(_id)
+        validator.append(trusted)
         return validator
 
     def get_with_id(self, _id) -> dict:
