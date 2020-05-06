@@ -22,29 +22,65 @@ class TransactionFailedError(Exception):
     pass
 
 
-class TxRes():
-    def __init__(self, tx_hash=None, data=None, receipt=None):
+class TxRes:
+    SUCCESS = 1
+    NOT_PERFORMED = -1
+
+    def __init__(self, tx_hash=None, dry_run_result=None, receipt=None):
         self._hash = tx_hash
-        self._data = data
+        self._dry_run_result = dry_run_result
         self._receipt = receipt
+
+    @property
+    def dry_run_result(self):
+        return self._dry_run_result
 
     @property
     def hash(self):
         return self._hash
 
     @property
-    def data(self):
-        return self._data
-
-    @property
     def receipt(self):
         return self._receipt
+
+    @dry_run_result.setter
+    def dry_run_result(self, dry_run_result: dict) -> None:
+        self._dry_run_result = dry_run_result
+
+    @hash.setter
+    def hash(self, tx_hash: str) -> None:
+        self._hash = tx_hash
 
     @receipt.setter
     def receipt(self, receipt: dict) -> None:
         self._receipt = receipt
 
+    def dry_run_finished(self) -> bool:
+        return self.dry_run_result is not None
+
+    def receipt_received(self) -> bool:
+        return self.receipt is not None
+
+    def dry_run_status(self) -> int:
+        if self.dry_run_finished():
+            return self.dry_run_result.get('status', TxRes.NOT_PERFORMED)
+        return TxRes.NOT_PERFORMED
+
+    def dry_run_passed(self) -> bool:
+        return self.dry_run_status() == TxRes.SUCCESS
+
+    def receipt_status(self) -> int:
+        if self.receipt_received():
+            return self.receipt.get('status', TxRes.NOT_PERFORMED)
+        return TxRes.NOT_PERFORMED
+
+    def tx_passed(self) -> bool:
+        return self.receipt_status() == TxRes.SUCCESS
+
     def raise_for_status(self) -> None:
-        if self._receipt and self._receipt['status'] != 1:
-            raise TransactionFailedError(f'Transaction failed with receipt '
-                                         f'{self._receipt}')
+        if self.dry_run_finished() and self.dry_run_status() != TxRes.SUCCESS:
+            raise TransactionFailedError(f'Dry run check failed with error: '
+                                         f'{self.dry_run_result}')
+        if self.receipt_received() and self.receipt_status() != TxRes.SUCCESS:
+            raise TransactionFailedError(f'Transaction failed with receipt: '
+                                         f'{self.receipt}')

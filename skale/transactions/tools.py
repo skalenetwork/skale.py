@@ -19,15 +19,29 @@
 
 import logging
 
-from skale.dataclasses.tx_res import TxRes
 from skale.utils.web3_utils import get_eth_nonce
 
 logger = logging.getLogger(__name__)
 
 
-def make_call(method, opts):
-    data = method.call(opts)
-    return TxRes(data=data)
+def make_dry_run_call(wallet, method, gas_limit) -> dict:
+    opts = {
+        'from': wallet.address,
+        'gas': gas_limit
+    }
+    logger.info(
+        f'Dry run tx: {method.fn_name}, '
+        f'sender: {wallet.address}, '
+        f'wallet: {wallet.__class__.__name__}, '
+        f'gasLimit: {gas_limit}'
+    )
+    try:
+        call_result = method.call(opts)
+    except Exception as err:
+        logger.error('Dry run for method failed with error', exc_info=err)
+        return {'status': 0, 'error': str(err)}
+
+    return {'status': 1, 'payload': call_result}
 
 
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
@@ -41,18 +55,24 @@ def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
     return method.buildTransaction(tx_dict_fields)
 
 
-def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> TxRes:
-    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
-    tx_hash = wallet.sign_and_send(tx_dict)
-    return TxRes(tx_hash=tx_hash)
-
-
-def sign_and_send(web3, method, gas_amount, wallet):
+def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     nonce = get_eth_nonce(web3, wallet.address)
     tx_dict = build_tx_dict(method, gas_amount, nonce)
     signed_tx = wallet.sign(tx_dict)
-    tx = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    return tx
+    return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+
+
+def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> str:
+    logger.info(
+        f'Tx: {method.fn_name}, '
+        f'sender: {wallet.address}, '
+        f'wallet: {wallet.__class__.__name__}, '
+        f'gasLimit: {gas_limit}, '
+        f'gasPrice: {gas_price}'
+    )
+    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
+    tx_hash = wallet.sign_and_send(tx_dict)
+    return tx_hash
 
 
 def send_eth(web3, account, amount, wallet):
