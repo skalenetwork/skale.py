@@ -24,15 +24,20 @@ from skale.utils.web3_utils import public_key_to_address
 from skale.schain_config.base_config import update_base_config
 
 
-def generate_schain_info(schain, schain_nodes, snapshot_interval_ms):
+def generate_schain_info(schain, schain_nodes, storage_limit,
+                         snapshot_interval_ms=None,
+                         empty_block_interval_ms=None):
     schain_info = {
         'schainID': 1,  # todo: remove this later (should be removed from the skaled first)
         'schainName': schain['name'],
         'schainOwner': schain['owner'],
-        'nodes': schain_nodes
+        'nodes': schain_nodes,
+        'storageLimit': storage_limit
     }
     if snapshot_interval_ms:
         schain_info['snapshotIntervalMs'] = snapshot_interval_ms
+    if empty_block_interval_ms:
+        schain_info['emptyBlockIntervalMs'] = empty_block_interval_ms
     return schain_info
 
 
@@ -106,9 +111,12 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
         schain_log_level=schain_log_level,
         schain_log_level_config=schain_log_level_config
     ).to_config()
+
     schain_info = generate_schain_info(
         schain=schain,
         schain_nodes=schain_nodes,
+        storage_limit=storage_limit,
+        empty_block_interval_ms=empty_block_interval_ms,
         snapshot_interval_ms=snapshot_interval_ms
     )
 
