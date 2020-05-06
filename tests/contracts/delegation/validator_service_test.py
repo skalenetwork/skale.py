@@ -178,6 +178,11 @@ def test_is_validator_trusted(skale):
     assert is_validator_trusted
 
 
+def test_is_accepting_new_requests(skale):
+    is_accepting_new_requests = skale.validator_service.is_accepting_new_requests(D_VALIDATOR_ID)
+    assert is_accepting_new_requests
+
+
 def test_register_existing_validator(skale):
     with pytest.raises(TransactionFailedError):
         skale.validator_service.register_validator(
