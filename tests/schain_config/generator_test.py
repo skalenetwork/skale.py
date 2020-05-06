@@ -10,8 +10,8 @@ from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAM
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
 TEST_NODE_IP = '10.10.10.10'
-NODE_INFO_LEN = 16
-SCHAIN_INFO_LEN = 4
+NODE_INFO_LEN = 15
+SCHAIN_INFO_LEN = 7
 TEST_ACCOUNTS_LEN = 2  # because we're creating everything from one account
 
 
@@ -62,12 +62,21 @@ def test_generate_schain_info():
         'owner': ZERO_ADDRESS,
     }
     nodes = []
-    schain_info = generate_schain_info(schain, nodes)
+    storage_limit = 10
+    snapshot_interval = 10
+    empty_block_interval = 10
+    schain_info = generate_schain_info(schain, nodes, storage_limit,
+                                       snapshot_interval_ms=snapshot_interval,
+                                       empty_block_interval_ms=empty_block_interval)
     assert isinstance(schain_info['schainID'], int)
     assert isinstance(schain_info['schainName'], str)
     assert isinstance(schain_info['schainOwner'], str)
     assert isinstance(schain_info['nodes'], list)
     assert len(schain_info) == SCHAIN_INFO_LEN
+
+    assert schain_info['storageLimit'] == storage_limit
+    assert schain_info['snapshotIntervalMs'] == snapshot_interval
+    assert schain_info['emptyBlockIntervalMs'] == empty_block_interval
 
 
 def test_generate_schain_config():

@@ -266,6 +266,7 @@ def test_empty_node_exit(skale):
     assert skale.nodes_data.get_node_status(node_idx) == 2
 
 
+@pytest.mark.skip(reason="{Need to update for the latest manager}")
 def test_one_schain_node_exit(skale):
     schains_ids = skale.schains_data.get_all_schains_ids()
     schain_name = skale.schains_data.get(schains_ids[0])['name']
@@ -290,6 +291,7 @@ def test_one_schain_node_exit(skale):
     clean_and_restart(skale)
 
 
+@pytest.mark.skip(reason="{Need to update for the latest manager}")
 def test_get_rotation(skale):
     schains_ids = skale.schains_data.get_all_schains_ids()
     schain_name = skale.schains_data.get(schains_ids[0])['name']
