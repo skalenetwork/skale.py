@@ -121,8 +121,8 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
     tx_res = None
     exp_timeout = 1
     while not success and attempt < max_retries:
-        tx_res = transaction(*args, **kwargs)
         try:
+            tx_res = transaction(*args, **kwargs)
             tx_res.raise_for_status()
         except TransactionFailedError as err:
             logger.error(f'Tx attempt {attempt}/{max_retries} failed',
