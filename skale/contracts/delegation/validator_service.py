@@ -171,6 +171,10 @@ class ValidatorService(BaseContract):
         """For internal usage only"""
         return self.contract.functions.trustedValidators(validator_id).call()
 
+    def is_accepting_new_requests(self, validator_id: int) -> bool:
+        """For internal usage only"""
+        return self.contract.functions.isAcceptingNewRequests(validator_id).call()
+
     @transaction_method(gas_limit=GAS['register_validator'])
     def register_validator(self, name: str, description: str, fee_rate: int,
                            min_delegation_amount: int) -> TxRes:
