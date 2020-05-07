@@ -22,7 +22,7 @@ from skale.utils.constants import GAS
 
 
 class ConstantsHolder(BaseContract):
-    @transaction_method(GAS['set_periods'])
+    @transaction_method(gas_limit=GAS['set_periods'])
     def set_periods(self, new_reward_period, new_delta_period):
         return self.contract.functions.setPeriods(new_reward_period, new_delta_period)
 
@@ -32,14 +32,14 @@ class ConstantsHolder(BaseContract):
     def get_delta_period(self):
         return self.contract.functions.deltaPeriod().call()
 
-    @transaction_method(GAS['set_check_time'])
+    @transaction_method(gas_limit=GAS['set_check_time'])
     def set_check_time(self, new_check_time):
         return self.contract.functions.setCheckTime(new_check_time)
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
 
-    @transaction_method(GAS['set_latency'])
+    @transaction_method(gas_limit=GAS['set_latency'])
     def set_latency(self, new_allowable_latency):
         return self.contract.functions.setLatency(new_allowable_latency)
 
@@ -54,7 +54,7 @@ class ConstantsHolder(BaseContract):
         """
         return self.contract.functions.msr().call()
 
-    @transaction_method(GAS['set_msr'])
+    @transaction_method(gas_limit=GAS['set_msr'])
     def _set_msr(self, new_msr: int) -> None:
         """For internal usage only"""
         return self.contract.functions.setMSR(new_msr)
@@ -62,6 +62,6 @@ class ConstantsHolder(BaseContract):
     def get_launch_timestamp(self) -> int:
         return self.contract.functions.launchTimestamp().call()
 
-    @transaction_method(GAS['set_launch_timestamp'])
+    @transaction_method(gas_limit=GAS['set_launch_timestamp'])
     def set_launch_timestamp(self, launch_timestamp: int):
         return self.contract.functions.setLaunchTimestamp(launch_timestamp)
