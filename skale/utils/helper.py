@@ -25,11 +25,8 @@ import random
 import socket
 import string
 import sys
-from functools import wraps
 from logging import Formatter, StreamHandler
 from random import randint
-
-from skale.dataclasses.tx_res import TransactionFailedError, TxRes
 
 logger = logging.getLogger(__name__)
 
@@ -130,37 +127,3 @@ def init_default_logger():  # pragma: no cover
     handlers.append(stream_handler)
 
     logging.basicConfig(level=logging.DEBUG, handlers=handlers)
-
-
-def retry_tx(max_retries=3):
-    def retry_decorator(transaction):
-        @wraps(transaction)
-        def wrapper(*args, **kwargs):
-            return run_tx_with_retry(transaction, *args,
-                                     max_retries=max_retries, **kwargs)
-        return wrapper
-    return retry_decorator
-
-
-def run_tx_with_retry(transaction, *args, max_retries=3, **kwargs) -> TxRes:
-    success = False
-    attempt = 0
-    tx_res = None
-    while not success and attempt < max_retries:
-        tx_res = transaction(*args, **kwargs)
-        try:
-            tx_res.raise_for_status()
-        except TransactionFailedError as err:
-            logger.error(f'Tx attempt {attempt}/{max_retries} failed',
-                         exc_info=err)
-        else:
-            success = True
-        attempt += 1
-    if success:
-        logger.info(f'Tx {transaction.__name__} completed '
-                    f'after {attempt}/{max_retries} retries')
-    else:
-        logger.error(
-            f'Tx {transaction.__name__} failed after '
-            f'{max_retries} retries')
-    return tx_res

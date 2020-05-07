@@ -18,7 +18,10 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import time
+from functools import partial, wraps
 
+from skale.dataclasses.tx_res import TransactionFailedError, TxRes
 from skale.utils.web3_utils import get_eth_nonce
 
 logger = logging.getLogger(__name__)
@@ -94,3 +97,47 @@ def send_eth(web3, account, amount, wallet):
         f'tx: {web3.toHex(tx)}'
     )
     return tx
+
+
+def retry_tx(tx=None, *, max_retries=3, timeout=-1):
+    if tx is None:
+        return partial(retry_tx, max_retries=3, timeout=timeout)
+
+    @wraps(tx)
+    def wrapper(*args, **kwargs):
+        return run_tx_with_retry(
+            tx, *args,
+            max_retries=max_retries,
+            retry_timeout=timeout, **kwargs
+        )
+    return wrapper
+
+
+def run_tx_with_retry(transaction, *args, max_retries=3,
+                      retry_timeout=-1,
+                      **kwargs) -> TxRes:
+    success = False
+    attempt = 0
+    tx_res = None
+    exp_timeout = 1
+    while not success and attempt < max_retries:
+        tx_res = transaction(*args, **kwargs)
+        try:
+            tx_res.raise_for_status()
+        except TransactionFailedError as err:
+            logger.error(f'Tx attempt {attempt}/{max_retries} failed',
+                         exc_info=err)
+            timeout = exp_timeout if retry_timeout < 0 else exp_timeout
+            time.sleep(timeout)
+            exp_timeout *= 2
+        else:
+            success = True
+        attempt += 1
+    if success:
+        logger.info(f'Tx {transaction.__name__} completed '
+                    f'after {attempt}/{max_retries} retries')
+    else:
+        logger.error(
+            f'Tx {transaction.__name__} failed after '
+            f'{max_retries} retries')
+    return tx_res

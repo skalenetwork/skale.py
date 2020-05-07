@@ -62,7 +62,7 @@ class Distributor(BaseContract):
             'from': address
         })
 
-    @transaction_method(GAS['withdraw_bounty'])
+    @transaction_method(gas_limit=GAS['withdraw_bounty'])
     def withdraw_bounty(self, validator_id: int, to: str) -> TxRes:
         """Withdraw earned bounty to specified address
 
@@ -75,7 +75,7 @@ class Distributor(BaseContract):
         """
         return self.contract.functions.withdrawBounty(validator_id, to)
 
-    @transaction_method(GAS['withdraw_fee'])
+    @transaction_method(gas_limit=GAS['withdraw_fee'])
     def withdraw_fee(self, to: str) -> TxRes:
         """Withdraw earned fee to specified address
 
