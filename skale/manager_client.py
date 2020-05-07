@@ -24,7 +24,7 @@ from web3.middleware import geth_poa_middleware
 
 import skale.contracts as contracts
 from skale.wallets import BaseWallet
-from skale.contracts_info import get_contracts_info
+from skale.contracts_info import get_base_contracts_info, get_debug_contracts_info
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
@@ -41,7 +41,8 @@ def spawn_skale_lib(skale):
 
 
 class Skale:
-    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30):
+    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30,
+                 debug_contracts=True):
         logger.info(f'Init skale-py, connecting to {endpoint}')
         provider = get_provider(endpoint, timeout=provider_timeout)
         self._abi_filepath = abi_filepath
@@ -50,10 +51,10 @@ class Skale:
         self.web3.middleware_onion.inject(
             geth_poa_middleware, layer=0)  # todo: may cause issues
         self.__contracts = {}
-        self.nonces = {}
+        self.__abi = get_abi(abi_filepath)
         if wallet:
             self.wallet = wallet
-        self.__init_contracts(get_abi(abi_filepath), get_contracts_info())
+        self.__init_contracts(debug_contracts=debug_contracts)
 
     @property
     def gas_price(self):
@@ -73,15 +74,20 @@ class Skale:
             raise InvalidWalletError(f'Wrong wallet class: {type(wallet).__name__}. \
                                        Must be one of the BaseWallet subclasses')
 
-    def __init_contracts(self, abi, contracts_info):
+    def __init_contracts(self, debug_contracts=True):
         self.add_lib_contract('contract_manager',
-                              contracts.ContractManager, abi)
+                              contracts.ContractManager, self.__abi)
+        self.__init_contracts_from_info(get_base_contracts_info())
+        if debug_contracts:
+            self.__init_contracts_from_info(get_debug_contracts_info())
+
+    def __init_contracts_from_info(self, contracts_info):
         for name in contracts_info:
             info = contracts_info[name]
             if info.upgradeable:
-                self.init_upgradeable_contract(info, abi)
+                self.init_upgradeable_contract(info, self.__abi)
             else:
-                self.add_lib_contract(info.name, info.contract_class, abi)
+                self.add_lib_contract(info.name, info.contract_class, self.__abi)
 
     def init_upgradeable_contract(self, contract_info, abi):
         address = self.get_contract_address(contract_info.contract_name)

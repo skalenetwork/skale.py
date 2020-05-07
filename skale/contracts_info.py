@@ -21,6 +21,7 @@ import skale.contracts as contracts
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 
+
 CONTRACTS_INFO = [
     ContractInfo('contract_manager', 'ContractManager',
                  contracts.ContractManager, ContractTypes.API, False),
@@ -48,14 +49,26 @@ CONTRACTS_INFO = [
     ContractInfo('token_state', 'TokenState', contracts.TokenState,
                  ContractTypes.API, False),
     ContractInfo('distributor', 'Distributor', contracts.Distributor,
-                 ContractTypes.API, False),
+                 ContractTypes.API, False)
+]
+
+
+DEBUG_CONTRACTS_INFO = [
     ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug', contracts.TimeHelpersWithDebug,
                  ContractTypes.API, False)
 ]
 
 
-def get_contracts_info():
+def get_contracts_info(contracts_data):
     contracts_info = {}
-    for contract_info in CONTRACTS_INFO:
+    for contract_info in contracts_data:
         contracts_info[contract_info.name] = contract_info
     return contracts_info
+
+
+def get_base_contracts_info():
+    return get_contracts_info(CONTRACTS_INFO)
+
+
+def get_debug_contracts_info():
+    return get_contracts_info(DEBUG_CONTRACTS_INFO)
