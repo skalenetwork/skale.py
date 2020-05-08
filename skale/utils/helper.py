@@ -28,7 +28,6 @@ import sys
 from logging import Formatter, StreamHandler
 from random import randint
 
-
 logger = logging.getLogger(__name__)
 
 
