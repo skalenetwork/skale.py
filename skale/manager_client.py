@@ -41,8 +41,7 @@ def spawn_skale_lib(skale):
 
 
 class Skale:
-    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30,
-                 debug_contracts=True):
+    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30):
         logger.info(f'Init skale-py, connecting to {endpoint}')
         provider = get_provider(endpoint, timeout=provider_timeout)
         self._abi_filepath = abi_filepath
@@ -53,7 +52,7 @@ class Skale:
         self.__contracts = {}
         if wallet:
             self.wallet = wallet
-        self.__init_contracts(get_abi(abi_filepath), debug_contracts=debug_contracts)
+        self.__init_contracts(get_abi(abi_filepath))
 
     @property
     def gas_price(self):
@@ -73,11 +72,15 @@ class Skale:
             raise InvalidWalletError(f'Wrong wallet class: {type(wallet).__name__}. \
                                        Must be one of the BaseWallet subclasses')
 
-    def __init_contracts(self, abi, debug_contracts=True):
+    def __is_debug_contracts(self, abi):
+        return abi.get('time_helpers_with_debug_address', None)
+
+    def __init_contracts(self, abi):
         self.add_lib_contract('contract_manager',
                               contracts.ContractManager, abi)
         self.__init_contracts_from_info(abi, get_base_contracts_info())
-        if debug_contracts:
+        if self.__is_debug_contracts(abi):
+            logger.info('Debug contracts found in ABI file')
             self.__init_contracts_from_info(abi, get_debug_contracts_info())
 
     def __init_contracts_from_info(self, abi, contracts_info):
