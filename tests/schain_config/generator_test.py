@@ -50,7 +50,7 @@ def test_generate_node_info():
     assert node_info['imaMessageProxyMainNet'] == ZERO_ADDRESS
     assert node_info['rotateAfterBlock'] == 128
 
-    assert node_info['logLevel'] == 'trace'
+    assert node_info['logLevel'] == 'info'
     assert node_info['logLevelConfig'] == 'info'
 
     assert len(node_info) == NODE_INFO_LEN

@@ -55,7 +55,9 @@ GAS = {
     'set_msr': 200000,
 
     'get_and_update_locked_amount': 3000000,
-    'request_undelegation': 3000000
+    'request_undelegation': 3000000,
+
+    'set_launch_timestamp': 200000,
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}

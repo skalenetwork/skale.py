@@ -12,7 +12,7 @@ extras_require = {
     ],
     'dev': [
         "bumpversion==0.5.3",
-        "pytest==5.4.1",
+        "pytest==5.4.2",
         "click==7.1.1",
         "twine==3.1.1",
         "mock==4.0.2",
@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='3.5',
+    version='3.6',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -39,7 +39,7 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==5.5.1",
+        "web3==5.6.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
         "sgx.py==0.5dev0",

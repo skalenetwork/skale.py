@@ -23,7 +23,7 @@ from skale.dataclasses.node_info import NodeInfo
 class CurrentNodeInfo(NodeInfo):
     def __init__(self, node_id, node_name, base_port, bind_ip, ima_mainnet=None,
                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None, rotate_after_block=64,
-                 schain_log_level='trace', schain_log_level_config='trace'):
+                 schain_log_level='info', schain_log_level_config='info'):
         self.bind_ip = bind_ip
         self.schain_log_level = schain_log_level
         self.schain_log_level_config = schain_log_level_config
