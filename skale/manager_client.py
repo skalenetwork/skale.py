@@ -47,7 +47,8 @@ class Skale:
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
         self.web3 = Web3(provider)
-        self.web3.middleware_onion.inject(geth_poa_middleware, layer=0)  # todo: may cause issues
+        self.web3.middleware_onion.inject(
+            geth_poa_middleware, layer=0)  # todo: may cause issues
         self.__contracts = {}
         self.nonces = {}
         if wallet:
@@ -56,7 +57,7 @@ class Skale:
 
     @property
     def gas_price(self):
-        return self.web3.eth.gasPrice
+        return self.web3.eth.gasPrice * 5 // 4
 
     @property
     def wallet(self):
@@ -73,7 +74,8 @@ class Skale:
                                        Must be one of the BaseWallet subclasses')
 
     def __init_contracts(self, abi, contracts_info):
-        self.add_lib_contract('contract_manager', contracts.ContractManager, abi)
+        self.add_lib_contract('contract_manager',
+                              contracts.ContractManager, abi)
         for name in contracts_info:
             info = contracts_info[name]
             if info.upgradeable:
@@ -87,17 +89,23 @@ class Skale:
                               abi, address)
 
     def add_lib_contract(self, name, contract_class, abi, contract_address=None):
-        address = contract_address or self.get_contract_address_by_name(abi, name)
-        logger.info(f'Initialized: {name} at {address}')
+        address = contract_address or self.get_contract_address_by_name(
+            abi, name)
+        logger.info(f'Fetching abi for {name}, address {address}')
         if name == 'dkg':  # todo: tmp fix
             contract_abi = self.get_contract_abi_by_name(abi, 'd_k_g')
+        elif name == 'nodes_data':
+            contract_abi = self.get_contract_abi_by_name(abi, 'nodes')
         else:
             contract_abi = self.get_contract_abi_by_name(abi, name)
-        self.add_contract(name, contract_class(self, name, address, contract_abi))
+        self.add_contract(name, contract_class(
+            self, name, address, contract_abi))
 
     def get_contract_address_by_name(self, abi, name):
         if name == 'dkg':  # todo: tmp fix
             return abi.get(f'skale_d_k_g_address')
+        if name == 'nodes_data':
+            return abi.get(f'nodes_address')
         return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
 
     def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names

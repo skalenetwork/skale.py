@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 
 
 class Manager(BaseContract):
-    @transaction_method(GAS['create_node'])
+
+    @transaction_method(gas_limit=GAS['create_node'])
     def create_node(self, ip, port, name, public_ip=None):
         logger.info(
             f'create_node: {ip}:{port}, public ip: {public_ip} name: {name}')
@@ -74,11 +75,12 @@ class Manager(BaseContract):
     def create_default_schain(self, name):
         lifetime = 3600
         nodes_type = 4
-        price_in_wei = self.skale.schains.get_schain_price(nodes_type, lifetime)
+        price_in_wei = self.skale.schains.get_schain_price(
+            nodes_type, lifetime)
         return self.create_schain(lifetime, nodes_type, price_in_wei, name,
                                   wait_for=True)
 
-    @transaction_method(GAS['create_schain'])
+    @transaction_method(gas_limit=GAS['create_schain'])
     def create_schain(self, lifetime, type_of_nodes, deposit, name):
         logger.info(
             f'create_schain: type_of_nodes: {type_of_nodes}, name: {name}')
@@ -108,29 +110,29 @@ class Manager(BaseContract):
         )
         return data_bytes
 
-    @transaction_method(GAS['get_bounty'])
+    @transaction_method(gas_limit=GAS['get_bounty'])
     def get_bounty(self, node_id):
         return self.contract.functions.getBounty(node_id)
 
-    @transaction_method(GAS['send_verdict'])
+    @transaction_method(gas_limit=GAS['send_verdict'])
     def send_verdict(self, validator, node_id, downtime, latency):
         return self.contract.functions.sendVerdict(validator, node_id, downtime,
                                                    latency)
 
-    @transaction_method(GAS['send_verdicts'])
+    @transaction_method(gas_limit=GAS['send_verdicts'])
     def send_verdicts(self, validator, nodes_ids, downtimes, latencies):
         return self.contract.functions.sendVerdicts(validator, nodes_ids,
                                                     downtimes, latencies)
 
-    @transaction_method(GAS['delete_node'])
+    @transaction_method(gas_limit=GAS['delete_node'])
     def deregister(self, node_id):
         return self.contract.functions.deleteNode(node_id)
 
-    @transaction_method(GAS['delete_schain'])
+    @transaction_method(gas_limit=GAS['delete_schain'])
     def delete_schain(self, schain_name):
         return self.contract.functions.deleteSchain(schain_name)
 
-    @transaction_method(GAS['delete_node_by_root'])
+    @transaction_method(gas_limit=GAS['delete_node_by_root'])
     def delete_node_by_root(self, node_id):
         return self.contract.functions.deleteNodeByRoot(node_id)
 

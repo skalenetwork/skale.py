@@ -89,7 +89,7 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
                                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None,
                                  rotate_after_block=64, storage_limit=1000000000,
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
-                                 schain_log_level='trace', schain_log_level_config='trace'):
+                                 schain_log_level='info', schain_log_level_config='info'):
     node = skale.nodes_data.get(node_id)
     schain = skale.schains_data.get_by_name(schain_name)
 

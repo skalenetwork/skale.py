@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts import BaseContract, transaction_method
+from skale.transactions.tools import retry_tx
 from skale.utils.constants import GAS
 
 
@@ -25,25 +26,29 @@ class DKG(BaseContract):
     def gas_price(self):
         return self.skale.gas_price * 5 // 4
 
-    @transaction_method(GAS['dkg_broadcast'])
+    @retry_tx
+    @transaction_method(gas_limit=GAS['dkg_broadcast'])
     def broadcast(self, group_index, node_index,
                   verification_vector, secret_key_contribution):
         return self.contract.functions.broadcast(group_index, node_index,
                                                  verification_vector,
                                                  secret_key_contribution)
 
-    @transaction_method(GAS['dkg_response'])
+    @retry_tx
+    @transaction_method(gas_limit=GAS['dkg_response'])
     def response(self, group_index, from_node_index,
                  secret_number, multiplied_share):
         return self.contract.functions.response(group_index, from_node_index,
                                                 secret_number,
                                                 multiplied_share)
 
-    @transaction_method(GAS['dkg_alright'])
+    @retry_tx
+    @transaction_method(gas_limit=GAS['dkg_alright'])
     def alright(self, group_index, from_node_index):
         return self.contract.functions.alright(group_index, from_node_index)
 
-    @transaction_method(GAS['dkg_complaint'])
+    @retry_tx
+    @transaction_method(gas_limit=GAS['dkg_complaint'])
     def complaint(self, group_index, from_node_index, to_node_index):
         return self.contract.functions.complaint(group_index, from_node_index,
                                                  to_node_index)

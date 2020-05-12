@@ -11,7 +11,7 @@ from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME
 
 def test_get_raw_not_exist(skale):
     not_exist_node_id = 123123
-    node_arr = skale.nodes_data._NodesData__get_raw(not_exist_node_id)
+    node_arr = skale.nodes_data._Nodes__get_raw(not_exist_node_id)
     assert node_arr is None
 
 
