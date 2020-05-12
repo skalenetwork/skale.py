@@ -1,3 +1,4 @@
+import json
 import skale.contracts.data.nodes_data as nodes_data
 from skale.dataclasses import CurrentNodeInfo
 from skale.schain_config.generator import get_nodes_for_schain
@@ -5,7 +6,7 @@ from skale.schain_config.generator import (generate_schain_info, generate_schain
                                            generate_skale_schain_config)
 from skale.utils.helper import ip_from_bytes
 from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAME, TEST_URL,
-                             MIN_NODES_IN_SCHAIN)
+                             MIN_NODES_IN_SCHAIN, IMA_DATA_FILEPATH)
 
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
@@ -13,12 +14,18 @@ TEST_NODE_IP = '10.10.10.10'
 NODE_INFO_LEN = 15
 SCHAIN_INFO_LEN = 4
 TEST_ACCOUNTS_LEN = 2  # because we're creating everything from one account
+TEST_ACCOUNTS_LEN_WITH_IMA = 12  # 10 precompiled IMA contracts
 
 
 TEST_BASE_CONFIG = {
     "params": {},
     "accounts": {}
 }
+
+
+def read_ima_data_sample():
+    with open(IMA_DATA_FILEPATH) as f:
+        return json.load(f)
 
 
 def test_generate_node_info():
@@ -109,3 +116,23 @@ def test_generate_skale_schain_config(skale):
 
     assert len(config['skaleConfig']['sChain']['nodes']) == 2
     assert isinstance(config['skaleConfig']['sChain']['schainOwner'], str)
+
+
+def test_generate_skale_schain_config_with_ima_data(skale):
+    node_index = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    config = generate_skale_schain_config(
+        skale=skale,
+        schain_name=DEFAULT_SCHAIN_NAME,
+        node_id=node_index,
+        base_config=TEST_BASE_CONFIG,
+        ima_mainnet=TEST_URL,
+        ima_mp_schain=ZERO_ADDRESS,
+        ima_mp_mainnet=ZERO_ADDRESS,
+        ima_data=read_ima_data_sample(),
+        wallets={}
+    )
+    assert len(config['accounts'].keys()) == TEST_ACCOUNTS_LEN_WITH_IMA
+
+    print(json.dumps(config, indent=2))
+    assert False
+    # todo: improve test
