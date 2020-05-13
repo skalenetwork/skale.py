@@ -51,6 +51,8 @@ CONTRACTS_INFO = [
                  ContractTypes.API, False),
     ContractInfo('distributor', 'Distributor', contracts.Distributor,
                  ContractTypes.API, False),
+    ContractInfo('slashing_table', 'Distributor', contracts.SlashingTable,
+                 ContractTypes.API, False),
     ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug', contracts.TimeHelpersWithDebug,
                  ContractTypes.API, False)
 ]
