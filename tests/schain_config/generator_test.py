@@ -132,7 +132,4 @@ def test_generate_skale_schain_config_with_ima_data(skale):
         wallets={}
     )
     assert len(config['accounts'].keys()) == TEST_ACCOUNTS_LEN_WITH_IMA
-
-    print(json.dumps(config, indent=2))
-    assert False
     # todo: improve test

@@ -17,6 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3 import Web3
+
 from skale.dataclasses import CurrentNodeInfo, SchainNodeInfo
 from skale.schain_config.ports_allocation import get_schain_base_port_on_node
 from skale.schain_config import PRECOMPILED_IMA_CONTRACTS
@@ -80,11 +82,18 @@ def generate_permitted_ima_contracts_info(ima_data):
     return permitted_contracts
 
 
-def generate_mp_authorized_callers(ima_data):
+def generate_mp_authorized_callers(ima_data, schain_owner, schain_nodes):
     mp_authorized_callers = {}
     for name in PRECOMPILED_IMA_CONTRACTS:
         address = get_contract_address_from_ima_data(ima_data, name)
         mp_authorized_callers[address] = 1
+    for node in schain_nodes:
+        acc_fx = Web3.toChecksumAddress(node['owner'])
+        if not mp_authorized_callers.get(acc_fx, None):
+            mp_authorized_callers[acc_fx] = 1
+    schain_owner_fx = Web3.toChecksumAddress(schain_owner)
+    if not mp_authorized_callers.get(schain_owner_fx, None):
+        mp_authorized_callers[schain_owner_fx] = 1
     return mp_authorized_callers
 
 
@@ -97,10 +106,10 @@ def generate_ima_contracts_addresses(ima_data):
     return ima_contracts_addresses
 
 
-def generate_schain_contract_settings(ima_data, schain_owner):
+def generate_schain_contract_settings(ima_data, schain_owner, schain_nodes):
     # todo: refactor
     permitted_contracts = generate_permitted_ima_contracts_info(ima_data)
-    mp_authorized_callers = generate_mp_authorized_callers(ima_data)
+    mp_authorized_callers = generate_mp_authorized_callers(ima_data, schain_owner, schain_nodes)
     ima_contracts_addresses = generate_ima_contracts_addresses(ima_data)
     return {
         'common': {
@@ -164,7 +173,8 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
     else:
         base_config = {}
     if ima_data:
-        schain_contract_settings = generate_schain_contract_settings(ima_data, schain['owner'])
+        schain_contract_settings = generate_schain_contract_settings(ima_data, schain['owner'],
+                                                                     schain_nodes)
     else:
         schain_contract_settings = {}
     return generate_schain_config(
