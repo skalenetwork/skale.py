@@ -23,14 +23,14 @@ from skale.utils.constants import GAS
 
 
 class Token(BaseContract):
-    @transaction_method(GAS['token_transfer'])
+    @transaction_method(gas_limit=GAS['token_transfer'])
     def transfer(self, address, value):
         return self.contract.functions.send(address, value, b'')
 
     def get_balance(self, address):
         return self.contract.functions.balanceOf(address).call()
 
-    @transaction_method(GAS['token_transfer'])
+    @transaction_method(gas_limit=GAS['token_transfer'])
     def add_authorized(self, address, wallet):  # pragma: no cover
         return self.contract.functions.addAuthorized(address)
 

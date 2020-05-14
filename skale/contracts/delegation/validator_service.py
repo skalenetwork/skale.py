@@ -28,7 +28,7 @@ from skale.utils.constants import GAS
 
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
-    'registration_time', 'minimum_delegation_amount', 'trusted'
+    'registration_time', 'minimum_delegation_amount', 'accept_new_requests', 'trusted'
 ]
 
 
@@ -51,7 +51,8 @@ class ValidatorService(BaseContract):
         :rtype: dict
         """
         validator = self.__get_raw(_id)
-        validator.append(self._is_validator_trusted(_id))
+        trusted = self._is_validator_trusted(_id)
+        validator.append(trusted)
         return validator
 
     def get_with_id(self, _id) -> dict:
@@ -156,12 +157,12 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
 
-    @transaction_method(GAS['enable_validator'])
+    @transaction_method(gas_limit=GAS['enable_validator'])
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         return self.contract.functions.enableValidator(validator_id)
 
-    @transaction_method(GAS['disable_validator'])
+    @transaction_method(gas_limit=GAS['disable_validator'])
     def _disable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         return self.contract.functions.disableValidator(validator_id)
@@ -170,7 +171,11 @@ class ValidatorService(BaseContract):
         """For internal usage only"""
         return self.contract.functions.trustedValidators(validator_id).call()
 
-    @transaction_method(GAS['register_validator'])
+    def is_accepting_new_requests(self, validator_id: int) -> bool:
+        """For internal usage only"""
+        return self.contract.functions.isAcceptingNewRequests(validator_id).call()
+
+    @transaction_method(gas_limit=GAS['register_validator'])
     def register_validator(self, name: str, description: str, fee_rate: int,
                            min_delegation_amount: int) -> TxRes:
         """Registers a new validator in the SKALE Manager contracts.
@@ -194,7 +199,7 @@ class ValidatorService(BaseContract):
         signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
         return signed_hash.signature.hex()
 
-    @transaction_method(GAS['link_node_address'])
+    @transaction_method(gas_limit=GAS['link_node_address'])
     def link_node_address(self, node_address: str, signature: str) -> TxRes:
         """Link node address to your validator account.
 
@@ -207,7 +212,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.linkNodeAddress(node_address, signature)
 
-    @transaction_method(GAS['unlink_node_address'])
+    @transaction_method(gas_limit=GAS['unlink_node_address'])
     def unlink_node_address(self, node_address: str) -> TxRes:
         """Unlink node address from your validator account.
 

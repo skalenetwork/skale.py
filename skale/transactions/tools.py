@@ -18,16 +18,33 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import time
+from functools import partial, wraps
 
-from skale.dataclasses.tx_res import TxRes
+from skale.dataclasses.tx_res import TransactionFailedError, TxRes
 from skale.utils.web3_utils import get_eth_nonce
 
 logger = logging.getLogger(__name__)
 
 
-def make_call(method, opts):
-    data = method.call(opts)
-    return TxRes(data=data)
+def make_dry_run_call(wallet, method, gas_limit) -> dict:
+    opts = {
+        'from': wallet.address,
+        'gas': gas_limit
+    }
+    logger.info(
+        f'Dry run tx: {method.fn_name}, '
+        f'sender: {wallet.address}, '
+        f'wallet: {wallet.__class__.__name__}, '
+        f'gasLimit: {gas_limit}'
+    )
+    try:
+        call_result = method.call(opts)
+    except Exception as err:
+        logger.error('Dry run for method failed with error', exc_info=err)
+        return {'status': 0, 'error': str(err)}
+
+    return {'status': 1, 'payload': call_result}
 
 
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
@@ -41,18 +58,24 @@ def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
     return method.buildTransaction(tx_dict_fields)
 
 
-def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> TxRes:
-    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
-    tx_hash = wallet.sign_and_send(tx_dict)
-    return TxRes(tx_hash=tx_hash)
-
-
-def sign_and_send(web3, method, gas_amount, wallet):
+def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     nonce = get_eth_nonce(web3, wallet.address)
     tx_dict = build_tx_dict(method, gas_amount, nonce)
     signed_tx = wallet.sign(tx_dict)
-    tx = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    return tx
+    return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+
+
+def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> str:
+    logger.info(
+        f'Tx: {method.fn_name}, '
+        f'sender: {wallet.address}, '
+        f'wallet: {wallet.__class__.__name__}, '
+        f'gasLimit: {gas_limit}, '
+        f'gasPrice: {gas_price}'
+    )
+    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
+    tx_hash = wallet.sign_and_send(tx_dict)
+    return tx_hash
 
 
 def send_eth(web3, account, amount, wallet):
@@ -74,3 +97,47 @@ def send_eth(web3, account, amount, wallet):
         f'tx: {web3.toHex(tx)}'
     )
     return tx
+
+
+def retry_tx(tx=None, *, max_retries=3, timeout=-1):
+    if tx is None:
+        return partial(retry_tx, max_retries=3, timeout=timeout)
+
+    @wraps(tx)
+    def wrapper(*args, **kwargs):
+        return run_tx_with_retry(
+            tx, *args,
+            max_retries=max_retries,
+            retry_timeout=timeout, **kwargs
+        )
+    return wrapper
+
+
+def run_tx_with_retry(transaction, *args, max_retries=3,
+                      retry_timeout=-1,
+                      **kwargs) -> TxRes:
+    success = False
+    attempt = 0
+    tx_res = None
+    exp_timeout = 1
+    while not success and attempt < max_retries:
+        try:
+            tx_res = transaction(*args, **kwargs)
+            tx_res.raise_for_status()
+        except TransactionFailedError as err:
+            logger.error(f'Tx attempt {attempt}/{max_retries} failed',
+                         exc_info=err)
+            timeout = exp_timeout if retry_timeout < 0 else exp_timeout
+            time.sleep(timeout)
+            exp_timeout *= 2
+        else:
+            success = True
+        attempt += 1
+    if success:
+        logger.info(f'Tx {transaction.__name__} completed '
+                    f'after {attempt}/{max_retries} retries')
+    else:
+        logger.error(
+            f'Tx {transaction.__name__} failed after '
+            f'{max_retries} retries')
+    return tx_res

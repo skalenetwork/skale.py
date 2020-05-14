@@ -27,6 +27,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install host dependencies
       run: |
+        sudo apt-get update --fix-missing
         sudo apt-get install libudev-dev
         sudo apt-get install libusb-1.0-0-dev
     - name: Install python dependencies

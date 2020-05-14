@@ -20,29 +20,29 @@
 from web3 import Web3
 from Crypto.Hash import keccak
 
-from skale.schain_config import NODE_OWNER_ALLOC, SCHAIN_OWNER_ALLOC
+from skale.schain_config import NODE_OWNER_ALLOC, SCHAIN_OWNER_ALLOC, PRECOMPILED_IMA_CONTRACTS
 
 
-def add_to_accounts(allocation, account, amount, code=None, storage={}, nonce=0):
+def add_to_accounts(accounts, account, balance, code=None, storage={}, nonce=0):
     assert isinstance(code, str) or code is None
     assert isinstance(storage, dict) or storage is None
     acc_fx = Web3.toChecksumAddress(account)
-    if str(acc_fx) not in allocation:
-        allocation[acc_fx] = {"balance": str(amount)}
+    if str(acc_fx) not in accounts:
+        accounts[acc_fx] = {"balance": str(balance)}
         if code:
-            allocation[acc_fx]['code'] = code
-            allocation[acc_fx]['storage'] = storage
-            allocation[acc_fx]['nonce'] = str(nonce)
+            accounts[acc_fx]['code'] = code
+            accounts[acc_fx]['storage'] = storage
+            accounts[acc_fx]['nonce'] = str(nonce)
 
 
-def update_accounts(schain, schain_nodes):
-    allocation = {}
-    add_to_accounts(allocation, schain['owner'], SCHAIN_OWNER_ALLOC)
+def update_accounts(schain, schain_nodes, ima_data=None):
+    accounts = {}
+    add_to_accounts(accounts, schain['owner'], SCHAIN_OWNER_ALLOC)
     for node in schain_nodes:
-        if str(node['owner']) not in allocation:
-            add_to_accounts(allocation, node['owner'], NODE_OWNER_ALLOC)
+        if str(node['owner']) not in accounts:
+            add_to_accounts(accounts, node['owner'], NODE_OWNER_ALLOC)
     add_to_accounts(
-        allocation,
+        accounts,
         '0xD2001000000000000000000000000000000000D2',
         0,
         *_generate_context_predeployed_smart_contract(
@@ -50,13 +50,25 @@ def update_accounts(schain, schain_nodes):
             schain['name']
         )
     )
-    return allocation
+    if ima_data:
+        add_ima_accounts(accounts, ima_data)
+    return accounts
 
 
-def update_base_config(base_config, schain, schain_nodes):
-    new_accounts = update_accounts(schain, schain_nodes)
+def update_base_config(base_config, schain, schain_nodes, ima_data=None):
+    new_accounts = update_accounts(schain, schain_nodes, ima_data=ima_data)
     base_config['accounts'] = {**base_config['accounts'], **new_accounts}
     add_chain_id(base_config, schain['name'])
+
+
+def add_ima_accounts(accounts, ima_data):
+    for contract_name in PRECOMPILED_IMA_CONTRACTS:
+        add_to_accounts(
+            accounts=accounts,
+            account=ima_data[f'{contract_name}_address'],
+            balance=0,
+            code=ima_data[f'{contract_name}_bytecode'],
+        )
 
 
 def _generate_context_predeployed_smart_contract(owner_address: str,

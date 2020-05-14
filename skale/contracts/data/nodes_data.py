@@ -39,7 +39,7 @@ SCHAIN_CONFIG_FIELDS = [
 ]
 
 
-class NodesData(BaseContract):
+class Nodes(BaseContract):
     def __get_raw(self, node_id):
         try:
             return self.contract.functions.nodes(node_id).call()

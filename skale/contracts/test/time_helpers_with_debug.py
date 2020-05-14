@@ -25,7 +25,7 @@ from skale.utils.constants import GAS
 class TimeHelpersWithDebug(BaseContract):
     """Wrapper for TimeHelpersWithDebug.sol functions (internal usage only)"""
 
-    @transaction_method(GAS['skip_time'])
+    @transaction_method(gas_limit=GAS['skip_time'])
     def skip_time(self, sec: int) -> TxRes:
         """Skip time on contracts
 
