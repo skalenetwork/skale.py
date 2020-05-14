@@ -9,7 +9,7 @@ from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.contracts import BaseContract
 from skale.contracts.data.nodes_data import Nodes
-from skale.contracts_info import CONTRACTS_INFO
+from skale.contracts_info import CONTRACTS_INFO, DEBUG_CONTRACTS_INFO
 from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 from skale.utils.contracts_provision.main import _skip_evm_time
 
@@ -20,7 +20,7 @@ def test_lib_init():
     skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet, provider_timeout=20)
 
     lib_contracts = skale._Skale__contracts
-    assert len(lib_contracts) == len(CONTRACTS_INFO)
+    assert len(lib_contracts) == len(CONTRACTS_INFO) + len(DEBUG_CONTRACTS_INFO)
 
     for lib_contract in lib_contracts.values():
         assert issubclass(type(lib_contract), BaseContract)
