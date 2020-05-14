@@ -24,7 +24,7 @@ from web3.middleware import geth_poa_middleware
 
 import skale.contracts as contracts
 from skale.wallets import BaseWallet
-from skale.contracts_info import get_contracts_info
+from skale.contracts_info import get_base_contracts_info, get_debug_contracts_info
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
@@ -50,10 +50,9 @@ class Skale:
         self.web3.middleware_onion.inject(
             geth_poa_middleware, layer=0)  # todo: may cause issues
         self.__contracts = {}
-        self.nonces = {}
         if wallet:
             self.wallet = wallet
-        self.__init_contracts(get_abi(abi_filepath), get_contracts_info())
+        self.__init_contracts(get_abi(abi_filepath))
 
     @property
     def gas_price(self):
@@ -73,9 +72,18 @@ class Skale:
             raise InvalidWalletError(f'Wrong wallet class: {type(wallet).__name__}. \
                                        Must be one of the BaseWallet subclasses')
 
-    def __init_contracts(self, abi, contracts_info):
+    def __is_debug_contracts(self, abi):
+        return abi.get('time_helpers_with_debug_address', None)
+
+    def __init_contracts(self, abi):
         self.add_lib_contract('contract_manager',
                               contracts.ContractManager, abi)
+        self.__init_contracts_from_info(abi, get_base_contracts_info())
+        if self.__is_debug_contracts(abi):
+            logger.info('Debug contracts found in ABI file')
+            self.__init_contracts_from_info(abi, get_debug_contracts_info())
+
+    def __init_contracts_from_info(self, abi, contracts_info):
         for name in contracts_info:
             info = contracts_info[name]
             if info.upgradeable:
