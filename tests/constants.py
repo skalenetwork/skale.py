@@ -36,6 +36,7 @@ ENDPOINT = os.environ['ENDPOINT']
 
 
 TEST_ABI_FILEPATH = os.path.join(DIR_PATH, os.pardir, 'test_abi.json')
+IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 
 # constants contract
