@@ -31,6 +31,10 @@ from random import randint
 logger = logging.getLogger(__name__)
 
 
+def decapitalize(s):
+    return s[:1].lower() + s[1:] if s else ''
+
+
 def format_fields(fields):
     """
         Transform array to object with passed fields
