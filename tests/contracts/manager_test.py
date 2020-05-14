@@ -6,43 +6,12 @@ import web3
 from hexbytes import HexBytes
 from mock import Mock
 
-import skale.utils.helper as helper
 from skale.dataclasses.tx_res import TransactionFailedError
 from skale.utils.constants import GAS
-from skale.utils.web3_utils import private_key_to_public
 
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data
 )
-
-
-def test_create_node_data_to_bytes(skale):
-    ip, public_ip, port, name = generate_random_node_data()
-    skale_nonce = helper.generate_nonce()
-    pk = private_key_to_public(skale.wallet._private_key)
-
-    bytes_data = skale.manager.create_node_data_to_bytes(
-        ip, public_ip, port, name, pk, skale_nonce)
-    name_bytes = name.encode()
-
-    assert type(bytes_data) is bytes
-    assert bytes_data.find(name_bytes) != -1
-
-
-def test_create_schain_data_to_bytes(skale):
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
-    skale_nonce = helper.generate_nonce()
-
-    bytes_data = skale.manager.create_schain_data_to_bytes(
-        lifetime_seconds,
-        type_of_nodes,
-        name,
-        skale_nonce
-    )
-    name_bytes = name.encode()
-
-    assert type(bytes_data) is bytes
-    assert bytes_data.find(name_bytes) != -1
 
 
 def test_get_bounty(skale):
@@ -78,7 +47,7 @@ def test_send_verdict(skale):
         'gas': 200000, 'nonce': nonce,
         'to': contract_address,
         'data': (
-            '0xd77de31c000000000000000000000000000000000000000'
+            '0x96a1ce46000000000000000000000000000000000000000'
             '0000000000000000000000000000000000000000000000000'
             '000000000000000000000000000000000000007b000000000'
             '0000000000000000000000000000000000000000000000000'
@@ -110,26 +79,24 @@ def test_send_verdicts(skale):
         'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
-        'data': ('0x25b2114b000000000000000000000000000000000000000000'
-                 '0000000000000000000000000000000000000000000000000000'
-                 '0000000000000000000000000000000080000000000000000000'
-                 '0000000000000000000000000000000000000000000100000000'
-                 '0000000000000000000000000000000000000000000000000000'
-                 '0001800000000000000000000000000000000000000000000000'
-                 '0000000000000000030000000000000000000000000000000000'
-                 '00000000000000000000000000007b0000000000000000000000'
-                 '0000000000000000000000000000000000000000e70000000000'
-                 '0000000000000000000000000000000000000000000000000001'
-                 'c300000000000000000000000000000000000000000000000000'
-                 '0000000000000300000000000000000000000000000000000000'
-                 '0000000000000000000000000100000000000000000000000000'
-                 '0000000000000000000000000000000000000200000000000000'
-                 '0000000000000000000000000000000000000000000000000300'
-                 '0000000000000000000000000000000000000000000000000000'
-                 '0000000003000000000000000000000000000000000000000000'
-                 '000000000000000000000a000000000000000000000000000000'
-                 '0000000000000000000000000000000014000000000000000000'
-                 '000000000000000000000000000000000000000000001e')
+
+        'data': (
+            '0x42c81d610000000000000000000000000000000000000000'
+            '00000000000000000000000000000000000000000000000000'
+            '0000000000000000000000000000000000004000000000000'
+            '00000000000000000000000000000000000000000000000000'
+            '00300000000000000000000000000000000000000000000000'
+            '0000000000000007b000000000000000000000000000000000'
+            '00000000000000000000000000000e70000000000000000000'
+            '0000000000000000000000000000000000000000001c300000'
+            '00000000000000000000000000000000000000000000000000'
+            '00000000100000000000000000000000000000000000000000'
+            '00000000000000000000002000000000000000000000000000'
+            '00000000000000000000000000000000000030000000000000'
+            '00000000000000000000000000000000000000000000000000'
+            'a0000000000000000000000000000000000000000000000000'
+            '00000000000001400000000000000000000000000000000000'
+            '0000000000000000000000000001e')
     }
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
