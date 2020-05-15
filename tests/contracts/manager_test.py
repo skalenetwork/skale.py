@@ -58,16 +58,14 @@ def test_send_verdict(skale):
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
     validator_id = 0
-    another_node_id = 123
-    downtime = 20
-    latency = 10
+    verdict_data = (123, 20, 10)
     with mock.patch.object(skale.manager.contract.functions.sendVerdict,
                            'call', new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth,
                                'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
-            skale.manager.send_verdict(validator_id, another_node_id,
-                                       downtime, latency, wait_for=False)
+            skale.manager.send_verdict(validator_id, verdict_data,
+                                       wait_for=False)
             send_tx_mock.assert_called_with(HexBytes(exp))
 
 
@@ -83,34 +81,32 @@ def test_send_verdicts(skale):
         'data': (
             '0x42c81d610000000000000000000000000000000000000000'
             '00000000000000000000000000000000000000000000000000'
-            '0000000000000000000000000000000000004000000000000'
+            '00000000000000000000000000000000000040000000000000'
             '00000000000000000000000000000000000000000000000000'
-            '00300000000000000000000000000000000000000000000000'
-            '0000000000000007b000000000000000000000000000000000'
-            '00000000000000000000000000000e70000000000000000000'
-            '0000000000000000000000000000000000000000001c300000'
+            '03000000000000000000000000000000000000000000000000'
+            '000000000000007b0000000000000000000000000000000000'
+            '00000000000000000000000000000100000000000000000000'
+            '0000000000000000000000000000000000000000000a000000'
             '00000000000000000000000000000000000000000000000000'
-            '00000000100000000000000000000000000000000000000000'
-            '00000000000000000000002000000000000000000000000000'
-            '00000000000000000000000000000000000030000000000000'
-            '00000000000000000000000000000000000000000000000000'
-            'a0000000000000000000000000000000000000000000000000'
-            '00000000000001400000000000000000000000000000000000'
-            '0000000000000000000000000001e')
+            '000000e7000000000000000000000000000000000000000000'
+            '00000000000000000000020000000000000000000000000000'
+            '00000000000000000000000000000000001400000000000000'
+            '000000000000000000000000000000000000000000000001c3'
+            '000000000000000000000000000000000000000000000000000'
+            '00000000000030000000000000000000000000000000000000'
+            '00000000000000000000000001e')
     }
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
     validator_id = 0
-    another_node_ids = [123, 231, 451]
-    downtimes = [1, 2, 3]
-    latencies = [10, 20, 30]
+    verdicts_data = [(123, 1, 10), (231, 2, 20), (451, 3, 30)]
     with mock.patch.object(skale.manager.contract.functions.sendVerdicts,
                            'call', new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth,
                                'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.manager.send_verdicts(
-                validator_id, another_node_ids, downtimes, latencies,
+                validator_id, verdicts_data,
                 wait_for=False)
             send_tx_mock.assert_called_with(HexBytes(exp))
 

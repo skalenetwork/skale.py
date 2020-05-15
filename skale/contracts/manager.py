@@ -82,17 +82,17 @@ class Manager(BaseContract):
         return self.contract.functions.getBounty(node_id)
 
     @transaction_method(gas_limit=GAS['send_verdict'])
-    def send_verdict(self, validator, node_id, downtime, latency):
+    def send_verdict(self, validator, verdict_data):
         return self.contract.functions.sendVerdict(
             validator,
-            [node_id, downtime, latency]
+            verdict_data
         )
 
     @transaction_method(gas_limit=GAS['send_verdicts'])
-    def send_verdicts(self, validator, nodes_ids, downtimes, latencies):
+    def send_verdicts(self, validator, verdicts_data):
         return self.contract.functions.sendVerdicts(
             validator,
-            [nodes_ids, downtimes, latencies]
+            verdicts_data
         )
 
     @transaction_method(gas_limit=GAS['delete_node'])
