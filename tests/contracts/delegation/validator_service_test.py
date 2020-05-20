@@ -14,7 +14,7 @@ from tests.constants import (
 )
 
 
-def link_node_address(skale,  wallet):
+def link_node_address(skale, wallet):
     main_wallet = skale.wallet
     skale.wallet = wallet
     signature = skale.validator_service.get_link_node_signature(
@@ -230,3 +230,13 @@ def test_unlink_node_address(skale):
         skale.wallet.address
     )
     assert wallet.address not in addresses
+
+
+def test_get_use_whitelist(skale):
+    assert not skale.validator_service.get_use_whitelist()
+
+
+def test_disable_whitelist(skale):
+    assert skale.validator_service.get_use_whitelist()
+    skale.validator_service.disable_whitelist(wait_for=True)
+    assert not skale.validator_service.get_use_whitelist()

@@ -56,7 +56,8 @@ GAS = {
 
     'get_and_update_locked_amount': 3000000,
     'request_undelegation': 3000000,
-    'set_penalty': 3000000
+    'set_penalty': 3000000,
+    'disable_whitelist': 3000000
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}
