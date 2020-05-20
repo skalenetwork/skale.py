@@ -233,7 +233,7 @@ def test_unlink_node_address(skale):
 
 
 def test_get_use_whitelist(skale):
-    assert not skale.validator_service.get_use_whitelist()
+    assert skale.validator_service.get_use_whitelist()
 
 
 def test_disable_whitelist(skale):
