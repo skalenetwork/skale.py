@@ -20,5 +20,8 @@ from skale.contracts.delegation.delegation_controller import DelegationControlle
 from skale.contracts.delegation.validator_service import ValidatorService
 from skale.contracts.delegation.token_state import TokenState
 from skale.contracts.delegation.distributor import Distributor
+from skale.contracts.delegation.slashing_table import SlashingTable
 
 from skale.contracts.dkg import DKG
+
+from skale.contracts.test.time_helpers_with_debug import TimeHelpersWithDebug

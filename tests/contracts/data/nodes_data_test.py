@@ -33,7 +33,7 @@ def test_get(skale):
     assert node_by_id['publicKey'].hex() == skale.wallet.public_key[2:]
 
     assert node_by_id['publicKey'] != b''
-    assert node_by_id['start_date'] > 0
+    assert node_by_id['start_block'] > 0
     assert node_by_id['last_reward_date'] > 0
     assert node_by_id['finish_time'] == 0
     assert node_by_id['status'] == 0

@@ -45,3 +45,8 @@ def test_get_balance(skale, empty_account):
 
     assert empty_balance == 0
     assert not_empty_balance != 0
+
+
+def test_get_and_update_slashed_amount(skale):
+    res = skale.token.get_and_update_slashed_amount(skale.wallet.address)
+    assert res != 0

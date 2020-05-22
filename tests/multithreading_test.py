@@ -13,7 +13,7 @@ def get_node_data():
         skale.nodes_data.get_by_name(DEFAULT_NODE_NAME)
 
 
-def test_multithead_calls():
+def test_multithread_calls():
     init_web3(ENDPOINT)
     monitors = []
     for _ in range(0, 5):

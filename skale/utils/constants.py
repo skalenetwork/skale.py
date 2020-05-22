@@ -21,11 +21,11 @@ NODE_DEPOSIT = 100000000000000000000
 
 GAS = {
     'add_validator': 4500000,
-    'create_node': 4500000,
+    'create_node': 8000000,
     'create_schain': 7500000,
-    'get_bounty': 4500000,
+    'get_bounty': 8000000,
     'send_verdict': 200000,
-    'send_verdicts': 500000,
+    'send_verdicts': 8000000,
     'set_check_time': 200000,
     'set_latency': 200000,
     'token_transfer': 600000,
@@ -51,7 +51,13 @@ GAS = {
     'withdraw_fee': 3000000,
 
     'skip_transition_delay': 1000000,
-    'set_msr': 200000
+    'skip_time': 1000000,
+    'set_msr': 200000,
+
+    'get_and_update_locked_amount': 3000000,
+    'request_undelegation': 3000000,
+    'set_penalty': 3000000,
+    'disable_whitelist': 3000000
 }
 
 OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}

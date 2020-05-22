@@ -11,7 +11,7 @@ jobs:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      MANAGER_BRANCH: "develop"
+      MANAGER_TAG: "beta-latest"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -20,6 +20,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install host dependencies
       run: |
+        sudo apt-get update
+        sudo apt-get upgrade
         sudo apt-get install libudev-dev
         sudo apt-get install libusb-1.0-0-dev
     - name: Install python dependencies
