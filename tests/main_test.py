@@ -8,8 +8,8 @@ from skale import Skale
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.contracts import BaseContract
-from skale.contracts.functionality.nodes import Nodes
-from skale.contracts_info import CONTRACTS_INFO
+from skale.contracts.data.nodes_data import Nodes
+from skale.contracts_info import CONTRACTS_INFO, DEBUG_CONTRACTS_INFO
 from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 from skale.utils.contracts_provision.main import _skip_evm_time
 
@@ -20,7 +20,7 @@ def test_lib_init():
     skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet, provider_timeout=20)
 
     lib_contracts = skale._Skale__contracts
-    assert len(lib_contracts) == len(CONTRACTS_INFO)
+    assert len(lib_contracts) == len(CONTRACTS_INFO) + len(DEBUG_CONTRACTS_INFO)
 
     for lib_contract in lib_contracts.values():
         assert issubclass(type(lib_contract), BaseContract)
@@ -46,16 +46,16 @@ def test_lib_init():
 
 
 def test_get_contract_address(skale):
-    lib_nodes_functionality_address = skale.get_contract_address(TEST_CONTRACT_NAME)
-    nodes_functionality_address = skale.nodes.address
+    lib_nodes_address = skale.get_contract_address(TEST_CONTRACT_NAME)
+    nodes_address = skale.nodes_data.address
 
-    assert lib_nodes_functionality_address == nodes_functionality_address
+    assert lib_nodes_address == nodes_address
 
 
 def test_get_attr(skale):
     random_attr = skale.t123_random_attr
     assert random_attr is None
-    skale_py_nodes_contract = skale.nodes
+    skale_py_nodes_contract = skale.nodes_data
     assert issubclass(type(skale_py_nodes_contract), BaseContract)
     assert isinstance(skale_py_nodes_contract, Nodes)
 

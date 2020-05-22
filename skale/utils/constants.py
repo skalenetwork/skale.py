@@ -60,7 +60,9 @@ GAS = {
     'disable_whitelist': 3000000
 }
 
-OP_TYPES = {'create_node': 0x1, 'create_schain': 0x10}
+
+    'set_launch_timestamp': 200000,
+}
 
 LONG_LINE = '=' * 100
 

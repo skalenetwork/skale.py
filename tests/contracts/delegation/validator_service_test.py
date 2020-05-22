@@ -29,7 +29,8 @@ def link_node_address(skale, wallet):
 
 
 def test_get_raw_not_exist(skale):
-    empty_struct = skale.validator_service._ValidatorService__get_raw(NOT_EXISTING_ID)
+    empty_struct = skale.validator_service._ValidatorService__get_raw(
+        NOT_EXISTING_ID)
     assert empty_struct[0] == ''
     assert empty_struct[1] == '0x0000000000000000000000000000000000000000'
 
@@ -54,11 +55,15 @@ def test_number_of_validators(skale):
 
 def test_ls(skale):
     n_of_validators = skale.validator_service.number_of_validators()
-    validators = skale.validator_service.ls()
-    assert all([validator['name'] == D_VALIDATOR_NAME for validator in validators])
+    validators = sorted(skale.validator_service.ls(),
+                        key=lambda x: x['validator_address'])
+    assert all(
+        [validator['name'] == D_VALIDATOR_NAME for validator in validators])
     assert n_of_validators == len(validators)
-    trusted_validators = skale.validator_service.ls(trusted_only=True)
-    assert trusted_validators == [v for v in validators if v['trusted']]
+    trusted_validators = sorted(skale.validator_service.ls(trusted_only=True),
+                                key=lambda x: x['validator_address'])
+    assert trusted_validators == sorted(
+        [v for v in validators if v['trusted']], key=lambda x: x['validator_address'])
 
 
 def test_get_linked_addresses_by_validator_address(skale):
@@ -78,13 +83,15 @@ def test_get_linked_addresses_by_validator_address(skale):
 
 
 def test_get_linked_addresses_by_validator_id(skale):
-    addresses = skale.validator_service.get_linked_addresses_by_validator_id(D_VALIDATOR_ID)
+    addresses = skale.validator_service.get_linked_addresses_by_validator_id(
+        D_VALIDATOR_ID)
     assert isinstance(addresses, list)
     # assert skale.wallet.address in addresses # todo: can't link main address for now
 
 
 def test_is_main_address(skale):
-    is_main_address = skale.validator_service.is_main_address(skale.wallet.address)
+    is_main_address = skale.validator_service.is_main_address(
+        skale.wallet.address)
     assert is_main_address
 
     wallet = generate_wallet(skale.web3)
@@ -95,16 +102,19 @@ def test_is_main_address(skale):
 
 
 def test_validator_address_exists(skale):
-    address_exists = skale.validator_service.validator_address_exists(skale.wallet.address)
+    address_exists = skale.validator_service.validator_address_exists(
+        skale.wallet.address)
     assert address_exists
 
     wallet = generate_wallet(skale.web3)
-    address_exists = skale.validator_service.validator_address_exists(wallet.address)
+    address_exists = skale.validator_service.validator_address_exists(
+        wallet.address)
     assert not address_exists
 
 
 def test_validator_id_by_address(skale):
-    validator_id = skale.validator_service.validator_id_by_address(skale.wallet.address)
+    validator_id = skale.validator_service.validator_id_by_address(
+        skale.wallet.address)
     assert validator_id == D_VALIDATOR_ID
 
 
@@ -120,7 +130,8 @@ def test_enable_validator(skale):
     _generate_new_validator(skale)
     latest_id = skale.validator_service.number_of_validators()
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    is_validator_trusted = skale.validator_service._is_validator_trusted(
+        latest_id)
     assert not is_validator_trusted
 
     tx_res = skale.validator_service._enable_validator(
@@ -129,7 +140,8 @@ def test_enable_validator(skale):
     )
     check_receipt(tx_res.receipt)
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    is_validator_trusted = skale.validator_service._is_validator_trusted(
+        latest_id)
     assert is_validator_trusted
 
 
@@ -137,7 +149,8 @@ def test_disable_validator(skale):
     _generate_new_validator(skale)
     latest_id = skale.validator_service.number_of_validators()
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    is_validator_trusted = skale.validator_service._is_validator_trusted(
+        latest_id)
     assert not is_validator_trusted
 
     tx_res = skale.validator_service._enable_validator(
@@ -146,20 +159,28 @@ def test_disable_validator(skale):
     )
     check_receipt(tx_res.receipt)
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    is_validator_trusted = skale.validator_service._is_validator_trusted(
+        latest_id)
     assert is_validator_trusted
 
     tx_res = skale.validator_service._disable_validator(
         validator_id=latest_id,
         wait_for=True
     )
-    is_validator_trusted = skale.validator_service._is_validator_trusted(latest_id)
+    is_validator_trusted = skale.validator_service._is_validator_trusted(
+        latest_id)
     assert not is_validator_trusted
 
 
 def test_is_validator_trusted(skale):
-    is_validator_trusted = skale.validator_service._is_validator_trusted(D_VALIDATOR_ID)
+    is_validator_trusted = skale.validator_service._is_validator_trusted(
+        D_VALIDATOR_ID)
     assert is_validator_trusted
+
+
+def test_is_accepting_new_requests(skale):
+    is_accepting_new_requests = skale.validator_service.is_accepting_new_requests(D_VALIDATOR_ID)
+    assert is_accepting_new_requests
 
 
 def test_register_existing_validator(skale):
