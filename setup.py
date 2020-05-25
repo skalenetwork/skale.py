@@ -11,9 +11,9 @@ extras_require = {
         "isort>=4.2.15,<4.3.22",
     ],
     'dev': [
-        "bumpversion==0.5.3",
+        "bumpversion==0.6.0",
         "pytest==5.4.2",
-        "click==7.1.1",
+        "click==7.1.2",
         "twine==3.1.1",
         "mock==4.0.2",
         "when-changed",
@@ -42,7 +42,7 @@ setup(
         "web3==5.6.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.5dev0",
+        "sgx.py==0.5dev8",
     ],
 
     python_requires='>=3.6,<4',
