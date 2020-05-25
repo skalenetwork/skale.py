@@ -6,7 +6,7 @@ from skale.utils.constants import GAS
 class SlashingTable(BaseContract):
     """ Wrapper for SlashingTable.sol functions """
 
-    @transaction_method(GAS['set_penalty'])
+    @transaction_method(gas_limit=GAS['set_penalty'])
     def set_penalty(self, offense, penalty) -> TxRes:
         """ Set slashing penalty
         :param offense: reason of slashing
