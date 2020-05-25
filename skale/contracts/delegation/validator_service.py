@@ -223,7 +223,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.unlinkNodeAddress(node_address)
 
-    @transaction_method(GAS['disable_whitelist'])
+    @transaction_method(gas_limit=GAS['disable_whitelist'])
     def disable_whitelist(self) -> TxRes:
         """ Disable validator whitelist. Master key only transaction.
         :returns: Transaction results
