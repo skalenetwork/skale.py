@@ -57,11 +57,8 @@ GAS = {
     'get_and_update_locked_amount': 3000000,
     'request_undelegation': 3000000,
     'set_penalty': 3000000,
-    'disable_whitelist': 3000000
-}
-
-
-    'set_launch_timestamp': 200000,
+    'disable_whitelist': 3000000,
+    'set_launch_timestamp': 200000
 }
 
 LONG_LINE = '=' * 100
