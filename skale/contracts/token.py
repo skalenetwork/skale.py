@@ -33,3 +33,6 @@ class Token(BaseContract):
     @transaction_method(gas_limit=GAS['token_transfer'])
     def add_authorized(self, address, wallet):  # pragma: no cover
         return self.contract.functions.addAuthorized(address)
+
+    def get_and_update_slashed_amount(self, address):
+        return self.contract.functions.getAndUpdateLockedAmount(address).call()
