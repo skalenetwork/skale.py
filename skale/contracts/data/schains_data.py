@@ -100,6 +100,10 @@ class SChainsData(BaseContract):
     def is_group_failed_dkg(self, group_index):
         return self.contract.functions.isGroupFailedDKG(group_index).call()
 
+    def is_schain_exist(self, name):
+        id_ = self.name_to_id(name)
+        return self.contract.functions.isSchainExist(id_).call()
+
     def schain_active(self, schain):
         if schain['name'] != '' and \
                 schain['owner'] != '0x0000000000000000000000000000000000000000':
