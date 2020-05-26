@@ -106,6 +106,10 @@ def test_is_group_failed_dkg(skale):
     assert skale.schains_data.is_group_failed_dkg(DEFAULT_SCHAIN_ID)
 
 
+def test_is_schain_exist(skale):
+    assert skale.schains_data.is_schain_exist(DEFAULT_SCHAIN_NAME)
+
+
 def test_get_group_public_key(skale):
     assert skale.schains_data.get_groups_public_key(
         DEFAULT_SCHAIN_ID) == [0, 0, 0, 0]
