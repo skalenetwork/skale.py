@@ -49,11 +49,14 @@ CONTRACTS_INFO = [
     ContractInfo('token_state', 'TokenState', contracts.TokenState,
                  ContractTypes.API, False),
     ContractInfo('distributor', 'Distributor', contracts.Distributor,
-                 ContractTypes.API, False)
+                 ContractTypes.API, False),
+    ContractInfo('slashing_table', 'Distributor', contracts.SlashingTable,
+                 ContractTypes.API, False),
 ]
 
 
 DEBUG_CONTRACTS_INFO = [
+
     ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug', contracts.TimeHelpersWithDebug,
                  ContractTypes.API, False)
 ]

@@ -36,5 +36,6 @@ class MonitorsData(BaseContract):
             node_id = int.from_bytes(node_in_bytes[:14], byteorder='big')
             report_date = int.from_bytes(node_in_bytes[14:28], byteorder='big')
             node_ip = socket.inet_ntoa(node_in_bytes[28:])
-            nodes.append({'id': node_id, 'ip': node_ip, 'rep_date': report_date})
+            nodes.append({'id': node_id, 'ip': node_ip,
+                          'rep_date': report_date})
         return nodes
