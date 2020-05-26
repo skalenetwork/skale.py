@@ -24,7 +24,7 @@ from web3.middleware import geth_poa_middleware
 
 import skale.contracts as contracts
 from skale.wallets import BaseWallet
-from skale.contracts_info import get_contracts_info
+from skale.contracts_info import get_base_contracts_info, get_debug_contracts_info
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
@@ -47,16 +47,16 @@ class Skale:
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
         self.web3 = Web3(provider)
-        self.web3.middleware_onion.inject(geth_poa_middleware, layer=0)  # todo: may cause issues
+        self.web3.middleware_onion.inject(
+            geth_poa_middleware, layer=0)  # todo: may cause issues
         self.__contracts = {}
-        self.nonces = {}
         if wallet:
             self.wallet = wallet
-        self.__init_contracts(get_abi(abi_filepath), get_contracts_info())
+        self.__init_contracts(get_abi(abi_filepath))
 
     @property
     def gas_price(self):
-        return self.web3.eth.gasPrice
+        return self.web3.eth.gasPrice * 5 // 4
 
     @property
     def wallet(self):
@@ -72,8 +72,18 @@ class Skale:
             raise InvalidWalletError(f'Wrong wallet class: {type(wallet).__name__}. \
                                        Must be one of the BaseWallet subclasses')
 
-    def __init_contracts(self, abi, contracts_info):
-        self.add_lib_contract('contract_manager', contracts.ContractManager, abi)
+    def __is_debug_contracts(self, abi):
+        return abi.get('time_helpers_with_debug_address', None)
+
+    def __init_contracts(self, abi):
+        self.add_lib_contract('contract_manager',
+                              contracts.ContractManager, abi)
+        self.__init_contracts_from_info(abi, get_base_contracts_info())
+        if self.__is_debug_contracts(abi):
+            logger.info('Debug contracts found in ABI file')
+            self.__init_contracts_from_info(abi, get_debug_contracts_info())
+
+    def __init_contracts_from_info(self, abi, contracts_info):
         for name in contracts_info:
             info = contracts_info[name]
             if info.upgradeable:
@@ -87,17 +97,23 @@ class Skale:
                               abi, address)
 
     def add_lib_contract(self, name, contract_class, abi, contract_address=None):
-        address = contract_address or self.get_contract_address_by_name(abi, name)
-        logger.info(f'Initialized: {name} at {address}')
+        address = contract_address or self.get_contract_address_by_name(
+            abi, name)
+        logger.info(f'Fetching abi for {name}, address {address}')
         if name == 'dkg':  # todo: tmp fix
             contract_abi = self.get_contract_abi_by_name(abi, 'd_k_g')
+        elif name == 'nodes_data':
+            contract_abi = self.get_contract_abi_by_name(abi, 'nodes')
         else:
             contract_abi = self.get_contract_abi_by_name(abi, name)
-        self.add_contract(name, contract_class(self, name, address, contract_abi))
+        self.add_contract(name, contract_class(
+            self, name, address, contract_abi))
 
     def get_contract_address_by_name(self, abi, name):
         if name == 'dkg':  # todo: tmp fix
             return abi.get(f'skale_d_k_g_address')
+        if name == 'nodes_data':
+            return abi.get(f'nodes_address')
         return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
 
     def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names

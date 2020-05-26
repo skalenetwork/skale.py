@@ -126,7 +126,7 @@ class DelegationController(BaseContract):
         delegation_ids = self._get_delegation_ids_by_validator(validator_id)
         return self.get_all_delegations(delegation_ids)
 
-    @transaction_method(GAS['delegate'])
+    @transaction_method(gas_limit=GAS['delegate'])
     def delegate(self, validator_id: int, amount: int, delegation_period: int, info: str) -> TxRes:
         """Creates request to delegate amount of tokens to validator_id.
 
@@ -143,7 +143,7 @@ class DelegationController(BaseContract):
         """
         return self.contract.functions.delegate(validator_id, amount, delegation_period, info)
 
-    @transaction_method(GAS['accept_pending_delegation'])
+    @transaction_method(gas_limit=GAS['accept_pending_delegation'])
     def accept_pending_delegation(self, delegation_id: int) -> TxRes:
         """Accepts a pending delegation by delegation ID.
 
@@ -154,7 +154,7 @@ class DelegationController(BaseContract):
         """
         return self.contract.functions.acceptPendingDelegation(delegation_id)
 
-    @transaction_method(GAS['cancel_pending_delegation'])
+    @transaction_method(gas_limit=GAS['cancel_pending_delegation'])
     def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
         """Cancel pending delegation request.
 
@@ -165,7 +165,7 @@ class DelegationController(BaseContract):
         """
         return self.contract.functions.cancelPendingDelegation(delegation_id)
 
-    @transaction_method(GAS['request_undelegation'])
+    @transaction_method(gas_limit=GAS['request_undelegation'])
     def request_undelegation(self, delegation_id: int) -> TxRes:
         """ This method is  for undelegating request in the end of
             delegation period (3/6/12 months)
