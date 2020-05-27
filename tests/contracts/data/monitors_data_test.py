@@ -1,6 +1,6 @@
 """ SKALE monitors data test """
 
-from tests.constants import DEFAULT_NODE_NAME
+from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_INDEX
 
 
 def test_get_checked_array_raw(skale):
@@ -16,3 +16,13 @@ def test_get_checked_array(skale):
     assert 'id' in checked_array[0]
     assert 'ip' in checked_array[0]
     assert 'rep_date' in checked_array[0]
+
+
+def test_get_last_bounty_block(skale):
+    last_bounty_block = skale.monitors_data.get_last_bounty_block(DEFAULT_NODE_INDEX)
+    assert isinstance(last_bounty_block, int)
+
+
+def test_get_last_received_verdict_block(skale):
+    last_verdict_block = skale.monitors_data.get_last_received_verdict_block(DEFAULT_NODE_INDEX)
+    assert isinstance(last_verdict_block, int)

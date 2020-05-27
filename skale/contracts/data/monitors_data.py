@@ -39,3 +39,9 @@ class MonitorsData(BaseContract):
             nodes.append({'id': node_id, 'ip': node_ip,
                           'rep_date': report_date})
         return nodes
+
+    def get_last_bounty_block(self, node_index):
+        return self.contract.functions.getLastBountyBlock(node_index).call()
+
+    def get_last_received_verdict_block(self, node_index):
+        return self.contract.functions.getLastReceivedVerdictBlock(node_index).call()
