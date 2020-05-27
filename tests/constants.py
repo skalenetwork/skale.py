@@ -5,6 +5,7 @@ from decimal import Decimal
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
+DEFAULT_NODE_INDEX = 1
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 DEFAULT_NODE_HASH = '23bdf46c41fa300e431425baff124dc31625b34ec09b829f61aa16ab0102ca8d'
