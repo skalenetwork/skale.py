@@ -38,7 +38,7 @@ GAS = {
     'dkg_response': 8000000,
     'dkg_alright': 1000000,
     'dkg_complaint': 1000000,
-
+    'node_exit': 5000000,
     'register_validator': 3000000,
     'delegate': 3000000,
     'accept_pending_delegation': 1000000,

@@ -9,6 +9,7 @@ from mock import Mock
 from skale.dataclasses.tx_res import TransactionFailedError
 from skale.utils.constants import GAS
 
+from tests.prepare_data import clean_and_restart
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data
 )
@@ -228,3 +229,60 @@ def test_create_node_status_0(skale):
             assert tx_res.receipt['status'] == 0
             with pytest.raises(TransactionFailedError):
                 tx_res.raise_for_status()
+
+
+def test_empty_node_exit(skale):
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+    node_idx = skale.nodes_data.node_name_to_index(name)
+    tx_res = skale.manager.node_exit(node_idx, wait_for=True)
+    assert tx_res.receipt['status'] == 1
+    assert skale.nodes_data.get_node_status(node_idx) == 2
+
+
+@pytest.mark.skip(reason="{Need to update for the latest manager}")
+def test_one_schain_node_exit(skale):
+    schains_ids = skale.schains_data.get_all_schains_ids()
+    schain_name = skale.schains_data.get(schains_ids[0])['name']
+    exit_node_id = skale.schains_data.get_node_ids_for_schain(schain_name)[0]
+    with pytest.raises(ValueError):
+        skale.manager.node_exit(exit_node_id, wait_for=True)
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+    new_node_id = skale.nodes_data.node_name_to_index(name)
+    tx_res = skale.manager.node_exit(exit_node_id, wait_for=True)
+    assert tx_res.receipt['status'] == 1
+    assert skale.nodes_data.get_node_status(exit_node_id) == 2
+
+    assert len(skale.schains_data.get_schain_ids_for_node(exit_node_id)) == 0
+    assert len(skale.schains_data.get_schain_ids_for_node(new_node_id)) == 1
+
+    history = skale.schains_data.get_leaving_history(exit_node_id)
+    assert len(history) == 1
+    assert history[0][1]
+    assert skale.schains_data.get(history[0][0])['name'] == schain_name
+
+    clean_and_restart(skale)
+
+
+@pytest.mark.skip(reason="{Need to update for the latest manager}")
+def test_get_rotation(skale):
+    schains_ids = skale.schains_data.get_all_schains_ids()
+    schain_name = skale.schains_data.get(schains_ids[0])['name']
+    exit_node_id = skale.schains_data.get_node_ids_for_schain(schain_name)[0]
+
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+    new_node_id = skale.nodes_data.node_name_to_index(name)
+    skale.manager.node_exit(exit_node_id, wait_for=True)
+    rotation = skale.schains_data.get_rotation(schain_name)
+    history = skale.schains_data.get_leaving_history(exit_node_id)
+    assert rotation['leaving_node'] == exit_node_id
+    assert rotation['new_node'] == new_node_id
+    assert rotation['finish_ts'] == history[0][1]
+
+    last_rotation = skale.schains_data.get_last_rotation_id(schain_name)
+    assert rotation['rotation_id'] == last_rotation
+    assert rotation['rotation_id'] == 1
+
+    clean_and_restart(skale)

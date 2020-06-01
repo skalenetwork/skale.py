@@ -97,6 +97,26 @@ class SChainsData(BaseContract):
     def get_groups_public_key(self, group_index):
         return self.contract.functions.getGroupsPublicKey(group_index).call()
 
+    def get_previous_groups_public_key(self, group_index):
+        return self.contract.functions.getPreviousGroupsPublicKey(group_index).call()
+
+    def get_leaving_history(self, node_id):
+        return self.contract.functions.getLeavingHistory(node_id).call()
+
+    def get_rotation(self, schain_name):
+        schain_id = self.name_to_id(schain_name)
+        rotation_data = self.contract.functions.getRotation(schain_id).call()
+        return {
+            'leaving_node': rotation_data[0],
+            'new_node': rotation_data[1],
+            'finish_ts': rotation_data[2],
+            'rotation_id': rotation_data[3]
+        }
+
+    def get_last_rotation_id(self, schain_name):
+        rotation_data = self.get_rotation(schain_name)
+        return rotation_data['rotation_id']
+
     def is_group_failed_dkg(self, group_index):
         return self.contract.functions.isGroupFailedDKG(group_index).call()
 
