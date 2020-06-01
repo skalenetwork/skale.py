@@ -102,6 +102,21 @@ def test_get_schains_number(skale):
     assert skale.schains_data.get_schains_number() == 1
 
 
+def test_get_previous_groups_public_key(skale):
+    group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+    public_key = skale.schains_data.get_previous_groups_public_key(group_id)
+    assert len(public_key) == 4
+
+
+def test_get_rotation(skale):
+    assert skale.schains_data.get_rotation(DEFAULT_SCHAIN_NAME) == {
+        'leaving_node': 0,
+        'new_node': 0,
+        'finish_ts': 0,
+        'rotation_id': 0
+    }
+
+
 def test_is_group_failed_dkg(skale):
     assert skale.schains_data.is_group_failed_dkg(DEFAULT_SCHAIN_ID)
 

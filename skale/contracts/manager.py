@@ -106,3 +106,7 @@ class Manager(BaseContract):
     @transaction_method(gas_limit=GAS['delete_node_by_root'])
     def delete_node_by_root(self, node_id):
         return self.contract.functions.deleteNodeByRoot(node_id)
+
+    @transaction_method(gas_limit=GAS['node_exit'])
+    def node_exit(self, node_id):
+        return self.contract.functions.nodeExit(node_id)
