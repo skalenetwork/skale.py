@@ -35,4 +35,4 @@ class Token(BaseContract):
         return self.contract.functions.addAuthorized(address)
 
     def get_and_update_slashed_amount(self, address):
-        return self.contract.functions.getAndUpdateLockedAmount(address).call()
+        return self.contract.functions.getAndUpdateSlashedAmount(address).call()
