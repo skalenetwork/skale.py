@@ -104,7 +104,7 @@ class SChainsData(BaseContract):
         raw_history = self.contract.functions.getLeavingHistory(node_id).call()
         history = [
             {
-                'schain_id': schain[0],
+                'id': schain[0],
                 'finished_rotation': schain[1]
             }
             for schain in raw_history
