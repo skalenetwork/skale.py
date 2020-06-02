@@ -101,7 +101,15 @@ class SChainsData(BaseContract):
         return self.contract.functions.getPreviousGroupsPublicKey(group_index).call()
 
     def get_leaving_history(self, node_id):
-        return self.contract.functions.getLeavingHistory(node_id).call()
+        raw_history = self.contract.functions.getLeavingHistory(node_id).call()
+        history = [
+            {
+                'schain_id': schain[0],
+                'finished_rotation': schain[1]
+            }
+            for schain in raw_history
+        ]
+        return history
 
     def get_rotation(self, schain_name):
         schain_id = self.name_to_id(schain_name)
