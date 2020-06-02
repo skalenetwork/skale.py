@@ -28,7 +28,7 @@ from skale.schain_config.base_config import update_base_config
 
 
 def generate_schain_info(schain, schain_nodes, storage_limit,
-                         custom_schain_config_fields,
+                         custom_schain_config_fields={},
                          snapshot_interval_ms=None,
                          empty_block_interval_ms=None):
     schain_info = {
@@ -156,7 +156,7 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
                                  ima_data=None, rotate_after_block=64, storage_limit=1000000000,
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  schain_log_level='info', schain_log_level_config='info',
-                                 custom_schain_config_fields=None):
+                                 custom_schain_config_fields={}):
     node = skale.nodes_data.get(node_id)
     schain = skale.schains_data.get_by_name(schain_name)
 
