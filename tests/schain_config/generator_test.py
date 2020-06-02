@@ -113,7 +113,8 @@ def test_generate_skale_schain_config(skale):
         ima_mainnet=TEST_URL,
         ima_mp_schain=ZERO_ADDRESS,
         ima_mp_mainnet=ZERO_ADDRESS,
-        wallets={}
+        wallets={},
+        custom_schain_config_fields={'testCustomField': 123}
     )
 
     assert isinstance(config['params']['chainID'], str)
@@ -125,6 +126,8 @@ def test_generate_skale_schain_config(skale):
 
     assert len(config['skaleConfig']['sChain']['nodes']) == 2
     assert isinstance(config['skaleConfig']['sChain']['schainOwner'], str)
+
+    assert config['skaleConfig']['sChain']['testCustomField'] == 123
 
 
 def test_generate_skale_schain_config_with_ima_data(skale):
