@@ -22,6 +22,10 @@ class TransactionFailedError(Exception):
     pass
 
 
+class DryRunFailedError(Exception):
+    pass
+
+
 class TxRes:
     SUCCESS = 1
     NOT_PERFORMED = -1
@@ -79,8 +83,8 @@ class TxRes:
 
     def raise_for_status(self) -> None:
         if self.dry_run_finished() and self.dry_run_status() != TxRes.SUCCESS:
-            raise TransactionFailedError(f'Dry run check failed with error: '
-                                         f'{self.dry_run_result}')
+            raise DryRunFailedError(f'Dry run check failed with error: '
+                                    f'{self.dry_run_result}')
         if self.receipt_received() and self.receipt_status() != TxRes.SUCCESS:
             raise TransactionFailedError(f'Transaction failed with receipt: '
                                          f'{self.receipt}')
