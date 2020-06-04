@@ -1,5 +1,8 @@
+import mock
+import pytest
 from web3 import Web3
-from skale.dataclasses.tx_res import TxRes
+
+from skale.dataclasses.tx_res import InsufficientBalanceError, TxRes
 from skale.utils.account_tools import generate_account
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
 
@@ -120,3 +123,12 @@ def test_tx_res_wait_for_true(skale):
     assert tx_res.receipt_status() == TxRes.SUCCESS
     assert tx_res.tx_passed()
     tx_res.raise_for_status()
+
+
+@mock.patch('skale.contracts.base_contract.account_eth_balance_wei',
+            new=mock.Mock(return_value=0))
+def test_tx_res_with_insufficient_funds(skale):
+    account = generate_account(skale.web3)
+    token_amount = 10
+    with pytest.raises(InsufficientBalanceError):
+        skale.token.transfer(account['address'], token_amount)

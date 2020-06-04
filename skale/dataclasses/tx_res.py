@@ -22,6 +22,10 @@ class TransactionFailedError(Exception):
     pass
 
 
+class InsufficientBalanceError(Exception):
+    pass
+
+
 class TxRes:
     SUCCESS = 1
     NOT_PERFORMED = -1

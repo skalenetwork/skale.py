@@ -23,12 +23,16 @@ from functools import partial, wraps
 
 from web3 import Web3
 
-from skale.dataclasses.tx_res import TxRes
+from skale.dataclasses.tx_res import InsufficientBalanceError, TxRes
 from skale.transactions.tools import post_transaction, make_dry_run_call
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
+from skale.utils.account_tools import account_eth_balance_wei
 
 
 logger = logging.getLogger(__name__)
+
+
+MINIMAL_TRANSACTION_ETH_BALANCE = 0.1
 
 
 def transaction_method(transaction=None, *, gas_limit=10):
@@ -41,6 +45,10 @@ def transaction_method(transaction=None, *, gas_limit=10):
                 gas_price=None, nonce=None,
                 dry_run_only=False, skip_dry_run=False, raise_for_status=True,
                 **kwargs):
+        balance = account_eth_balance_wei(self.skale.web3,
+                                          self.skale.wallet.address)
+        if balance < MINIMAL_TRANSACTION_ETH_BALANCE:
+            logger.warning('Balance is too low to perform actual transactions')
         method = transaction(self, *args, **kwargs)
         tx_res = TxRes()
         if not skip_dry_run:
@@ -49,6 +57,10 @@ def transaction_method(transaction=None, *, gas_limit=10):
 
         if not dry_run_only and (skip_dry_run or tx_res.dry_run_passed()):
             gas_price = gas_price or self.skale.gas_price
+            tx_cost = gas_price * gas_limit
+            if balance < tx_cost:
+                raise InsufficientBalanceError(
+                    f'Transaction requires {tx_cost}. Wallet has {balance} wei')
             tx_res.hash = post_transaction(self.skale.wallet, method,
                                            gas_limit, gas_price, nonce)
             if wait_for:
