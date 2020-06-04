@@ -18,11 +18,15 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 
-class TransactionFailedError(Exception):
+class TransactionError(Exception):
     pass
 
 
-class DryRunFailedError(Exception):
+class TransactionFailedError(TransactionError):
+    pass
+
+
+class DryRunFailedError(TransactionError):
     pass
 
 
