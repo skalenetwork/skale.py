@@ -3,7 +3,7 @@
 import pytest
 
 from skale.contracts.delegation.validator_service import FIELDS
-from skale.dataclasses.tx_res import TransactionFailedError
+from skale.dataclasses.tx_res import DryRunFailedError
 from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
 from skale.wallets.web3_wallet import generate_wallet
@@ -184,7 +184,7 @@ def test_is_accepting_new_requests(skale):
 
 
 def test_register_existing_validator(skale):
-    with pytest.raises(TransactionFailedError):
+    with pytest.raises(DryRunFailedError):
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,

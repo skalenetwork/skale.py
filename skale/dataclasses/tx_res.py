@@ -18,7 +18,15 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 
-class TransactionFailedError(Exception):
+class TransactionError(Exception):
+    pass
+
+
+class TransactionFailedError(TransactionError):
+    pass
+
+
+class DryRunFailedError(TransactionError):
     pass
 
 
@@ -79,8 +87,8 @@ class TxRes:
 
     def raise_for_status(self) -> None:
         if self.dry_run_finished() and self.dry_run_status() != TxRes.SUCCESS:
-            raise TransactionFailedError(f'Dry run check failed with error: '
-                                         f'{self.dry_run_result}')
+            raise DryRunFailedError(f'Dry run check failed with error: '
+                                    f'{self.dry_run_result}')
         if self.receipt_received() and self.receipt_status() != TxRes.SUCCESS:
             raise TransactionFailedError(f'Transaction failed with receipt: '
                                          f'{self.receipt}')
