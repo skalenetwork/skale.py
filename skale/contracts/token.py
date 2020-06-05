@@ -34,5 +34,5 @@ class Token(BaseContract):
     def add_authorized(self, address, wallet):  # pragma: no cover
         return self.contract.functions.addAuthorized(address)
 
-    def get_and_update_slashed_amount(self, address):
+    def get_and_update_slashed_amount(self, address: str) -> int:
         return self.contract.functions.getAndUpdateSlashedAmount(address).call()

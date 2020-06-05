@@ -7,10 +7,12 @@ from skale.dataclasses.tx_res import TransactionFailedError
 from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
 from skale.wallets.web3_wallet import generate_wallet
+from skale.utils.contracts_provision.main import _skip_evm_time
 
 from tests.constants import (
-    NOT_EXISTING_ID, D_VALIDATOR_ID, D_VALIDATOR_NAME, D_VALIDATOR_DESC,
-    D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL
+    D_DELEGATION_PERIOD, D_VALIDATOR_ID, D_VALIDATOR_NAME, D_VALIDATOR_DESC,
+    D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL,
+    MONTH_IN_SECONDS, NOT_EXISTING_ID
 )
 
 
@@ -261,3 +263,32 @@ def test_disable_whitelist(skale):
     assert skale.validator_service.get_use_whitelist()
     skale.validator_service.disable_whitelist(wait_for=True)
     assert not skale.validator_service.get_use_whitelist()
+
+
+def test_get_and_update_bond_amount(skale):
+    initial_bond = skale.validator_service.get_and_update_bond_amount(D_VALIDATOR_ID)
+    additional_bond = skale.constants_holder.msr() * 2
+
+    # Delegate to myself
+    skale.delegation_controller.delegate(
+        validator_id=D_VALIDATOR_ID,
+        amount=additional_bond,
+        delegation_period=D_DELEGATION_PERIOD,
+        info='Test get_and_update_bond_amount',
+        wait_for=True
+    )
+
+    # Accept delegation
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
+    skale.delegation_controller.accept_pending_delegation(
+        delegation_id=delegations[-1]['id'],
+        wait_for=True
+    )
+
+    # Skip time
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+
+    bond = skale.validator_service.get_and_update_bond_amount(D_VALIDATOR_ID)
+    locked = skale.token_state.get_and_update_locked_amount(skale.wallet.address)
+    print(delegations)
+    assert bond == initial_bond + additional_bond, (bond, initial_bond + additional_bond, locked)
