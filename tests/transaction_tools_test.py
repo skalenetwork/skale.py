@@ -2,7 +2,7 @@ import pytest
 import mock
 from web3 import Web3
 
-from skale.dataclasses.tx_res import TransactionFailedError
+from skale.dataclasses.tx_res import TransactionFailedError, DryRunFailedError
 from skale.transactions.tools import run_tx_with_retry
 from skale.utils.account_tools import generate_account
 
@@ -45,7 +45,7 @@ def test_run_tx_with_retry_dry_run_failed(skale):
             wait_for=True, raise_for_status=False,
             max_retries=retries_number
         )
-        with pytest.raises(TransactionFailedError):
+        with pytest.raises(DryRunFailedError):
             tx_res.raise_for_status()
 
     assert dry_run_call_mock.call_count == retries_number
