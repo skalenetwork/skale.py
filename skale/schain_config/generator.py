@@ -28,6 +28,7 @@ from skale.schain_config.base_config import update_base_config
 
 
 def generate_schain_info(schain, schain_nodes, storage_limit,
+                         custom_schain_config_fields={},
                          snapshot_interval_ms=None,
                          empty_block_interval_ms=None):
     schain_info = {
@@ -37,6 +38,7 @@ def generate_schain_info(schain, schain_nodes, storage_limit,
         'nodes': schain_nodes,
         'storageLimit': storage_limit
     }
+    schain_info.update(custom_schain_config_fields)
     if snapshot_interval_ms:
         schain_info['snapshotIntervalMs'] = snapshot_interval_ms
     if empty_block_interval_ms:
@@ -153,7 +155,8 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
                                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None,
                                  ima_data=None, rotate_after_block=64, storage_limit=1000000000,
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
-                                 schain_log_level='info', schain_log_level_config='info'):
+                                 schain_log_level='info', schain_log_level_config='info',
+                                 custom_schain_config_fields={}):
     node = skale.nodes_data.get(node_id)
     schain = skale.schains_data.get_by_name(schain_name)
 
@@ -181,7 +184,8 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
         schain_nodes=schain_nodes,
         storage_limit=storage_limit,
         empty_block_interval_ms=empty_block_interval_ms,
-        snapshot_interval_ms=snapshot_interval_ms
+        snapshot_interval_ms=snapshot_interval_ms,
+        custom_schain_config_fields=custom_schain_config_fields
     )
 
     if base_config:

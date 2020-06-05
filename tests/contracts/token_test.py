@@ -49,4 +49,4 @@ def test_get_balance(skale, empty_account):
 
 def test_get_and_update_slashed_amount(skale):
     res = skale.token.get_and_update_slashed_amount(skale.wallet.address)
-    assert res != 0
+    assert res == 0
