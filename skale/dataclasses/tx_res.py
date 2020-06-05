@@ -39,6 +39,12 @@ class TxRes:
         self._dry_run_result = dry_run_result
         self._receipt = receipt
 
+    def __str__(self):
+        return (
+            f'TxRes hash: {self._hash}, dry_run_result {self._dry_run_result}, '
+            f'receipt {self._receipt}'
+        )
+
     @property
     def dry_run_result(self):
         return self._dry_run_result
