@@ -118,6 +118,10 @@ def test_get_rotation(skale):
     }
 
 
+def test_get_last_rotation_id(skale):
+    assert skale.schains_data.get_last_rotation_id(DEFAULT_SCHAIN_NAME) == 0
+
+
 def test_is_group_failed_dkg(skale):
     assert skale.schains_data.is_group_failed_dkg(DEFAULT_SCHAIN_ID)
 
