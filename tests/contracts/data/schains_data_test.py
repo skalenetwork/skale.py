@@ -136,6 +136,8 @@ def test_get_group_public_key(skale):
 
 
 def test_get_leaving_history(skale):
+    empty = skale.schains_data.get_leaving_history(DEFAULT_SCHAIN_INDEX)
+    assert empty == []
     with mock.patch.object(skale.schains_data.contract.functions.getLeavingHistory, 'call') \
             as call_mock:
         call_mock.return_value = [(DEFAULT_SCHAIN_ID, 1000), (DEFAULT_SCHAIN_ID, 2000)]
