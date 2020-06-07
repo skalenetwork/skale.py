@@ -153,7 +153,7 @@ def generate_schain_config(base_config, node_info, schain_info, schain_contract_
 
 def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, ima_mainnet=None,
                                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None,
-                                 ima_data=None, rotate_after_block=64, storage_limit=1000000000,
+                                 ima_data=None, rotate_after_block=64,
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  schain_log_level='info', schain_log_level_config='info',
                                  custom_schain_config_fields={}):
