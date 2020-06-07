@@ -21,7 +21,7 @@ import logging
 import time
 from functools import partial, wraps
 
-from skale.dataclasses.tx_res import TransactionFailedError, TxRes
+from skale.dataclasses.tx_res import TransactionFailedError, DryRunFailedError, TxRes
 from skale.utils.web3_utils import get_eth_nonce
 
 logger = logging.getLogger(__name__)
@@ -124,7 +124,7 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         try:
             tx_res = transaction(*args, **kwargs)
             tx_res.raise_for_status()
-        except TransactionFailedError as err:
+        except (TransactionFailedError, DryRunFailedError) as err:
             logger.error(f'Tx attempt {attempt}/{max_retries} failed',
                          exc_info=err)
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
