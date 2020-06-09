@@ -180,7 +180,7 @@ class ValidatorService(BaseContract):
                            min_delegation_amount: int) -> TxRes:
         """Registers a new validator in the SKALE Manager contracts.
 
-        :param name:z Validator name
+        :param name: Validator name
         :type name: str
         :param description: Validator description
         :type description: str
@@ -232,8 +232,16 @@ class ValidatorService(BaseContract):
         return self.contract.functions.disableWhitelist()
 
     def get_use_whitelist(self) -> bool:
-        """ Returns useWhitelist contract variable
+        """ Return useWhitelist contract variable
         :returns: useWhitelist value
         :rtype: bool
         """
         return self.contract.functions.useWhitelist().call()
+
+    def get_and_update_bond_amount(self, validator_id: int) -> int:
+        """Return amount of token that validator delegated to himself
+           :param validator_id: id of the validator
+           :returns:
+           :rtype: int
+        """
+        return self.contract.functions.getAndUpdateBondAmount(validator_id).call()
