@@ -1,5 +1,5 @@
 import json
-import skale.contracts.data.nodes_data as nodes_data
+import skale.contracts.nodes as nodes
 from skale.dataclasses import CurrentNodeInfo
 from skale.schain_config.generator import get_nodes_for_schain
 from skale.schain_config.generator import (generate_schain_info, generate_schain_config,
@@ -96,7 +96,7 @@ def test_generate_schain_config():
 
 def test_get_nodes_for_schain(skale):
     schain_nodes = get_nodes_for_schain(skale, DEFAULT_SCHAIN_NAME)
-    fields_with_id = nodes_data.FIELDS.copy()
+    fields_with_id = nodes.FIELDS.copy()
     fields_with_id.append('id')
 
     assert len(schain_nodes) >= MIN_NODES_IN_SCHAIN
@@ -104,7 +104,7 @@ def test_get_nodes_for_schain(skale):
 
 
 def test_generate_skale_schain_config(skale):
-    node_index = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_index = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     config = generate_skale_schain_config(
         skale=skale,
         schain_name=DEFAULT_SCHAIN_NAME,
@@ -131,7 +131,7 @@ def test_generate_skale_schain_config(skale):
 
 
 def test_generate_skale_schain_config_with_ima_data(skale):
-    node_index = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_index = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     config = generate_skale_schain_config(
         skale=skale,
         schain_name=DEFAULT_SCHAIN_NAME,

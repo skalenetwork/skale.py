@@ -16,9 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Get SKALE validator data """
-
-import socket
+""" Monitors.sol functions """
 
 from web3 import Web3
 from skale.contracts import BaseContract
@@ -27,7 +25,7 @@ from skale.utils.helper import format_fields
 FIELDS = ['id', 'rep_date', 'ip']
 
 
-class MonitorsData(BaseContract):
+class Monitors(BaseContract):
     def __get_checked_array_raw(self, node_id):
         node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
         return self.contract.functions.getCheckedArray(node_id_bytes).call()

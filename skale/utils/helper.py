@@ -149,13 +149,16 @@ def init_default_logger():  # pragma: no cover
 
 def chunk(in_string, num_chunks):  # pragma: no cover
     chunk_size = len(in_string)//num_chunks
-    if len(in_string) % num_chunks: chunk_size += 1
+    if len(in_string) % num_chunks:
+        chunk_size += 1
     iterator = iter(in_string)
     for _ in range(num_chunks):
         accumulator = list()
         for _ in range(chunk_size):
-            try: accumulator.append(next(iterator))
-            except StopIteration: break
+            try:
+                accumulator.append(next(iterator))
+            except StopIteration:
+                break
         yield ''.join(accumulator)
 
 
