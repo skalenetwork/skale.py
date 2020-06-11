@@ -48,11 +48,9 @@ def transaction_method(transaction=None, *, gas_limit=10):
                 gas_price=None, nonce=None,
                 dry_run_only=False, skip_dry_run=False, raise_for_status=True,
                 **kwargs):
+        # Check balance
         balance = account_eth_balance_wei(self.skale.web3,
                                           self.skale.wallet.address)
-        if balance < MINIMAL_TRANSACTION_ETH_BALANCE:
-            logger.warning('Balance is too low to perform actual transactions')
-
         gas_price = gas_price or self.skale.gas_price
         balance_check_result = check_balance(balance, gas_price, gas_limit)
         rich_enough = is_success(balance_check_result)
@@ -60,12 +58,16 @@ def transaction_method(transaction=None, *, gas_limit=10):
         dry_run_result, tx_hash, receipt = None, None, None
         method = transaction(self, *args, **kwargs)
 
+        # Make dry_run
         if rich_enough and not skip_dry_run:
             dry_run_result = make_dry_run_call(self.skale.wallet,
                                                method, gas_limit)
 
-        dry_run_passed = dry_run_only or is_success_or_not_performed(dry_run_result)
-        if rich_enough and dry_run_passed:
+        # Send transaction
+        should_send_transaction = not dry_run_only and \
+            is_success_or_not_performed(dry_run_result)
+
+        if rich_enough and should_send_transaction:
             tx_hash = post_transaction(
                 self.skale.wallet, method, gas_limit,
                 gas_price, nonce
