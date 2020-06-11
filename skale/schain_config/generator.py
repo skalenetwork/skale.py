@@ -60,8 +60,6 @@ def get_nodes_for_schain_config(skale, name):
     nodes_info = []
     nodes = get_nodes_for_schain(skale, name)
     for i, node in enumerate(nodes, 1):
-        pk = node['publicKey'].hex()
-
         schains_on_node = skale.schains_data.get_schains_for_node(node['id'])
         base_port = get_schain_base_port_on_node(schains_on_node, name, node['port'])
 
@@ -72,9 +70,9 @@ def get_nodes_for_schain_config(skale, name):
 
             schain_index=i,
             ip=ip_from_bytes(node['ip']),
-            public_key=pk,
+            public_key=node['publicKey'],
             public_ip=ip_from_bytes(node['publicIP']),
-            owner=public_key_to_address(pk)
+            owner=public_key_to_address(node['publicKey'])
         ).to_config()
         nodes_info.append(node_info)
     return nodes_info

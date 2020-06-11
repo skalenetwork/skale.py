@@ -27,8 +27,8 @@ from skale.contracts import BaseContract
 from skale.utils.helper import format_fields
 
 FIELDS = [
-    'name', 'ip', 'publicIP', 'port', 'publicKey', 'start_block',
-    'last_reward_date', 'finish_time', 'status', 'validator_id'
+    'name', 'ip', 'publicIP', 'port', 'start_block',
+    'last_reward_date', 'finish_time', 'status', 'validator_id', 'publicKey'
 ]
 
 COMPACT_FIELDS = ['schainIndex', 'nodeID', 'ip', 'basePort']
@@ -46,15 +46,20 @@ class Nodes(BaseContract):
         except (ValueError, BadFunctionCallOutput):
             return None
 
+    def __get_raw_w_pk(self, node_id):
+        raw_node_struct = self.__get_raw(node_id)
+        raw_node_struct.append(self.get_node_public_key(node_id))
+        return raw_node_struct
+
     @format_fields(FIELDS)
     def get(self, node_id):
-        return self.__get_raw(node_id)
+        return self.__get_raw_w_pk(node_id)
 
     @format_fields(FIELDS)
     def get_by_name(self, name):
         name_hash = self.name_to_id(name)
-        id = self.contract.functions.nodesNameToIndex(name_hash).call()
-        return self.__get_raw(id)
+        _id = self.contract.functions.nodesNameToIndex(name_hash).call()
+        return self.__get_raw_w_pk(_id)
 
     def get_active_node_ids(self):
         return self.contract.functions.getActiveNodeIds().call()
@@ -87,3 +92,11 @@ class Nodes(BaseContract):
 
     def get_node_finish_time(self, node_id):
         return self.contract.functions.getNodeFinishTime(node_id).call()
+
+    def __get_node_public_key_raw(self, node_id):
+        return self.contract.functions.getNodePublicKey(node_id).call()
+
+    def get_node_public_key(self, node_id):
+        raw_key = self.__get_node_public_key_raw(node_id)
+        key_bytes = raw_key[0] + raw_key[1]
+        return self.skale.web3.toHex(key_bytes)

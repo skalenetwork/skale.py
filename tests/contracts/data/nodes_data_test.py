@@ -30,7 +30,7 @@ def test_get(skale):
     socket.inet_ntoa(node_by_id['ip'])
     socket.inet_ntoa(node_by_id['publicIP'])
 
-    assert node_by_id['publicKey'].hex() == skale.wallet.public_key[2:]
+    assert node_by_id['publicKey'] == skale.wallet.public_key
 
     assert node_by_id['publicKey'] != b''
     assert node_by_id['start_block'] > 0
@@ -105,3 +105,10 @@ def test_node_name_to_index(skale):
     node_by_id_data = skale.nodes_data.get(node_id)
     node_by_name_data = skale.nodes_data.get_by_name(DEFAULT_NODE_NAME)
     assert node_by_id_data == node_by_name_data
+
+
+def test_get_node_public_key(skale):
+    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_public_key = skale.nodes_data.get_node_public_key(node_id)
+    assert node_public_key == skale.wallet.public_key
+    

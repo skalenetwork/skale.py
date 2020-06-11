@@ -1,12 +1,13 @@
 """ SKALE monitors data test """
 
+from skale.contracts.data.monitors_data import FIELDS
 from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_INDEX
 
 
 def test_get_checked_array_raw(skale):
     node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
     raw_checked_array = skale.monitors_data._MonitorsData__get_checked_array_raw(node_id)
-    assert isinstance(raw_checked_array[0], bytes)
+    assert len(raw_checked_array[0]) == len(FIELDS)
 
 
 def test_get_checked_array(skale):

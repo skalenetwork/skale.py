@@ -22,6 +22,9 @@ import socket
 
 from web3 import Web3
 from skale.contracts import BaseContract
+from skale.utils.helper import format_fields
+
+FIELDS = ['id', 'rep_date', 'ip']
 
 
 class MonitorsData(BaseContract):
@@ -29,16 +32,9 @@ class MonitorsData(BaseContract):
         node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
         return self.contract.functions.getCheckedArray(node_id_bytes).call()
 
+    @format_fields(FIELDS, flist=True)
     def get_checked_array(self, node_id):
-        raw_checked_array = self.__get_checked_array_raw(node_id)
-        nodes = []
-        for node_in_bytes in raw_checked_array:
-            node_id = int.from_bytes(node_in_bytes[:14], byteorder='big')
-            report_date = int.from_bytes(node_in_bytes[14:28], byteorder='big')
-            node_ip = socket.inet_ntoa(node_in_bytes[28:])
-            nodes.append({'id': node_id, 'ip': node_ip,
-                          'rep_date': report_date})
-        return nodes
+        return self.__get_checked_array_raw(node_id)
 
     def get_last_bounty_block(self, node_index):
         return self.contract.functions.getLastBountyBlock(node_index).call()
