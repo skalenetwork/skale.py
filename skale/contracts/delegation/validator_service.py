@@ -22,7 +22,7 @@ from web3 import Web3
 from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
-from skale.dataclasses.tx_res import TxRes
+from skale.transactions.result import TxRes
 from skale.utils.constants import GAS
 
 

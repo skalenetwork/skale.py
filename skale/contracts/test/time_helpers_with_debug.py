@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts import BaseContract, transaction_method
-from skale.dataclasses.tx_res import TxRes
+from skale.transactions.result import TxRes
 from skale.utils.constants import GAS
 
 

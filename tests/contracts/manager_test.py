@@ -8,7 +8,7 @@ import web3
 from hexbytes import HexBytes
 from mock import Mock
 
-from skale.dataclasses.tx_res import TransactionFailedError
+from skale.transactions.result import TransactionFailedError
 from skale.utils.constants import GAS
 
 from skale.utils.contracts_provision.main import (
