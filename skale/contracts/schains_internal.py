@@ -70,3 +70,14 @@ class SChainsInternal(BaseContract):
 
     def get_groups_public_key(self, group_index):
         return self.contract.functions.getGroupsPublicKey(group_index).call()
+
+    def get_leaving_history(self, node_id):
+        raw_history = self.contract.functions.getLeavingHistory(node_id).call()
+        history = [
+            {
+                'id': schain[0],
+                'finished_rotation': schain[1]
+            }
+            for schain in raw_history
+        ]
+        return history

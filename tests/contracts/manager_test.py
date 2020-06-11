@@ -242,8 +242,8 @@ def test_empty_node_exit(skale):
 
 
 def test_failed_node_exit(skale):
-    schains_ids = skale.schains_data.get_all_schains_ids()
-    schain_name = skale.schains_data.get(schains_ids[0])['name']
-    exit_node_id = skale.schains_data.get_node_ids_for_schain(schain_name)[0]
+    schains_ids = skale.schains_internal.get_all_schains_ids()
+    schain_name = skale.schains.get(schains_ids[0])['name']
+    exit_node_id = skale.schains_internal.get_node_ids_for_schain(schain_name)[0]
     with pytest.raises(TransactionFailedError):
         skale.manager.node_exit(exit_node_id, skip_dry_run=True, wait_for=True)

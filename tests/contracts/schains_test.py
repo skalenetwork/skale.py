@@ -5,7 +5,7 @@ import mock
 from skale.contracts.schains import FIELDS
 from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
-                             DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS, DEFAULT_SCHAIN_INDEX)
+                             DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
 
 
 def test_get(skale):
@@ -63,23 +63,3 @@ def test_get_schain_price(skale):
                                                       LIFETIME_SECONDS)
         assert schain_price > 0
         assert type(schain_price) is int
-
-
-def test_get_leaving_history(skale):
-    empty = skale.schains.get_leaving_history(DEFAULT_SCHAIN_INDEX)
-    assert empty == []
-    with mock.patch.object(skale.schains.contract.functions.getLeavingHistory, 'call') \
-            as call_mock:
-        call_mock.return_value = [(DEFAULT_SCHAIN_ID, 1000), (DEFAULT_SCHAIN_ID, 2000)]
-        history = skale.schains.get_leaving_history(DEFAULT_SCHAIN_INDEX)
-        assert isinstance(history, list)
-        assert history == [
-            {
-                'id': DEFAULT_SCHAIN_ID,
-                'finished_rotation': 1000
-            },
-            {
-                'id': DEFAULT_SCHAIN_ID,
-                'finished_rotation': 2000
-            }
-        ]

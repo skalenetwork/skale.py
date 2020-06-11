@@ -77,17 +77,6 @@ class SChains(BaseContract):
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
         return keccak_hash.hexdigest()
 
-    def get_leaving_history(self, node_id):
-        raw_history = self.contract.functions.getLeavingHistory(node_id).call()
-        history = [
-            {
-                'id': schain[0],
-                'finished_rotation': schain[1]
-            }
-            for schain in raw_history
-        ]
-        return history
-
     def get_last_rotation_id(self, schain_name):
         rotation_data = self.get_schains_internal().get_rotation(schain_name)
         return rotation_data['rotation_id']
