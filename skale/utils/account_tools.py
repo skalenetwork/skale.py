@@ -69,8 +69,12 @@ def send_ether(web3, sender_wallet, receiver_account, amount,
         return tx
 
 
+def account_eth_balance_wei(web3, address):
+    return web3.eth.getBalance(address)
+
+
 def check_ether_balance(web3, address):
-    balance_wei = web3.eth.getBalance(address)
+    balance_wei = account_eth_balance_wei(web3, address)
     balance = web3.fromWei(balance_wei, 'ether')
 
     logger.info(f'{address} balance: {balance} ETH')

@@ -3,7 +3,7 @@
 import pytest
 
 from skale.contracts.delegation.validator_service import FIELDS
-from skale.dataclasses.tx_res import DryRunFailedError
+from skale.transactions.result import DryRunFailedError
 from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
 from skale.wallets.web3_wallet import generate_wallet
