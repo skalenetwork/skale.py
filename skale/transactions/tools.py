@@ -21,7 +21,11 @@ import logging
 import time
 from functools import partial, wraps
 
-from skale.dataclasses.tx_res import TransactionFailedError, DryRunFailedError, TxRes
+from skale.transactions.result import (
+    DryRunFailedError,
+    InsufficientBalanceError,
+    TransactionFailedError, TxRes
+)
 from skale.utils.web3_utils import get_eth_nonce
 
 logger = logging.getLogger(__name__)
@@ -130,6 +134,9 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
             exp_timeout *= 2
+        except InsufficientBalanceError as err:
+            logger.error('Sender balance is too low', exc_info=err)
+            raise err
         else:
             success = True
         attempt += 1

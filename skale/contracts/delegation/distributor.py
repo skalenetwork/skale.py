@@ -20,7 +20,7 @@
 from functools import wraps
 
 from skale.contracts import BaseContract, transaction_method
-from skale.dataclasses.tx_res import TxRes
+from skale.transactions.result import TxRes
 from skale.utils.constants import GAS
 
 

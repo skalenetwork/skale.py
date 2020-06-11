@@ -23,7 +23,10 @@ from functools import partial, wraps
 
 from web3 import Web3
 
-from skale.dataclasses.tx_res import InsufficientBalanceError, TxRes
+from skale.transactions.result import (check_balance,
+                                       is_success,
+                                       is_success_or_not_performed,
+                                       TxRes)
 from skale.transactions.tools import post_transaction, make_dry_run_call
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
 from skale.utils.account_tools import account_eth_balance_wei
@@ -49,31 +52,36 @@ def transaction_method(transaction=None, *, gas_limit=10):
                                           self.skale.wallet.address)
         if balance < MINIMAL_TRANSACTION_ETH_BALANCE:
             logger.warning('Balance is too low to perform actual transactions')
-        method = transaction(self, *args, **kwargs)
-        tx_res = TxRes()
-        if not skip_dry_run:
-            tx_res.dry_run_result = make_dry_run_call(self.skale.wallet,
-                                                      method, gas_limit)
 
-        if not dry_run_only and (skip_dry_run or tx_res.dry_run_passed()):
-            gas_price = gas_price or self.skale.gas_price
-            tx_cost = gas_price * gas_limit
-            if balance < tx_cost:
-                raise InsufficientBalanceError(
-                    f'Transaction requires {tx_cost}. Wallet has {balance} wei')
-            tx_res.hash = post_transaction(self.skale.wallet, method,
-                                           gas_limit, gas_price, nonce)
+        gas_price = gas_price or self.skale.gas_price
+        balance_check_result = check_balance(balance, gas_price, gas_limit)
+        rich_enough = is_success(balance_check_result)
+
+        dry_run_result, tx_hash, receipt = None, None, None
+        method = transaction(self, *args, **kwargs)
+
+        if rich_enough and not skip_dry_run:
+            dry_run_result = make_dry_run_call(self.skale.wallet,
+                                               method, gas_limit)
+
+        dry_run_passed = dry_run_only or is_success_or_not_performed(dry_run_result)
+        if rich_enough and dry_run_passed:
+            tx_hash = post_transaction(
+                self.skale.wallet, method, gas_limit,
+                gas_price, nonce
+            )
             if wait_for:
-                tx_res.receipt = wait_for_receipt_by_blocks(
+                receipt = wait_for_receipt_by_blocks(
                     self.skale.web3,
-                    tx_res.hash,
+                    tx_hash,
                     timeout=wait_timeout,
                     blocks_to_wait=blocks_to_wait
                 )
 
+        tx_res = TxRes(dry_run_result, balance_check_result, tx_hash, receipt)
+
         if raise_for_status:
             tx_res.raise_for_status()
-
         return tx_res
 
     return wrapper
