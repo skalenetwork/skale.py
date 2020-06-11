@@ -35,9 +35,6 @@ from skale.utils.account_tools import account_eth_balance_wei
 logger = logging.getLogger(__name__)
 
 
-MINIMAL_TRANSACTION_ETH_BALANCE = 0.1
-
-
 def transaction_method(transaction=None, *, gas_limit=10):
     if transaction is None:
         return partial(transaction_method, gas_limit=gas_limit)
