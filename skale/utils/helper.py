@@ -134,6 +134,7 @@ def rm_0x_prefix(bytes_string):
         return bytes_string[2:]
     return bytes_string
 
+
 def init_default_logger():  # pragma: no cover
     handlers = []
     formatter = Formatter(
@@ -148,12 +149,12 @@ def init_default_logger():  # pragma: no cover
 
 
 def chunk(in_string, num_chunks):  # pragma: no cover
-    chunk_size = len(in_string)//num_chunks
+    chunk_size = len(in_string) // num_chunks
     if len(in_string) % num_chunks:
         chunk_size += 1
     iterator = iter(in_string)
     for _ in range(num_chunks):
-        accumulator = list()
+        accumulator = []
         for _ in range(chunk_size):
             try:
                 accumulator.append(next(iterator))
