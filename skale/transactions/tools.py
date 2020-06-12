@@ -87,7 +87,6 @@ def send_eth(web3, account, amount, wallet):
     logger.info(f'Transaction nonce {eth_nonce}')
     txn = {
         'to': account,
-        'from': wallet.address,
         'value': amount,
         'gasPrice': web3.eth.gasPrice,
         'gas': 22000,
