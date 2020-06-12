@@ -47,9 +47,9 @@ def generate_schain_info(schain, schain_nodes,
 
 def get_nodes_for_schain(skale, name):
     nodes = []
-    ids = skale.schains_data.get_node_ids_for_schain(name)
+    ids = skale.schains_internal.get_node_ids_for_schain(name)
     for id_ in ids:
-        node = skale.nodes_data.get(id_)
+        node = skale.nodes.get(id_)
         node['id'] = id_
         nodes.append(node)
     return nodes
@@ -59,9 +59,7 @@ def get_nodes_for_schain_config(skale, name):
     nodes_info = []
     nodes = get_nodes_for_schain(skale, name)
     for i, node in enumerate(nodes, 1):
-        pk = node['publicKey'].hex()
-
-        schains_on_node = skale.schains_data.get_schains_for_node(node['id'])
+        schains_on_node = skale.schains.get_schains_for_node(node['id'])
         base_port = get_schain_base_port_on_node(schains_on_node, name, node['port'])
 
         node_info = SchainNodeInfo(
@@ -71,9 +69,9 @@ def get_nodes_for_schain_config(skale, name):
 
             schain_index=i,
             ip=ip_from_bytes(node['ip']),
-            public_key=pk,
+            public_key=node['publicKey'],
             public_ip=ip_from_bytes(node['publicIP']),
-            owner=public_key_to_address(pk)
+            owner=public_key_to_address(node['publicKey'])
         ).to_config()
         nodes_info.append(node_info)
     return nodes_info
@@ -156,10 +154,10 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  schain_log_level='info', schain_log_level_config='info',
                                  custom_schain_config_fields={}):
-    node = skale.nodes_data.get(node_id)
-    schain = skale.schains_data.get_by_name(schain_name)
+    node = skale.nodes.get(node_id)
+    schain = skale.schains.get_by_name(schain_name)
 
-    schains_on_node = skale.schains_data.get_schains_for_node(node_id)
+    schains_on_node = skale.schains.get_schains_for_node(node_id)
     schain_base_port_on_node = get_schain_base_port_on_node(schains_on_node, schain_name,
                                                             node['port'])
     schain_nodes = get_nodes_for_schain_config(skale, schain_name)

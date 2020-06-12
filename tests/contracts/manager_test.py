@@ -1,5 +1,7 @@
 """ SKALE manager test """
 
+import random
+
 import mock
 import pytest
 import web3
@@ -112,47 +114,47 @@ def test_send_verdicts(skale):
 
 
 def test_create_node_delete_node_by_root(skale):
-    active_node_ids_before = skale.nodes_data.get_active_node_ids()
+    active_node_ids_before = skale.nodes.get_active_node_ids()
 
     ip, public_ip, port, name = generate_random_node_data()
     tx_res = skale.manager.create_node(ip, port, name, wait_for=True)
     assert tx_res.receipt['status'] == 1
 
-    active_node_ids_after = skale.nodes_data.get_active_node_ids()
+    active_node_ids_after = skale.nodes.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
 
-    node_idx = skale.nodes_data.node_name_to_index(name)
+    node_idx = skale.nodes.node_name_to_index(name)
 
     tx_res = skale.manager.delete_node_by_root(node_idx, wait_for=True)
     assert tx_res.receipt['status'] == 1
-    active_node_ids_after = skale.nodes_data.get_active_node_ids()
+    active_node_ids_after = skale.nodes.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
 def test_create_deregister_node(skale):
     # Create node
-    active_node_ids_before = skale.nodes_data.get_active_node_ids()
+    active_node_ids_before = skale.nodes.get_active_node_ids()
 
     ip, public_ip, port, name = generate_random_node_data()
     tx_res = skale.manager.create_node(
         ip, port, name, public_ip, wait_for=True)
     assert tx_res.receipt['status'] == 1
 
-    active_node_ids_after = skale.nodes_data.get_active_node_ids()
+    active_node_ids_after = skale.nodes.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
 
-    node_idx = skale.nodes_data.node_name_to_index(name)
+    node_idx = skale.nodes.node_name_to_index(name)
 
     # Deregister node
 
     tx_res = skale.manager.deregister(node_idx, wait_for=True)
     assert tx_res.receipt['status'] == 1
-    active_node_ids_after = skale.nodes_data.get_active_node_ids()
+    active_node_ids_after = skale.nodes.get_active_node_ids()
     assert len(active_node_ids_after) == len(active_node_ids_before)
 
 
 def test_create_delete_schain(skale):
-    schains_ids = skale.schains_data.get_all_schains_ids()
+    schains_ids = skale.schains_internal.get_all_schains_ids()
 
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
     price_in_wei = skale.schains.get_schain_price(type_of_nodes,
@@ -161,12 +163,12 @@ def test_create_delete_schain(skale):
                                          price_in_wei, name, wait_for=True)
     assert tx_res.receipt['status'] == 1
 
-    schains_ids_number_after = skale.schains_data.get_schains_number()
+    schains_ids_number_after = skale.schains_internal.get_schains_number()
     assert schains_ids_number_after == len(schains_ids) + 1
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
     schains_names = [
-        skale.schains_data.get(sid)['name']
+        skale.schains.get(sid)['name']
         for sid in schains_ids_after
     ]
     assert name in schains_names
@@ -174,29 +176,29 @@ def test_create_delete_schain(skale):
     tx_res = skale.manager.delete_schain(name, wait_for=True)
     assert tx_res.receipt['status'] == 1
 
-    schains_ids_number_after = skale.schains_data.get_schains_number()
+    schains_ids_number_after = skale.schains_internal.get_schains_number()
     assert schains_ids_number_after == len(schains_ids)
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
     schains_names = [
-        skale.schains_data.get(sid)['name']
+        skale.schains.get(sid)['name']
         for sid in schains_ids_after
     ]
     assert name not in schains_names
 
 
 def test_create_delete_default_schain(skale):
-    schains_ids = skale.schains_data.get_all_schains_ids()
-    name = 'default-schain'
+    schains_ids = skale.schains_internal.get_all_schains_ids()
+    name = ''.join(random.choice('abcde') for _ in range(4))
     tx_res = skale.manager.create_default_schain(name)
     assert tx_res.receipt['status'] == 1
 
-    schains_ids_number_after = skale.schains_data.get_schains_number()
+    schains_ids_number_after = skale.schains_internal.get_schains_number()
     assert schains_ids_number_after == len(schains_ids) + 1
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
     schains_names = [
-        skale.schains_data.get(sid)['name']
+        skale.schains.get(sid)['name']
         for sid in schains_ids_after
     ]
     assert name in schains_names
@@ -204,12 +206,12 @@ def test_create_delete_default_schain(skale):
     tx_res = skale.manager.delete_schain(name, wait_for=True)
     assert tx_res.receipt['status'] == 1
 
-    schains_ids_number_after = skale.schains_data.get_schains_number()
+    schains_ids_number_after = skale.schains_internal.get_schains_number()
     assert schains_ids_number_after == len(schains_ids)
-    schains_ids_after = skale.schains_data.get_all_schains_ids()
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
     schains_names = [
-        skale.schains_data.get(sid)['name']
+        skale.schains.get(sid)['name']
         for sid in schains_ids_after
     ]
     assert name not in schains_names
@@ -233,15 +235,15 @@ def test_create_node_status_0(skale):
 def test_empty_node_exit(skale):
     ip, public_ip, port, name = generate_random_node_data()
     skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
-    node_idx = skale.nodes_data.node_name_to_index(name)
+    node_idx = skale.nodes.node_name_to_index(name)
     tx_res = skale.manager.node_exit(node_idx, wait_for=True)
     assert tx_res.receipt['status'] == 1
-    assert skale.nodes_data.get_node_status(node_idx) == 2
+    assert skale.nodes.get_node_status(node_idx) == 2
 
 
 def test_failed_node_exit(skale):
-    schains_ids = skale.schains_data.get_all_schains_ids()
-    schain_name = skale.schains_data.get(schains_ids[0])['name']
-    exit_node_id = skale.schains_data.get_node_ids_for_schain(schain_name)[0]
+    schains_ids = skale.schains_internal.get_all_schains_ids()
+    schain_name = skale.schains.get(schains_ids[0])['name']
+    exit_node_id = skale.schains_internal.get_node_ids_for_schain(schain_name)[0]
     with pytest.raises(TransactionFailedError):
         skale.manager.node_exit(exit_node_id, skip_dry_run=True, wait_for=True)

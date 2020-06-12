@@ -8,12 +8,10 @@ from skale.contracts.token import Token
 from skale.contracts.groups import Groups
 from skale.contracts.constants_holder import ConstantsHolder
 
-from skale.contracts.data.schains_data import SChainsData
-from skale.contracts.data.nodes_data import Nodes
-from skale.contracts.data.monitors_data import MonitorsData
-
-from skale.contracts.functionality.schains import SChains
-from skale.contracts.functionality.monitors import MonitorsFunctionality
+from skale.contracts.schains import SChains
+from skale.contracts.schains_internal import SChainsInternal
+from skale.contracts.nodes import Nodes
+from skale.contracts.monitors import Monitors
 
 from skale.contracts.delegation.delegation_controller import DelegationController
 from skale.contracts.delegation.validator_service import ValidatorService

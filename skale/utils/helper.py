@@ -35,7 +35,7 @@ def decapitalize(s):
     return s[:1].lower() + s[1:] if s else ''
 
 
-def format_fields(fields):
+def format_fields(fields, flist=False):
     """
         Transform array to object with passed fields
         Usage:
@@ -52,6 +52,15 @@ def format_fields(fields):
 
             if result is None:
                 return None
+
+            if flist:
+                formatted_list = []
+                for item in result:
+                    obj = {}
+                    for i, field in enumerate(fields):
+                        obj[field] = item[i]
+                    formatted_list.append(obj)
+                return formatted_list
 
             obj = {}
             for i, field in enumerate(fields):
@@ -120,6 +129,11 @@ def add_0x_prefix(bytes_string):  # pragma: no cover
     return '0x' + bytes_string
 
 
+def rm_0x_prefix(bytes_string):
+    if bytes_string.startswith('0x'):
+        return bytes_string[2:]
+
+
 def init_default_logger():  # pragma: no cover
     handlers = []
     formatter = Formatter(
@@ -131,3 +145,24 @@ def init_default_logger():  # pragma: no cover
     handlers.append(stream_handler)
 
     logging.basicConfig(level=logging.DEBUG, handlers=handlers)
+
+
+def chunk(in_string, num_chunks):  # pragma: no cover
+    chunk_size = len(in_string)//num_chunks
+    if len(in_string) % num_chunks:
+        chunk_size += 1
+    iterator = iter(in_string)
+    for _ in range(num_chunks):
+        accumulator = list()
+        for _ in range(chunk_size):
+            try:
+                accumulator.append(next(iterator))
+            except StopIteration:
+                break
+        yield ''.join(accumulator)
+
+
+def split_public_key(public_key: str) -> list:
+    public_key = rm_0x_prefix(public_key)
+    pk_parts = list(chunk(public_key, 2))
+    return list(map(bytes.fromhex, pk_parts))

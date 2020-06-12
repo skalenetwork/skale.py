@@ -40,19 +40,15 @@ class Manager(BaseContract):
         skale_nonce = helper.generate_nonce()
         if not public_ip:
             public_ip = ip
-        pk = self.skale.wallet.public_key
-
         ip_bytes = socket.inet_aton(ip)
         public_ip_bytes = socket.inet_aton(public_ip)
-        # pk to bytes without 0x
-        pk_bytes = bytes.fromhex(str(pk)[2:])
-
+        pk_parts_bytes = helper.split_public_key(self.skale.wallet.public_key)
         return self.contract.functions.createNode(
             port,
             skale_nonce,
             ip_bytes,
             public_ip_bytes,
-            pk_bytes,
+            pk_parts_bytes,
             name
         )
 

@@ -9,8 +9,8 @@ from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_NAME, DEFAULT_NOD
 
 
 def test_get_schain_base_port_on_node(skale):
-    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
-    schains_on_node = skale.schains_data.get_schains_for_node(node_id)
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    schains_on_node = skale.schains.get_schains_for_node(node_id)
     schain_port_on_node = get_schain_base_port_on_node(
         schains_on_node,
         DEFAULT_SCHAIN_NAME,
@@ -20,8 +20,8 @@ def test_get_schain_base_port_on_node(skale):
 
 
 def test_get_schain_index_in_node(skale):
-    node_id = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
-    schains_on_node = skale.schains_data.get_schains_for_node(node_id)
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    schains_on_node = skale.schains.get_schains_for_node(node_id)
     index = get_schain_index_in_node(DEFAULT_SCHAIN_NAME, schains_on_node)
     assert isinstance(index, int)
     with pytest.raises(SChainNotFoundException):
