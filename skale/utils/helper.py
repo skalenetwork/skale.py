@@ -132,7 +132,7 @@ def add_0x_prefix(bytes_string):  # pragma: no cover
 def rm_0x_prefix(bytes_string):
     if bytes_string.startswith('0x'):
         return bytes_string[2:]
-
+    return bytes_string
 
 def init_default_logger():  # pragma: no cover
     handlers = []
