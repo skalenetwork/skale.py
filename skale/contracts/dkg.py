@@ -23,14 +23,14 @@ from skale.utils.constants import GAS
 from skale.utils.helper import split_public_key
 
 
-class KeyShare():
+class KeyShare:
     def __init__(self, public_key: str, share: bytes):
         self.public_key = split_public_key(public_key)
         self.share = share
         self.tuple = (self.public_key, self.share)
 
 
-class G2Point():
+class G2Point:
     def __init__(self, xa, xb, ya, yb):
         self.x = (xa, xb)
         self.y = (ya, yb)

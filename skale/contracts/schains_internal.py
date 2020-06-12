@@ -18,11 +18,16 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SchainsInternal.sol functions """
 
+import functools
 from skale.contracts import BaseContract
 
 
 class SChainsInternal(BaseContract):
-    def get_schains(self):
+    """Wrapper for some of the SchainsInternal.sol functions"""
+
+    @property
+    @functools.lru_cache()
+    def schains(self):
         return self.skale.get_contract_by_name('schains')
 
     def get_raw(self, name):
@@ -42,7 +47,7 @@ class SChainsInternal(BaseContract):
         return self.contract.functions.schainIndexes(account, index).call()
 
     def get_node_ids_for_schain(self, name):
-        id_ = self.get_schains().name_to_id(name)
+        id_ = self.schains.name_to_id(name)
         return self.contract.functions.getNodesInGroup(id_).call()
 
     def get_schain_ids_for_node(self, node_id):
@@ -52,7 +57,7 @@ class SChainsInternal(BaseContract):
         return self.contract.functions.getPreviousGroupsPublicKey(group_index).call()
 
     def get_rotation(self, schain_name):
-        schain_id = self.get_schains().name_to_id(schain_name)
+        schain_id = self.schains.name_to_id(schain_name)
         rotation_data = self.contract.functions.getRotation(schain_id).call()
         return {
             'leaving_node': rotation_data[0],
@@ -65,7 +70,7 @@ class SChainsInternal(BaseContract):
         return self.contract.functions.isGroupFailedDKG(group_index).call()
 
     def is_schain_exist(self, name):
-        id_ = self.get_schains().name_to_id(name)
+        id_ = self.schains.name_to_id(name)
         return self.contract.functions.isSchainExist(id_).call()
 
     def get_groups_public_key(self, group_index):
