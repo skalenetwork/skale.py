@@ -245,3 +245,36 @@ class ValidatorService(BaseContract):
            :rtype: int
         """
         return self.contract.functions.getAndUpdateBondAmount(validator_id).call()
+
+    @transaction_method(gas_limit=GAS['set_validator_mda'])
+    def set_validator_mda(self, minimum_delegation_amount: int) -> TxRes:
+        """ Allows a validator to set the minimum delegation amount.
+
+        :param new_minimum_delegation_amount: Minimum delegation amount
+        :type new_minimum_delegation_amount: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.setValidatorMDA(minimum_delegation_amount)
+
+    @transaction_method(gas_limit=GAS['request_for_new_address'])
+    def request_for_new_address(self, new_validator_address: str) -> TxRes:
+        """ Allows a validator to request a new address.
+
+        :param new_validator_address: New validator address
+        :type new_validator_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.requestForNewAddress(new_validator_address)
+
+    @transaction_method(gas_limit=GAS['confirm_new_address'])
+    def confirm_new_address(self, validator_id: int) -> TxRes:
+        """  Confirm change of the address.
+
+        :param validator_id: ID of the validator
+        :type validator_id: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.confirmNewAddress(validator_id)

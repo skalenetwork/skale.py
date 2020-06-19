@@ -27,7 +27,7 @@ from skale.wallets import BaseWallet
 from skale.contracts_info import get_base_contracts_info, get_debug_contracts_info
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
-from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
+from skale.utils.exceptions import InvalidWalletError, EmptyWalletError, IncompatibleAbiError
 
 logger = logging.getLogger(__name__)
 
@@ -100,22 +100,36 @@ class Skale:
         address = contract_address or self.get_contract_address_by_name(
             abi, name)
         logger.info(f'Fetching abi for {name}, address {address}')
-        if name == 'dkg':  # todo: tmp fix
-            contract_abi = self.get_contract_abi_by_name(abi, 'd_k_g')
-        else:
-            contract_abi = self.get_contract_abi_by_name(abi, name)
+        contract_abi = self.get_contract_abi_by_name(abi, name)
         self.add_contract(name, contract_class(
             self, name, address, contract_abi))
 
     def get_contract_address_by_name(self, abi, name):
-        if name == 'dkg':  # todo: tmp fix
-            return abi.get(f'skale_d_k_g_address')
-        return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
+        return self.get_abi_key(abi, self.get_address_key_name(name))
 
-    def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names
-        return abi.get(f'skale_{name}_abi') or abi.get(
-            f'{name}_abi') or abi.get(f'{name}_functionality_abi') or abi.get(
-            f'{name}_data_abi')
+    def get_contract_abi_by_name(self, abi, name):
+        return self.get_abi_key(abi, self.get_abi_key_name(name))
+
+    def get_abi_key_name(self, contract_name):
+        # todo: tmp fix for inconsistent contract names
+        if contract_name == 'manager' or contract_name == 'token':
+            return f'skale_{contract_name}_abi'
+        if contract_name == 'dkg':
+            return 'skale_d_k_g_abi'
+        return f'{contract_name}_abi'
+
+    def get_address_key_name(self, contract_name):
+        if contract_name == 'manager' or contract_name == 'token':
+            return f'skale_{contract_name}_address'
+        if contract_name == 'dkg':
+            return 'skale_d_k_g_address'
+        return f'{contract_name}_address'
+
+    def get_abi_key(self, abi, key):
+        try:
+            return abi[key]
+        except KeyError:
+            raise IncompatibleAbiError(key)
 
     def add_contract(self, name, skale_contract):
         logger.debug(f'Init contract: {name}')

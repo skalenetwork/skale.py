@@ -58,7 +58,11 @@ GAS = {
     'request_undelegation': 3000000,
     'set_penalty': 3000000,
     'disable_whitelist': 3000000,
-    'set_launch_timestamp': 200000
+    'set_launch_timestamp': 200000,
+
+    'set_validator_mda': 1000000,
+    'request_for_new_address': 1000000,
+    'confirm_new_address': 1000000,
 }
 
 LONG_LINE = '=' * 100
