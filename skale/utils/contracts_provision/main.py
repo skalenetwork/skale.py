@@ -42,7 +42,7 @@ def cleanup_nodes_schains(skale):
         if schain_name is not None:
             skale.manager.delete_schain(schain_name, wait_for=True)
     for node_id in skale.nodes.get_active_node_ids():
-        skale.manager.deregister(node_id, wait_for=True)
+        skale.manager.node_exit(node_id, wait_for=True)
 
 
 def validator_exist(skale):

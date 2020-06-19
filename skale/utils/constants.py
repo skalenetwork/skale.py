@@ -31,8 +31,6 @@ GAS = {
     'token_transfer': 600000,
     'add_authorized': 100000,
     'set_periods': 200000,
-    'delete_node': 6000000,
-    'delete_node_by_root': 6000000,
     'delete_schain': 8000000,
     'dkg_broadcast': 8000000,
     'dkg_response': 8000000,

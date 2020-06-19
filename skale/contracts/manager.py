@@ -91,17 +91,9 @@ class Manager(BaseContract):
             verdicts_data
         )
 
-    @transaction_method(gas_limit=GAS['delete_node'])
-    def deregister(self, node_id):
-        return self.contract.functions.deleteNode(node_id)
-
     @transaction_method(gas_limit=GAS['delete_schain'])
     def delete_schain(self, schain_name):
         return self.contract.functions.deleteSchain(schain_name)
-
-    @transaction_method(gas_limit=GAS['delete_node_by_root'])
-    def delete_node_by_root(self, node_id):
-        return self.contract.functions.deleteNodeByRoot(node_id)
 
     @transaction_method(gas_limit=GAS['node_exit'])
     def node_exit(self, node_id):
