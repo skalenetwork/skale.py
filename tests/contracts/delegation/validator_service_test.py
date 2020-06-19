@@ -1,5 +1,6 @@
 """ Tests for contracts/delegation/validator_service.py """
 
+import random
 import pytest
 
 from skale.contracts.delegation.validator_service import FIELDS
@@ -211,6 +212,7 @@ def _generate_new_validator(skale):
     )
     check_receipt(tx_res.receipt)
     skale.wallet = main_wallet
+    return wallet
 
 
 def test_register_new_validator(skale):
@@ -292,3 +294,69 @@ def test_get_and_update_bond_amount(skale):
     locked = skale.token_state.get_and_update_locked_amount(skale.wallet.address)
     print(delegations)
     assert bond == initial_bond + additional_bond, (bond, initial_bond + additional_bond, locked)
+
+
+def test_set_validator_mda(skale):
+    minimum_delegation_amount = random.randint(1000, 10000)
+
+    validator = skale.validator_service.get(D_VALIDATOR_ID)
+    old_mda = validator['minimum_delegation_amount']
+
+    skale.validator_service.set_validator_mda(
+        minimum_delegation_amount=minimum_delegation_amount,
+        wait_for=True
+    )
+    validator = skale.validator_service.get(D_VALIDATOR_ID)
+    new_mda = validator['minimum_delegation_amount']
+
+    assert minimum_delegation_amount != old_mda
+    assert minimum_delegation_amount == new_mda
+
+
+def test_request_for_new_address(skale):
+    main_wallet = skale.wallet
+    skale.wallet = _generate_new_validator(skale)
+    new_wallet = generate_wallet(skale.web3)
+
+    validator = skale.validator_service.get(D_VALIDATOR_ID)
+    assert validator['requested_address'] == '0x0000000000000000000000000000000000000000'
+
+    with pytest.raises(DryRunFailedError):
+        skale.validator_service.request_for_new_address(
+            new_validator_address=main_wallet.address,
+            wait_for=True
+        )
+
+    skale.validator_service.request_for_new_address(
+        new_validator_address=new_wallet.address,
+        wait_for=True
+    )
+
+    n_of_validators = skale.validator_service.number_of_validators()
+    validator = skale.validator_service.get(n_of_validators)
+    assert validator['requested_address'] == new_wallet.address
+
+    skale.wallet = main_wallet
+
+
+def test_confirm_new_address(skale):
+    main_wallet = skale.wallet
+    skale.wallet = _generate_new_validator(skale)
+    new_wallet = generate_wallet(skale.web3)
+    send_ether(skale.web3, main_wallet, new_wallet.address, 0.1)
+
+    skale.validator_service.request_for_new_address(
+        new_validator_address=new_wallet.address,
+        wait_for=True
+    )
+
+    skale.wallet = new_wallet
+    n_of_validators = skale.validator_service.number_of_validators()
+
+    skale.validator_service.confirm_new_address(
+        validator_id=n_of_validators,
+        wait_for=True
+    )
+
+    validator = skale.validator_service.get(n_of_validators)
+    assert validator['validator_address'] == new_wallet.address

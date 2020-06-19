@@ -31,8 +31,6 @@ GAS = {
     'token_transfer': 600000,
     'add_authorized': 100000,
     'set_periods': 200000,
-    'delete_node': 6000000,
-    'delete_node_by_root': 6000000,
     'delete_schain': 8000000,
     'dkg_broadcast': 8000000,
     'dkg_response': 8000000,
@@ -58,7 +56,11 @@ GAS = {
     'request_undelegation': 3000000,
     'set_penalty': 3000000,
     'disable_whitelist': 3000000,
-    'set_launch_timestamp': 200000
+    'set_launch_timestamp': 200000,
+
+    'set_validator_mda': 1000000,
+    'request_for_new_address': 1000000,
+    'confirm_new_address': 1000000,
 }
 
 LONG_LINE = '=' * 100

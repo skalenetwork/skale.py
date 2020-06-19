@@ -113,46 +113,6 @@ def test_send_verdicts(skale):
             send_tx_mock.assert_called_with(HexBytes(exp))
 
 
-def test_create_node_delete_node_by_root(skale):
-    active_node_ids_before = skale.nodes.get_active_node_ids()
-
-    ip, public_ip, port, name = generate_random_node_data()
-    tx_res = skale.manager.create_node(ip, port, name, wait_for=True)
-    assert tx_res.receipt['status'] == 1
-
-    active_node_ids_after = skale.nodes.get_active_node_ids()
-    assert len(active_node_ids_after) == len(active_node_ids_before) + 1
-
-    node_idx = skale.nodes.node_name_to_index(name)
-
-    tx_res = skale.manager.delete_node_by_root(node_idx, wait_for=True)
-    assert tx_res.receipt['status'] == 1
-    active_node_ids_after = skale.nodes.get_active_node_ids()
-    assert len(active_node_ids_after) == len(active_node_ids_before)
-
-
-def test_create_deregister_node(skale):
-    # Create node
-    active_node_ids_before = skale.nodes.get_active_node_ids()
-
-    ip, public_ip, port, name = generate_random_node_data()
-    tx_res = skale.manager.create_node(
-        ip, port, name, public_ip, wait_for=True)
-    assert tx_res.receipt['status'] == 1
-
-    active_node_ids_after = skale.nodes.get_active_node_ids()
-    assert len(active_node_ids_after) == len(active_node_ids_before) + 1
-
-    node_idx = skale.nodes.node_name_to_index(name)
-
-    # Deregister node
-
-    tx_res = skale.manager.deregister(node_idx, wait_for=True)
-    assert tx_res.receipt['status'] == 1
-    active_node_ids_after = skale.nodes.get_active_node_ids()
-    assert len(active_node_ids_after) == len(active_node_ids_before)
-
-
 def test_create_delete_schain(skale):
     schains_ids = skale.schains_internal.get_all_schains_ids()
 
