@@ -33,6 +33,7 @@ class EmptyWalletError(Exception):
 class SChainNotFoundException(Exception):
     """Raised when requested sChain is not found"""
 
+
 class IncompatibleAbiError(Exception):
     """Raised when required contract is not found in the ABI file"""
     def __init__(self, key):
