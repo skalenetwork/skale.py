@@ -23,7 +23,7 @@ from skale.dataclasses.node_info import NodeInfo
 class CurrentNodeInfo(NodeInfo):
     def __init__(self, node_id, node_name, base_port, bind_ip, ima_mainnet=None,
                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None, rotate_after_block=64,
-                 schain_log_level='info', schain_log_level_config='info'):
+                 schain_log_level='info', schain_log_level_config='info', ecdsa_key_name=None):
         self.bind_ip = bind_ip
         self.schain_log_level = schain_log_level
         self.schain_log_level_config = schain_log_level_config
@@ -31,6 +31,7 @@ class CurrentNodeInfo(NodeInfo):
         self.ima_mainnet = ima_mainnet
         self.ima_mp_schain = ima_mp_schain
         self.ima_mp_mainnet = ima_mp_mainnet
+        self.ecdsa_key_name = ecdsa_key_name
         self.wallets = wallets
 
         self.rotate_after_block = rotate_after_block
@@ -48,4 +49,5 @@ class CurrentNodeInfo(NodeInfo):
         config['wallets'] = self.wallets
 
         config['rotateAfterBlock'] = self.rotate_after_block
+        config['ecdsaKeyName'] = self.ecdsa_key_name
         return config

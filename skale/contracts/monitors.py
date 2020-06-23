@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ Monitors.sol functions """
 
+import socket
 from web3 import Web3
 from skale.contracts import BaseContract
 from skale.utils.helper import format_fields
@@ -31,8 +32,14 @@ class Monitors(BaseContract):
         return self.contract.functions.getCheckedArray(node_id_bytes).call()
 
     @format_fields(FIELDS, flist=True)
-    def get_checked_array(self, node_id):
+    def get_checked_array_struct(self, node_id):
         return self.__get_checked_array_raw(node_id)
+
+    def get_checked_array(self, node_id):
+        checked_array = self.get_checked_array_struct(node_id)
+        for node in checked_array:
+            node['ip'] = socket.inet_ntoa(node['ip'])
+        return checked_array
 
     def get_last_bounty_block(self, node_index):
         return self.contract.functions.getLastBountyBlock(node_index).call()
