@@ -154,6 +154,7 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  schain_log_level='info', schain_log_level_config='info',
                                  custom_schain_config_fields={}):
+    """Main function that is used for generating sChain config"""
     node = skale.nodes.get(node_id)
     schain = skale.schains.get_by_name(schain_name)
 
