@@ -6,7 +6,7 @@ from skale.schain_config.generator import (generate_schain_info, generate_schain
                                            generate_skale_schain_config)
 from skale.utils.helper import ip_from_bytes
 from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAME, TEST_URL,
-                             MIN_NODES_IN_SCHAIN, IMA_DATA_FILEPATH)
+                             MIN_NODES_IN_SCHAIN, IMA_DATA_FILEPATH, TEST_ECDSA_KEY_NAME)
 
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
@@ -111,6 +111,7 @@ def test_generate_skale_schain_config(skale):
         ima_mainnet=TEST_URL,
         ima_mp_schain=ZERO_ADDRESS,
         ima_mp_mainnet=ZERO_ADDRESS,
+        ecdsa_key_name=TEST_ECDSA_KEY_NAME,
         wallets={},
         custom_schain_config_fields={'testCustomField': 123}
     )
@@ -126,6 +127,7 @@ def test_generate_skale_schain_config(skale):
     assert isinstance(config['skaleConfig']['sChain']['schainOwner'], str)
 
     assert config['skaleConfig']['sChain']['testCustomField'] == 123
+    assert config['skaleConfig']['nodeInfo']['ecdsaKeyName'] == TEST_ECDSA_KEY_NAME
 
 
 def test_generate_skale_schain_config_with_ima_data(skale):

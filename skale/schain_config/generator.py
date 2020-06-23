@@ -150,7 +150,7 @@ def generate_schain_config(base_config, node_info, schain_info, schain_contract_
 
 def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, ima_mainnet=None,
                                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None,
-                                 ima_data=None, rotate_after_block=64,
+                                 ima_data=None, rotate_after_block=64, ecdsa_key_name=None,
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  schain_log_level='info', schain_log_level_config='info',
                                  custom_schain_config_fields={}):
@@ -167,6 +167,7 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
         node_id=node_id,
         base_port=schain_base_port_on_node,
         bind_ip=ip_from_bytes(node['ip']),
+        ecdsa_key_name=ecdsa_key_name,
         ima_mainnet=ima_mainnet,
         ima_mp_schain=ima_mp_schain,
         ima_mp_mainnet=ima_mp_mainnet,
