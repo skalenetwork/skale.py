@@ -5,7 +5,8 @@ from tests.constants import D_VALIDATOR_ID
 
 def test_get_earned_bounty_amount(skale):
     res = skale.distributor.get_earned_bounty_amount(
-        D_VALIDATOR_ID
+        D_VALIDATOR_ID,
+        skale.wallet.address
     )
     assert res['earned'] == 0
 
