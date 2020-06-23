@@ -11,7 +11,7 @@ from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAM
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
 TEST_NODE_IP = '10.10.10.10'
-NODE_INFO_LEN = 15
+NODE_INFO_LEN = 16
 SCHAIN_INFO_LEN = 6
 TEST_ACCOUNTS_LEN = 2  # because we're creating everything from one account
 TEST_ACCOUNTS_LEN_WITH_IMA = 12  # 10 precompiled IMA contracts
