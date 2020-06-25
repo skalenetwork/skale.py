@@ -51,7 +51,7 @@ class ValidatorService(BaseContract):
         :rtype: dict
         """
         validator = self.__get_raw(_id)
-        trusted = self._is_validator_trusted(_id)
+        trusted = self._is_authorized_validator(_id)
         validator.append(trusted)
         return validator
 
@@ -159,7 +159,7 @@ class ValidatorService(BaseContract):
         """For internal usage only"""
         return self.contract.functions.disableValidator(validator_id)
 
-    def _is_validator_trusted(self, validator_id: int) -> bool:
+    def _is_authorized_validator(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.isAuthorizedValidator(validator_id).call()
 

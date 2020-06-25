@@ -133,7 +133,7 @@ def test_enable_validator(skale):
     _generate_new_validator(skale)
     latest_id = skale.validator_service.number_of_validators()
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert not is_validator_trusted
 
@@ -143,7 +143,7 @@ def test_enable_validator(skale):
     )
     check_receipt(tx_res.receipt)
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert is_validator_trusted
 
@@ -152,7 +152,7 @@ def test_disable_validator(skale):
     _generate_new_validator(skale)
     latest_id = skale.validator_service.number_of_validators()
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert not is_validator_trusted
 
@@ -162,7 +162,7 @@ def test_disable_validator(skale):
     )
     check_receipt(tx_res.receipt)
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert is_validator_trusted
 
@@ -170,13 +170,13 @@ def test_disable_validator(skale):
         validator_id=latest_id,
         wait_for=True
     )
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert not is_validator_trusted
 
 
-def test_is_validator_trusted(skale):
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+def test_is_authorized_validator(skale):
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         D_VALIDATOR_ID)
     assert is_validator_trusted
 
