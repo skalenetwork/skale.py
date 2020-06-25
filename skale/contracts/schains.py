@@ -102,7 +102,7 @@ class SChains(BaseContract):
         )
 
     @transaction_method(gas_limit=GAS['grant_role'])
-    def grant_role(self, role: str, owner: str) -> TxRes:
+    def grant_role(self, role: bytes, owner: str) -> TxRes:
         return self.contract.functions.grantRole(role, owner)
 
     def schain_creator_role(self):
