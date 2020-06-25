@@ -61,6 +61,8 @@ GAS = {
     'set_validator_mda': 1000000,
     'request_for_new_address': 1000000,
     'confirm_new_address': 1000000,
+    'add_schain_by_foundation': 7500000,
+    'grant_role': 7500000
 }
 
 LONG_LINE = '=' * 100
