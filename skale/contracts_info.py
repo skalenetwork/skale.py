@@ -40,6 +40,7 @@ CONTRACTS_INFO = [
     ContractInfo('monitors', 'Monitors', contracts.Monitors,
                  ContractTypes.API, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
+    ContractInfo('key_storage', 'KeyStorage', contracts.KeyStorage, ContractTypes.API, True),
     ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,
                  ContractTypes.API, False),
     ContractInfo('validator_service', 'ValidatorService', contracts.ValidatorService,
