@@ -10,7 +10,7 @@ from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
 
 def test_get_raw(skale):
     schain_arr = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
-    assert len(FIELDS) == len(schain_arr)+1  # +1 for chainId
+    assert len(FIELDS) == len(schain_arr) + 1  # +1 for chainId
 
 
 def test_get_raw_not_exist(skale):
@@ -79,7 +79,7 @@ def test_is_schain_exist(skale):
 
 def test_get_group_public_key(skale):
     assert skale.schains_internal.get_groups_public_key(
-        DEFAULT_SCHAIN_ID) == [0, 0, 0, 0]
+        DEFAULT_SCHAIN_ID) == ((0, 0), (0, 0))
 
 
 def test_get_leaving_history(skale):
