@@ -21,7 +21,9 @@
 import functools
 from Crypto.Hash import keccak
 
-from skale.contracts import BaseContract
+from skale.contracts import BaseContract, transaction_method
+from skale.transactions.result import TxRes
+from skale.utils.constants import GAS
 from skale.utils.helper import format_fields
 
 
@@ -91,3 +93,17 @@ class SChains(BaseContract):
     def get_schain_price(self, index_of_type, lifetime):
         return self.contract.functions.getSchainPrice(index_of_type,
                                                       lifetime).call()
+
+    @transaction_method(gas_limit=GAS['add_schain_by_foundation'])
+    def add_schain_by_foundation(self, lifetime: int, type_of_nodes: int,
+                                 nonce: int, name: str) -> TxRes:
+        return self.contract.functions.addSchainByFoundation(
+            lifetime, type_of_nodes, nonce, name
+        )
+
+    @transaction_method(gas_limit=GAS['grant_role'])
+    def grant_role(self, role: str, owner: str) -> TxRes:
+        return self.contract.functions.grantRole(role, owner)
+
+    def schain_creator_role(self):
+        return self.contract.functions.SCHAIN_CREATOR_ROLE().call()
