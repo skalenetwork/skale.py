@@ -57,7 +57,10 @@ def test_get_schain_ids_for_node(skale):
 def test_get_previous_groups_public_key(skale):
     group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
     public_key = skale.schains_internal.get_previous_groups_public_key(group_id)
-    assert len(public_key) == 4
+    assert isinstance(public_key, tuple)
+    assert len(public_key) == 2
+    assert isinstance(public_key[0], tuple) and len(public_key[0]) == 2
+    assert isinstance(public_key[1], tuple) and len(public_key[1]) == 2
 
 
 def test_get_rotation(skale):
