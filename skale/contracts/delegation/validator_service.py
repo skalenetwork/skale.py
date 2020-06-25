@@ -149,14 +149,6 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getTrustedValidators().call()
 
-    def get_validator_node_indices(self, validator_id: int) -> list:
-        """Returns list of node indices to the validator
-
-        :returns: List of trusted node indices
-        :rtype: list
-        """
-        return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
-
     @transaction_method(gas_limit=GAS['enable_validator'])
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
@@ -169,7 +161,7 @@ class ValidatorService(BaseContract):
 
     def _is_validator_trusted(self, validator_id: int) -> bool:
         """For internal usage only"""
-        return self.contract.functions.trustedValidators(validator_id).call()
+        return self.contract.functions.isAuthorizedValidator(validator_id).call()
 
     def is_accepting_new_requests(self, validator_id: int) -> bool:
         """For internal usage only"""
