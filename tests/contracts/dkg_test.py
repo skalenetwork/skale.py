@@ -126,4 +126,4 @@ def test_complaint(skale):
 
 
 def test_is_last_dkg_successful(skale):
-    assert skale.dkg.is_last_dkg_successful(DEFAULT_SCHAIN_ID)
+    assert skale.dkg.is_last_dkg_successful(DEFAULT_SCHAIN_ID).call()
