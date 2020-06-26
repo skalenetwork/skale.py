@@ -18,3 +18,13 @@ def test_get_broadcasted_data(skale):
 def test_get_bls_public_key(skale):
     group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
     assert skale.key_storage.get_bls_public_key(group_id, 0) == [0, 0, 0, 0]
+
+
+def test_get_previous_groups_public_key(skale):
+    group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+    public_key = skale.key_storage.get_previous_groups_public_key(group_id)
+    assert len(public_key) == 4
+
+
+def test_get_group_public_key(skale):
+    assert skale.key_storage.get_groups_public_key(DEFAULT_SCHAIN_ID) == [0, 0, 0, 0]

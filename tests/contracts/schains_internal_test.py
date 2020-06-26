@@ -54,12 +54,6 @@ def test_get_schain_ids_for_node(skale):
     assert len(schain_ids_for_node) > 0
 
 
-# def test_get_previous_groups_public_key(skale):
-#     group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
-#     public_key = skale.schains_internal.get_previous_groups_public_key(group_id)
-#     assert len(public_key) == 4
-
-
 def test_get_rotation(skale):
     assert skale.schains_internal.get_rotation(DEFAULT_SCHAIN_NAME) == {
         'leaving_node': 0,
@@ -75,11 +69,6 @@ def test_get_rotation(skale):
 
 def test_is_schain_exist(skale):
     assert skale.schains_internal.is_schain_exist(DEFAULT_SCHAIN_NAME)
-
-
-# def test_get_group_public_key(skale):
-#     assert skale.schains_internal.get_groups_public_key(
-#         DEFAULT_SCHAIN_ID) == [0, 0, 0, 0]
 
 
 def test_get_leaving_history(skale):
