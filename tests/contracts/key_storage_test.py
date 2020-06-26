@@ -1,6 +1,3 @@
-from tests.constants import (DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME)
-
-
 def test_get_broadcasted_data(skale):
     group_index = b'e629fa6598d732768f7c726b4b621285'
     broadcasted_data = skale.key_storage.get_broadcasted_data(group_index, 0).call()

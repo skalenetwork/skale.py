@@ -3,8 +3,6 @@ import web3
 from mock import Mock
 from hexbytes import HexBytes
 
-from tests.constants import DEFAULT_SCHAIN_ID
-
 from skale.contracts.dkg import G2Point, KeyShare
 
 
