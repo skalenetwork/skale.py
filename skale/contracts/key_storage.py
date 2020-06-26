@@ -29,6 +29,6 @@ class KeyStorage(BaseContract):
 
     def get_common_public_key(self, group_index):
         return self.contract.functions.getCommonPublicKey(group_index).call()
-    
+
     def get_previous_public_key(self, group_index):
         return self.contract.functions.getPreviousPublicKey(group_index).call()
