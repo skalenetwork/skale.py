@@ -125,4 +125,4 @@ def test_complaint(skale):
 
 def test_is_last_dkg_successful(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
-    assert not skale.dkg.is_last_dkg_successful(group_index).call()
+    assert skale.dkg.is_last_dkg_successful(group_index)

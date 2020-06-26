@@ -5,6 +5,8 @@ from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
 
+from skale.utils.contracts_provision.main import generate_random_schain_data
+
 
 def test_get(skale):
     schain = skale.schains.get(DEFAULT_SCHAIN_ID)
@@ -61,3 +63,30 @@ def test_get_schain_price(skale):
                                                       LIFETIME_SECONDS)
         assert schain_price > 0
         assert type(schain_price) is int
+
+
+def test_add_schain_by_foundation(skale):
+    skale.schains.grant_role(skale.schains.schain_creator_role(),
+                             skale.wallet.address)
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    skale.schains.add_schain_by_foundation(
+        lifetime_seconds, type_of_nodes, 0, name, wait_for=True
+    )
+
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name in schains_names
+
+    skale.manager.delete_schain(name, wait_for=True)
+
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name not in schains_names

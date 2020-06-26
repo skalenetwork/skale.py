@@ -34,10 +34,10 @@ class SchainNodeInfo(NodeInfo):
     def to_config(self):
         return {**super().to_config(), **{
             'publicKey': self.public_key,
-            'blsPublicKey0': self.bls_public_key.x[0],
-            'blsPublicKey1': self.bls_public_key.x[1],
-            'blsPublicKey2': self.bls_public_key.y[0],
-            'blsPublicKey3': self.bls_public_key.y[1],
+            'blsPublicKey0': self.bls_public_key[0][0],
+            'blsPublicKey1': self.bls_public_key[0][1],
+            'blsPublicKey2': self.bls_public_key[1][0],
+            'blsPublicKey3': self.bls_public_key[1][1],
             'owner': self.owner,
             'schainIndex': self.schain_index,
             'ip': self.ip,
