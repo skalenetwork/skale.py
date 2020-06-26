@@ -20,5 +20,6 @@ from skale.contracts.delegation.distributor import Distributor
 from skale.contracts.delegation.slashing_table import SlashingTable
 
 from skale.contracts.dkg import DKG
+from skale.contracts.key_storage import KeyStorage
 
 from skale.contracts.test.time_helpers_with_debug import TimeHelpersWithDebug

@@ -121,3 +121,8 @@ def test_complaint(skale):
                                 gas_price=skale.dkg.gas_price(),
                                 wait_for=False)
             send_tx_mock.assert_called_with(HexBytes(exp))
+
+
+def test_is_last_dkg_successful(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.is_last_dkg_successful(group_index)
