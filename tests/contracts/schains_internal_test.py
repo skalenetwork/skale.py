@@ -63,10 +63,6 @@ def test_get_rotation(skale):
     }
 
 
-# def test_is_group_failed_dkg(skale):
-#     assert skale.schains_internal.is_group_failed_dkg(DEFAULT_SCHAIN_ID)
-
-
 def test_is_schain_exist(skale):
     assert skale.schains_internal.is_schain_exist(DEFAULT_SCHAIN_NAME)
 

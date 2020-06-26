@@ -63,9 +63,6 @@ class SChainsInternal(BaseContract):
             'rotation_id': rotation_data[3]
         }
 
-    # def is_group_failed_dkg(self, group_index):
-    #     return self.contract.functions.isGroupFailedDKG(group_index).call()
-
     def is_schain_exist(self, name):
         id_ = self.schains.name_to_id(name)
         return self.contract.functions.isSchainExist(id_).call()

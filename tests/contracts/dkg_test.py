@@ -3,6 +3,8 @@ import web3
 from mock import Mock
 from hexbytes import HexBytes
 
+from tests.constants import DEFAULT_SCHAIN_ID
+
 from skale.contracts.dkg import G2Point, KeyShare
 
 
@@ -121,3 +123,7 @@ def test_complaint(skale):
                                 gas_price=skale.dkg.gas_price(),
                                 wait_for=False)
             send_tx_mock.assert_called_with(HexBytes(exp))
+
+
+def test_is_last_dkg_successful(skale):
+    assert skale.dkg.is_last_dkg_successful(DEFAULT_SCHAIN_ID)

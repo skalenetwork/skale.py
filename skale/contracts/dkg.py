@@ -67,3 +67,7 @@ class DKG(BaseContract):
     def complaint(self, group_index, from_node_index, to_node_index):
         return self.contract.functions.complaint(group_index, from_node_index,
                                                  to_node_index)
+    
+
+    def is_last_dkg_successful(self, group_index):
+        return self.contract.functions.isLastDKGSuccesful(group_index).call()
