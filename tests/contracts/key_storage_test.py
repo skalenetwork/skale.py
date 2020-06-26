@@ -14,7 +14,7 @@ def test_get_bls_public_key(skale):
 
 def test_get_previous_groups_public_key(skale):
     group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
-    public_key = skale.key_storage.get_previous_groups_public_key(group_id).call()
+    public_key = skale.key_storage.get_previous_public_key(group_id).call()
     assert len(public_key) == 4
 
 
