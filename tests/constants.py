@@ -41,7 +41,7 @@ IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 
 # constants contract
-NEW_REWARD_PERIOD = 500
+NEW_REWARD_PERIOD = 600
 NEW_DELTA_PERIOD = 400
 
 TEST_URL = 'http://localhost:3030'

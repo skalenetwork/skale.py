@@ -1,11 +1,9 @@
 """ SKALE chain internal test """
 
-import mock
-
 from skale.contracts.schains import FIELDS
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              EMPTY_SCHAIN_ARR, DEFAULT_SCHAIN_NAME,
-                             MIN_NODES_IN_SCHAIN, DEFAULT_SCHAIN_INDEX)
+                             MIN_NODES_IN_SCHAIN)
 
 
 def test_get_raw(skale):
@@ -54,34 +52,5 @@ def test_get_schain_ids_for_node(skale):
     assert len(schain_ids_for_node) > 0
 
 
-def test_get_rotation(skale):
-    assert skale.schains_internal.get_rotation(DEFAULT_SCHAIN_NAME) == {
-        'leaving_node': 0,
-        'new_node': 0,
-        'finish_ts': 0,
-        'rotation_id': 0
-    }
-
-
 def test_is_schain_exist(skale):
     assert skale.schains_internal.is_schain_exist(DEFAULT_SCHAIN_NAME)
-
-
-def test_get_leaving_history(skale):
-    empty = skale.schains_internal.get_leaving_history(DEFAULT_SCHAIN_INDEX)
-    assert empty == []
-    with mock.patch.object(skale.schains_internal.contract.functions.getLeavingHistory, 'call') \
-            as call_mock:
-        call_mock.return_value = [(DEFAULT_SCHAIN_ID, 1000), (DEFAULT_SCHAIN_ID, 2000)]
-        history = skale.schains_internal.get_leaving_history(DEFAULT_SCHAIN_INDEX)
-        assert isinstance(history, list)
-        assert history == [
-            {
-                'id': DEFAULT_SCHAIN_ID,
-                'finished_rotation': 1000
-            },
-            {
-                'id': DEFAULT_SCHAIN_ID,
-                'finished_rotation': 2000
-            }
-        ]

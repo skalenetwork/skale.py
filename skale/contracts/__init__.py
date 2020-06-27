@@ -11,6 +11,7 @@ from skale.contracts.constants_holder import ConstantsHolder
 from skale.contracts.schains import SChains
 from skale.contracts.schains_internal import SChainsInternal
 from skale.contracts.nodes import Nodes
+from skale.contracts.node_rotation import NodeRotation
 from skale.contracts.monitors import Monitors
 
 from skale.contracts.delegation.delegation_controller import DelegationController
