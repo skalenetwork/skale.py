@@ -133,6 +133,14 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.validatorAddressExists(validator_address).call()
 
+    def validator_exists(self, validator_id: str) -> bool:
+        """Checks if there is a validator with provided ID
+
+        :returns: True if validator exists, otherwise False
+        :rtype: bool
+        """
+        return self.contract.functions.validatorExists(validator_id).call()
+
     def validator_id_by_address(self, validator_address: str) -> int:
         """Returns validator ID by validator address
 

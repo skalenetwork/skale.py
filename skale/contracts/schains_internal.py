@@ -53,27 +53,6 @@ class SChainsInternal(BaseContract):
     def get_schain_ids_for_node(self, node_id):
         return self.contract.functions.getSchainIdsForNode(node_id).call()
 
-    def get_rotation(self, schain_name):
-        schain_id = self.schains.name_to_id(schain_name)
-        rotation_data = self.contract.functions.getRotation(schain_id).call()
-        return {
-            'leaving_node': rotation_data[0],
-            'new_node': rotation_data[1],
-            'finish_ts': rotation_data[2],
-            'rotation_id': rotation_data[3]
-        }
-
     def is_schain_exist(self, name):
         id_ = self.schains.name_to_id(name)
         return self.contract.functions.isSchainExist(id_).call()
-
-    def get_leaving_history(self, node_id):
-        raw_history = self.contract.functions.getLeavingHistory(node_id).call()
-        history = [
-            {
-                'id': schain[0],
-                'finished_rotation': schain[1]
-            }
-            for schain in raw_history
-        ]
-        return history
