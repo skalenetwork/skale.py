@@ -41,6 +41,11 @@ class SChains(BaseContract):
     def schains_internal(self):
         return self.skale.get_contract_by_name('schains_internal')
 
+    @property
+    @functools.lru_cache()
+    def node_rotation(self):
+        return self.skale.get_contract_by_name('node_rotation')
+
     @format_fields(FIELDS)
     def get(self, id_):
         res = self.schains_internal.get_raw(id_)
@@ -82,7 +87,7 @@ class SChains(BaseContract):
         return keccak_hash.hexdigest()
 
     def get_last_rotation_id(self, schain_name):
-        rotation_data = self.schains_internal.get_rotation(schain_name)
+        rotation_data = self.node_rotation.get_rotation(schain_name)
         return rotation_data['rotation_id']
 
     def schain_active(self, schain):
