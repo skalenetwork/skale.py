@@ -27,6 +27,7 @@ from eth_abi import encode_abi
 from skale.contracts import BaseContract, transaction_method
 from skale.utils import helper
 from skale.utils.constants import GAS
+from skale.transactions.result import TxRes
 
 logger = logging.getLogger(__name__)
 
@@ -98,3 +99,13 @@ class Manager(BaseContract):
     @transaction_method(gas_limit=GAS['node_exit'])
     def node_exit(self, node_id):
         return self.contract.functions.nodeExit(node_id)
+
+    @transaction_method(gas_limit=GAS['manager_grant_role'])
+    def grant_role(self, role: bytes, address: str) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
+
+    def default_admin_role(self) -> bytes:
+        return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
