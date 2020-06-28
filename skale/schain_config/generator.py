@@ -62,7 +62,7 @@ def get_nodes_for_schain_config(skale, name):
         schains_on_node = skale.schains.get_schains_for_node(node['id'])
         base_port = get_schain_base_port_on_node(schains_on_node, name, node['port'])
         group_index = skale.web3.sha3(text=name)
-        bls_public_key = skale.key_storage.get_bls_public_key(group_index, i - 1)
+        bls_public_key = skale.key_storage.get_bls_public_key(group_index, node['id'])
 
         node_info = SchainNodeInfo(
             node_name=node['name'],
