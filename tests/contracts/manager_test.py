@@ -221,3 +221,16 @@ def test_grant_role(skale):
         wait_for=True
     )
     assert skale.manager.has_role(default_admin_role, wallet.address)
+
+
+def test_grant_admin_role(skale):
+    wallet = generate_wallet(skale.web3)
+    admin_role = skale.manager.admin_role()
+    assert not skale.manager.has_role(admin_role, wallet.address)
+
+    skale.manager.grant_role(
+        admin_role,
+        wallet.address,
+        wait_for=True
+    )
+    assert skale.manager.has_role(admin_role, wallet.address)
