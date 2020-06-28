@@ -33,6 +33,8 @@ CONTRACTS_INFO = [
                  ContractTypes.INTERNAL, True),
     ContractInfo('nodes', 'Nodes', contracts.Nodes,
                  ContractTypes.API, True),
+    ContractInfo('node_rotation', 'NodeRotation', contracts.NodeRotation,
+                 ContractTypes.API, True),
     ContractInfo('schains', 'Schains', contracts.SChains,
                  ContractTypes.API, True),
     ContractInfo('schains_internal', 'SchainsInternal', contracts.SChainsInternal,

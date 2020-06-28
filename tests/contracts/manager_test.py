@@ -8,6 +8,7 @@ import web3
 from hexbytes import HexBytes
 from mock import Mock
 
+from skale.wallets.web3_wallet import generate_wallet
 from skale.transactions.result import TransactionFailedError
 from skale.utils.constants import GAS
 
@@ -207,3 +208,16 @@ def test_failed_node_exit(skale):
     exit_node_id = skale.schains_internal.get_node_ids_for_schain(schain_name)[0]
     with pytest.raises(TransactionFailedError):
         skale.manager.node_exit(exit_node_id, skip_dry_run=True, wait_for=True)
+
+
+def test_grant_role(skale):
+    wallet = generate_wallet(skale.web3)
+    default_admin_role = skale.manager.default_admin_role()
+    assert not skale.manager.has_role(default_admin_role, wallet.address)
+
+    skale.manager.grant_role(
+        default_admin_role,
+        wallet.address,
+        wait_for=True
+    )
+    assert skale.manager.has_role(default_admin_role, wallet.address)

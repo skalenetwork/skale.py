@@ -36,7 +36,7 @@ GAS = {
     'dkg_response': 8000000,
     'dkg_alright': 1000000,
     'dkg_complaint': 1000000,
-    'node_exit': 5000000,
+    'node_exit': 8000000,
     'register_validator': 3000000,
     'delegate': 3000000,
     'accept_pending_delegation': 1000000,
@@ -62,7 +62,8 @@ GAS = {
     'request_for_new_address': 1000000,
     'confirm_new_address': 1000000,
     'add_schain_by_foundation': 7500000,
-    'grant_role': 7500000
+    'grant_role': 7500000,
+    'manager_grant_role': 7500000
 }
 
 LONG_LINE = '=' * 100

@@ -115,6 +115,13 @@ def test_validator_address_exists(skale):
     assert not address_exists
 
 
+def test_validator_exists(skale):
+    validator_exists = skale.validator_service.validator_exists(D_VALIDATOR_ID)
+    assert validator_exists
+    validator_exists = skale.validator_service.validator_exists(NOT_EXISTING_ID)
+    assert not validator_exists
+
+
 def test_validator_id_by_address(skale):
     validator_id = skale.validator_service.validator_id_by_address(
         skale.wallet.address)
