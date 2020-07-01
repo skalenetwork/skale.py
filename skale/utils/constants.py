@@ -21,7 +21,7 @@ NODE_DEPOSIT = 100000000000000000000
 
 GAS = {
     'add_validator': 4500000,
-    'create_node': 1300000,
+    'create_node': 2300000,
     'create_schain': 7500000,
     'get_bounty': 8000000,
     'send_verdict': 200000,
