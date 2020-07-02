@@ -111,9 +111,9 @@ class Skale:
 
     def get_contract_address_by_name(self, abi, name):
         if name == 'dkg':  # todo: tmp fix
-            return abi.get(f'skale_d_k_g_address')
+            return abi.get('skale_d_k_g_address')
         if name == 'nodes_data':
-            return abi.get(f'nodes_address')
+            return abi.get('nodes_address')
         return abi.get(f'skale_{name}_address') or abi.get(f'{name}_address')
 
     def get_contract_abi_by_name(self, abi, name):  # todo: unify abi key names
