@@ -91,7 +91,7 @@ class TxRes:
                                     f'See result {self.dry_run_result}')
         if self.balance_check_failed():
             raise InsufficientBalanceError(
-                f'Balance check failed. ',
+                'Balance check failed. ',
                 f'See result {self.balance_check_result}'
             )
         if self.tx_failed():
