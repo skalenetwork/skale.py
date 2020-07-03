@@ -101,7 +101,7 @@ def test_complaint(skale):
     chain_id = skale.web3.eth.chainId
     expected_txn = {
         'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
-        'gas': 1000000, 'nonce': nonce,
+        'gas': 8000000, 'nonce': nonce,
         'to': contract_address,
         'data': (
             '0xd76c2c4fe629fa6598d732768f7c726b4b6212850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'  # noqa
