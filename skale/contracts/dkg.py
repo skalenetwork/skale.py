@@ -38,6 +38,7 @@ class G2Point:
 
 
 class DKG(BaseContract):
+    """Wrapper for DKG.sol functions"""
     def gas_price(self):
         return self.skale.gas_price * 5 // 4
 
