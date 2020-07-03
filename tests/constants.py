@@ -5,6 +5,7 @@ from decimal import Decimal
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
+DEFAULT_NODE_INDEX = 1
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 DEFAULT_NODE_HASH = '23bdf46c41fa300e431425baff124dc31625b34ec09b829f61aa16ab0102ca8d'
@@ -40,7 +41,7 @@ IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 
 # constants contract
-NEW_REWARD_PERIOD = 500
+NEW_REWARD_PERIOD = 600
 NEW_DELTA_PERIOD = 400
 
 TEST_URL = 'http://localhost:3030'
@@ -66,3 +67,5 @@ NOT_EXISTING_ID = 123123
 MONTH_IN_SECONDS = (60 * 60 * 24 * 31) + 100
 
 DELEGATION_STRUCT_LEN = 8
+
+TEST_ECDSA_KEY_NAME = 'NEK:36224eb0296c6c28c3c73942cf28b5ba449e4a1e6472d52d459627c4d9479b21'

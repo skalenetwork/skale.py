@@ -21,9 +21,10 @@ from skale.dataclasses.node_info import NodeInfo
 
 
 class SchainNodeInfo(NodeInfo):
-    def __init__(self, node_id, node_name, base_port, public_key, owner, schain_index, ip,
-                 public_ip):
+    def __init__(self, node_id, node_name, base_port, public_key, bls_public_key, owner,
+                 schain_index, ip, public_ip):
         self.public_key = public_key
+        self.bls_public_key = bls_public_key
         self.owner = owner
         self.schain_index = schain_index
         self.ip = ip
@@ -33,6 +34,10 @@ class SchainNodeInfo(NodeInfo):
     def to_config(self):
         return {**super().to_config(), **{
             'publicKey': self.public_key,
+            'blsPublicKey0': str(self.bls_public_key[0][0]),
+            'blsPublicKey1': str(self.bls_public_key[0][1]),
+            'blsPublicKey2': str(self.bls_public_key[1][0]),
+            'blsPublicKey3': str(self.bls_public_key[1][1]),
             'owner': self.owner,
             'schainIndex': self.schain_index,
             'ip': self.ip,

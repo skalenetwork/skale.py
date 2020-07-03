@@ -22,7 +22,7 @@ from web3 import Web3
 from skale.contracts import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
-from skale.dataclasses.tx_res import TxRes
+from skale.transactions.result import TxRes
 from skale.utils.constants import GAS
 
 
@@ -51,7 +51,7 @@ class ValidatorService(BaseContract):
         :rtype: dict
         """
         validator = self.__get_raw(_id)
-        trusted = self._is_validator_trusted(_id)
+        trusted = self._is_authorized_validator(_id)
         validator.append(trusted)
         return validator
 
@@ -133,6 +133,14 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.validatorAddressExists(validator_address).call()
 
+    def validator_exists(self, validator_id: str) -> bool:
+        """Checks if there is a validator with provided ID
+
+        :returns: True if validator exists, otherwise False
+        :rtype: bool
+        """
+        return self.contract.functions.validatorExists(validator_id).call()
+
     def validator_id_by_address(self, validator_address: str) -> int:
         """Returns validator ID by validator address
 
@@ -149,14 +157,6 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getTrustedValidators().call()
 
-    def get_validator_node_indices(self, validator_id: int) -> list:
-        """Returns list of node indices to the validator
-
-        :returns: List of trusted node indices
-        :rtype: list
-        """
-        return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
-
     @transaction_method(gas_limit=GAS['enable_validator'])
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
@@ -167,9 +167,9 @@ class ValidatorService(BaseContract):
         """For internal usage only"""
         return self.contract.functions.disableValidator(validator_id)
 
-    def _is_validator_trusted(self, validator_id: int) -> bool:
+    def _is_authorized_validator(self, validator_id: int) -> bool:
         """For internal usage only"""
-        return self.contract.functions.trustedValidators(validator_id).call()
+        return self.contract.functions.isAuthorizedValidator(validator_id).call()
 
     def is_accepting_new_requests(self, validator_id: int) -> bool:
         """For internal usage only"""
@@ -180,7 +180,7 @@ class ValidatorService(BaseContract):
                            min_delegation_amount: int) -> TxRes:
         """Registers a new validator in the SKALE Manager contracts.
 
-        :param name:z Validator name
+        :param name: Validator name
         :type name: str
         :param description: Validator description
         :type description: str
@@ -232,8 +232,49 @@ class ValidatorService(BaseContract):
         return self.contract.functions.disableWhitelist()
 
     def get_use_whitelist(self) -> bool:
-        """ Returns useWhitelist contract variable
+        """ Return useWhitelist contract variable
         :returns: useWhitelist value
         :rtype: bool
         """
         return self.contract.functions.useWhitelist().call()
+
+    def get_and_update_bond_amount(self, validator_id: int) -> int:
+        """Return amount of token that validator delegated to himself
+           :param validator_id: id of the validator
+           :returns:
+           :rtype: int
+        """
+        return self.contract.functions.getAndUpdateBondAmount(validator_id).call()
+
+    @transaction_method(gas_limit=GAS['set_validator_mda'])
+    def set_validator_mda(self, minimum_delegation_amount: int) -> TxRes:
+        """ Allows a validator to set the minimum delegation amount.
+
+        :param new_minimum_delegation_amount: Minimum delegation amount
+        :type new_minimum_delegation_amount: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.setValidatorMDA(minimum_delegation_amount)
+
+    @transaction_method(gas_limit=GAS['request_for_new_address'])
+    def request_for_new_address(self, new_validator_address: str) -> TxRes:
+        """ Allows a validator to request a new address.
+
+        :param new_validator_address: New validator address
+        :type new_validator_address: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.requestForNewAddress(new_validator_address)
+
+    @transaction_method(gas_limit=GAS['confirm_new_address'])
+    def confirm_new_address(self, validator_id: int) -> TxRes:
+        """  Confirm change of the address.
+
+        :param validator_id: ID of the validator
+        :type validator_id: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.confirmNewAddress(validator_id)

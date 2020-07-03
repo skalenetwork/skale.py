@@ -21,7 +21,7 @@ NODE_DEPOSIT = 100000000000000000000
 
 GAS = {
     'add_validator': 4500000,
-    'create_node': 8000000,
+    'create_node': 3500000,
     'create_schain': 7500000,
     'get_bounty': 8000000,
     'send_verdict': 200000,
@@ -31,14 +31,12 @@ GAS = {
     'token_transfer': 600000,
     'add_authorized': 100000,
     'set_periods': 200000,
-    'delete_node': 6000000,
-    'delete_node_by_root': 6000000,
     'delete_schain': 8000000,
     'dkg_broadcast': 8000000,
     'dkg_response': 8000000,
     'dkg_alright': 1000000,
-    'dkg_complaint': 1000000,
-
+    'dkg_complaint': 8000000,
+    'node_exit': 10000000,
     'register_validator': 3000000,
     'delegate': 3000000,
     'accept_pending_delegation': 1000000,
@@ -58,7 +56,14 @@ GAS = {
     'request_undelegation': 3000000,
     'set_penalty': 3000000,
     'disable_whitelist': 3000000,
-    'set_launch_timestamp': 200000
+    'set_launch_timestamp': 200000,
+
+    'set_validator_mda': 1000000,
+    'request_for_new_address': 1000000,
+    'confirm_new_address': 1000000,
+    'add_schain_by_foundation': 7500000,
+    'grant_role': 7500000,
+    'manager_grant_role': 7500000
 }
 
 LONG_LINE = '=' * 100

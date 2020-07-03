@@ -14,6 +14,17 @@ from skale.utils.contracts_provision.main import (
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 
 
+def clean_and_restart(skale):
+    cleanup_nodes_schains(skale)
+    try:
+        setup_validator(skale)
+        create_nodes(skale)
+        create_schain(skale)
+    except Exception as err:
+        cleanup_nodes_schains(skale)
+        raise err
+
+
 @click.command()
 @click.option('--cleanup-only', is_flag=True)
 def prepare_data(cleanup_only):
@@ -37,9 +48,8 @@ def prepare_data(cleanup_only):
             _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
             create_nodes(skale)
             create_schain(skale)
-
-            active_node_ids_before = skale.nodes_data.get_active_node_ids()
-            print(active_node_ids_before)
+            active_node_ids = skale.nodes.get_active_node_ids()
+            print(active_node_ids)
         except Exception as err:
             cleanup_nodes_schains(skale)
             raise err

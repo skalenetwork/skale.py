@@ -21,7 +21,12 @@ import logging
 import time
 from functools import partial, wraps
 
-from skale.dataclasses.tx_res import TransactionFailedError, TxRes
+from skale.transactions.result import (
+    DryRunFailedError,
+    InsufficientBalanceError,
+    TransactionFailedError, TxRes
+)
+from skale.utils.exceptions import RPCWalletError
 from skale.utils.web3_utils import get_eth_nonce
 
 logger = logging.getLogger(__name__)
@@ -83,7 +88,6 @@ def send_eth(web3, account, amount, wallet):
     logger.info(f'Transaction nonce {eth_nonce}')
     txn = {
         'to': account,
-        'from': wallet.address,
         'value': amount,
         'gasPrice': web3.eth.gasPrice,
         'gas': 22000,
@@ -124,12 +128,15 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         try:
             tx_res = transaction(*args, **kwargs)
             tx_res.raise_for_status()
-        except TransactionFailedError as err:
+        except (TransactionFailedError, DryRunFailedError, RPCWalletError) as err:
             logger.error(f'Tx attempt {attempt}/{max_retries} failed',
                          exc_info=err)
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
             exp_timeout *= 2
+        except InsufficientBalanceError as err:
+            logger.error('Sender balance is too low', exc_info=err)
+            raise err
         else:
             success = True
         attempt += 1

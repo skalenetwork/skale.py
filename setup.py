@@ -12,7 +12,7 @@ extras_require = {
     ],
     'dev': [
         "bumpversion==0.6.0",
-        "pytest==5.4.2",
+        "pytest==5.4.3",
         "click==7.1.2",
         "twine==3.1.1",
         "mock==4.0.2",
@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='3.6',
+    version='3.10',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -42,7 +42,7 @@ setup(
         "web3==5.6.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.5dev8",
+        "sgx.py==0.6dev0",
     ],
 
     python_requires='>=3.6,<4',

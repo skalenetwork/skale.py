@@ -20,7 +20,7 @@
 from functools import wraps
 
 from skale.contracts import BaseContract, transaction_method
-from skale.dataclasses.tx_res import TxRes
+from skale.transactions.result import TxRes
 from skale.utils.constants import GAS
 
 
@@ -39,7 +39,7 @@ class Distributor(BaseContract):
     """Wrapper for Distributor.sol functions"""
 
     @formatter
-    def get_earned_bounty_amount(self, validator_id: int) -> dict:
+    def get_earned_bounty_amount(self, validator_id: int, address: str) -> dict:
         """Get earned bounty amount for the validator
 
         :param validator_id: ID of the validator
@@ -47,7 +47,9 @@ class Distributor(BaseContract):
         :returns: Earned bounty amount and end month
         :rtype: dict
         """
-        return self.contract.functions.getAndUpdateEarnedBountyAmount(validator_id).call()
+        return self.contract.functions.getAndUpdateEarnedBountyAmount(validator_id).call({
+            'from': address
+        })
 
     @formatter
     def get_earned_fee_amount(self, address: str) -> dict:

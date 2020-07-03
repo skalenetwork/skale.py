@@ -130,6 +130,8 @@ class LedgerWallet(BaseWallet):
     def sign(self, tx_dict):
         if os.getenv('ENV') == 'dev':
             tx_dict['chainId'] = None
+        if tx_dict.get('nonce') is None:
+            tx_dict['nonce'] = self._web3.eth.getTransactionCount(self.address)
         tx = tx_from_dict(tx_dict)
         payload = LedgerWallet.make_payload(tx)
         exchange_result = self.exchange_sign_payload_by_chunks(payload)

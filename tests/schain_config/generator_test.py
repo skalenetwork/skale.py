@@ -1,18 +1,18 @@
 import json
-import skale.contracts.data.nodes_data as nodes_data
+import skale.contracts.nodes as nodes
 from skale.dataclasses import CurrentNodeInfo
 from skale.schain_config.generator import get_nodes_for_schain
 from skale.schain_config.generator import (generate_schain_info, generate_schain_config,
                                            generate_skale_schain_config)
 from skale.utils.helper import ip_from_bytes
 from tests.constants import (DEFAULT_NODE_NAME, ZERO_ADDRESS, DEFAULT_SCHAIN_NAME, TEST_URL,
-                             MIN_NODES_IN_SCHAIN, IMA_DATA_FILEPATH)
+                             MIN_NODES_IN_SCHAIN, IMA_DATA_FILEPATH, TEST_ECDSA_KEY_NAME)
 
 
 TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
 TEST_NODE_IP = '10.10.10.10'
-NODE_INFO_LEN = 15
-SCHAIN_INFO_LEN = 4
+NODE_INFO_LEN = 16
+SCHAIN_INFO_LEN = 6
 TEST_ACCOUNTS_LEN = 2  # because we're creating everything from one account
 TEST_ACCOUNTS_LEN_WITH_IMA = 12  # 10 precompiled IMA contracts
 
@@ -69,12 +69,19 @@ def test_generate_schain_info():
         'owner': ZERO_ADDRESS,
     }
     nodes = []
-    schain_info = generate_schain_info(schain, nodes)
+    snapshot_interval = 10
+    empty_block_interval = 10
+    schain_info = generate_schain_info(schain, nodes,
+                                       snapshot_interval_ms=snapshot_interval,
+                                       empty_block_interval_ms=empty_block_interval)
     assert isinstance(schain_info['schainID'], int)
     assert isinstance(schain_info['schainName'], str)
     assert isinstance(schain_info['schainOwner'], str)
     assert isinstance(schain_info['nodes'], list)
     assert len(schain_info) == SCHAIN_INFO_LEN
+
+    assert schain_info['snapshotIntervalMs'] == snapshot_interval
+    assert schain_info['emptyBlockIntervalMs'] == empty_block_interval
 
 
 def test_generate_schain_config():
@@ -87,7 +94,7 @@ def test_generate_schain_config():
 
 def test_get_nodes_for_schain(skale):
     schain_nodes = get_nodes_for_schain(skale, DEFAULT_SCHAIN_NAME)
-    fields_with_id = nodes_data.FIELDS.copy()
+    fields_with_id = nodes.FIELDS.copy()
     fields_with_id.append('id')
 
     assert len(schain_nodes) >= MIN_NODES_IN_SCHAIN
@@ -95,7 +102,7 @@ def test_get_nodes_for_schain(skale):
 
 
 def test_generate_skale_schain_config(skale):
-    node_index = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_index = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     config = generate_skale_schain_config(
         skale=skale,
         schain_name=DEFAULT_SCHAIN_NAME,
@@ -104,7 +111,9 @@ def test_generate_skale_schain_config(skale):
         ima_mainnet=TEST_URL,
         ima_mp_schain=ZERO_ADDRESS,
         ima_mp_mainnet=ZERO_ADDRESS,
-        wallets={}
+        ecdsa_key_name=TEST_ECDSA_KEY_NAME,
+        wallets={},
+        custom_schain_config_fields={'testCustomField': 123}
     )
 
     assert isinstance(config['params']['chainID'], str)
@@ -117,9 +126,12 @@ def test_generate_skale_schain_config(skale):
     assert len(config['skaleConfig']['sChain']['nodes']) == 2
     assert isinstance(config['skaleConfig']['sChain']['schainOwner'], str)
 
+    assert config['skaleConfig']['sChain']['testCustomField'] == 123
+    assert config['skaleConfig']['nodeInfo']['ecdsaKeyName'] == TEST_ECDSA_KEY_NAME
+
 
 def test_generate_skale_schain_config_with_ima_data(skale):
-    node_index = skale.nodes_data.node_name_to_index(DEFAULT_NODE_NAME)
+    node_index = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     config = generate_skale_schain_config(
         skale=skale,
         schain_name=DEFAULT_SCHAIN_NAME,

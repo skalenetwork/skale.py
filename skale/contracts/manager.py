@@ -27,6 +27,7 @@ from eth_abi import encode_abi
 from skale.contracts import BaseContract, transaction_method
 from skale.utils import helper
 from skale.utils.constants import GAS
+from skale.transactions.result import TxRes
 
 logger = logging.getLogger(__name__)
 
@@ -40,19 +41,15 @@ class Manager(BaseContract):
         skale_nonce = helper.generate_nonce()
         if not public_ip:
             public_ip = ip
-        pk = self.skale.wallet.public_key
-
         ip_bytes = socket.inet_aton(ip)
         public_ip_bytes = socket.inet_aton(public_ip)
-        # pk to bytes without 0x
-        pk_bytes = bytes.fromhex(str(pk)[2:])
-
+        pk_parts_bytes = helper.split_public_key(self.skale.wallet.public_key)
         return self.contract.functions.createNode(
             port,
             skale_nonce,
             ip_bytes,
             public_ip_bytes,
-            pk_bytes,
+            pk_parts_bytes,
             name
         )
 
@@ -95,14 +92,23 @@ class Manager(BaseContract):
             verdicts_data
         )
 
-    @transaction_method(gas_limit=GAS['delete_node'])
-    def deregister(self, node_id):
-        return self.contract.functions.deleteNode(node_id)
-
     @transaction_method(gas_limit=GAS['delete_schain'])
     def delete_schain(self, schain_name):
         return self.contract.functions.deleteSchain(schain_name)
 
-    @transaction_method(gas_limit=GAS['delete_node_by_root'])
-    def delete_node_by_root(self, node_id):
-        return self.contract.functions.deleteNodeByRoot(node_id)
+    @transaction_method(gas_limit=GAS['node_exit'])
+    def node_exit(self, node_id):
+        return self.contract.functions.nodeExit(node_id)
+
+    @transaction_method(gas_limit=GAS['manager_grant_role'])
+    def grant_role(self, role: bytes, address: str) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
+
+    def default_admin_role(self) -> bytes:
+        return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
+
+    def admin_role(self) -> bytes:
+        return self.contract.functions.ADMIN_ROLE().call()
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()

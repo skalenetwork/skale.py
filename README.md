@@ -54,8 +54,8 @@ skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
 Interactions with SKALE contracts
 
 ```python
-active_nodes = skale.nodes_data.get_active_node_ips()
-schains = skale.schains_data.get_schains_for_owner('0x...')
+active_nodes = skale.nodes.get_active_node_ips()
+schains = skale.schains.get_schains_for_owner('0x...')
 ```
 
 #### Working in multiple threads

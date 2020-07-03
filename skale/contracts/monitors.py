@@ -16,26 +16,33 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Get SKALE validator data """
+""" Monitors.sol functions """
 
 import socket
-
 from web3 import Web3
 from skale.contracts import BaseContract
+from skale.utils.helper import format_fields
+
+FIELDS = ['id', 'rep_date', 'ip']
 
 
-class MonitorsData(BaseContract):
+class Monitors(BaseContract):
     def __get_checked_array_raw(self, node_id):
         node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
         return self.contract.functions.getCheckedArray(node_id_bytes).call()
 
+    @format_fields(FIELDS, flist=True)
+    def get_checked_array_struct(self, node_id):
+        return self.__get_checked_array_raw(node_id)
+
     def get_checked_array(self, node_id):
-        raw_checked_array = self.__get_checked_array_raw(node_id)
-        nodes = []
-        for node_in_bytes in raw_checked_array:
-            node_id = int.from_bytes(node_in_bytes[:14], byteorder='big')
-            report_date = int.from_bytes(node_in_bytes[14:28], byteorder='big')
-            node_ip = socket.inet_ntoa(node_in_bytes[28:])
-            nodes.append({'id': node_id, 'ip': node_ip,
-                          'rep_date': report_date})
-        return nodes
+        checked_array = self.get_checked_array_struct(node_id)
+        for node in checked_array:
+            node['ip'] = socket.inet_ntoa(node['ip'])
+        return checked_array
+
+    def get_last_bounty_block(self, node_index):
+        return self.contract.functions.getLastBountyBlock(node_index).call()
+
+    def get_last_received_verdict_block(self, node_index):
+        return self.contract.functions.getLastReceivedVerdictBlock(node_index).call()

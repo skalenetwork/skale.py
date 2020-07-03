@@ -1,16 +1,19 @@
 """ Tests for contracts/delegation/validator_service.py """
 
+import random
 import pytest
 
 from skale.contracts.delegation.validator_service import FIELDS
-from skale.dataclasses.tx_res import TransactionFailedError
+from skale.transactions.result import DryRunFailedError
 from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
 from skale.wallets.web3_wallet import generate_wallet
+from skale.utils.contracts_provision.main import _skip_evm_time
 
 from tests.constants import (
-    NOT_EXISTING_ID, D_VALIDATOR_ID, D_VALIDATOR_NAME, D_VALIDATOR_DESC,
-    D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL
+    D_DELEGATION_PERIOD, D_VALIDATOR_ID, D_VALIDATOR_NAME, D_VALIDATOR_DESC,
+    D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL,
+    MONTH_IN_SECONDS, NOT_EXISTING_ID
 )
 
 
@@ -112,17 +115,24 @@ def test_validator_address_exists(skale):
     assert not address_exists
 
 
+def test_validator_exists(skale):
+    validator_exists = skale.validator_service.validator_exists(D_VALIDATOR_ID)
+    assert validator_exists
+    validator_exists = skale.validator_service.validator_exists(NOT_EXISTING_ID)
+    assert not validator_exists
+
+
 def test_validator_id_by_address(skale):
     validator_id = skale.validator_service.validator_id_by_address(
         skale.wallet.address)
     assert validator_id == D_VALIDATOR_ID
 
 
-def test_get_validator_node_indices(skale):
-    node_indices = skale.validator_service.get_validator_node_indices(
+def test_get_validator_node_indices(skale):  # todo: improve test
+    node_indices = skale.nodes.get_validator_node_indices(
         validator_id=D_VALIDATOR_ID
     )
-    all_active_node_ids = skale.nodes_data.get_active_node_ids()
+    all_active_node_ids = skale.nodes.get_active_node_ids()
     assert set(all_active_node_ids).issubset(node_indices)
 
 
@@ -130,7 +140,7 @@ def test_enable_validator(skale):
     _generate_new_validator(skale)
     latest_id = skale.validator_service.number_of_validators()
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert not is_validator_trusted
 
@@ -140,7 +150,7 @@ def test_enable_validator(skale):
     )
     check_receipt(tx_res.receipt)
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert is_validator_trusted
 
@@ -149,7 +159,7 @@ def test_disable_validator(skale):
     _generate_new_validator(skale)
     latest_id = skale.validator_service.number_of_validators()
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert not is_validator_trusted
 
@@ -159,7 +169,7 @@ def test_disable_validator(skale):
     )
     check_receipt(tx_res.receipt)
 
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert is_validator_trusted
 
@@ -167,13 +177,13 @@ def test_disable_validator(skale):
         validator_id=latest_id,
         wait_for=True
     )
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         latest_id)
     assert not is_validator_trusted
 
 
-def test_is_validator_trusted(skale):
-    is_validator_trusted = skale.validator_service._is_validator_trusted(
+def test_is_authorized_validator(skale):
+    is_validator_trusted = skale.validator_service._is_authorized_validator(
         D_VALIDATOR_ID)
     assert is_validator_trusted
 
@@ -184,7 +194,7 @@ def test_is_accepting_new_requests(skale):
 
 
 def test_register_existing_validator(skale):
-    with pytest.raises(TransactionFailedError):
+    with pytest.raises(DryRunFailedError):
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,
@@ -209,6 +219,7 @@ def _generate_new_validator(skale):
     )
     check_receipt(tx_res.receipt)
     skale.wallet = main_wallet
+    return wallet
 
 
 def test_register_new_validator(skale):
@@ -261,3 +272,98 @@ def test_disable_whitelist(skale):
     assert skale.validator_service.get_use_whitelist()
     skale.validator_service.disable_whitelist(wait_for=True)
     assert not skale.validator_service.get_use_whitelist()
+
+
+def test_get_and_update_bond_amount(skale):
+    initial_bond = skale.validator_service.get_and_update_bond_amount(D_VALIDATOR_ID)
+    additional_bond = skale.constants_holder.msr() * 2
+
+    # Delegate to myself
+    skale.delegation_controller.delegate(
+        validator_id=D_VALIDATOR_ID,
+        amount=additional_bond,
+        delegation_period=D_DELEGATION_PERIOD,
+        info='Test get_and_update_bond_amount',
+        wait_for=True
+    )
+
+    # Accept delegation
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
+    skale.delegation_controller.accept_pending_delegation(
+        delegation_id=delegations[-1]['id'],
+        wait_for=True
+    )
+
+    # Skip time
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+
+    bond = skale.validator_service.get_and_update_bond_amount(D_VALIDATOR_ID)
+    locked = skale.token_state.get_and_update_locked_amount(skale.wallet.address)
+    print(delegations)
+    assert bond == initial_bond + additional_bond, (bond, initial_bond + additional_bond, locked)
+
+
+def test_set_validator_mda(skale):
+    minimum_delegation_amount = random.randint(1000, 10000)
+
+    validator = skale.validator_service.get(D_VALIDATOR_ID)
+    old_mda = validator['minimum_delegation_amount']
+
+    skale.validator_service.set_validator_mda(
+        minimum_delegation_amount=minimum_delegation_amount,
+        wait_for=True
+    )
+    validator = skale.validator_service.get(D_VALIDATOR_ID)
+    new_mda = validator['minimum_delegation_amount']
+
+    assert minimum_delegation_amount != old_mda
+    assert minimum_delegation_amount == new_mda
+
+
+def test_request_for_new_address(skale):
+    main_wallet = skale.wallet
+    skale.wallet = _generate_new_validator(skale)
+    new_wallet = generate_wallet(skale.web3)
+
+    validator = skale.validator_service.get(D_VALIDATOR_ID)
+    assert validator['requested_address'] == '0x0000000000000000000000000000000000000000'
+
+    with pytest.raises(DryRunFailedError):
+        skale.validator_service.request_for_new_address(
+            new_validator_address=main_wallet.address,
+            wait_for=True
+        )
+
+    skale.validator_service.request_for_new_address(
+        new_validator_address=new_wallet.address,
+        wait_for=True
+    )
+
+    n_of_validators = skale.validator_service.number_of_validators()
+    validator = skale.validator_service.get(n_of_validators)
+    assert validator['requested_address'] == new_wallet.address
+
+    skale.wallet = main_wallet
+
+
+def test_confirm_new_address(skale):
+    main_wallet = skale.wallet
+    skale.wallet = _generate_new_validator(skale)
+    new_wallet = generate_wallet(skale.web3)
+    send_ether(skale.web3, main_wallet, new_wallet.address, 0.1)
+
+    skale.validator_service.request_for_new_address(
+        new_validator_address=new_wallet.address,
+        wait_for=True
+    )
+
+    skale.wallet = new_wallet
+    n_of_validators = skale.validator_service.number_of_validators()
+
+    skale.validator_service.confirm_new_address(
+        validator_id=n_of_validators,
+        wait_for=True
+    )
+
+    validator = skale.validator_service.get(n_of_validators)
+    assert validator['validator_address'] == new_wallet.address
