@@ -54,3 +54,11 @@ def test_get_schain_ids_for_node(skale):
 
 def test_is_schain_exist(skale):
     assert skale.schains_internal.is_schain_exist(DEFAULT_SCHAIN_NAME)
+
+
+def test_get_active_schain_ids(skale):
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    active_schains = skale.schains_internal.get_active_schain_ids_for_node(node_id)
+
+    assert isinstance(active_schains, list)
+    assert len(active_schains) > 0
