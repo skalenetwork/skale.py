@@ -82,6 +82,15 @@ class SChains(BaseContract):
             schains.append(schain)
         return schains
 
+    def get_active_schains_for_node(self, node_id):
+        schains = []
+        schain_ids = self.schains_internal.get_active_schain_ids_for_node(node_id)
+        for schain_id in schain_ids:
+            schain = self.get(schain_id)
+            schain['active'] = True
+            schains.append(schain)
+        return schains
+
     def name_to_id(self, name):
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
         return keccak_hash.hexdigest()
