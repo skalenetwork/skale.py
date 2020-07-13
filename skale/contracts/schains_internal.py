@@ -56,3 +56,6 @@ class SChainsInternal(BaseContract):
     def is_schain_exist(self, name):
         id_ = self.schains.name_to_id(name)
         return self.contract.functions.isSchainExist(id_).call()
+
+    def get_active_schains(self, node_id):
+        return self.contract.functions.getActiveSchains(node_id).call()
