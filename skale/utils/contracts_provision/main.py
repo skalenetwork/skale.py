@@ -138,7 +138,7 @@ def create_nodes(skale):
         skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
 
 
-def create_schain(skale):
+def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME):
     print('Creating schain')
     # create 1 s-chain
     type_of_nodes, lifetime_seconds, _ = generate_random_schain_data()
@@ -149,6 +149,6 @@ def create_schain(skale):
         lifetime_seconds,
         type_of_nodes,
         price_in_wei,
-        DEFAULT_SCHAIN_NAME,
+        schain_name,
         wait_for=True
     )
