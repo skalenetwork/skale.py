@@ -5,7 +5,7 @@ from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
 
-from skale.utils.contracts_provision.main import generate_random_schain_data
+from skale.utils.contracts_provision.main import generate_random_schain_data, create_schain
 
 
 def test_get(skale):
@@ -90,3 +90,16 @@ def test_add_schain_by_foundation(skale):
         for sid in schains_ids_after
     ]
     assert name not in schains_names
+
+
+def test_get_active_schains_for_node(skale):
+    create_schain(skale, 'test1')
+    create_schain(skale, 'test2')
+    skale.manager.delete_schain('test1', wait_for=True)
+
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    active_schains = skale.schains.get_active_schains_for_node(node_id)
+    all_schains = skale.schains.get_schains_for_node(node_id)
+    all_active_schains = [schain for schain in all_schains if schain['active']]
+    for active_schain in all_active_schains:
+        assert active_schain in active_schains
