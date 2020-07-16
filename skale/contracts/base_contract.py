@@ -28,7 +28,7 @@ from skale.transactions.result import (check_balance,
                                        is_success_or_not_performed,
                                        TxRes)
 from skale.transactions.tools import post_transaction, make_dry_run_call
-from skale.utils.web3_utils import wait_for_receipt_by_blocks
+from skale.utils.web3_utils import wait_for_receipt_by_blocks, wait_for_confirmation_blocks
 from skale.utils.account_tools import account_eth_balance_wei
 
 
@@ -42,9 +42,8 @@ def transaction_method(transaction=None, *, gas_limit=10):
     @wraps(transaction)
     def wrapper(self, *args, wait_for=True,
                 wait_timeout=4, blocks_to_wait=50,
-                gas_price=None, nonce=None,
-                dry_run_only=False, skip_dry_run=False, raise_for_status=True,
-                **kwargs):
+                gas_price=None, nonce=None, dry_run_only=False, skip_dry_run=False,
+                raise_for_status=True, confirmation_blocks=0, **kwargs):
         # Check balance
         balance = account_eth_balance_wei(self.skale.web3,
                                           self.skale.wallet.address)
@@ -76,6 +75,8 @@ def transaction_method(transaction=None, *, gas_limit=10):
                     timeout=wait_timeout,
                     blocks_to_wait=blocks_to_wait
                 )
+            if confirmation_blocks:
+                wait_for_confirmation_blocks(self.skale.web3, confirmation_blocks)
 
         tx_res = TxRes(dry_run_result, balance_check_result, tx_hash, receipt)
 

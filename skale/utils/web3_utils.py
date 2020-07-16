@@ -98,6 +98,17 @@ def check_receipt(receipt, raise_error=True):
     return True
 
 
+def wait_for_confirmation_blocks(web3, blocks_to_wait, request_timeout=5):
+    current_block = start_block = web3.eth.blockNumber
+    logger.info(
+        f'Current block number is {current_block}, '
+        f'waiting for {blocks_to_wait} confimration blocks to be mined'
+    )
+    while current_block <= start_block + blocks_to_wait:
+        current_block = web3.eth.blockNumber
+        sleep(request_timeout)
+
+
 def private_key_to_public(pr):
     pr_bytes = Web3.toBytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
