@@ -111,3 +111,12 @@ def test_tx_res_with_insufficient_funds(skale):
     token_amount = 10
     with pytest.raises(InsufficientBalanceError):
         skale.token.transfer(account['address'], token_amount)
+
+
+def test_confirmation_blocks(skale):
+    account = generate_account(skale.web3)
+    token_amount = 10
+    confirmation_blocks = 0  # todo: enable mining on ganache
+    start_block = skale.web3.eth.blockNumber
+    skale.token.transfer(account['address'], token_amount, confirmation_blocks=confirmation_blocks)
+    assert skale.web3.eth.blockNumber >= start_block + confirmation_blocks
