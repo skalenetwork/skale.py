@@ -19,6 +19,7 @@
 """ Nodes.sol functions """
 
 import socket
+from enum import IntEnum
 
 from Crypto.Hash import keccak
 from web3.exceptions import BadFunctionCallOutput
@@ -37,6 +38,12 @@ SCHAIN_CONFIG_FIELDS = [
     'publicKey', 'publicIP', 'owner',
     'httpRpcPort', 'httpsRpcPort', 'wsRpcPort', 'wssRpcPort'
 ]
+
+
+class NodeStatus(IntEnum):
+    ACTIVE = 0
+    LEAVING = 1
+    LEFT = 2
 
 
 class Nodes(BaseContract):
@@ -61,11 +68,25 @@ class Nodes(BaseContract):
         _id = self.contract.functions.nodesNameToIndex(name_hash).call()
         return self.__get_raw_w_pk(_id)
 
+    def get_nodes_number(self):
+        return self.contract.functions.getNumberOfNodes().call()
+
     def get_active_node_ids(self):
-        return self.contract.functions.getActiveNodeIds().call()
+        nodes_number = self.get_nodes_number()
+        print(nodes_number)
+        return [
+            node_id
+            for node_id in range(0, nodes_number)
+            if self.get_node_status(node_id) == NodeStatus.ACTIVE
+        ]
 
     def get_active_node_ips(self):
-        return self.contract.functions.getActiveNodeIPs().call()
+        nodes_number = self.get_nodes_number()
+        return [
+            self.get(node_id)['ip']
+            for node_id in range(0, nodes_number)
+            if self.get_node_status(node_id) == NodeStatus.ACTIVE
+        ]
 
     def get_active_node_ids_by_address(self, account):
         return self.contract.functions.getActiveNodesByAddress().call(

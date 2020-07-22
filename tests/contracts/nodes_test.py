@@ -51,9 +51,15 @@ def test_get_by_name(skale):
 
 
 def test_get_active_node_ids(skale):
+    number = skale.nodes.get_nodes_number()
+    print([
+        skale.nodes.get_node_status(node_id)
+        for node_id in range(0, number)
+    ])
     active_node_ids = skale.nodes.get_active_node_ids()
 
     assert isinstance(active_node_ids, list)
+    assert len(active_node_ids) > 0
 
     node = skale.nodes.get(active_node_ids[-1])
     assert list(node.keys()) == FIELDS
