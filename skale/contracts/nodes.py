@@ -73,7 +73,6 @@ class Nodes(BaseContract):
 
     def get_active_node_ids(self):
         nodes_number = self.get_nodes_number()
-        print(nodes_number)
         return [
             node_id
             for node_id in range(0, nodes_number)
