@@ -51,21 +51,32 @@ def test_get_by_name(skale):
 
 
 def test_get_active_node_ids(skale):
+    nodes_number = skale.nodes.get_nodes_number()
     active_node_ids = skale.nodes.get_active_node_ids()
 
+    assert len(active_node_ids) <= nodes_number
+
     assert isinstance(active_node_ids, list)
+    assert len(active_node_ids) > 0
 
     node = skale.nodes.get(active_node_ids[-1])
     assert list(node.keys()) == FIELDS
 
+    # 0 is active status
+    assert all([skale.nodes.get_node_status(node_id) == 0
+                for node_id in active_node_ids])
+
 
 def test_get_active_node_ips(skale):
+    nodes_number = skale.nodes.get_nodes_number()
+
     active_node_ips = skale.nodes.get_active_node_ips()
+    assert len(active_node_ips) <= nodes_number
 
     assert isinstance(active_node_ips, list)
 
-    test_ip = Helper.ip_from_bytes(active_node_ips[0])
-    assert Helper.is_valid_ipv4_address(test_ip)
+    assert all([Helper.is_valid_ipv4_address(node_ip)
+               for node_ip in active_node_ips])
 
 
 def test_get_active_node_ids_by_address(skale):
