@@ -70,3 +70,6 @@ class ConstantsHolder(BaseContract):
     def set_rotation_delay(self, rotation_delay: int) -> None:
         """For internal usage only"""
         return self.contract.functions.setRotationDelay(rotation_delay)
+
+    def get_rotation_delay(self) -> int:
+        return self.contract.functions.rotationDelay().call()
