@@ -65,3 +65,8 @@ class ConstantsHolder(BaseContract):
     @transaction_method(gas_limit=GAS['set_launch_timestamp'])
     def set_launch_timestamp(self, launch_timestamp: int):
         return self.contract.functions.setLaunchTimestamp(launch_timestamp)
+
+    @transaction_method(gas_limit=GAS['set_rotation_delay'])
+    def set_rotation_delay(self, rotation_delay: int) -> None:
+        """For internal usage only"""
+        return self.contract.functions.setRotationDelay(rotation_delay)
