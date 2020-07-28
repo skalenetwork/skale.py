@@ -51,6 +51,7 @@ GAS = {
     'skip_transition_delay': 1000000,
     'skip_time': 1000000,
     'set_msr': 200000,
+    'set_rotation_delay': 200000,
 
     'get_and_update_locked_amount': 3000000,
     'request_undelegation': 3000000,
