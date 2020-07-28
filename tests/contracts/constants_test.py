@@ -33,3 +33,12 @@ def test_get_set_launch_timestamp(skale):
     skale.constants_holder.set_launch_timestamp(new_launch_ts, wait_for=True)
     launch_ts = skale.constants_holder.get_launch_timestamp()
     assert launch_ts == new_launch_ts
+
+
+def test_get_set_rotation_delay(skale):
+    rotation_delay = skale.constants_holder.get_rotation_delay()
+    assert isinstance(rotation_delay, int) and rotation_delay > 0
+    new_rotation_delay = 1000
+    skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)
+    rotation_delay = skale.constants_holder.get_rotation_delay()
+    assert rotation_delay == new_rotation_delay
