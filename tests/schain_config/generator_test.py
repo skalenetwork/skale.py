@@ -13,13 +13,22 @@ TEST_NODE_IP_BYTES = b'\x8aD\xf6V'
 TEST_NODE_IP = '10.10.10.10'
 NODE_INFO_LEN = 16
 SCHAIN_INFO_LEN = 6
-TEST_ACCOUNTS_LEN = 2  # because we're creating everything from one account
-TEST_ACCOUNTS_LEN_WITH_IMA = 12  # 10 precompiled IMA contracts
+TEST_ACCOUNTS_LEN = 3  # because we're creating everything from one account + filestorage
+TEST_ACCOUNTS_LEN_WITH_IMA = 13  # 10 precompiled IMA contracts + filestorage
 
 
 TEST_BASE_CONFIG = {
     "params": {},
     "accounts": {}
+}
+
+
+TEST_FILESTORE_INFO = {
+    'address': ZERO_ADDRESS,
+    'bytecode': '0x111',
+    'storage': {
+        '0x0': 123
+    }
 }
 
 
@@ -113,7 +122,8 @@ def test_generate_skale_schain_config(skale):
         ima_mp_mainnet=ZERO_ADDRESS,
         ecdsa_key_name=TEST_ECDSA_KEY_NAME,
         wallets={},
-        custom_schain_config_fields={'testCustomField': 123}
+        custom_schain_config_fields={'testCustomField': 123},
+        filestorage_info=TEST_FILESTORE_INFO
     )
 
     assert isinstance(config['params']['chainID'], str)
@@ -128,6 +138,9 @@ def test_generate_skale_schain_config(skale):
 
     assert config['skaleConfig']['sChain']['testCustomField'] == 123
     assert config['skaleConfig']['nodeInfo']['ecdsaKeyName'] == TEST_ECDSA_KEY_NAME
+
+    assert config['accounts'][ZERO_ADDRESS]['storage']['0x0'] == 123
+    assert config['accounts'][ZERO_ADDRESS]['code'] == '0x111'
 
 
 def test_generate_skale_schain_config_with_ima_data(skale):

@@ -156,7 +156,7 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
                                  ima_data=None, rotate_after_block=64, ecdsa_key_name=None,
                                  empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  schain_log_level='info', schain_log_level_config='info',
-                                 custom_schain_config_fields={}):
+                                 custom_schain_config_fields={}, filestorage_info=None):
     """Main function that is used for generating sChain config"""
     node = skale.nodes.get(node_id)
     schain = skale.schains.get_by_name(schain_name)
@@ -190,7 +190,8 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
     )
 
     if base_config:
-        update_base_config(base_config, schain, schain_nodes, ima_data=ima_data)
+        update_base_config(base_config, schain, schain_nodes, ima_data=ima_data,
+                           filestorage_info=filestorage_info)
     else:
         base_config = {}
     if ima_data:
