@@ -59,7 +59,7 @@ def update_accounts(schain, schain_nodes, ima_data=None, filestorage_info=None):
 
 def update_base_config(base_config, schain, schain_nodes, ima_data=None, filestorage_info=None):
     new_accounts = update_accounts(schain, schain_nodes, ima_data=ima_data,
-        filestorage_info=filestorage_info)
+                                   filestorage_info=filestorage_info)
     base_config['accounts'] = {**base_config['accounts'], **new_accounts}
     add_chain_id(base_config, schain['name'])
 

@@ -191,7 +191,7 @@ def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, 
 
     if base_config:
         update_base_config(base_config, schain, schain_nodes, ima_data=ima_data,
-            filestorage_info=filestorage_info)
+                           filestorage_info=filestorage_info)
     else:
         base_config = {}
     if ima_data:
