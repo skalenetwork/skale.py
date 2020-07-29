@@ -35,7 +35,7 @@ def add_to_accounts(accounts, account, balance, code=None, storage={}, nonce=0):
             accounts[acc_fx]['nonce'] = str(nonce)
 
 
-def update_accounts(schain, schain_nodes, ima_data=None):
+def update_accounts(schain, schain_nodes, ima_data=None, filestorage_info=None):
     accounts = {}
     add_to_accounts(accounts, schain['owner'], SCHAIN_OWNER_ALLOC)
     for node in schain_nodes:
@@ -52,13 +52,26 @@ def update_accounts(schain, schain_nodes, ima_data=None):
     )
     if ima_data:
         add_ima_accounts(accounts, ima_data)
+    if filestorage_info:
+        add_filestorage_accounts(accounts, filestorage_info)
     return accounts
 
 
-def update_base_config(base_config, schain, schain_nodes, ima_data=None):
-    new_accounts = update_accounts(schain, schain_nodes, ima_data=ima_data)
+def update_base_config(base_config, schain, schain_nodes, ima_data=None, filestorage_info=None):
+    new_accounts = update_accounts(schain, schain_nodes, ima_data=ima_data,
+        filestorage_info=filestorage_info)
     base_config['accounts'] = {**base_config['accounts'], **new_accounts}
     add_chain_id(base_config, schain['name'])
+
+
+def add_filestorage_accounts(accounts, filestorage_info):
+    add_to_accounts(
+        accounts=accounts,
+        account=filestorage_info['address'],
+        balance=0,
+        code=filestorage_info['bytecode'],
+        storage=filestorage_info['storage'],
+    )
 
 
 def add_ima_accounts(accounts, ima_data):
