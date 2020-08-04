@@ -139,7 +139,7 @@ def test_generate_skale_schain_config(skale):
     assert config['skaleConfig']['sChain']['testCustomField'] == 123
     assert config['skaleConfig']['nodeInfo']['ecdsaKeyName'] == TEST_ECDSA_KEY_NAME
 
-    assert config['accounts'][ZERO_ADDRESS]['storage']['0x0'] == 123
+    assert config['accounts'][ZERO_ADDRESS]['storage']['0x0'] == '123'
     assert config['accounts'][ZERO_ADDRESS]['code'] == '0x111'
 
 
