@@ -70,7 +70,7 @@ def add_filestorage_accounts(accounts, filestorage_info):
         account=filestorage_info['address'],
         balance=0,
         code=filestorage_info['bytecode'],
-        storage=filestorage_info['storage'],
+        storage=str(filestorage_info['storage']),
     )
 
 
