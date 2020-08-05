@@ -42,7 +42,7 @@ setup(
         "web3==5.6.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.6.dev6",
+        "git+git://github.com/skalenetwork/sgx.py.git@bug/SKALE-2985-exception-instead-of-retry#egg=sgx.py"
     ],
 
     python_requires='>=3.6,<4',
