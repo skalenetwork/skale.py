@@ -20,6 +20,7 @@
 from dataclasses import dataclass
 from skale.dataclasses.skaled_ports import SkaledPorts
 
+
 @dataclass
 class NodeInfo():
     """Dataclass that represents base info about the node"""
