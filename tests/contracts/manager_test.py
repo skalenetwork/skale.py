@@ -17,7 +17,6 @@ from skale.utils.contracts_provision.main import (
 )
 
 
-@pytest.mark.skip(reason="verdicts temporary disabled")
 def test_get_bounty(skale):
     node_id = 0
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
@@ -74,6 +73,7 @@ def test_send_verdict(skale):
             send_tx_mock.assert_called_with(HexBytes(exp))
 
 
+@pytest.mark.skip(reason="verdicts temporary disabled")
 def test_send_verdicts(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.manager.address
