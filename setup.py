@@ -18,7 +18,7 @@ extras_require = {
         "mock==4.0.2",
         "when-changed",
         "Random-Word==1.0.4",
-        "pytest-cov==2.8.1"
+        "pytest-cov==2.10.0"
     ],
     'hw-wallet': [
         "ledgerblue==0.1.31"
