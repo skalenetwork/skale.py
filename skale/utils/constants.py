@@ -24,8 +24,6 @@ GAS = {
     'create_node': 3500000,
     'create_schain': 7500000,
     'get_bounty': 8000000,
-    'send_verdict': 200000,
-    'send_verdicts': 8000000,
     'set_check_time': 200000,
     'set_latency': 200000,
     'token_transfer': 600000,

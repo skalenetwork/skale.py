@@ -78,20 +78,6 @@ class Manager(BaseContract):
     def get_bounty(self, node_id):
         return self.contract.functions.getBounty(node_id)
 
-    @transaction_method(gas_limit=GAS['send_verdict'])
-    def send_verdict(self, validator, verdict_data):
-        return self.contract.functions.sendVerdict(
-            validator,
-            verdict_data
-        )
-
-    @transaction_method(gas_limit=GAS['send_verdicts'])
-    def send_verdicts(self, validator, verdicts_data):
-        return self.contract.functions.sendVerdicts(
-            validator,
-            verdicts_data
-        )
-
     @transaction_method(gas_limit=GAS['delete_schain'])
     def delete_schain(self, schain_name):
         return self.contract.functions.deleteSchain(schain_name)
