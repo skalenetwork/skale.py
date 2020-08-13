@@ -17,12 +17,13 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import functools
 import json
 import logging
+import time
 import urllib
-import functools
-import requests
 
+import requests
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
 
@@ -30,7 +31,7 @@ from skale.wallets.common import BaseWallet
 from skale.utils.exceptions import RPCWalletError
 
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 ROUTES = {
     'sign': '/sign',
@@ -40,22 +41,34 @@ ROUTES = {
     'public_key': '/public-key',
 }
 
+ATTEMPTS = 9
+TIMEOUTS = [2 ** p for p in range(ATTEMPTS)]
+SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
+
 
 def rpc_request(func):
     @functools.wraps(func)
-    def wrapper_decorator(*args, **kwargs):
-        res = func(*args, **kwargs)
-        res_json = res.json()
-        if res_json['error']:
-            raise RPCWalletError(res_json['error'])
-        else:
-            return res_json['data']
-    return wrapper_decorator
+    def wrapper(self, *args, **kwargs):
+        data, error = None, None
+        for i, timeout in enumerate(TIMEOUTS):
+            logger.info('Sending request to transaction manager. Try {i}')
+            response = func(self, *args, **kwargs).json()
+            data, error = response.get('data'), response.get('error')
+            if self._retry_unreachable_sgx and error == SGX_UNREACHABLE_MESSAGE:
+                time.sleep(timeout)
+            else:
+                break
+        if error is not None:
+            logger.error('Transaction manager returned error')
+            raise RPCWalletError(error)
+        return data
+    return wrapper
 
 
 class RPCWallet(BaseWallet):
-    def __init__(self, url):
+    def __init__(self, url, retry_unreachable_sgx=False):
         self._url = url
+        self._retry_unreachable_sgx = retry_unreachable_sgx
 
     def _construct_url(self, host, url):
         return urllib.parse.urljoin(host, url)
