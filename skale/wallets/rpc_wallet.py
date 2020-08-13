@@ -31,7 +31,7 @@ from skale.wallets.common import BaseWallet
 from skale.utils.exceptions import RPCWalletError
 
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 ROUTES = {
     'sign': '/sign',
@@ -51,6 +51,7 @@ def rpc_request(func):
     def wrapper(self, *args, **kwargs):
         data, error = None, None
         for i, timeout in enumerate(TIMEOUTS):
+            logger.info('Sending request to transaction manager. Try {i}')
             response = func(self, *args, **kwargs).json()
             data, error = response.get('data'), response.get('error')
             if self._retry_unreachable_sgx and error == SGX_UNREACHABLE_MESSAGE:
@@ -58,6 +59,7 @@ def rpc_request(func):
             else:
                 break
         if error is not None:
+            logger.error('Transaction manager returned error')
             raise RPCWalletError(error)
         return data
     return wrapper
