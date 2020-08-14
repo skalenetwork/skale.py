@@ -90,7 +90,7 @@ class RPCWallet(BaseWallet):
 
     def sign(self, tx_dict):
         data = self._post(ROUTES['sign'], self._compose_tx_data(tx_dict))
-        return data['transaction_hash']
+        return AttributeDict(data)
 
     def sign_and_send(self, tx_dict):
         data = self._post(ROUTES['sign_and_send'], self._compose_tx_data(tx_dict))
