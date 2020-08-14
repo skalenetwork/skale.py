@@ -79,12 +79,19 @@ def test_sign_and_send_sgx_unreachable():
 
 
 def test_sign():
+    signed_data = {
+        'hash': HexBytes('0x00'),
+        'rawTransaction': HexBytes('0x00'),
+        'r': 123,
+        's': 123,
+        'v': 27
+    }
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
     res_mock = response_mock(HTTPStatus.OK,
-                             {'data': {'transaction_hash': EMPTY_HEX_STR}, 'error': None})
+                             {'data': signed_data, 'error': None})
     with mock.patch('requests.post', new=request_mock(res_mock)):
-        tx_hash = wallet.sign(TX_DICT)
-        assert tx_hash == EMPTY_HEX_STR
+        res = wallet.sign(TX_DICT)
+        assert res == AttributeDict(signed_data)
 
 
 def test_sign_hash():
