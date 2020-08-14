@@ -48,11 +48,11 @@ SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
 
 def rpc_request(func):
     @functools.wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self, route, *args, **kwargs):
         data, error = None, None
         for i, timeout in enumerate(TIMEOUTS):
-            logger.info('Sending request to transaction manager. Try {i}')
-            response = func(self, *args, **kwargs).json()
+            logger.info(f'Sending request to tm for {route}. Try {i}')
+            response = func(self, route, *args, **kwargs).json()
             data, error = response.get('data'), response.get('error')
             if self._retry_unreachable_sgx and error == SGX_UNREACHABLE_MESSAGE:
                 time.sleep(timeout)
