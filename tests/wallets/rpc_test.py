@@ -80,11 +80,11 @@ def test_sign_and_send_sgx_unreachable():
 
 def test_sign():
     signed_data = {
-        'messageHash': HexBytes('0x00'),
+        'hash': HexBytes('0x00'),
+        'rawTransaction': HexBytes('0x00'),
         'r': 123,
         's': 123,
-        'v': 27,
-        'signature': HexBytes('0x00')
+        'v': 27
     }
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
     res_mock = response_mock(HTTPStatus.OK,
