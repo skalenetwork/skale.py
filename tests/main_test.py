@@ -4,7 +4,7 @@ import mock
 import pytest
 from web3 import HTTPProvider, WebsocketProvider
 
-from skale import SkaleManager, Skale
+from skale import Skale
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.base_contract import BaseContract
