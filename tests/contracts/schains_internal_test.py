@@ -1,6 +1,6 @@
 """ SKALE chain internal test """
 
-from skale.contracts.schains import FIELDS
+from skale.manager.contracts.schains import FIELDS
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              EMPTY_SCHAIN_ARR, DEFAULT_SCHAIN_NAME,
                              MIN_NODES_IN_SCHAIN)

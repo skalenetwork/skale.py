@@ -3,7 +3,7 @@ import web3
 from mock import Mock
 from hexbytes import HexBytes
 
-from skale.contracts.dkg import G2Point, KeyShare
+from skale.manager.contracts.dkg import G2Point, KeyShare
 
 
 def test_broadcast(skale):

@@ -24,7 +24,7 @@ from web3.middleware import geth_poa_middleware
 
 import skale.contracts as contracts
 from skale.wallets import BaseWallet
-from skale.contracts_info import get_base_contracts_info, get_debug_contracts_info
+from skale.manager.contracts_info import get_base_contracts_info, get_debug_contracts_info
 from skale.utils.helper import get_abi
 from skale.utils.web3_utils import get_provider
 from skale.utils.abi_utils import get_contract_address_by_name, get_contract_abi_by_name

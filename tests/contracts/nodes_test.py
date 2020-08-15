@@ -5,7 +5,7 @@ from eth_keys import keys
 from web3 import Web3
 
 import skale.utils.helper as Helper
-from skale.contracts.nodes import FIELDS
+from skale.manager.contracts.nodes import FIELDS
 from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME
 
 

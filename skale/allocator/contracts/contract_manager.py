@@ -16,23 +16,19 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE token operations """
+""" SKALE Contract manager class """
 
-from skale.contracts import BaseContract, transaction_method
-from skale.utils.constants import GAS
+from Crypto.Hash import keccak
+
+from skale.base_contract import BaseContract
+from skale.utils.helper import add_0x_prefix
 
 
-class Token(BaseContract):
-    @transaction_method(gas_limit=GAS['token_transfer'])
-    def transfer(self, address, value):
-        return self.contract.functions.send(address, value, b'')
+class ContractManager(BaseContract):
+    def get_contract_address(self, name):
+        contract_hash = add_0x_prefix(self.get_contract_hash_by_name(name))
+        return self.contract.functions.contracts(contract_hash).call()
 
-    def get_balance(self, address):
-        return self.contract.functions.balanceOf(address).call()
-
-    @transaction_method(gas_limit=GAS['token_transfer'])
-    def add_authorized(self, address, wallet):  # pragma: no cover
-        return self.contract.functions.addAuthorized(address)
-
-    def get_and_update_slashed_amount(self, address: str) -> int:
-        return self.contract.functions.getAndUpdateSlashedAmount(address).call()
+    def get_contract_hash_by_name(self, name):
+        keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
+        return keccak_hash.hexdigest()

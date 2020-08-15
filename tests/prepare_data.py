@@ -2,7 +2,7 @@
 
 import click
 
-from skale import Skale
+from skale import SkaleManager
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
@@ -31,7 +31,7 @@ def prepare_data(cleanup_only):
     init_default_logger()
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
+    skale = SkaleManager(ENDPOINT, TEST_ABI_FILEPATH, wallet)
     cleanup_nodes_schains(skale)
     if not cleanup_only:
         try:

@@ -1,4 +1,4 @@
-from skale.contracts import BaseContract, transaction_method
+from skale.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from skale.utils.constants import GAS
 

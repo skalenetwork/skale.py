@@ -24,7 +24,7 @@ from enum import IntEnum
 from Crypto.Hash import keccak
 from web3.exceptions import BadFunctionCallOutput
 
-from skale.contracts import BaseContract
+from skale.base_contract import BaseContract
 from skale.utils.helper import format_fields
 
 FIELDS = [

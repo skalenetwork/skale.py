@@ -2,7 +2,7 @@
 
 import threading
 
-from skale import Skale
+from skale import SkaleManager
 from skale.utils.web3_utils import init_web3
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, DEFAULT_NODE_NAME
 

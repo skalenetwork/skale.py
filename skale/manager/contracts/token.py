@@ -16,17 +16,23 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Contract info utilities """
+""" SKALE token operations """
 
-from typing import NamedTuple
-
-from skale.base_contract import BaseContract
-from skale.utils.contract_types import ContractTypes
+from skale.base_contract import BaseContract, transaction_method
+from skale.utils.constants import GAS
 
 
-class ContractInfo(NamedTuple):
-    name: str
-    contract_name: str
-    contract_class: BaseContract
-    type: ContractTypes
-    upgradeable: bool
+class Token(BaseContract):
+    @transaction_method(gas_limit=GAS['token_transfer'])
+    def transfer(self, address, value):
+        return self.contract.functions.send(address, value, b'')
+
+    def get_balance(self, address):
+        return self.contract.functions.balanceOf(address).call()
+
+    @transaction_method(gas_limit=GAS['token_transfer'])
+    def add_authorized(self, address, wallet):  # pragma: no cover
+        return self.contract.functions.addAuthorized(address)
+
+    def get_and_update_slashed_amount(self, address: str) -> int:
+        return self.contract.functions.getAndUpdateSlashedAmount(address).call()

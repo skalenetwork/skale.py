@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import skale.contracts as contracts
+import skale.manager.contracts as contracts
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 

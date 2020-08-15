@@ -19,7 +19,7 @@
 """ NodeRotation.sol functions """
 
 import functools
-from skale.contracts import BaseContract
+from skale.base_contract import BaseContract
 
 
 class NodeRotation(BaseContract):
