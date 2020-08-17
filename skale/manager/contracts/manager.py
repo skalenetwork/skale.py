@@ -24,7 +24,7 @@ import socket
 
 from eth_abi import encode_abi
 
-from skale.base_contract import BaseContract, transaction_method
+from skale.common_contracts.base_contract import BaseContract, transaction_method
 from skale.utils import helper
 from skale.utils.constants import GAS
 from skale.transactions.result import TxRes

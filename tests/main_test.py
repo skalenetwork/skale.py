@@ -7,7 +7,7 @@ from web3 import HTTPProvider, WebsocketProvider
 from skale import Skale
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
-from skale.base_contract import BaseContract
+from skale.common_contracts.base_contract import BaseContract
 from skale.manager.contracts.nodes import Nodes
 from skale.manager.contracts_info import CONTRACTS_INFO, DEBUG_CONTRACTS_INFO
 from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY

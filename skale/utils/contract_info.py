@@ -20,7 +20,7 @@
 
 from typing import NamedTuple
 
-from skale.base_contract import BaseContract
+from skale.common_contracts.base_contract import BaseContract
 from skale.utils.contract_types import ContractTypes
 
 

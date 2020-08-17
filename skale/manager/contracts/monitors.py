@@ -20,7 +20,7 @@
 
 import socket
 from web3 import Web3
-from skale.base_contract import BaseContract
+from skale.common_contracts.base_contract import BaseContract
 from skale.utils.helper import format_fields
 
 FIELDS = ['id', 'rep_date', 'ip']

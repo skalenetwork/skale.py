@@ -19,7 +19,7 @@
 
 from web3 import Web3
 
-from skale.base_contract import BaseContract, transaction_method
+from skale.common_contracts.base_contract import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
 from skale.transactions.result import TxRes

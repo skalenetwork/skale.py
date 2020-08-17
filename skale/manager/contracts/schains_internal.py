@@ -19,7 +19,7 @@
 """ SchainsInternal.sol functions """
 
 import functools
-from skale.base_contract import BaseContract
+from skale.common_contracts.base_contract import BaseContract
 
 
 class SChainsInternal(BaseContract):

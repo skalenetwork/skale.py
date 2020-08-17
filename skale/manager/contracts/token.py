@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE token operations """
 
-from skale.base_contract import BaseContract, transaction_method
+from skale.common_contracts.base_contract import BaseContract, transaction_method
 from skale.utils.constants import GAS
 
 

@@ -20,7 +20,7 @@
 
 from Crypto.Hash import keccak
 
-from skale.base_contract import BaseContract
+from skale.common_contracts.base_contract import BaseContract
 from skale.utils.helper import add_0x_prefix
 
 

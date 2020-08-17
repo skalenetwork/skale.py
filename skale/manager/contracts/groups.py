@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE group class """
 
-from skale.base_contract import BaseContract
+from skale.common_contracts.base_contract import BaseContract
 
 
 class Groups(BaseContract):

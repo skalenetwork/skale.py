@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.base_contract import BaseContract, transaction_method
+from skale.common_contracts.base_contract import BaseContract, transaction_method
 from skale.utils.constants import GAS
 
 
