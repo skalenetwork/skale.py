@@ -21,8 +21,6 @@ def test_lib_init():
 
     lib_contracts = skale._SkaleBase__contracts
 
-    print(lib_contracts)
-    #lib_contracts = skale._Skale__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO) + len(DEBUG_CONTRACTS_INFO)
 
     for lib_contract in lib_contracts.values():
