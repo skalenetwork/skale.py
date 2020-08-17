@@ -19,7 +19,10 @@ def test_lib_init():
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
     skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet, provider_timeout=20)
 
-    lib_contracts = skale._Skale__contracts
+    lib_contracts = skale._SkaleBase__contracts
+
+    print(lib_contracts)
+    #lib_contracts = skale._Skale__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO) + len(DEBUG_CONTRACTS_INFO)
 
     for lib_contract in lib_contracts.values():
@@ -32,7 +35,7 @@ def test_lib_init():
     isinstance(skale.web3.provider, HTTPProvider)
 
     ws_endpoint = 'ws://localhost:8080'
-    with mock.patch.object(Skale, '_Skale__init_contracts'):
+    with mock.patch.object(Skale, 'init_contracts'):
         skale = Skale(ws_endpoint, TEST_ABI_FILEPATH, wallet)
         assert skale.web3.provider.websocket_timeout == 30
         assert skale.web3.provider.conn.websocket_kwargs == {

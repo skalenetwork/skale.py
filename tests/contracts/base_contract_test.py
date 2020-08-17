@@ -104,7 +104,7 @@ def test_tx_res_wait_for_true(skale):
     tx_res.raise_for_status()
 
 
-@mock.patch('skale.contracts.base_contract.account_eth_balance_wei',
+@mock.patch('skale.base_contract.account_eth_balance_wei',
             new=mock.Mock(return_value=0))
 def test_tx_res_with_insufficient_funds(skale):
     account = generate_account(skale.web3)

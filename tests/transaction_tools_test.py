@@ -50,7 +50,7 @@ def test_run_tx_with_retry_dry_run_failed(skale):
     account = generate_account(skale.web3)
     token_amount = 10 * ETH_IN_WEI
     retries_number = 5
-    with mock.patch('skale.contracts.base_contract.make_dry_run_call',
+    with mock.patch('skale.base_contract.make_dry_run_call',
                     dry_run_call_mock):
 
         tx_res = run_tx_with_retry(
@@ -79,10 +79,10 @@ def test_run_tx_with_retry_tx_failed(skale):
 
     token_amount = 10 * ETH_IN_WEI
     retries_number = 5
-    with mock.patch('skale.contracts.base_contract.post_transaction',
+    with mock.patch('skale.base_contract.post_transaction',
                     post_transaction_mock):
         with mock.patch(
-            'skale.contracts.base_contract.wait_for_receipt_by_blocks',
+            'skale.base_contract.wait_for_receipt_by_blocks',
             wait_for_receipt_by_blocks_mock
         ):
             tx_res = run_tx_with_retry(
@@ -110,10 +110,10 @@ def test_run_tx_with_retry_insufficient_balance(skale):
                          skip_dry_run=True,
                          wait_for=True)
     retries_number = 5
-    with mock.patch('skale.contracts.base_contract.post_transaction',
+    with mock.patch('skale.base_contract.post_transaction',
                     post_transaction_mock):
         with mock.patch(
-            'skale.contracts.base_contract.wait_for_receipt_by_blocks',
+            'skale.base_contract.wait_for_receipt_by_blocks',
             wait_for_receipt_by_blocks_mock
         ):
             with pytest.raises(InsufficientBalanceError):
