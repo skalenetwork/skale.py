@@ -26,6 +26,8 @@ from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
 )
 
+FIRST_DELEGATION_MONTH = 1
+
 
 def _skip_evm_time(web3, seconds) -> int:
     """For test purposes only, works only with ganache node"""
@@ -57,7 +59,7 @@ def setup_validator(skale):
     else:
         print('Skipping default validator creation')
     set_test_msr(skale)
-
+    skale.constants_holder.set_first_delegation_month(FIRST_DELEGATION_MONTH)
     delegate_to_validator(skale)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
     accept_pending_delegation(skale, delegations[-1]['id'])
