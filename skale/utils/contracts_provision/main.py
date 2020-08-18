@@ -20,13 +20,11 @@
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
-    DEFAULT_SCHAIN_NAME
+    DEFAULT_SCHAIN_NAME, FIRST_DELEGATION_MONTH
 )
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
 )
-
-FIRST_DELEGATION_MONTH = 1
 
 
 def _skip_evm_time(web3, seconds) -> int:
