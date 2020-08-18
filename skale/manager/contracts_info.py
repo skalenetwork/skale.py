@@ -18,13 +18,14 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import skale.manager.contracts as contracts
+from skale.common_contracts.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 
 
 CONTRACTS_INFO = [
     ContractInfo('contract_manager', 'ContractManager',
-                 contracts.ContractManager, ContractTypes.API, False),
+                 ContractManager, ContractTypes.API, False),
     ContractInfo('token', 'SkaleToken', contracts.Token, ContractTypes.API,
                  False),
     ContractInfo('manager', 'SkaleManager', contracts.Manager,

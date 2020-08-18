@@ -37,7 +37,7 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 .
-    - name: Deploy manager contracts
+    - name: Deploy manager and allocator contracts
       run: |
         bash ./helper-scripts/deploy_test_allocator.sh
     - name: Run tests

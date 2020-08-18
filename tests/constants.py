@@ -38,6 +38,8 @@ ENDPOINT = os.environ['ENDPOINT']
 HELPER_SCRIPTS_DIR = os.path.join(DIR_PATH, os.pardir, 'helper-scripts')
 
 TEST_ABI_FILEPATH = os.path.join(HELPER_SCRIPTS_DIR, 'contracts_data', 'unique.json')
+TEST_ALLOCATOR_ABI_FILEPATH = os.path.join(HELPER_SCRIPTS_DIR, 'allocator_contracts_data',
+                                           'unique.json')
 IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 

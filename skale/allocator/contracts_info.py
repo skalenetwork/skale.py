@@ -18,20 +18,14 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import skale.allocator.contracts as contracts
+from skale.common_contracts.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 
 
 CONTRACTS_INFO = [
     ContractInfo('contract_manager', 'ContractManager',
-                 contracts.ContractManager, ContractTypes.API, False)
-]
-
-
-DEBUG_CONTRACTS_INFO = [
-
-    ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug', contracts.TimeHelpersWithDebug,
-                 ContractTypes.API, False)
+                 ContractManager, ContractTypes.API, False),
 ]
 
 
@@ -44,7 +38,3 @@ def get_contracts_info(contracts_data):
 
 def get_base_contracts_info():
     return get_contracts_info(CONTRACTS_INFO)
-
-
-def get_debug_contracts_info():
-    return get_contracts_info(DEBUG_CONTRACTS_INFO)

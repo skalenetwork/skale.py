@@ -20,7 +20,7 @@
 import logging
 
 from skale.skale_base import SkaleBase
-from skale.manager import contracts
+from skale.common_contracts.contract_manager import ContractManager
 from skale.utils.helper import get_abi
 from skale.manager.contracts_info import get_base_contracts_info, get_debug_contracts_info
 
@@ -35,8 +35,7 @@ def spawn_skale_manager_lib(skale):
 class SkaleManager(SkaleBase):
     def init_contracts(self):
         abi = get_abi(self._abi_filepath)
-        self.add_lib_contract('contract_manager',
-                              contracts.ContractManager, abi)
+        self.add_lib_contract('contract_manager', ContractManager, abi)
         self._SkaleBase__init_contracts_from_info(abi, get_base_contracts_info())
         if self._SkaleBase__is_debug_contracts(abi):
             logger.info('Debug contracts found in ABI file')
