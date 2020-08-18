@@ -138,6 +138,14 @@ def test_generate_skale_schain_config(skale):
 
     assert config['skaleConfig']['sChain']['testCustomField'] == 123
     assert config['skaleConfig']['nodeInfo']['ecdsaKeyName'] == TEST_ECDSA_KEY_NAME
+    # TODO: Improve tests for bls public keys
+    previous_pk = config['skaleConfig']['sChain']['nodes'][0].get('previousBlsPublicKeys')
+    assert isinstance(previous_pk, list)
+
+    assert config['skaleConfig']['sChain']['nodes'][0].get('blsPublicKey0') is not None
+    assert config['skaleConfig']['sChain']['nodes'][0].get('blsPublicKey1') is not None
+    assert config['skaleConfig']['sChain']['nodes'][0].get('blsPublicKey2') is not None
+    assert config['skaleConfig']['sChain']['nodes'][0].get('blsPublicKey3') is not None
 
     assert config['accounts'][ZERO_ADDRESS]['storage']['0x0'] == 123
     assert config['accounts'][ZERO_ADDRESS]['code'] == '0x111'

@@ -63,13 +63,14 @@ def get_nodes_for_schain_config(skale, name):
         base_port = get_schain_base_port_on_node(schains_on_node, name, node['port'])
         group_index = skale.web3.sha3(text=name)
         bls_public_key = skale.key_storage.get_bls_public_key(group_index, node['id'])
+        previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_index)
 
         node_info = SchainNodeInfo(
             node_name=node['name'],
             node_id=node['id'],
             base_port=base_port,
-
             bls_public_key=bls_public_key,
+            previous_bls_public_keys=previous_public_keys,
             schain_index=i,
             ip=ip_from_bytes(node['ip']),
             public_key=node['publicKey'],
@@ -154,8 +155,8 @@ def generate_schain_config(base_config, node_info, schain_info, schain_contract_
 def generate_skale_schain_config(skale, schain_name, node_id, base_config=None, ima_mainnet=None,
                                  ima_mp_schain=None, ima_mp_mainnet=None, wallets=None,
                                  ima_data=None, rotate_after_block=64, ecdsa_key_name=None,
-                                 empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  schain_log_level='info', schain_log_level_config='info',
+                                 empty_block_interval_ms=None, snapshot_interval_ms=None,
                                  custom_schain_config_fields={}, filestorage_info=None):
     """Main function that is used for generating sChain config"""
     node = skale.nodes.get(node_id)

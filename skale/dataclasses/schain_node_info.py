@@ -21,7 +21,9 @@ from skale.dataclasses.node_info import NodeInfo
 
 
 class SchainNodeInfo(NodeInfo):
-    def __init__(self, node_id, node_name, base_port, public_key, bls_public_key, owner,
+    def __init__(self, node_id, node_name, base_port, public_key,
+                 bls_public_key,
+                 previous_bls_public_keys, owner,
                  schain_index, ip, public_ip):
         self.public_key = public_key
         self.bls_public_key = bls_public_key
@@ -29,17 +31,36 @@ class SchainNodeInfo(NodeInfo):
         self.schain_index = schain_index
         self.ip = ip
         self.public_ip = public_ip
+        self.previous_bls_public_keys = previous_bls_public_keys
         super().__init__(node_id, node_name, base_port)
 
+    @classmethod
+    def compose_bls_public_key_info(cls, bls_public_key):
+        return {
+            'blsPublicKey0': str(bls_public_key[0][0]),
+            'blsPublicKey1': str(bls_public_key[0][1]),
+            'blsPublicKey2': str(bls_public_key[1][0]),
+            'blsPublicKey3': str(bls_public_key[1][1])
+        }
+
+    def bls_public_keys_structure(self):
+        previous_pks = [
+            SchainNodeInfo.compose_bls_public_key_info(pk)
+            for pk in self.previous_bls_public_keys
+        ]
+        pk = SchainNodeInfo.compose_bls_public_key_info(self.bls_public_key)
+        return {
+            'previousBlsPublicKeys': previous_pks,
+            **pk
+        }
+
     def to_config(self):
-        return {**super().to_config(), **{
+        return {
+            **super().to_config(),
+            **self.bls_public_keys_structure(),
             'publicKey': self.public_key,
-            'blsPublicKey0': str(self.bls_public_key[0][0]),
-            'blsPublicKey1': str(self.bls_public_key[0][1]),
-            'blsPublicKey2': str(self.bls_public_key[1][0]),
-            'blsPublicKey3': str(self.bls_public_key[1][1]),
             'owner': self.owner,
             'schainIndex': self.schain_index,
             'ip': self.ip,
             'publicIP': self.public_ip
-        }}
+        }
