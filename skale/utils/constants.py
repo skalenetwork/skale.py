@@ -65,7 +65,17 @@ GAS = {
     'manager_grant_role': 7500000
 }
 
+
+ALLOCATOR_GAS = {
+    'retrieve': 1000000,
+    'retrieve_after_termination': 1000000,
+    'delegate': 3000000,
+    'request_undelegation': 3000000
+}
+
+
 LONG_LINE = '=' * 100
+
 
 SCHAIN_TYPES = {
     'tiny': 1,
