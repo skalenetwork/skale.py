@@ -1,17 +1,19 @@
 """ SKALE node test """
 
 import socket
+
+import pytest
 from eth_keys import keys
 from web3 import Web3
 
 import skale.utils.helper as Helper
 from skale.manager.contracts.nodes import FIELDS
-from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME
+from skale.utils.exceptions import InvalidNodeIdError
+from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
 
 def test_get_raw_not_exist(skale):
-    not_exist_node_id = 123123
-    node_arr = skale.nodes._Nodes__get_raw(not_exist_node_id)
+    node_arr = skale.nodes._Nodes__get_raw(NOT_EXISTING_ID)
     assert node_arr is None
 
 
@@ -41,6 +43,9 @@ def test_get(skale):
 
     assert list(node_by_id.keys()) == FIELDS
     assert node == node_by_id
+
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes.get(NOT_EXISTING_ID)
 
 
 def test_get_by_name(skale):

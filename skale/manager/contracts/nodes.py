@@ -25,6 +25,7 @@ from Crypto.Hash import keccak
 from web3.exceptions import BadFunctionCallOutput
 
 from skale.common_contracts.base_contract import BaseContract
+from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.helper import format_fields
 
 FIELDS = [
@@ -60,6 +61,9 @@ class Nodes(BaseContract):
 
     @format_fields(FIELDS)
     def get(self, node_id):
+        nodes_number = self.get_nodes_number()
+        if node_id not in range(nodes_number):
+            raise InvalidNodeIdError(f'Node with ID = {node_id} doesn\'t exist!')
         return self.__get_raw_w_pk(node_id)
 
     @format_fields(FIELDS)
