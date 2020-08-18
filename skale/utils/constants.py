@@ -62,7 +62,8 @@ GAS = {
     'confirm_new_address': 1000000,
     'add_schain_by_foundation': 7500000,
     'grant_role': 7500000,
-    'manager_grant_role': 7500000
+    'manager_grant_role': 7500000,
+    'first_delegation_month': 3000000
 }
 
 LONG_LINE = '=' * 100
