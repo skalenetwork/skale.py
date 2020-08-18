@@ -12,12 +12,17 @@ jobs:
       ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       MANAGER_TAG: "1.5.0-develop.26"
+      ALLOCATOR_TAG: "0.1.0-develop.0"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@master
+      with:
+        remote: true
     - name: Install host dependencies
       run: |
         sudo apt-get update --fix-missing
@@ -34,7 +39,7 @@ jobs:
         flake8 .
     - name: Deploy manager contracts
       run: |
-        bash ./scripts/deploy_manager.sh
+        bash ./helper-scripts/deploy_test_allocator.sh
     - name: Run tests
       run: |
         bash ./scripts/run_tests.sh
