@@ -16,23 +16,23 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
+""" SKALE token operations """
+
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.utils.constants import GAS
 
 
-def get_nodes_for_schain(skale, name):
-    nodes = []
-    ids = skale.schains_internal.get_node_ids_for_schain(name)
-    for id_ in ids:
-        node = skale.nodes.get(id_)
-        node['id'] = id_
-        nodes.append(node)
-    return nodes
+class Token(BaseContract):
+    @transaction_method(gas_limit=GAS['token_transfer'])
+    def transfer(self, address, value):
+        return self.contract.functions.send(address, value, b'')
 
+    def get_balance(self, address):
+        return self.contract.functions.balanceOf(address).call()
 
-def get_schain_nodes_with_schains(skale, schain_name) -> list:
-    """Returns list of nodes for schain with schains for all nodes"""
-    nodes = get_nodes_for_schain(skale, schain_name)
-    for node in nodes:
-        group_index = skale.web3.sha3(text=schain_name)
-        node['schains'] = skale.schains.get_schains_for_node(node['id'])
-        node['bls_public_key'] = skale.key_storage.get_bls_public_key(group_index, node['id'])
-    return nodes
+    @transaction_method(gas_limit=GAS['token_transfer'])
+    def add_authorized(self, address, wallet):  # pragma: no cover
+        return self.contract.functions.addAuthorized(address)
+
+    def get_and_update_slashed_amount(self, address: str) -> int:
+        return self.contract.functions.getAndUpdateSlashedAmount(address).call()

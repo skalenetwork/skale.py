@@ -31,7 +31,7 @@ pip install skale.py
 With embeded Web3Wallet
 
 ```python
-from skale import Skale
+from skale import SkaleManager
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 
@@ -43,7 +43,7 @@ skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
 With external transactions manager:
 
 ```python
-from skale import Skale
+from skale import SkaleManager
 from skale.wallets import RPCWallet
 
 web3 = init_web3(ENDPOINT)
