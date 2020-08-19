@@ -46,6 +46,13 @@ class ConstantsHolder(BaseContract):
     def get_latency(self):
         return self.contract.functions.allowableLatency().call()
 
+    def get_first_delegation_month(self):
+        return self.contract.functions.firstDelegationsMonth().call()
+
+    @transaction_method(gas_limit=GAS['first_delegation_month'])
+    def set_first_delegation_month(self, new_first_month):
+        return self.contract.functions.setFirstDelegationsMonth(new_first_month)
+
     def msr(self) -> int:
         """Minimum staking requirement to create a node.
 

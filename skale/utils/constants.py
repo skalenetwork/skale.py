@@ -24,8 +24,6 @@ GAS = {
     'create_node': 3500000,
     'create_schain': 7500000,
     'get_bounty': 8000000,
-    'send_verdict': 200000,
-    'send_verdicts': 8000000,
     'set_check_time': 200000,
     'set_latency': 200000,
     'token_transfer': 600000,
@@ -33,7 +31,7 @@ GAS = {
     'set_periods': 200000,
     'delete_schain': 8000000,
     'dkg_broadcast': 8000000,
-    'dkg_response': 8000000,
+    'dkg_response': 10000000,
     'dkg_alright': 1000000,
     'dkg_complaint': 8000000,
     'node_exit': 10000000,
@@ -64,7 +62,8 @@ GAS = {
     'confirm_new_address': 1000000,
     'add_schain_by_foundation': 7500000,
     'grant_role': 7500000,
-    'manager_grant_role': 7500000
+    'manager_grant_role': 7500000,
+    'first_delegation_month': 3000000
 }
 
 LONG_LINE = '=' * 100
