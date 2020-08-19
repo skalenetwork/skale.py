@@ -3,7 +3,7 @@
 from skale import SkaleAllocator
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
-from skale.allocator.contracts_info import CONTRACTS_INFO
+from skale.skale_allocator import CONTRACTS_INFO
 from tests.constants import ENDPOINT, TEST_ALLOCATOR_ABI_FILEPATH, ETH_PRIVATE_KEY
 
 

@@ -1,5 +1,5 @@
 import json
-import skale.manager.contracts.nodes as nodes
+import skale.contracts.manager.nodes as nodes
 from skale.dataclasses import CurrentNodeInfo
 from skale.schain_config.generator import get_nodes_for_schain
 from skale.schain_config.generator import (generate_schain_info, generate_schain_config,
