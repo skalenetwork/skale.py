@@ -1,4 +1,4 @@
-import skale.contracts.nodes as nodes
+import skale.contracts.manager.nodes as nodes
 from skale.schain_config.generator import get_nodes_for_schain, get_schain_nodes_with_schains
 from tests.constants import (DEFAULT_SCHAIN_NAME, MIN_NODES_IN_SCHAIN)
 
