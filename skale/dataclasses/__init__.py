@@ -18,6 +18,3 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 # flake8: noqa: F401
-
-from skale.dataclasses.current_node_info import CurrentNodeInfo
-from skale.dataclasses.schain_node_info import SchainNodeInfo
