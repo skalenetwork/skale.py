@@ -16,17 +16,10 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Contract info utilities """
-
-from typing import NamedTuple
+""" SKALE group class """
 
 from skale.contracts.base_contract import BaseContract
-from skale.utils.contract_types import ContractTypes
 
 
-class ContractInfo(NamedTuple):
-    name: str
-    contract_name: str
-    contract_class: BaseContract
-    type: ContractTypes
-    upgradeable: bool
+class Groups(BaseContract):
+    pass

@@ -1,6 +1,6 @@
 """ SKALE chain test """
 
-from skale.manager.contracts.schains import FIELDS
+from skale.contracts.manager.schains import FIELDS
 from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)

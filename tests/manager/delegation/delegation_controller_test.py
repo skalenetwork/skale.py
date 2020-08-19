@@ -2,7 +2,7 @@
 
 import pytest
 
-from skale.manager.contracts.delegation.delegation_controller import FIELDS
+from skale.contracts.manager.delegation.delegation_controller import FIELDS
 from skale.transactions.result import DryRunFailedError
 from skale.utils.contracts_provision.main import _skip_evm_time
 

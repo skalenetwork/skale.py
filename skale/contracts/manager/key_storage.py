@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2020-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -16,17 +16,22 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Contract info utilities """
-
-from typing import NamedTuple
 
 from skale.contracts.base_contract import BaseContract
-from skale.utils.contract_types import ContractTypes
 
 
-class ContractInfo(NamedTuple):
-    name: str
-    contract_name: str
-    contract_class: BaseContract
-    type: ContractTypes
-    upgradeable: bool
+class KeyStorage(BaseContract):
+    def get_bls_public_key(self, group_index, node_index):
+        return self.contract.functions.getBLSPublicKey(group_index, node_index).call()
+
+    def get_broadcasted_data(self, group_index, node_index):
+        return self.contract.functions.getBroadcastedData(group_index, node_index).call()
+
+    def get_common_public_key(self, group_index):
+        return self.contract.functions.getCommonPublicKey(group_index).call()
+
+    def get_previous_public_key(self, group_index):
+        return self.contract.functions.getPreviousPublicKey(group_index).call()
+
+    def get_all_previous_public_keys(self, group_index):
+        return self.contract.functions.getAllPreviousPublicKeys(group_index).call()

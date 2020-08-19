@@ -3,7 +3,7 @@
 import random
 import pytest
 
-from skale.manager.contracts.delegation.validator_service import FIELDS
+from skale.contracts.manager.delegation.validator_service import FIELDS
 from skale.transactions.result import DryRunFailedError
 from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether

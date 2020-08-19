@@ -16,17 +16,27 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Contract info utilities """
 
-from typing import NamedTuple
-
-from skale.contracts.base_contract import BaseContract
+import skale.allocator.contracts as contracts
+from skale.contracts.contract_manager import ContractManager
+from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 
 
-class ContractInfo(NamedTuple):
-    name: str
-    contract_name: str
-    contract_class: BaseContract
-    type: ContractTypes
-    upgradeable: bool
+CONTRACTS_INFO = [
+    ContractInfo('contract_manager', 'ContractManager',
+                 ContractManager, ContractTypes.API, False),
+    ContractInfo('core_escrow', 'CoreEscrow', contracts.CoreEscrow,
+                 ContractTypes.API, True),
+]
+
+
+def get_contracts_info(contracts_data):
+    contracts_info = {}
+    for contract_info in contracts_data:
+        contracts_info[contract_info.name] = contract_info
+    return contracts_info
+
+
+def get_base_contracts_info():
+    return get_contracts_info(CONTRACTS_INFO)

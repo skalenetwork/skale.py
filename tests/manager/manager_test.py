@@ -185,7 +185,7 @@ def test_create_node_status_0(skale):
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         send_tx_mock.return_value = b'hexstring'
         with mock.patch(
-            'skale.common_contracts.base_contract.wait_for_receipt_by_blocks',
+            'skale.contracts.base_contract.wait_for_receipt_by_blocks',
             return_value={'status': 0}
         ):
             tx_res = skale.manager.create_node(ip, port, name,

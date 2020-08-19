@@ -16,17 +16,19 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Contract info utilities """
+""" SKALE Contract manager class """
 
-from typing import NamedTuple
+from Crypto.Hash import keccak
 
 from skale.contracts.base_contract import BaseContract
-from skale.utils.contract_types import ContractTypes
+from skale.utils.helper import add_0x_prefix
 
 
-class ContractInfo(NamedTuple):
-    name: str
-    contract_name: str
-    contract_class: BaseContract
-    type: ContractTypes
-    upgradeable: bool
+class ContractManager(BaseContract):
+    def get_contract_address(self, name):
+        contract_hash = add_0x_prefix(self.get_contract_hash_by_name(name))
+        return self.contract.functions.contracts(contract_hash).call()
+
+    def get_contract_hash_by_name(self, name):
+        keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
+        return keccak_hash.hexdigest()
