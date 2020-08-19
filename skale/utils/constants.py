@@ -63,7 +63,9 @@ GAS = {
     'add_schain_by_foundation': 7500000,
     'grant_role': 7500000,
     'manager_grant_role': 7500000,
-    'first_delegation_month': 3000000
+    'first_delegation_month': 3000000,
+    'set_node_in_maintenance': 1000000,
+    'remove_node_from_in_maintenance': 1000000
 }
 
 
