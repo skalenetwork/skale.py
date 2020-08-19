@@ -135,10 +135,10 @@ class Nodes(BaseContract):
         """
         return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
 
-    @transaction_method(GAS['set_node_in_maintenance'])
+    @transaction_method(gas_limit=GAS['set_node_in_maintenance'])
     def set_node_in_maintenance(self, node_id):
         return self.contract.functions.setNodeInMaintenance(node_id)
 
-    @transaction_method(GAS['remove_node_from_in_maintenance'])
+    @transaction_method(gas_limit=GAS['remove_node_from_in_maintenance'])
     def remove_node_from_in_maintenance(self, node_id):
         return self.contract.functions.removeNodeFromInMaintenance(node_id)
