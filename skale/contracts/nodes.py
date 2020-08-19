@@ -46,6 +46,7 @@ class NodeStatus(IntEnum):
     ACTIVE = 0
     LEAVING = 1
     LEFT = 2
+    IN_MAINTENANCE = 3
 
 
 class Nodes(BaseContract):

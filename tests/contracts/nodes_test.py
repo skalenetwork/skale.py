@@ -7,7 +7,7 @@ from eth_keys import keys
 from web3 import Web3
 
 import skale.utils.helper as Helper
-from skale.contracts.nodes import FIELDS
+from skale.contracts.nodes import FIELDS, NodeStatus
 from skale.utils.exceptions import InvalidNodeIdError
 from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
@@ -127,3 +127,14 @@ def test_get_node_public_key(skale):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     node_public_key = skale.nodes.get_node_public_key(node_id)
     assert node_public_key == skale.wallet.public_key
+
+
+def test_node_in_maintenance(skale):
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    assert skale.nodes.get_node_status(node_id) == NodeStatus.ACTIVE.value
+
+    skale.nodes.set_node_in_maintenance(node_id)
+    assert skale.nodes.get_node_status(node_id) == NodeStatus.IN_MAINTENANCE.value
+
+    skale.nodes.remove_node_from_in_maintenance(node_id)
+    assert skale.nodes.get_node_status(node_id) == NodeStatus.ACTIVE.value
