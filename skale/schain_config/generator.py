@@ -17,6 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import logging
+
 from web3 import Web3
 
 from skale.dataclasses import CurrentNodeInfo, SchainNodeInfo
@@ -25,6 +27,9 @@ from skale.schain_config import PRECOMPILED_IMA_CONTRACTS
 from skale.utils.helper import ip_from_bytes, decapitalize
 from skale.utils.web3_utils import public_key_to_address
 from skale.schain_config.base_config import update_base_config
+
+
+logger = logging.getLogger(__name__)
 
 
 def generate_schain_info(schain, schain_nodes,
@@ -64,6 +69,7 @@ def get_nodes_for_schain_config(skale, name):
         group_index = skale.web3.sha3(text=name)
         bls_public_key = skale.key_storage.get_bls_public_key(group_index, node['id'])
         previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_index)
+        logger.info(f'Previous public keys {previous_public_keys}')
 
         node_info = SchainNodeInfo(
             node_name=node['name'],
@@ -72,8 +78,8 @@ def get_nodes_for_schain_config(skale, name):
             bls_public_key=bls_public_key,
             previous_bls_public_keys=previous_public_keys,
             schain_index=i,
-            ip=ip_from_bytes(node['ip']),
             public_key=node['publicKey'],
+            ip=ip_from_bytes(node['ip']),
             public_ip=ip_from_bytes(node['publicIP']),
             owner=public_key_to_address(node['publicKey'])
         ).to_config()
