@@ -49,11 +49,12 @@ class Allocator(BaseContract):
     @transaction_method(gas_limit=ALLOCATOR_GAS['connect_beneficiary_to_plan'])
     def connect_beneficiary_to_plan(
             self,
-            beneficiary: str,
+            beneficiary_address: str,
             plan_id: int,
             start_month: int,
             full_amount: int,
             lockup_amount: int,
     ) -> TxRes:
-        return self.contract.functions.connectBeneficiaryToPlan(beneficiary, plan_id, start_month,
-                                                                full_amount, lockup_amount)
+        return self.contract.functions.connectBeneficiaryToPlan(beneficiary_address, plan_id,
+                                                                start_month, full_amount,
+                                                                lockup_amount)

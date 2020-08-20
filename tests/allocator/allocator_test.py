@@ -1,6 +1,8 @@
 """ Tests for skale/allocator/allocator.py """
 
+import pytest
 import time
+import datetime
 from skale.wallets.web3_wallet import generate_wallet
 
 TEST_VESTING_SLIFF = 6
@@ -48,6 +50,24 @@ def test_add_plan(skale_allocator):
     assert isinstance(plan_id, int)
 
 
-# def test_connect_beneficiary_to_plan(skale_allocator):
-#     wallet = generate_wallet(skale_allocator.web3)
-#     plan_id = _add_test_plan(skale_allocator, False)
+@pytest.skip('Not implemented yet')
+def test_connect_beneficiary_to_plan(skale_allocator):
+    wallet = generate_wallet(skale_allocator.web3)
+    d = datetime.date(2020, 10, 1)
+    start_month = int("{:%s}".format(d))
+
+    full_amount = 10 ** 6
+    lockup_amount = 10 ** 5
+
+    assert not skale_allocator.allocator.is_beneficiary_registered(wallet.address)
+    plan_id = _add_test_plan(skale_allocator, False)
+
+    print('plan_id')
+    print(plan_id)
+    skale_allocator.allocator.connect_beneficiary_to_plan(
+        beneficiary_address=wallet.address,
+        plan_id=plan_id,
+        start_month=start_month,
+        full_amount=full_amount,
+        lockup_amount=lockup_amount
+    )
