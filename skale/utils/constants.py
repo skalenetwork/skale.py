@@ -73,7 +73,9 @@ ALLOCATOR_GAS = {
     'retrieve': 1000000,
     'retrieve_after_termination': 1000000,
     'delegate': 3000000,
-    'request_undelegation': 3000000
+    'request_undelegation': 3000000,
+    'add_plan': 3000000,
+    'connect_beneficiary_to_plan': 3000000
 }
 
 

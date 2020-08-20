@@ -14,3 +14,6 @@ def test_init_allocator():
                                      provider_timeout=20)
     lib_contracts = skale_allocator._SkaleBase__contracts
     assert len(lib_contracts) == len(CONTRACTS_INFO)
+
+    assert skale_allocator.allocator
+    assert skale_allocator.escrow
