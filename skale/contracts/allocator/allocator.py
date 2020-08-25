@@ -32,6 +32,18 @@ class Allocator(BaseContract):
         """
         return self.contract.functions.isBeneficiaryRegistered(beneficiary_address).call()
 
+    def is_beneficiary_address_approved(self, beneficiary_address: str) -> bool:
+        return self.contract.functions.isBeneficiaryAddressApproved(beneficiary_address).call()
+
+    def is_delegation_allowed(self, beneficiary_address: str) -> bool:
+        return self.contract.functions.isDelegationAllowed(beneficiary_address).call()
+
+    def is_vesting_active(self, beneficiary_address: str) -> bool:
+        return self.contract.functions.isVestingActive(beneficiary_address).call()
+
+    def get_escrow_address(self, beneficiary_address: str) -> str:
+        return self.contract.functions.getEscrowAddress(beneficiary_address).call()
+
     @transaction_method(gas_limit=ALLOCATOR_GAS['add_plan'])
     def add_plan(
             self,
@@ -67,3 +79,11 @@ class Allocator(BaseContract):
             fullAmount=full_amount,
             lockupAmount=lockup_amount
         )
+
+    @transaction_method(gas_limit=ALLOCATOR_GAS['approve_address'])
+    def approve_address(self) -> TxRes:
+        return self.contract.functions.approveAddress()
+
+    @transaction_method(gas_limit=ALLOCATOR_GAS['start_vesting'])
+    def start_vesting(self, beneficiary_address: str) -> TxRes:
+        return self.contract.functions.startVesting(beneficiary_address)

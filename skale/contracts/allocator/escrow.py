@@ -18,12 +18,24 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE Allocator Core Escrow methods """
 
+import functools
+
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from skale.utils.constants import ALLOCATOR_GAS
 
 
 class Escrow(BaseContract):
+    @property
+    @functools.lru_cache()
+    def allocator(self):
+        return self.skale.get_contract_by_name('allocator')
+
+    def init_beneficiary_contract(self, beneficiary_address: str):
+        beneficiary_escrow_address = self.allocator.get_escrow_address(beneficiary_address)
+        return Escrow(self.skale, f'escrow_{beneficiary_address}', beneficiary_escrow_address,
+                      self.contract.abi)
+
     @transaction_method(gas_limit=ALLOCATOR_GAS['retrieve'])
     def retrieve(self) -> TxRes:
         """Allows Holder to retrieve vested tokens from the Escrow contract
@@ -58,7 +70,8 @@ class Escrow(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        return self.contract.functions.delegate(validator_id, amount, delegation_period, info)
+        escrow_contract = self.init_beneficiary_contract(self.skale.wallet.address)
+        return escrow_contract.contract.functions.delegate(validator_id, amount, delegation_period, info)
 
     @transaction_method(gas_limit=ALLOCATOR_GAS['request_undelegation'])
     def request_undelegation(self, delegation_id: int) -> TxRes:

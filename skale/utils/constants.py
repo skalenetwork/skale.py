@@ -75,7 +75,9 @@ ALLOCATOR_GAS = {
     'delegate': 3000000,
     'request_undelegation': 3000000,
     'add_plan': 3000000,
-    'connect_beneficiary_to_plan': 3000000
+    'connect_beneficiary_to_plan': 3000000,
+    'approve_address': 1000000,
+    'start_vesting': 2000000
 }
 
 
