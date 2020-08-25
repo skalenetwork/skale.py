@@ -33,8 +33,10 @@ logger = logging.getLogger(__name__)
 CONTRACTS_INFO = [
     ContractInfo('contract_manager', 'ContractManager',
                  ContractManager, ContractTypes.API, False),
-    ContractInfo('core_escrow', 'CoreEscrow', contracts.CoreEscrow,
+    ContractInfo('escrow', 'Escrow', contracts.Escrow,
                  ContractTypes.API, True),
+    ContractInfo('allocator', 'Allocator', contracts.Allocator,
+                 ContractTypes.API, True)
 ]
 
 

@@ -1,12 +1,6 @@
 from tests.constants import (DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME)
 
 
-def test_get_broadcasted_data(skale):
-    group_index = b'e629fa6598d732768f7c726b4b621285'
-    broadcasted_data = skale.key_storage.get_broadcasted_data(group_index, 0)
-    assert len(broadcasted_data) == 2
-
-
 def test_get_bls_public_key(skale):
     group_index = b'e629fa6598d732768f7c726b4b621285'
     assert skale.key_storage.get_bls_public_key(group_index, 0) == ((0, 0), (1, 0))

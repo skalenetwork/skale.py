@@ -51,11 +51,23 @@ class DKG(BaseContract):
 
     @retry_tx
     @transaction_method(gas_limit=GAS['dkg_response'])
-    def response(self, group_index, from_node_index,
-                 secret_number, multiplied_share):
-        return self.contract.functions.response(group_index, from_node_index,
-                                                secret_number,
-                                                multiplied_share)
+    def response(
+            self,
+            group_index: bytes,
+            from_node_index: int,
+            secret_number: int,
+            multiplied_share: G2Point,
+            verification_vector: list,
+            secret_key_contribution: list,
+    ):
+        return self.contract.functions.response(
+            groupIndex=group_index,
+            fromNodeIndex=from_node_index,
+            secretNumber=secret_number,
+            multipliedShare=multiplied_share,
+            verificationVector=verification_vector,
+            secretKeyContribution=secret_key_contribution,
+        )
 
     @retry_tx
     @transaction_method(gas_limit=GAS['dkg_alright'])

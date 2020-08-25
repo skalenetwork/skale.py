@@ -31,7 +31,7 @@ GAS = {
     'set_periods': 200000,
     'delete_schain': 8000000,
     'dkg_broadcast': 8000000,
-    'dkg_response': 10000000,
+    'dkg_response': 11000000,
     'dkg_alright': 1000000,
     'dkg_complaint': 8000000,
     'node_exit': 10000000,
@@ -73,7 +73,9 @@ ALLOCATOR_GAS = {
     'retrieve': 1000000,
     'retrieve_after_termination': 1000000,
     'delegate': 3000000,
-    'request_undelegation': 3000000
+    'request_undelegation': 3000000,
+    'add_plan': 3000000,
+    'connect_beneficiary_to_plan': 3000000
 }
 
 

@@ -23,7 +23,7 @@ from skale.transactions.result import TxRes
 from skale.utils.constants import ALLOCATOR_GAS
 
 
-class CoreEscrow(BaseContract):
+class Escrow(BaseContract):
     @transaction_method(gas_limit=ALLOCATOR_GAS['retrieve'])
     def retrieve(self) -> TxRes:
         """Allows Holder to retrieve vested tokens from the Escrow contract
