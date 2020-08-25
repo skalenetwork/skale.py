@@ -37,14 +37,19 @@ class Allocator(BaseContract):
             self,
             vesting_cliff: int,
             total_vesting_duration: int,
-            vesting_step_time_unit: int,
-            vesting_times: int,
+            vesting_interval_time_unit: int,
+            vesting_interval: int,
             can_delegate: bool,
             is_terminatable: bool
     ) -> TxRes:
-        return self.contract.functions.addPlan(vesting_cliff, total_vesting_duration,
-                                               vesting_step_time_unit, vesting_times,
-                                               can_delegate, is_terminatable)
+        return self.contract.functions.addPlan(
+            vestingCliff=vesting_cliff,
+            totalVestingDuration=total_vesting_duration,
+            vestingIntervalTimeUnit=vesting_interval_time_unit,
+            vestingInterval=vesting_interval,
+            canDelegate=can_delegate,
+            isTerminatable=is_terminatable
+        )
 
     @transaction_method(gas_limit=ALLOCATOR_GAS['connect_beneficiary_to_plan'])
     def connect_beneficiary_to_plan(
@@ -55,6 +60,10 @@ class Allocator(BaseContract):
             full_amount: int,
             lockup_amount: int,
     ) -> TxRes:
-        return self.contract.functions.connectBeneficiaryToPlan(beneficiary_address, plan_id,
-                                                                start_month, full_amount,
-                                                                lockup_amount)
+        return self.contract.functions.connectBeneficiaryToPlan(
+            beneficiary=beneficiary_address,
+            planId=plan_id,
+            startMonth=start_month,
+            fullAmount=full_amount,
+            lockupAmount=lockup_amount
+        )
