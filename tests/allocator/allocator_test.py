@@ -3,7 +3,7 @@
 import time
 import datetime
 from skale.wallets.web3_wallet import generate_wallet
-from skale.utils.account_tools import send_ether
+from skale.utils.account_tools import send_ether, send_tokens
 
 TEST_VESTING_SLIFF = 6
 TEST_TOTAL_VESTING_DURATION = 36
@@ -17,6 +17,12 @@ TEST_FULL_AMOUNT = 10 ** 6
 TEST_LOCKUP_AMOUNT = 10 ** 5
 
 POLL_INTERVAL = 2
+
+TEST_SKALE_AMOUNT = 10 ** 8
+
+
+def _transfer_tokens_to_allocator(skale, skale_allocator):
+    send_tokens(skale, skale_allocator.wallet, skale_allocator.allocator.address, TEST_SKALE_AMOUNT)
 
 
 def _add_test_plan(skale_allocator, wait_for):
@@ -96,7 +102,7 @@ def test_connect_beneficiary_to_plan(skale_allocator):
     assert skale_allocator.allocator.is_beneficiary_registered(wallet.address)
 
 
-def test_approve_address(skale_allocator):
+def test_approve_address(skale, skale_allocator):
     main_wallet = skale_allocator.wallet
     wallet = generate_wallet(skale_allocator.web3)
     _add_plan_and_connect_beneficiary(skale_allocator, wallet)
@@ -112,6 +118,8 @@ def test_approve_address(skale_allocator):
     assert skale_allocator.allocator.is_delegation_allowed(wallet.address)
 
     skale_allocator.wallet = main_wallet
+
+    _transfer_tokens_to_allocator(skale, skale_allocator)
     assert not skale_allocator.allocator.is_vesting_active(wallet.address)
     skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)
     assert skale_allocator.allocator.is_vesting_active(wallet.address)
