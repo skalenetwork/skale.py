@@ -19,7 +19,7 @@
 """ SKALE web3 utilities """
 
 import logging
-from time import sleep
+import time
 from urllib.parse import urlparse
 
 from eth_keys import keys
@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
+MAX_WAITING_TIME = 1200
 
 
 def get_provider(endpoint, timeout=10, request_kwargs={}):
@@ -65,7 +66,9 @@ def get_eth_nonce(web3, address):
 def wait_for_receipt_by_blocks(web3, tx, timeout=4, blocks_to_wait=50):
     previous_block = web3.eth.blockNumber
     current_block = previous_block
-    while current_block <= previous_block + blocks_to_wait:
+    wait_start_time = time.time()
+    while time.time() - wait_start_time < MAX_WAITING_TIME and \
+            current_block <= previous_block + blocks_to_wait:
         try:
             receipt = get_receipt(web3, tx)
         except TransactionNotFound:
@@ -73,7 +76,7 @@ def wait_for_receipt_by_blocks(web3, tx, timeout=4, blocks_to_wait=50):
         if receipt is not None:
             return receipt
         current_block = web3.eth.blockNumber
-        sleep(timeout)
+        time.sleep(timeout)
     raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
 
 
@@ -85,7 +88,7 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
             receipt = None
         if receipt is not None:
             return receipt
-        sleep(timeout)  # pragma: no cover
+        time.sleep(timeout)  # pragma: no cover
     raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
 
 
@@ -104,9 +107,11 @@ def wait_for_confirmation_blocks(web3, blocks_to_wait, request_timeout=5):
         f'Current block number is {current_block}, '
         f'waiting for {blocks_to_wait} confimration blocks to be mined'
     )
-    while current_block <= start_block + blocks_to_wait:
+    wait_start_time = time.time()
+    while time.time() - wait_start_time < MAX_WAITING_TIME and \
+            current_block <= start_block + blocks_to_wait:
         current_block = web3.eth.blockNumber
-        sleep(request_timeout)
+        time.sleep(request_timeout)
 
 
 def private_key_to_public(pr):

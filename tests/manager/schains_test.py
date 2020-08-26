@@ -1,5 +1,7 @@
 """ SKALE chain test """
 
+from hexbytes import HexBytes
+
 from skale.contracts.manager.schains import FIELDS
 from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
@@ -103,3 +105,9 @@ def test_get_active_schains_for_node(skale):
     all_active_schains = [schain for schain in all_schains if schain['active']]
     for active_schain in all_active_schains:
         assert active_schain in active_schains
+
+
+def test_name_to_group_id(skale):
+    name = 'TEST'
+    gid = skale.schains.name_to_group_id(name)
+    assert gid == HexBytes('0x852daa74cc3c31fe64542bb9b8764cfb91cc30f9acf9389071ffb44a9eefde46')  # noqa

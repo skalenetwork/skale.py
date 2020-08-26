@@ -36,6 +36,9 @@ FIELDS = [
 class SChains(BaseContract):
     """Wrapper for some of the Schains.sol functions"""
 
+    def name_to_group_id(self, name):
+        return self.skale.web3.keccak(text=name)
+
     @property
     @functools.lru_cache()
     def schains_internal(self):
