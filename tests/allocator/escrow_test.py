@@ -1,6 +1,5 @@
 """ Tests for skale/allocator/escrow.py """
 
-import pytest
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.account_tools import send_ether
 
@@ -8,8 +7,10 @@ from tests.allocator.allocator_test import _add_test_plan, _connect_and_approve_
 from tests.constants import (D_DELEGATION_INFO, D_VALIDATOR_ID,
                              D_DELEGATION_AMOUNT, D_DELEGATION_PERIOD)
 
+from skale.utils.contracts_provision.main import _skip_evm_time
+from skale.utils.contracts_provision import MONTH_IN_SECONDS
 
-# @pytest.mark.skip(reason="not ready yet")
+
 def test_delegate(skale, skale_allocator):
     main_wallet = skale_allocator.wallet
     wallet = generate_wallet(skale_allocator.web3)
@@ -18,8 +19,10 @@ def test_delegate(skale, skale_allocator):
     plan_id = _add_test_plan(skale_allocator, False)
     _connect_and_approve_beneficiary(skale_allocator, plan_id, wallet)
 
-    _transfer_tokens_to_allocator(skale, skale_allocator) # todo: move to prepare_data for allocator!!!!
+    _transfer_tokens_to_allocator(skale, skale_allocator) # todo move to prepare_data for allocator
     skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)
+
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * 12)
 
     skale_allocator.wallet = wallet
     skale_allocator.escrow.delegate(

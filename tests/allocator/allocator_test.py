@@ -13,8 +13,8 @@ TEST_CAN_DELEGATE = True
 TEST_IS_TERMINATABLE = True
 
 TEST_START_MONTH = int("{:%s}".format(datetime.date(2020, 10, 1)))
-TEST_FULL_AMOUNT = 10 ** 6
-TEST_LOCKUP_AMOUNT = 10 ** 5
+TEST_FULL_AMOUNT = 10 ** 10
+TEST_LOCKUP_AMOUNT = 10 ** 9
 
 POLL_INTERVAL = 2
 
@@ -119,7 +119,7 @@ def test_approve_address(skale, skale_allocator):
 
     skale_allocator.wallet = main_wallet
 
-    _transfer_tokens_to_allocator(skale, skale_allocator)
+    _transfer_tokens_to_allocator(skale, skale_allocator) # todo: move to prepare_data for allocator!!!!
     assert not skale_allocator.allocator.is_vesting_active(wallet.address)
     skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)
     assert skale_allocator.allocator.is_vesting_active(wallet.address)
