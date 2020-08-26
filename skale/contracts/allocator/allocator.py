@@ -32,9 +32,6 @@ class Allocator(BaseContract):
         """
         return self.contract.functions.isBeneficiaryRegistered(beneficiary_address).call()
 
-    def is_beneficiary_address_approved(self, beneficiary_address: str) -> bool:
-        return self.contract.functions.isBeneficiaryAddressApproved(beneficiary_address).call()
-
     def is_delegation_allowed(self, beneficiary_address: str) -> bool:
         return self.contract.functions.isDelegationAllowed(beneficiary_address).call()
 
@@ -79,10 +76,6 @@ class Allocator(BaseContract):
             fullAmount=full_amount,
             lockupAmount=lockup_amount
         )
-
-    @transaction_method(gas_limit=ALLOCATOR_GAS['approve_address'])
-    def approve_address(self) -> TxRes:
-        return self.contract.functions.approveAddress()
 
     @transaction_method(gas_limit=ALLOCATOR_GAS['start_vesting'])
     def start_vesting(self, beneficiary_address: str) -> TxRes:

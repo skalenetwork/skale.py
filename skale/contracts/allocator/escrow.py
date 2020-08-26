@@ -70,8 +70,8 @@ class Escrow(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        escrow_contract = self.init_beneficiary_contract(self.skale.wallet.address)
-        return escrow_contract.contract.functions.delegate(validator_id, amount, delegation_period, info)
+        escrow = self.init_beneficiary_contract(self.skale.wallet.address)
+        return escrow.contract.functions.delegate(validator_id, amount, delegation_period, info)
 
     @transaction_method(gas_limit=ALLOCATOR_GAS['request_undelegation'])
     def request_undelegation(self, delegation_id: int) -> TxRes:
@@ -83,4 +83,5 @@ class Escrow(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        return self.contract.functions.requestUndelegation(delegation_id)
+        escrow = self.init_beneficiary_contract(self.skale.wallet.address)
+        return escrow.contract.functions.requestUndelegation(delegation_id)

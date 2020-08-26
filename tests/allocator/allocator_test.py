@@ -62,7 +62,6 @@ def _connect_and_approve_beneficiary(skale_allocator, plan_id, wallet):
     )
     main_wallet = skale_allocator.wallet
     skale_allocator.wallet = wallet
-    skale_allocator.allocator.approve_address(wait_for=True)
     skale_allocator.wallet = main_wallet
 
 
@@ -102,19 +101,16 @@ def test_connect_beneficiary_to_plan(skale_allocator):
     assert skale_allocator.allocator.is_beneficiary_registered(wallet.address)
 
 
-def test_approve_address(skale, skale_allocator):
+def test_start_vesting(skale, skale_allocator):
     main_wallet = skale_allocator.wallet
     wallet = generate_wallet(skale_allocator.web3)
     _add_plan_and_connect_beneficiary(skale_allocator, wallet)
     assert skale_allocator.allocator.is_beneficiary_registered(wallet.address)
-    assert not skale_allocator.allocator.is_beneficiary_address_approved(wallet.address)
 
     send_ether(skale_allocator.web3, main_wallet, wallet.address, 0.1)
 
     skale_allocator.wallet = wallet
-    skale_allocator.allocator.approve_address(wait_for=True)
 
-    assert skale_allocator.allocator.is_beneficiary_address_approved(wallet.address)
     assert skale_allocator.allocator.is_delegation_allowed(wallet.address)
 
     skale_allocator.wallet = main_wallet
