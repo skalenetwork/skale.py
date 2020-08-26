@@ -25,6 +25,7 @@ def _delegate_via_escrow(skale_allocator, plan_id, wallet):
         amount=D_DELEGATION_AMOUNT,
         delegation_period=D_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
+        beneficiary_address=skale_allocator.wallet.address,
         wait_for=True
     )
     skale_allocator.wallet = main_wallet
@@ -51,6 +52,7 @@ def test_delegate(skale, skale_allocator):
         amount=D_DELEGATION_AMOUNT,
         delegation_period=D_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
+        beneficiary_address=skale_allocator.wallet.address,
         wait_for=True
     )
     num_of_delegations_after = _get_number_of_delegations(skale)
@@ -80,6 +82,7 @@ def test_request_undelegate(skale, skale_allocator):
     skale_allocator.wallet = wallet
     skale_allocator.escrow.request_undelegation(
         delegation_id,
+        beneficiary_address=skale_allocator.wallet.address,
         wait_for=True
     )
     skale_allocator.wallet = main_wallet
@@ -89,3 +92,30 @@ def test_request_undelegate(skale, skale_allocator):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
+
+
+def test_retrieve(skale, skale_allocator):
+    main_wallet = skale_allocator.wallet
+    wallet = generate_wallet(skale_allocator.web3)
+
+    plan_id = _add_test_plan(skale_allocator, False)
+    _delegate_via_escrow(skale_allocator, plan_id, wallet)
+
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        validator_id=D_VALIDATOR_ID
+    )
+    delegation_id = delegations[-1]['id']
+    skale.delegation_controller.accept_pending_delegation(
+        delegation_id,
+        wait_for=True
+    )
+
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * (D_DELEGATION_PERIOD + 1))
+
+    skale_allocator.wallet = wallet
+    skale_allocator.escrow.retrieve(
+        beneficiary_address=skale_allocator.wallet.address,
+        wait_for=True
+    )
+    skale_allocator.wallet = main_wallet
+    # todo: improve test

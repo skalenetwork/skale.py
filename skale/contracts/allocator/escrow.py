@@ -25,6 +25,14 @@ from skale.transactions.result import TxRes
 from skale.utils.constants import ALLOCATOR_GAS
 
 
+def beneficiary_escrow(transaction):
+    @functools.wraps(transaction)
+    def wrapper(self, *args, beneficiary_address, **kwargs):
+        self.contract = self.init_beneficiary_contract(beneficiary_address)
+        return transaction(self, *args, **kwargs)
+    return wrapper
+
+
 class Escrow(BaseContract):
     @property
     @functools.lru_cache()
@@ -34,8 +42,9 @@ class Escrow(BaseContract):
     def init_beneficiary_contract(self, beneficiary_address: str):
         beneficiary_escrow_address = self.allocator.get_escrow_address(beneficiary_address)
         return Escrow(self.skale, f'escrow_{beneficiary_address}', beneficiary_escrow_address,
-                      self.contract.abi)
+                      self.contract.abi).contract
 
+    @beneficiary_escrow
     @transaction_method(gas_limit=ALLOCATOR_GAS['retrieve'])
     def retrieve(self) -> TxRes:
         """Allows Holder to retrieve vested tokens from the Escrow contract
@@ -45,6 +54,7 @@ class Escrow(BaseContract):
         """
         return self.contract.functions.retrieve()
 
+    @beneficiary_escrow
     @transaction_method(gas_limit=ALLOCATOR_GAS['retrieve_after_termination'])
     def retrieve_after_termination(self) -> TxRes:
         """Allows Core Owner to retrieve remaining transferrable escrow balance
@@ -55,6 +65,7 @@ class Escrow(BaseContract):
         """
         return self.contract.functions.retrieveAfterTermination()
 
+    @beneficiary_escrow
     @transaction_method(gas_limit=ALLOCATOR_GAS['delegate'])
     def delegate(self, validator_id: int, amount: int, delegation_period: int, info: str) -> TxRes:
         """Allows Core holder to propose a delegation to a validator
@@ -70,9 +81,9 @@ class Escrow(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        escrow = self.init_beneficiary_contract(self.skale.wallet.address)
-        return escrow.contract.functions.delegate(validator_id, amount, delegation_period, info)
+        return self.contract.functions.delegate(validator_id, amount, delegation_period, info)
 
+    @beneficiary_escrow
     @transaction_method(gas_limit=ALLOCATOR_GAS['request_undelegation'])
     def request_undelegation(self, delegation_id: int) -> TxRes:
         """Allows Holder and Owner to request undelegation. Only Owner can
@@ -83,5 +94,4 @@ class Escrow(BaseContract):
         :returns: Transaction results
         :rtype: TxRes
         """
-        escrow = self.init_beneficiary_contract(self.skale.wallet.address)
-        return escrow.contract.functions.requestUndelegation(delegation_id)
+        return self.contract.functions.requestUndelegation(delegation_id)
