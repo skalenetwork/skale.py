@@ -115,7 +115,7 @@ def test_start_vesting(skale, skale_allocator):
 
     skale_allocator.wallet = main_wallet
 
-    _transfer_tokens_to_allocator(skale, skale_allocator) # todo: move to prepare_data for allocator!!!!
+    _transfer_tokens_to_allocator(skale, skale_allocator)  # todo move to prepare_data for allocator
     assert not skale_allocator.allocator.is_vesting_active(wallet.address)
     skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)
     assert skale_allocator.allocator.is_vesting_active(wallet.address)

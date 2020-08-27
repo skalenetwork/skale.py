@@ -95,3 +95,17 @@ class Escrow(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.requestUndelegation(delegation_id)
+
+    @beneficiary_escrow
+    @transaction_method(gas_limit=ALLOCATOR_GAS['withdraw_bounty'])
+    def withdraw_bounty(self, validator_id: int, to: str) -> TxRes:
+        """Allows Beneficiary and Vesting Owner to withdraw earned bounty.
+
+        :param validator_id: ID of the validator
+        :type validator_id: int
+        :param to: Recipient address
+        :type to: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.withdrawBounty(validator_id, to)
