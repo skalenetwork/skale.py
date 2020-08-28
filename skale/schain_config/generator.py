@@ -32,6 +32,5 @@ def get_schain_nodes_with_schains(skale, schain_name) -> list:
     """Returns list of nodes for schain with schains for all nodes"""
     nodes = get_nodes_for_schain(skale, schain_name)
     for node in nodes:
-        group_index = skale.web3.sha3(text=schain_name)
         node['schains'] = skale.schains.get_schains_for_node(node['id'])
     return nodes
