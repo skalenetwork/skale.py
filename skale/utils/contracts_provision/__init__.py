@@ -17,6 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import datetime
+
+# manager test constants
+
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 
@@ -33,3 +37,25 @@ D_DELEGATION_INFO = 'test'
 
 MONTH_IN_SECONDS = (60 * 60 * 24 * 31) + 100
 FIRST_DELEGATION_MONTH = 1
+
+# allocator test constants
+
+TEST_VESTING_SLIFF = 6
+TEST_TOTAL_VESTING_DURATION = 36
+TEST_VESTING_INTERVAL_TIME_UNIT = 1
+TEST_VESTING_INTERVAL = 6
+TEST_CAN_DELEGATE = True
+TEST_IS_TERMINATABLE = True
+
+TEST_START_MONTH = int("{:%s}".format(datetime.date(2020, 10, 1)))
+
+WEI_MULTIPLIER = 10 ** 18
+
+TEST_FULL_AMOUNT = 5000 * WEI_MULTIPLIER
+TEST_LOCKUP_AMOUNT = 1000 * WEI_MULTIPLIER
+
+POLL_INTERVAL = 2
+
+TEST_SKALE_AMOUNT = 100000
+
+D_PLAN_ID = 1

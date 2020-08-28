@@ -102,6 +102,10 @@ def set_test_msr(skale):
     )
 
 
+def set_test_mda(skale):
+    skale.validator_service.set_validator_mda(0, wait_for=True)
+
+
 def delegate_to_validator(skale):
     print(f'Delegating tokens to validator ID: {D_VALIDATOR_ID}')
     skale.delegation_controller.delegate(

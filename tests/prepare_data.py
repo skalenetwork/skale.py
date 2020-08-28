@@ -46,6 +46,7 @@ def prepare_data(cleanup_only):
             # )
             # skale.time_helpers_with_debug.skip_time(MONTH_IN_SECONDS, wait_for=True)
             _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+            skale.constants_holder.set_launch_timestamp(0, wait_for=True)
             create_nodes(skale)
             create_schain(skale)
             active_node_ids = skale.nodes.get_active_node_ids()
