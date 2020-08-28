@@ -21,9 +21,6 @@ from skale.contracts.base_contract import BaseContract
 
 
 class KeyStorage(BaseContract):
-    def get_bls_public_key(self, group_index, node_index):
-        return self.contract.functions.getBLSPublicKey(group_index, node_index).call()
-
     def get_common_public_key(self, group_index):
         return self.contract.functions.getCommonPublicKey(group_index).call()
 
