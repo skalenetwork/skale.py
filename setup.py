@@ -8,7 +8,7 @@ from setuptools import (
 extras_require = {
     'linter': [
         "flake8==3.8.3",
-        "isort>=4.2.15,<4.3.22",
+        "isort>=4.2.15,<5.4.3",
     ],
     'dev': [
         "bumpversion==0.6.0",
@@ -42,7 +42,7 @@ setup(
         "web3==5.6.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.6dev8"
+        "sgx.py==0.6.dev13"
     ],
 
     python_requires='>=3.6,<4',
