@@ -45,7 +45,7 @@ setup(
         "sgx.py==0.6dev8"
     ],
 
-    python_requires='>=3.6,<4',
+    python_requires='>=3.7,<4',
     extras_require=extras_require,
 
     keywords='skale',
@@ -55,7 +55,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 
     package_data={  # Optional
