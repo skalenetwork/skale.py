@@ -16,4 +16,3 @@ def test_get_schain_nodes_with_schains(skale):
     nodes_with_schains = get_schain_nodes_with_schains(skale, DEFAULT_SCHAIN_NAME)
     assert isinstance(nodes_with_schains[0]['schains'], list)
     assert isinstance(nodes_with_schains[0]['schains'][0]['owner'], str)
-    assert isinstance(nodes_with_schains[0]['bls_public_key'], tuple)
