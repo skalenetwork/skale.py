@@ -18,9 +18,17 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE Allocator Core Escrow methods """
 
+from enum import IntEnum
+
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from skale.utils.constants import ALLOCATOR_GAS
+
+
+class TimeUnit(IntEnum):
+    DAY = 0
+    MONTH = 1
+    YEAR = 2
 
 
 class Allocator(BaseContract):
@@ -46,7 +54,7 @@ class Allocator(BaseContract):
             self,
             vesting_cliff: int,
             total_vesting_duration: int,
-            vesting_interval_time_unit: int,
+            vesting_interval_time_unit: TimeUnit,
             vesting_interval: int,
             can_delegate: bool,
             is_terminatable: bool
@@ -54,7 +62,7 @@ class Allocator(BaseContract):
         return self.contract.functions.addPlan(
             vestingCliff=vesting_cliff,
             totalVestingDuration=total_vesting_duration,
-            vestingIntervalTimeUnit=vesting_interval_time_unit,
+            vestingIntervalTimeUnit=vesting_interval_time_unit.value,
             vestingInterval=vesting_interval,
             canDelegate=can_delegate,
             isTerminatable=is_terminatable

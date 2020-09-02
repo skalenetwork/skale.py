@@ -19,6 +19,8 @@
 
 import datetime
 
+from skale.contracts.allocator.allocator import TimeUnit
+
 # manager test constants
 
 DEFAULT_NODE_NAME = 'test_node'
@@ -42,7 +44,7 @@ FIRST_DELEGATION_MONTH = 1
 
 TEST_VESTING_SLIFF = 6
 TEST_TOTAL_VESTING_DURATION = 36
-TEST_VESTING_INTERVAL_TIME_UNIT = 1
+TEST_VESTING_INTERVAL_TIME_UNIT = TimeUnit.MONTH
 TEST_VESTING_INTERVAL = 6
 TEST_CAN_DELEGATE = True
 TEST_IS_TERMINATABLE = True
