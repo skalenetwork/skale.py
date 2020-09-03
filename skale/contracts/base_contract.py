@@ -48,7 +48,7 @@ def transaction_method(transaction):
         if not skip_dry_run:
             dry_run_result = make_dry_run_call(self.skale.wallet, method)
             success_dry_run = is_success(dry_run_result)
-            if success_dry_run:
+            if success_dry_run and not gas_limit:
                 gas_limit = dry_run_result['payload']
 
         # Check balance

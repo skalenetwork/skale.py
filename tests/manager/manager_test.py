@@ -37,7 +37,7 @@ def test_get_bounty(skale):
                            new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
-            skale.manager.get_bounty(node_id, wait_for=False)
+            skale.manager.get_bounty(node_id, wait_for=False, gas_limit=TEST_GAS_LIMIT)
             send_tx_mock.assert_called_with(HexBytes(exp))
 
 
@@ -209,7 +209,8 @@ def test_failed_node_exit(skale):
     schain_name = skale.schains.get(schains_ids[0])['name']
     exit_node_id = skale.schains_internal.get_node_ids_for_schain(schain_name)[0]
     with pytest.raises(TransactionFailedError):
-        skale.manager.node_exit(exit_node_id, skip_dry_run=True, wait_for=True)
+        skale.manager.node_exit(exit_node_id, skip_dry_run=True,
+                                wait_for=True, gas_limit=TEST_GAS_LIMIT)
 
 
 def test_grant_role(skale):
