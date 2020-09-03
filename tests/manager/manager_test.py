@@ -10,11 +10,11 @@ from mock import Mock
 
 from skale.wallets.web3_wallet import generate_wallet
 from skale.transactions.result import TransactionFailedError
-from skale.utils.constants import GAS
 
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data
 )
+from tests.constants import TEST_GAS_LIMIT
 
 
 def test_get_bounty(skale):
@@ -24,7 +24,7 @@ def test_get_bounty(skale):
     chain_id = skale.web3.eth.chainId
     expected_txn = {
         'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
-        'gas': GAS['get_bounty'], 'nonce': nonce,
+        'gas': TEST_GAS_LIMIT, 'nonce': nonce,
         'to': contract_address,
         'data': (
             '0xee8c4bbf00000000000000000000000000000000000000000000'
