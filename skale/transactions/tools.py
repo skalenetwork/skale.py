@@ -21,8 +21,6 @@ import logging
 import time
 from functools import partial, wraps
 
-from web3._utils.transactions import get_block_gas_limit
-
 from skale.transactions.result import (
     DryRunFailedError,
     InsufficientBalanceError,
@@ -34,42 +32,29 @@ from skale.utils.web3_utils import get_eth_nonce
 logger = logging.getLogger(__name__)
 
 
-def make_dry_run_call(wallet, method, gas_limit) -> dict:
+def make_dry_run_call(wallet, method) -> dict:
     opts = {
         'from': wallet.address,
-        'gas': gas_limit
     }
     logger.info(
         f'Dry run tx: {method.fn_name}, '
         f'sender: {wallet.address}, '
         f'wallet: {wallet.__class__.__name__}, '
-        f'gasLimit: {gas_limit}'
     )
     try:
-        call_result = method.call(opts)
+        estimated_gas = method.estimateGas(opts)
+        logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
     except Exception as err:
         logger.error('Dry run for method failed with error', exc_info=err)
         return {'status': 0, 'error': str(err)}
 
-    return {'status': 1, 'payload': call_result}
+    return {'status': 1, 'payload': estimated_gas}
 
 
-def estimate_gas(web3, wallet, method):
-    opts = {
-        'from': wallet.address
-    }
-    logger.info(
-        f'Estimating tx gas: {method.fn_name}, '
-        f'sender: {wallet.address}, '
-        f'wallet: {wallet.__class__.__name__}, '
-    )
-    try:
-        estimated_gas = method.estimateGas(opts)
-        return estimated_gas
-    except Exception as err:
-        logger.error('Estimate gas for method failed with error', exc_info=err)
-        block_gas_limit = get_block_gas_limit(web3)
-        return block_gas_limit
+def raise_empty_gas_limit():
+    msg = 'Gas limit is empty'
+    logger.error(msg)
+    return {'status': 0, 'error': msg}
 
 
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
