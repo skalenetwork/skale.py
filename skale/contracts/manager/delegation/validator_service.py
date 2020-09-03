@@ -23,7 +23,6 @@ from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
 from skale.transactions.result import TxRes
-from skale.utils.constants import GAS
 
 
 FIELDS = [
@@ -157,12 +156,12 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getTrustedValidators().call()
 
-    @transaction_method(gas_limit=GAS['enable_validator'])
+    @transaction_method
     def _enable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         return self.contract.functions.enableValidator(validator_id)
 
-    @transaction_method(gas_limit=GAS['disable_validator'])
+    @transaction_method
     def _disable_validator(self, validator_id: int) -> TxRes:
         """For internal usage only"""
         return self.contract.functions.disableValidator(validator_id)
@@ -175,7 +174,7 @@ class ValidatorService(BaseContract):
         """For internal usage only"""
         return self.contract.functions.isAcceptingNewRequests(validator_id).call()
 
-    @transaction_method(gas_limit=GAS['register_validator'])
+    @transaction_method
     def register_validator(self, name: str, description: str, fee_rate: int,
                            min_delegation_amount: int) -> TxRes:
         """Registers a new validator in the SKALE Manager contracts.
@@ -199,7 +198,7 @@ class ValidatorService(BaseContract):
         signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
         return signed_hash.signature.hex()
 
-    @transaction_method(gas_limit=GAS['link_node_address'])
+    @transaction_method
     def link_node_address(self, node_address: str, signature: str) -> TxRes:
         """Link node address to your validator account.
 
@@ -212,7 +211,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.linkNodeAddress(node_address, signature)
 
-    @transaction_method(gas_limit=GAS['unlink_node_address'])
+    @transaction_method
     def unlink_node_address(self, node_address: str) -> TxRes:
         """Unlink node address from your validator account.
 
@@ -223,7 +222,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.unlinkNodeAddress(node_address)
 
-    @transaction_method(gas_limit=GAS['disable_whitelist'])
+    @transaction_method
     def disable_whitelist(self) -> TxRes:
         """ Disable validator whitelist. Master key only transaction.
         :returns: Transaction results
@@ -246,7 +245,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getAndUpdateBondAmount(validator_id).call()
 
-    @transaction_method(gas_limit=GAS['set_validator_mda'])
+    @transaction_method
     def set_validator_mda(self, minimum_delegation_amount: int) -> TxRes:
         """ Allows a validator to set the minimum delegation amount.
 
@@ -257,7 +256,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.setValidatorMDA(minimum_delegation_amount)
 
-    @transaction_method(gas_limit=GAS['request_for_new_address'])
+    @transaction_method
     def request_for_new_address(self, new_validator_address: str) -> TxRes:
         """ Allows a validator to request a new address.
 
@@ -268,7 +267,7 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.requestForNewAddress(new_validator_address)
 
-    @transaction_method(gas_limit=GAS['confirm_new_address'])
+    @transaction_method
     def confirm_new_address(self, validator_id: int) -> TxRes:
         """  Confirm change of the address.
 

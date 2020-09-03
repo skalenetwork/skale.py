@@ -26,7 +26,6 @@ from eth_abi import encode_abi
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils import helper
-from skale.utils.constants import GAS
 from skale.transactions.result import TxRes
 
 logger = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 class Manager(BaseContract):
 
-    @transaction_method(gas_limit=GAS['create_node'])
+    @transaction_method
     def create_node(self, ip, port, name, public_ip=None):
         logger.info(
             f'create_node: {ip}:{port}, public ip: {public_ip} name: {name}')
@@ -61,7 +60,7 @@ class Manager(BaseContract):
         return self.create_schain(lifetime, nodes_type, price_in_wei, name,
                                   wait_for=True)
 
-    @transaction_method(gas_limit=GAS['create_schain'])
+    @transaction_method
     def create_schain(self, lifetime, type_of_nodes, deposit, name):
         logger.info(
             f'create_schain: type_of_nodes: {type_of_nodes}, name: {name}')
@@ -74,19 +73,19 @@ class Manager(BaseContract):
         )
         return token.contract.functions.send(self.address, deposit, tx_data)
 
-    @transaction_method(gas_limit=GAS['get_bounty'])
+    @transaction_method
     def get_bounty(self, node_id):
         return self.contract.functions.getBounty(node_id)
 
-    @transaction_method(gas_limit=GAS['delete_schain'])
+    @transaction_method
     def delete_schain(self, schain_name):
         return self.contract.functions.deleteSchain(schain_name)
 
-    @transaction_method(gas_limit=GAS['node_exit'])
+    @transaction_method
     def node_exit(self, node_id):
         return self.contract.functions.nodeExit(node_id)
 
-    @transaction_method(gas_limit=GAS['manager_grant_role'])
+    @transaction_method
     def grant_role(self, role: bytes, address: str) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 

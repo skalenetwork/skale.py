@@ -22,7 +22,6 @@ import functools
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
-from skale.utils.constants import ALLOCATOR_GAS
 
 
 def beneficiary_escrow(transaction):
@@ -45,7 +44,7 @@ class Escrow(BaseContract):
                       self.contract.abi).contract
 
     @beneficiary_escrow
-    @transaction_method(gas_limit=ALLOCATOR_GAS['retrieve'])
+    @transaction_method
     def retrieve(self) -> TxRes:
         """Allows Holder to retrieve vested tokens from the Escrow contract
 
@@ -55,7 +54,7 @@ class Escrow(BaseContract):
         return self.contract.functions.retrieve()
 
     @beneficiary_escrow
-    @transaction_method(gas_limit=ALLOCATOR_GAS['retrieve_after_termination'])
+    @transaction_method
     def retrieve_after_termination(self) -> TxRes:
         """Allows Core Owner to retrieve remaining transferrable escrow balance
         after Core holder termination. Slashed tokens are non-transferable
@@ -66,7 +65,7 @@ class Escrow(BaseContract):
         return self.contract.functions.retrieveAfterTermination()
 
     @beneficiary_escrow
-    @transaction_method(gas_limit=ALLOCATOR_GAS['delegate'])
+    @transaction_method
     def delegate(self, validator_id: int, amount: int, delegation_period: int, info: str) -> TxRes:
         """Allows Core holder to propose a delegation to a validator
 
@@ -84,7 +83,7 @@ class Escrow(BaseContract):
         return self.contract.functions.delegate(validator_id, amount, delegation_period, info)
 
     @beneficiary_escrow
-    @transaction_method(gas_limit=ALLOCATOR_GAS['request_undelegation'])
+    @transaction_method
     def request_undelegation(self, delegation_id: int) -> TxRes:
         """Allows Holder and Owner to request undelegation. Only Owner can
         request undelegation after Core holder is deactivated (upon holder termination)
@@ -97,7 +96,7 @@ class Escrow(BaseContract):
         return self.contract.functions.requestUndelegation(delegation_id)
 
     @beneficiary_escrow
-    @transaction_method(gas_limit=ALLOCATOR_GAS['withdraw_bounty'])
+    @transaction_method
     def withdraw_bounty(self, validator_id: int, to: str) -> TxRes:
         """Allows Beneficiary and Vesting Owner to withdraw earned bounty.
 

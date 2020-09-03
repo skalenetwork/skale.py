@@ -22,7 +22,6 @@ from enum import IntEnum
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
-from skale.utils.constants import ALLOCATOR_GAS
 
 
 class TimeUnit(IntEnum):
@@ -49,7 +48,7 @@ class Allocator(BaseContract):
     def get_escrow_address(self, beneficiary_address: str) -> str:
         return self.contract.functions.getEscrowAddress(beneficiary_address).call()
 
-    @transaction_method(gas_limit=ALLOCATOR_GAS['add_plan'])
+    @transaction_method
     def add_plan(
             self,
             vesting_cliff: int,
@@ -68,7 +67,7 @@ class Allocator(BaseContract):
             isTerminatable=is_terminatable
         )
 
-    @transaction_method(gas_limit=ALLOCATOR_GAS['connect_beneficiary_to_plan'])
+    @transaction_method
     def connect_beneficiary_to_plan(
             self,
             beneficiary_address: str,
@@ -85,6 +84,6 @@ class Allocator(BaseContract):
             lockupAmount=lockup_amount
         )
 
-    @transaction_method(gas_limit=ALLOCATOR_GAS['start_vesting'])
+    @transaction_method
     def start_vesting(self, beneficiary_address: str) -> TxRes:
         return self.contract.functions.startVesting(beneficiary_address)

@@ -21,7 +21,6 @@ from functools import wraps
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
-from skale.utils.constants import GAS
 
 
 def formatter(method):
@@ -64,7 +63,7 @@ class Distributor(BaseContract):
             'from': address
         })
 
-    @transaction_method(gas_limit=GAS['withdraw_bounty'])
+    @transaction_method
     def withdraw_bounty(self, validator_id: int, to: str) -> TxRes:
         """Withdraw earned bounty to specified address
 
@@ -77,7 +76,7 @@ class Distributor(BaseContract):
         """
         return self.contract.functions.withdrawBounty(validator_id, to)
 
-    @transaction_method(gas_limit=GAS['withdraw_fee'])
+    @transaction_method
     def withdraw_fee(self, to: str) -> TxRes:
         """Withdraw earned fee to specified address
 

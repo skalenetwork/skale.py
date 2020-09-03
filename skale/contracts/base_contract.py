@@ -19,7 +19,7 @@
 """ SKALE base contract class """
 
 import logging
-from functools import partial, wraps
+from functools import wraps
 
 from web3 import Web3
 
@@ -35,10 +35,7 @@ from skale.utils.account_tools import account_eth_balance_wei
 logger = logging.getLogger(__name__)
 
 
-def transaction_method(transaction=None, *, gas_limit=None):
-    if transaction is None:
-        return partial(transaction_method, gas_limit=gas_limit)
-
+def transaction_method(transaction):
     @wraps(transaction)
     def wrapper(self, *args, wait_for=True,
                 wait_timeout=4, blocks_to_wait=50, gas_limit=None,
