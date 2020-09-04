@@ -5,7 +5,7 @@ from web3 import Web3
 from skale.transactions.result import InsufficientBalanceError
 from skale.utils.account_tools import generate_account
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
-
+from tests.constants import TEST_GAS_LIMIT
 
 ETH_IN_WEI = 10 ** 18
 
@@ -19,7 +19,7 @@ def test_dry_run(skale):
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
     tx_res = skale.token.transfer(address_to, amount, dry_run_only=True)
-    assert tx_res.dry_run_result == {'payload': [], 'status': 1}
+    assert tx_res.dry_run_result == {'payload': 278373, 'status': 1}
     tx_res.raise_for_status()
 
     balance_from_after = skale.token.get_balance(address_from)
@@ -37,7 +37,11 @@ def test_skip_dry_run(skale):
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
 
-    tx_res = skale.token.transfer(address_to, amount, skip_dry_run=True)
+    with pytest.raises(InsufficientBalanceError) as err:
+        skale.token.transfer(address_to, amount, skip_dry_run=True)
+        assert err == 'Gas limit is empty'
+
+    tx_res = skale.token.transfer(address_to, amount, skip_dry_run=True, gas_limit=TEST_GAS_LIMIT)
     assert tx_res.tx_hash is not None, tx_res
     assert tx_res.receipt is not None
     assert tx_res.dry_run_result is None
@@ -60,7 +64,7 @@ def test_wait_for_false(skale):
     tx_res = skale.token.transfer(address_to, amount, wait_for=False)
     assert tx_res.tx_hash is not None
     assert tx_res.receipt is None
-    assert tx_res.dry_run_result == {'payload': [], 'status': 1}
+    assert tx_res.dry_run_result == {'payload': 278373, 'status': 1}
 
     tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.tx_hash)
     tx_res.raise_for_status()

@@ -51,12 +51,6 @@ def make_dry_run_call(wallet, method) -> dict:
     return {'status': 1, 'payload': estimated_gas}
 
 
-def raise_empty_gas_limit():
-    msg = 'Gas limit is empty'
-    logger.error(msg)
-    return {'status': 0, 'error': msg}
-
-
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
     tx_dict_fields = {
         'gas': gas_limit,

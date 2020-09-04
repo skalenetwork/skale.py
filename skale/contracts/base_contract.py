@@ -23,11 +23,10 @@ from functools import wraps
 
 from web3 import Web3
 
-from skale.transactions.result import (check_balance,
-                                       is_success,
+from skale.transactions.result import (is_success,
                                        is_success_or_not_performed,
-                                       TxRes)
-from skale.transactions.tools import post_transaction, make_dry_run_call, raise_empty_gas_limit
+                                       TxRes, check_balance_and_gas)
+from skale.transactions.tools import post_transaction, make_dry_run_call
 from skale.utils.web3_utils import wait_for_receipt_by_blocks, wait_for_confirmation_blocks
 from skale.utils.account_tools import account_eth_balance_wei
 
@@ -55,12 +54,8 @@ def transaction_method(transaction):
         balance = account_eth_balance_wei(self.skale.web3,
                                           self.skale.wallet.address)
         gas_price = gas_price or self.skale.gas_price
-        if gas_limit:
-            balance_check_result = check_balance(balance, gas_price, gas_limit)
-            rich_enough = is_success(balance_check_result)
-        else:
-            balance_check_result = raise_empty_gas_limit()
-            rich_enough = False
+        balance_check_result = check_balance_and_gas(balance, gas_price, gas_limit)
+        rich_enough = is_success(balance_check_result)
 
         # Send transaction
         should_send_transaction = not dry_run_only and \
