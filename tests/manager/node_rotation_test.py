@@ -36,3 +36,7 @@ def test_get_leaving_history(skale):
 
 def test_is_rotation_in_progress(skale):
     assert skale.node_rotation.is_rotation_in_progress(DEFAULT_SCHAIN_NAME) is False
+
+
+def test_wait_for_new_node(skale):
+    assert skale.node_rotation.wait_for_new_node(DEFAULT_SCHAIN_NAME) is False
