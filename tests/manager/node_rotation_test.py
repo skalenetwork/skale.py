@@ -32,3 +32,7 @@ def test_get_leaving_history(skale):
                 'finished_rotation': 2000
             }
         ]
+
+
+def test_is_rotation_in_progress(skale):
+    assert skale.node_rotation.is_rotation_in_progress(DEFAULT_SCHAIN_NAME) is False
