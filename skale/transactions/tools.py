@@ -32,24 +32,28 @@ from skale.utils.web3_utils import get_eth_nonce
 logger = logging.getLogger(__name__)
 
 
-def make_dry_run_call(wallet, method, gas_limit) -> dict:
+def make_dry_run_call(wallet, method, gas_limit=None) -> dict:
     opts = {
         'from': wallet.address,
-        'gas': gas_limit
     }
     logger.info(
         f'Dry run tx: {method.fn_name}, '
         f'sender: {wallet.address}, '
         f'wallet: {wallet.__class__.__name__}, '
-        f'gasLimit: {gas_limit}'
     )
     try:
-        call_result = method.call(opts)
+        if gas_limit:
+            estimated_gas = gas_limit
+            opts.update({'gas': gas_limit})
+            method.call(opts)
+        else:
+            estimated_gas = method.estimateGas(opts)
+        logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
     except Exception as err:
         logger.error('Dry run for method failed with error', exc_info=err)
         return {'status': 0, 'error': str(err)}
 
-    return {'status': 1, 'payload': call_result}
+    return {'status': 1, 'payload': estimated_gas}
 
 
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):

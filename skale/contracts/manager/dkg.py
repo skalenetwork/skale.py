@@ -19,7 +19,6 @@
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.tools import retry_tx
-from skale.utils.constants import GAS
 from skale.utils.helper import split_public_key
 
 
@@ -42,7 +41,7 @@ class DKG(BaseContract):
         return self.skale.gas_price * 5 // 4
 
     @retry_tx
-    @transaction_method(gas_limit=GAS['dkg_broadcast'])
+    @transaction_method
     def broadcast(self, group_index, node_index,
                   verification_vector, secret_key_contribution):
         return self.contract.functions.broadcast(group_index, node_index,
@@ -50,7 +49,7 @@ class DKG(BaseContract):
                                                  secret_key_contribution)
 
     @retry_tx
-    @transaction_method(gas_limit=GAS['dkg_response'])
+    @transaction_method
     def response(
             self,
             group_index: bytes,
@@ -70,12 +69,12 @@ class DKG(BaseContract):
         )
 
     @retry_tx
-    @transaction_method(gas_limit=GAS['dkg_alright'])
+    @transaction_method
     def alright(self, group_index, from_node_index):
         return self.contract.functions.alright(group_index, from_node_index)
 
     @retry_tx
-    @transaction_method(gas_limit=GAS['dkg_complaint'])
+    @transaction_method
     def complaint(self, group_index, from_node_index, to_node_index):
         return self.contract.functions.complaint(group_index, from_node_index,
                                                  to_node_index)

@@ -19,67 +19,6 @@
 
 NODE_DEPOSIT = 100000000000000000000
 
-GAS = {
-    'add_validator': 4500000,
-    'create_node': 7500000,
-    'create_schain': 7500000,
-    'get_bounty': 8000000,
-    'set_check_time': 200000,
-    'set_latency': 200000,
-    'token_transfer': 600000,
-    'add_authorized': 100000,
-    'set_periods': 200000,
-    'delete_schain': 8000000,
-    'dkg_broadcast': 8000000,
-    'dkg_response': 11000000,
-    'dkg_alright': 1000000,
-    'dkg_complaint': 8000000,
-    'node_exit': 10000000,
-    'register_validator': 3000000,
-    'delegate': 3000000,
-    'accept_pending_delegation': 1000000,
-    'enable_validator': 1000000,
-    'disable_validator': 1000000,
-    'link_node_address': 1000000,
-    'unlink_node_address': 1000000,
-    'cancel_pending_delegation': 1000000,
-    'withdraw_bounty': 3000000,
-    'withdraw_fee': 3000000,
-
-    'skip_transition_delay': 1000000,
-    'skip_time': 1000000,
-    'set_msr': 200000,
-    'set_rotation_delay': 200000,
-
-    'get_and_update_locked_amount': 3000000,
-    'request_undelegation': 3000000,
-    'set_penalty': 3000000,
-    'disable_whitelist': 3000000,
-    'set_launch_timestamp': 200000,
-
-    'set_validator_mda': 1000000,
-    'request_for_new_address': 1000000,
-    'confirm_new_address': 1000000,
-    'add_schain_by_foundation': 7500000,
-    'grant_role': 7500000,
-    'manager_grant_role': 7500000,
-    'first_delegation_month': 3000000,
-    'set_node_in_maintenance': 1000000,
-    'remove_node_from_in_maintenance': 1000000
-}
-
-
-ALLOCATOR_GAS = {
-    'retrieve': 1000000,
-    'retrieve_after_termination': 1000000,
-    'delegate': 3000000,
-    'request_undelegation': 3000000,
-    'add_plan': 3000000,
-    'connect_beneficiary_to_plan': 3000000,
-    'start_vesting': 2000000,
-    'withdraw_bounty': 4000000
-}
-
 
 LONG_LINE = '=' * 100
 

@@ -10,8 +10,7 @@ from skale.transactions.tools import run_tx_with_retry
 from skale.utils.account_tools import generate_account, send_ether
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
-
+from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, TEST_GAS_LIMIT
 
 ETH_IN_WEI = 10 ** 18
 
@@ -108,7 +107,8 @@ def test_run_tx_with_retry_insufficient_balance(skale):
     token_amount = 10 * ETH_IN_WEI
     skale.token.transfer(sender_skale.wallet.address, token_amount + 1,
                          skip_dry_run=True,
-                         wait_for=True)
+                         wait_for=True,
+                         gas_limit=TEST_GAS_LIMIT)
     retries_number = 5
     with mock.patch('skale.contracts.base_contract.post_transaction',
                     post_transaction_mock):

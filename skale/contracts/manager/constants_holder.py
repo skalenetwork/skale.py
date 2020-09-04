@@ -18,11 +18,10 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.utils.constants import GAS
 
 
 class ConstantsHolder(BaseContract):
-    @transaction_method(gas_limit=GAS['set_periods'])
+    @transaction_method
     def set_periods(self, new_reward_period, new_delta_period):
         return self.contract.functions.setPeriods(new_reward_period, new_delta_period)
 
@@ -32,14 +31,14 @@ class ConstantsHolder(BaseContract):
     def get_delta_period(self):
         return self.contract.functions.deltaPeriod().call()
 
-    @transaction_method(gas_limit=GAS['set_check_time'])
+    @transaction_method
     def set_check_time(self, new_check_time):
         return self.contract.functions.setCheckTime(new_check_time)
 
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
 
-    @transaction_method(gas_limit=GAS['set_latency'])
+    @transaction_method
     def set_latency(self, new_allowable_latency):
         return self.contract.functions.setLatency(new_allowable_latency)
 
@@ -49,7 +48,7 @@ class ConstantsHolder(BaseContract):
     def get_first_delegation_month(self):
         return self.contract.functions.firstDelegationsMonth().call()
 
-    @transaction_method(gas_limit=GAS['first_delegation_month'])
+    @transaction_method
     def set_first_delegation_month(self, new_first_month):
         return self.contract.functions.setFirstDelegationsMonth(new_first_month)
 
@@ -61,7 +60,7 @@ class ConstantsHolder(BaseContract):
         """
         return self.contract.functions.msr().call()
 
-    @transaction_method(gas_limit=GAS['set_msr'])
+    @transaction_method
     def _set_msr(self, new_msr: int) -> None:
         """For internal usage only"""
         return self.contract.functions.setMSR(new_msr)
@@ -69,11 +68,11 @@ class ConstantsHolder(BaseContract):
     def get_launch_timestamp(self) -> int:
         return self.contract.functions.launchTimestamp().call()
 
-    @transaction_method(gas_limit=GAS['set_launch_timestamp'])
+    @transaction_method
     def set_launch_timestamp(self, launch_timestamp: int):
         return self.contract.functions.setLaunchTimestamp(launch_timestamp)
 
-    @transaction_method(gas_limit=GAS['set_rotation_delay'])
+    @transaction_method
     def set_rotation_delay(self, rotation_delay: int) -> None:
         """For internal usage only"""
         return self.contract.functions.setRotationDelay(rotation_delay)

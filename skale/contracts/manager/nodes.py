@@ -24,7 +24,6 @@ from enum import IntEnum
 from Crypto.Hash import keccak
 from web3.exceptions import BadFunctionCallOutput
 
-from skale.utils.constants import GAS
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.helper import format_fields
@@ -135,10 +134,10 @@ class Nodes(BaseContract):
         """
         return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
 
-    @transaction_method(gas_limit=GAS['set_node_in_maintenance'])
+    @transaction_method
     def set_node_in_maintenance(self, node_id):
         return self.contract.functions.setNodeInMaintenance(node_id)
 
-    @transaction_method(gas_limit=GAS['remove_node_from_in_maintenance'])
+    @transaction_method
     def remove_node_from_in_maintenance(self, node_id):
         return self.contract.functions.removeNodeFromInMaintenance(node_id)

@@ -23,7 +23,6 @@ from Crypto.Hash import keccak
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
-from skale.utils.constants import GAS
 from skale.utils.helper import format_fields
 
 
@@ -111,14 +110,14 @@ class SChains(BaseContract):
         return self.contract.functions.getSchainPrice(index_of_type,
                                                       lifetime).call()
 
-    @transaction_method(gas_limit=GAS['add_schain_by_foundation'])
+    @transaction_method
     def add_schain_by_foundation(self, lifetime: int, type_of_nodes: int,
                                  nonce: int, name: str) -> TxRes:
         return self.contract.functions.addSchainByFoundation(
             lifetime, type_of_nodes, nonce, name
         )
 
-    @transaction_method(gas_limit=GAS['grant_role'])
+    @transaction_method
     def grant_role(self, role: bytes, owner: str) -> TxRes:
         return self.contract.functions.grantRole(role, owner)
 

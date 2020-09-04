@@ -19,14 +19,13 @@
 """ SKALE base contract class """
 
 import logging
-from functools import partial, wraps
+from functools import wraps
 
 from web3 import Web3
 
-from skale.transactions.result import (check_balance,
-                                       is_success,
+from skale.transactions.result import (is_success,
                                        is_success_or_not_performed,
-                                       TxRes)
+                                       TxRes, check_balance_and_gas)
 from skale.transactions.tools import post_transaction, make_dry_run_call
 from skale.utils.web3_utils import wait_for_receipt_by_blocks, wait_for_confirmation_blocks
 from skale.utils.account_tools import account_eth_balance_wei
@@ -35,29 +34,28 @@ from skale.utils.account_tools import account_eth_balance_wei
 logger = logging.getLogger(__name__)
 
 
-def transaction_method(transaction=None, *, gas_limit=10):
-    if transaction is None:
-        return partial(transaction_method, gas_limit=gas_limit)
-
+def transaction_method(transaction):
     @wraps(transaction)
     def wrapper(self, *args, wait_for=True,
-                wait_timeout=4, blocks_to_wait=50,
+                wait_timeout=4, blocks_to_wait=50, gas_limit=None,
                 gas_price=None, nonce=None, dry_run_only=False, skip_dry_run=False,
                 raise_for_status=True, confirmation_blocks=0, **kwargs):
+        method = transaction(self, *args, **kwargs)
+        dry_run_result, tx_hash, receipt = None, None, None
+
+        # Make dry_run
+        if not skip_dry_run:
+            dry_run_result = make_dry_run_call(self.skale.wallet, method, gas_limit)
+            success_dry_run = is_success(dry_run_result)
+            if success_dry_run:
+                gas_limit = dry_run_result['payload']
+
         # Check balance
         balance = account_eth_balance_wei(self.skale.web3,
                                           self.skale.wallet.address)
         gas_price = gas_price or self.skale.gas_price
-        balance_check_result = check_balance(balance, gas_price, gas_limit)
+        balance_check_result = check_balance_and_gas(balance, gas_price, gas_limit)
         rich_enough = is_success(balance_check_result)
-
-        dry_run_result, tx_hash, receipt = None, None, None
-        method = transaction(self, *args, **kwargs)
-
-        # Make dry_run
-        if rich_enough and not skip_dry_run:
-            dry_run_result = make_dry_run_call(self.skale.wallet,
-                                               method, gas_limit)
 
         # Send transaction
         should_send_transaction = not dry_run_only and \
