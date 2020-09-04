@@ -19,7 +19,8 @@ def test_dry_run(skale):
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
     tx_res = skale.token.transfer(address_to, amount, dry_run_only=True)
-    assert tx_res.dry_run_result == {'payload': 278373, 'status': 1}
+    assert isinstance(tx_res.dry_run_result['payload'], int)
+    assert tx_res.dry_run_result['status'] == 1
     tx_res.raise_for_status()
 
     balance_from_after = skale.token.get_balance(address_from)
@@ -64,7 +65,8 @@ def test_wait_for_false(skale):
     tx_res = skale.token.transfer(address_to, amount, wait_for=False)
     assert tx_res.tx_hash is not None
     assert tx_res.receipt is None
-    assert tx_res.dry_run_result == {'payload': 278373, 'status': 1}
+    assert isinstance(tx_res.dry_run_result['payload'], int)
+    assert tx_res.dry_run_result['status'] == 1
 
     tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.tx_hash)
     tx_res.raise_for_status()
