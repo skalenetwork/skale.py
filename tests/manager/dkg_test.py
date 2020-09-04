@@ -27,7 +27,7 @@ def test_broadcast(skale):
 
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
-    with mock.patch.object(skale.dkg.contract.functions.broadcast, 'estimateGas',
+    with mock.patch.object(skale.dkg.contract.functions.broadcast, 'call',
                            new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
@@ -62,7 +62,7 @@ def test_response(skale):
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
 
-    with mock.patch.object(skale.dkg.contract.functions.response, 'estimateGas',
+    with mock.patch.object(skale.dkg.contract.functions.response, 'call',
                            new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
@@ -100,7 +100,7 @@ def test_alright(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
 
     with mock.patch.object(skale.dkg.contract.functions.alright,
-                           'estimateGas', new=Mock(return_value=[])):
+                           'call', new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.alright(group_index, from_node_index,
@@ -130,7 +130,7 @@ def test_complaint(skale):
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(skale.dkg.contract.functions.complaint,
-                           'estimateGas', new=Mock(return_value=[])):
+                           'call', new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.complaint(group_index, from_node_index, to_node_index,
