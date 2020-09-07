@@ -50,3 +50,11 @@ class NodeRotation(BaseContract):
             for schain in raw_history
         ]
         return history
+
+    def is_rotation_in_progress(self, schain_name):
+        schain_id = self.schains.name_to_id(schain_name)
+        return self.contract.functions.isRotationInProgress(schain_id).call()
+
+    def wait_for_new_node(self, schain_name):
+        schain_id = self.schains.name_to_id(schain_name)
+        return self.contract.functions.waitForNewNode(schain_id).call()

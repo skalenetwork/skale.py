@@ -48,10 +48,6 @@ class ConstantsHolder(BaseContract):
     def get_first_delegation_month(self):
         return self.contract.functions.firstDelegationsMonth().call()
 
-    @transaction_method
-    def set_first_delegation_month(self, new_first_month):
-        return self.contract.functions.setFirstDelegationsMonth(new_first_month)
-
     def msr(self) -> int:
         """Minimum staking requirement to create a node.
 
