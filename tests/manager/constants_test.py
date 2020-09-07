@@ -52,9 +52,9 @@ def test_get_set_rotation_delay(skale):
     assert rotation_delay == new_rotation_delay
 
 
-def test_get_set_first_delegation_moth(skale):
+def test_get_set_first_delegation_month(skale):
     fdm = skale.constants_holder.get_first_delegation_month()
-    assert fdm == 1  # because of prepare_data.py script
+    assert fdm == 0
     new_fdm = 2
     skale.constants_holder.set_first_delegation_month(new_fdm)
     fdm = skale.constants_holder.get_first_delegation_month()
