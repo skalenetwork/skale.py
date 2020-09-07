@@ -48,7 +48,7 @@ def make_dry_run_call(wallet, method, gas_limit=None) -> dict:
             opts.update({'gas': gas_limit})
             method.call(opts)
         else:
-            estimated_gas = method.estimateGas(opts) * GAS_LIMIT_COEFFICIENT
+            estimated_gas = int(method.estimateGas(opts) * GAS_LIMIT_COEFFICIENT)
         logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
     except Exception as err:
         logger.error('Dry run for method failed with error', exc_info=err)
