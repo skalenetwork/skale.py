@@ -15,6 +15,7 @@ from skale.contracts.manager.node_rotation import NodeRotation
 from skale.contracts.manager.monitors import Monitors
 
 from skale.contracts.manager.delegation.delegation_controller import DelegationController
+from skale.contracts.manager.delegation.delegation_period_manager import DelegationPeriodManager
 from skale.contracts.manager.delegation.validator_service import ValidatorService
 from skale.contracts.manager.delegation.token_state import TokenState
 from skale.contracts.manager.delegation.distributor import Distributor
