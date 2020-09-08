@@ -3,6 +3,7 @@ import pytest
 from web3 import Web3
 
 from skale.transactions.result import InsufficientBalanceError
+from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
 from tests.constants import TEST_GAS_LIMIT
@@ -126,3 +127,14 @@ def test_confirmation_blocks(skale):
     start_block = skale.web3.eth.blockNumber
     skale.token.transfer(account['address'], token_amount, confirmation_blocks=confirmation_blocks)
     assert skale.web3.eth.blockNumber >= start_block + confirmation_blocks
+
+
+def test_block_limit_estimate_gas(skale):
+    account = generate_account(skale.web3)
+    token_amount = 10
+    max_gas = 200000000
+    with mock.patch.object(skale.token.contract.functions.transfer, 'estimateGas',
+                           new=mock.Mock(return_value=max_gas)):
+        method = skale.token.contract.functions.transfer(account['address'], token_amount)
+        res = estimate_gas(skale.web3, method, {'from': skale.wallet.address})
+        assert res < max_gas
