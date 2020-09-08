@@ -36,3 +36,11 @@ def test_start_vesting(skale_allocator):
     assert not skale_allocator.allocator.is_vesting_active(wallet.address)
     skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)
     assert skale_allocator.allocator.is_vesting_active(wallet.address)
+
+
+def test_grant_vesting_manager_role(skale_allocator):
+    wallet = generate_wallet(skale_allocator.web3)
+    vesting_manager_role = skale_allocator.allocator.vesting_manager_role()
+    assert not skale_allocator.allocator.has_role(vesting_manager_role, wallet.address)
+    skale_allocator.allocator.grant_role(vesting_manager_role, wallet.address)
+    assert skale_allocator.allocator.has_role(vesting_manager_role, wallet.address)

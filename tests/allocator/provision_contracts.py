@@ -25,6 +25,8 @@ def provision_contracts():
     if launch_ts != 0:
         skale_manager.constants_holder.set_launch_timestamp(0, wait_for=True)
 
+    vesting_manager_role = skale_allocator.allocator.vesting_manager_role()
+    skale_allocator.allocator.grant_role(vesting_manager_role, skale_allocator.wallet.address)
     transfer_tokens_to_allocator(skale_manager, skale_allocator)
     add_test_plan(skale_allocator)
 
