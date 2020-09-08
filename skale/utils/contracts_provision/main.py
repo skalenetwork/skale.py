@@ -20,7 +20,7 @@
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
-    DEFAULT_SCHAIN_NAME
+    DEFAULT_SCHAIN_NAME, D_STAKE_MULTIPLIER
 )
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
@@ -49,6 +49,14 @@ def validator_exist(skale):
     return skale.validator_service.number_of_validators() > 0
 
 
+def add_delegation_period(skale):
+    skale.delegation_period_manager.set_delegation_period(
+        months_count=D_DELEGATION_PERIOD,
+        stake_multiplier=D_STAKE_MULTIPLIER,
+        wait_for=True
+    )
+
+
 def setup_validator(skale):
     """Create and activate a validator"""
     if not validator_exist(skale):
@@ -57,6 +65,7 @@ def setup_validator(skale):
     else:
         print('Skipping default validator creation')
     set_test_msr(skale)
+    add_delegation_period(skale)
     delegate_to_validator(skale)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
     accept_pending_delegation(skale, delegations[-1]['id'])

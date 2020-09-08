@@ -87,3 +87,13 @@ class Allocator(BaseContract):
     @transaction_method
     def start_vesting(self, beneficiary_address: str) -> TxRes:
         return self.contract.functions.startVesting(beneficiary_address)
+
+    @transaction_method
+    def grant_role(self, role: bytes, address: str) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
+
+    def vesting_manager_role(self) -> bytes:
+        return self.contract.functions.VESTING_MANAGER_ROLE().call()
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()

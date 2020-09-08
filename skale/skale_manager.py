@@ -53,6 +53,8 @@ CONTRACTS_INFO = [
     ContractInfo('key_storage', 'KeyStorage', contracts.KeyStorage, ContractTypes.API, True),
     ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,
                  ContractTypes.API, False),
+    ContractInfo('delegation_period_manager', 'DelegationPeriodManager',
+                 contracts.DelegationPeriodManager, ContractTypes.API, False),
     ContractInfo('validator_service', 'ValidatorService', contracts.ValidatorService,
                  ContractTypes.API, False),
     ContractInfo('token_state', 'TokenState', contracts.TokenState,
