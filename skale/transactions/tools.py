@@ -63,7 +63,10 @@ def estimate_gas(web3, method, opts):
     block_gas_limit = get_block_gas_limit(web3)
     estimated_gas = method.estimateGas(opts)
     normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
-    return min(block_gas_limit, normalized_estimated_gas)
+    if normalized_estimated_gas > block_gas_limit:
+        logger.warning(f'Estimate gas for {method.fn_name} exceeds block gas limit')
+        return block_gas_limit
+    return normalized_estimated_gas
 
 
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
