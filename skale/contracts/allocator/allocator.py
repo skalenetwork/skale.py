@@ -22,6 +22,24 @@ from enum import IntEnum
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from skale.utils.helper import format_fields
+
+
+PLAN_FIELDS = [
+    'totalVestingDuration',
+    'vestingCliff',
+    'vestingIntervalTimeUnit',
+    'vestingInterval',
+    'isDelegationAllowed',
+    'isTerminatable'
+]
+
+BENEFICIARY_FIELDS = [
+    'planId',
+    'startMonth',
+    'fullAmount',
+    'amountAfterLockup'
+]
 
 
 class TimeUnit(IntEnum):
@@ -97,3 +115,17 @@ class Allocator(BaseContract):
 
     def has_role(self, role: bytes, address: str) -> bool:
         return self.contract.functions.hasRole(role, address).call()
+
+    def __get_beneficiary_plan_params_raw(self, beneficiary_address: str):
+        return self.contract.functions.getBeneficiaryPlanParams(beneficiary_address).call()
+
+    @format_fields(BENEFICIARY_FIELDS)
+    def get_beneficiary_plan_params(self, beneficiary_address: str) -> dict:
+        return self.__get_beneficiary_plan_params_raw(beneficiary_address)
+
+    def __get_plan_raw(self, plan_id: int):
+        return self.contract.functions.getPlan(plan_id).call()
+
+    @format_fields(PLAN_FIELDS)
+    def get_plan(self, plan_id: int) -> dict:
+        return self.__get_plan_raw(plan_id)

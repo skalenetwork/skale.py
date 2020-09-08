@@ -44,3 +44,24 @@ def test_grant_vesting_manager_role(skale_allocator):
     assert not skale_allocator.allocator.has_role(vesting_manager_role, wallet.address)
     skale_allocator.allocator.grant_role(vesting_manager_role, wallet.address)
     assert skale_allocator.allocator.has_role(vesting_manager_role, wallet.address)
+
+
+def test_get_beneficiary_plan_params(skale_allocator):
+    wallet = generate_wallet(skale_allocator.web3)
+    connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
+    beneficiary = skale_allocator.allocator.get_beneficiary_plan_params(wallet.address)
+    assert beneficiary['planId'] == 1
+    assert beneficiary['startMonth'] == 1
+    assert beneficiary['amountAfterLockup'] == 5000000000000000000000
+
+
+def test_get_plan(skale_allocator):
+    plan = skale_allocator.allocator.get_plan(D_PLAN_ID)
+    assert plan == {
+        'totalVestingDuration': 36,
+        'vestingCliff': 6,
+        'vestingIntervalTimeUnit': 1,
+        'vestingInterval': 6,
+        'isDelegationAllowed': True,
+        'isTerminatable': True
+    }
