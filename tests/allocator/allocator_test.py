@@ -72,5 +72,6 @@ def test_get_plan(skale_allocator):
 
 def test_get_all_plans(skale_allocator):
     plans = skale_allocator.allocator.get_all_plans()
-    TEST_PLAN_PARAMS['planId'] = 1
-    assert TEST_PLAN_PARAMS == plans[0]
+    plan_params_with_id = TEST_PLAN_PARAMS.copy()
+    plan_params_with_id['planId'] = 1
+    assert plan_params_with_id == plans[0]
