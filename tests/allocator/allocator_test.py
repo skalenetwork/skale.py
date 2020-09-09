@@ -7,6 +7,16 @@ from skale.utils.contracts_provision import D_PLAN_ID
 from skale.utils.contracts_provision.allocator import add_test_plan, connect_test_beneficiary
 
 
+TEST_PLAN_PARAMS = {
+        'totalVestingDuration': 36,
+        'vestingCliff': 6,
+        'vestingIntervalTimeUnit': 1,
+        'vestingInterval': 6,
+        'isDelegationAllowed': True,
+        'isTerminatable': True
+    }
+
+
 def test_is_beneficiary_registered(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     assert not skale_allocator.allocator.is_beneficiary_registered(wallet.address)
@@ -57,11 +67,10 @@ def test_get_beneficiary_plan_params(skale_allocator):
 
 def test_get_plan(skale_allocator):
     plan = skale_allocator.allocator.get_plan(D_PLAN_ID)
-    assert plan == {
-        'totalVestingDuration': 36,
-        'vestingCliff': 6,
-        'vestingIntervalTimeUnit': 1,
-        'vestingInterval': 6,
-        'isDelegationAllowed': True,
-        'isTerminatable': True
-    }
+    assert plan == TEST_PLAN_PARAMS
+
+
+def test_get_all_plans(skale_allocator):
+    plans = skale_allocator.allocator.get_all_plans()
+    TEST_PLAN_PARAMS['planId'] = 1
+    assert TEST_PLAN_PARAMS == plans[0]

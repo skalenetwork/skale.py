@@ -41,6 +41,9 @@ BENEFICIARY_FIELDS = [
     'amountAfterLockup'
 ]
 
+MAX_NUM_OF_PLANS = 9999
+MAX_NUM_OF_BENEFICIARIES = 9999
+
 
 class TimeUnit(IntEnum):
     DAY = 0
@@ -129,3 +132,14 @@ class Allocator(BaseContract):
     @format_fields(PLAN_FIELDS)
     def get_plan(self, plan_id: int) -> dict:
         return self.__get_plan_raw(plan_id)
+
+    def get_all_plans(self) -> dict:
+        plans = []
+        for i in range(1, MAX_NUM_OF_PLANS):
+            try:
+                plan = self.get_plan(i)
+                plan['planId'] = i
+                plans.append(plan)
+            except ValueError:
+                break
+        return plans
