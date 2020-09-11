@@ -55,14 +55,14 @@ class Escrow(BaseContract):
 
     @beneficiary_escrow
     @transaction_method
-    def retrieve_after_termination(self) -> TxRes:
+    def retrieve_after_termination(self, address: str) -> TxRes:
         """Allows Core Owner to retrieve remaining transferrable escrow balance
         after Core holder termination. Slashed tokens are non-transferable
 
         :returns: Transaction results
         :rtype: TxRes
         """
-        return self.contract.functions.retrieveAfterTermination()
+        return self.contract.functions.retrieveAfterTermination(address)
 
     @beneficiary_escrow
     @transaction_method
@@ -109,6 +109,7 @@ class Escrow(BaseContract):
         """
         return self.contract.functions.withdrawBounty(validator_id, to)
 
+    @beneficiary_escrow
     @transaction_method
     def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
         """Cancel pending delegation request.

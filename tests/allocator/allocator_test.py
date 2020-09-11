@@ -48,6 +48,24 @@ def test_start_vesting(skale_allocator):
     assert skale_allocator.allocator.is_vesting_active(wallet.address)
 
 
+def test_stop_vesting(skale_allocator):
+    # todo: impove test
+    main_wallet = skale_allocator.wallet
+    wallet = generate_wallet(skale_allocator.web3)
+
+    connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
+    send_ether(skale_allocator.web3, main_wallet, wallet.address, 0.1)
+
+    assert skale_allocator.allocator.is_delegation_allowed(wallet.address)
+
+    assert not skale_allocator.allocator.is_vesting_active(wallet.address)
+    skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)
+    assert skale_allocator.allocator.is_vesting_active(wallet.address)
+
+    skale_allocator.allocator.stop_vesting(wallet.address, wait_for=True)
+    assert not skale_allocator.allocator.is_vesting_active(wallet.address)
+
+
 def test_grant_vesting_manager_role(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     vesting_manager_role = skale_allocator.allocator.vesting_manager_role()

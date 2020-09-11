@@ -160,6 +160,7 @@ def test_cancel_pending_delegation(skale_allocator, skale):
 
     skale_allocator.escrow.cancel_pending_delegation(
         delegation_id=delegation_id,
+        beneficiary_address=skale_allocator.wallet.address,
         wait_for=True
     )
     skale_allocator.wallet = main_wallet
