@@ -108,3 +108,14 @@ class Escrow(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.withdrawBounty(validator_id, to)
+
+    @transaction_method
+    def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
+        """Cancel pending delegation request.
+
+        :param delegation_id: ID of the delegation to cancel
+        :type delegation_id: int
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.cancelPendingDelegation(delegation_id)
