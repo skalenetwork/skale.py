@@ -109,6 +109,7 @@ class Escrow(BaseContract):
         """
         return self.contract.functions.withdrawBounty(validator_id, to)
 
+    @beneficiary_escrow
     @transaction_method
     def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
         """Cancel pending delegation request.
