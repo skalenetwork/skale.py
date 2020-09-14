@@ -25,6 +25,7 @@ from skale.utils.contracts_provision import (
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
 )
+from tests.constants import INITIAL_DELEGATION_PERIOD
 
 
 def _skip_evm_time(web3, seconds) -> int:
@@ -119,7 +120,7 @@ def delegate_to_validator(skale):
     skale.delegation_controller.delegate(
         validator_id=D_VALIDATOR_ID,
         amount=get_test_delegation_amount(skale),
-        delegation_period=D_DELEGATION_PERIOD,
+        delegation_period=INITIAL_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
         wait_for=True
     )

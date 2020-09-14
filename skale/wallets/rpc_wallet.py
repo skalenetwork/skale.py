@@ -41,7 +41,7 @@ ROUTES = {
     'public_key': '/public-key',
 }
 
-ATTEMPTS = 9
+ATTEMPTS = 10
 TIMEOUTS = [2 ** p for p in range(ATTEMPTS)]
 SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
 
@@ -52,23 +52,29 @@ def rpc_request(func):
         data, error = None, None
         for i, timeout in enumerate(TIMEOUTS):
             logger.info(f'Sending request to tm for {route}. Try {i}')
-            response = func(self, route, *args, **kwargs).json()
-            data, error = response.get('data'), response.get('error')
-            if self._retry_unreachable_sgx and error == SGX_UNREACHABLE_MESSAGE:
-                time.sleep(timeout)
-            else:
+            try:
+                response = func(self, route, *args, **kwargs).json()
+                data, error = response.get('data'), response.get('error')
+            except Exception as err:
+                error = 'RPC request failed'
+                logger.error(error, exc_info=err)
+
+            if not error or not self._retry_if_failed:
                 break
+
+            logger.info(f'Sleeping {timeout}s ...')
+            time.sleep(timeout)
+
         if error is not None:
-            logger.error('Transaction manager returned error')
             raise RPCWalletError(error)
         return data
     return wrapper
 
 
 class RPCWallet(BaseWallet):
-    def __init__(self, url, retry_unreachable_sgx=False):
+    def __init__(self, url, retry_if_failed=False):
         self._url = url
-        self._retry_unreachable_sgx = retry_unreachable_sgx
+        self._retry_if_failed = retry_if_failed
 
     def _construct_url(self, host, url):
         return urllib.parse.urljoin(host, url)
