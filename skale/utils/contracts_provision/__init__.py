@@ -17,8 +17,6 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import datetime
-
 from skale.contracts.allocator.allocator import TimeUnit
 
 # manager test constants
@@ -50,7 +48,7 @@ TEST_VESTING_INTERVAL = 6
 TEST_CAN_DELEGATE = True
 TEST_IS_TERMINATABLE = True
 
-TEST_START_MONTH = int("{:%s}".format(datetime.date(2020, 10, 1)))
+TEST_START_MONTH = 8
 
 WEI_MULTIPLIER = 10 ** 18
 

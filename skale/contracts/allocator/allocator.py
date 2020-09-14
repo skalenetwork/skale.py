@@ -35,6 +35,7 @@ PLAN_FIELDS = [
 ]
 
 BENEFICIARY_FIELDS = [
+    'status',
     'planId',
     'startMonth',
     'fullAmount',
@@ -49,6 +50,13 @@ class TimeUnit(IntEnum):
     DAY = 0
     MONTH = 1
     YEAR = 2
+
+
+class BeneficiaryStatus(IntEnum):
+    UNKNOWN = 0
+    CONFIRMED = 1
+    ACTIVE = 2
+    TERMINATED = 3
 
 
 class Allocator(BaseContract):
@@ -127,8 +135,13 @@ class Allocator(BaseContract):
         return self.contract.functions.getBeneficiaryPlanParams(beneficiary_address).call()
 
     @format_fields(BENEFICIARY_FIELDS)
-    def get_beneficiary_plan_params(self, beneficiary_address: str) -> dict:
+    def get_beneficiary_plan_params_dict(self, beneficiary_address: str) -> dict:
         return self.__get_beneficiary_plan_params_raw(beneficiary_address)
+
+    def get_beneficiary_plan_params(self, beneficiary_address: str) -> dict:
+        plan_params = self.get_beneficiary_plan_params_dict(beneficiary_address)
+        plan_params['statusName'] = BeneficiaryStatus(plan_params['status']).name
+        return plan_params
 
     def __get_plan_raw(self, plan_id: int):
         return self.contract.functions.getPlan(plan_id).call()
