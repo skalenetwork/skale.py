@@ -39,8 +39,8 @@ class EmptyPrivateKey(Exception):
 class SkaleBase:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30, ):
-        logger.info(f'Init skale-py, connecting to {endpoint}')
+    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30):
+        logger.info(f'Initing skale.py, endpoint: {endpoint}, wallet: {type(wallet).__name__}')
         provider = get_provider(endpoint, timeout=provider_timeout)
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
@@ -93,7 +93,7 @@ class SkaleBase:
     def add_lib_contract(self, name, contract_class, abi, contract_address=None):
         address = contract_address or get_contract_address_by_name(
             abi, name)
-        logger.info(f'Fetching abi for {name}, address {address}')
+        logger.debug(f'Fetching abi for {name}, address {address}')
         contract_abi = get_contract_abi_by_name(abi, name)
         self.add_contract(name, contract_class(
             self, name, address, contract_abi))
