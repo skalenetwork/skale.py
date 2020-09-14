@@ -167,3 +167,10 @@ def split_public_key(public_key: str) -> list:
     public_key = rm_0x_prefix(public_key)
     pk_parts = list(chunk(public_key, 2))
     return list(map(bytes.fromhex, pk_parts))
+
+
+def get_contracts_info(contracts_data):
+    contracts_info = {}
+    for contract_info in contracts_data:
+        contracts_info[contract_info.name] = contract_info
+    return contracts_info

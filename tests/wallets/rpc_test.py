@@ -27,6 +27,8 @@ TX_DICT = {
     'data': '0x0'
 }
 
+TEST_MAX_RETRIES = 2
+
 
 def test_rpc_not_available():
     wallet = RPCWallet(NOT_EXISTING_RPC_WALLET_URL)
@@ -49,15 +51,47 @@ def test_sign_and_send_fail():
     with mock.patch('requests.post', new=request_mock(res_mock)):
         with pytest.raises(RPCWalletError):
             wallet.sign_and_send(TX_DICT)
+            assert res_mock.call_count == 1
+
+
+def test_sign_and_send_sgx_unreachable():
+    wallet = RPCWallet(TEST_RPC_WALLET_URL, retry_unreachable_sgx=True)
+
+    cnt = 0
+
+    def post_mock(*args, **kwargs):
+        nonlocal cnt
+        response_mock = mock.Mock()
+        if cnt < TEST_MAX_RETRIES:
+            rv = {'data': None, 'error': 'Sgx server is unreachable'}
+            cnt += 1
+        else:
+            rv = {'data': 'test', 'error': 'test'}
+
+        response_mock.json = mock.Mock(return_value=rv)
+        return response_mock
+
+    with mock.patch('requests.post', post_mock):
+        with pytest.raises(RPCWalletError):
+            wallet.sign_and_send(TX_DICT)
+
+        assert cnt == TEST_MAX_RETRIES
 
 
 def test_sign():
+    signed_data = {
+        'hash': HexBytes('0x00'),
+        'rawTransaction': HexBytes('0x00'),
+        'r': 123,
+        's': 123,
+        'v': 27
+    }
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
     res_mock = response_mock(HTTPStatus.OK,
-                             {'data': {'transaction_hash': EMPTY_HEX_STR}, 'error': None})
+                             {'data': signed_data, 'error': None})
     with mock.patch('requests.post', new=request_mock(res_mock)):
-        tx_hash = wallet.sign(TX_DICT)
-        assert tx_hash == EMPTY_HEX_STR
+        res = wallet.sign(TX_DICT)
+        assert res == AttributeDict(signed_data)
 
 
 def test_sign_hash():

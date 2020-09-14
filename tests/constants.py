@@ -35,8 +35,12 @@ N_TEST_WALLETS = 2
 
 ENDPOINT = os.environ['ENDPOINT']
 
+HELPER_SCRIPTS_DIR = os.path.join(DIR_PATH, os.pardir, 'helper-scripts')
 
-TEST_ABI_FILEPATH = os.path.join(DIR_PATH, os.pardir, 'test_abi.json')
+TEST_ABI_FILEPATH = os.getenv('TEST_ABI_FILEPATH') or \
+    os.path.join(HELPER_SCRIPTS_DIR, 'contracts_data', 'unique.json')
+TEST_ALLOCATOR_ABI_FILEPATH = os.getenv('TEST_ALLOCATOR_ABI_FILEPATH') or \
+    os.path.join(HELPER_SCRIPTS_DIR, 'allocator_contracts_data', 'unique.json')
 IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 
@@ -59,7 +63,7 @@ D_VALIDATOR_MIN_DEL = 1000
 
 D_DELEGATION_ID = 0
 D_DELEGATION_AMOUNT = 55000000
-D_DELEGATION_PERIOD = 3
+D_DELEGATION_PERIOD = 2
 D_DELEGATION_INFO = 'test'
 
 NOT_EXISTING_ID = 123123
@@ -69,3 +73,5 @@ MONTH_IN_SECONDS = (60 * 60 * 24 * 31) + 100
 DELEGATION_STRUCT_LEN = 8
 
 TEST_ECDSA_KEY_NAME = 'NEK:36224eb0296c6c28c3c73942cf28b5ba449e4a1e6472d52d459627c4d9479b21'
+
+TEST_GAS_LIMIT = 10000000

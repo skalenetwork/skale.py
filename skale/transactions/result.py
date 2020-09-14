@@ -48,6 +48,12 @@ def check_balance(balance: int, gas_price: int, gas_limit: int) -> dict:
     return {'status': status, 'msg': msg}
 
 
+def check_balance_and_gas(balance, gas_price, gas_limit):
+    if gas_limit:
+        return check_balance(balance, gas_price, gas_limit)
+    return {'status': 0, 'msg': 'Gas limit is empty'}
+
+
 def is_success(result: dict) -> bool:
     return result.get('status') == SUCCESS_STATUS
 

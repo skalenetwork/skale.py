@@ -8,7 +8,7 @@ from setuptools import (
 extras_require = {
     'linter': [
         "flake8==3.8.3",
-        "isort>=4.2.15,<4.3.22",
+        "isort>=4.2.15,<5.4.3",
     ],
     'dev': [
         "bumpversion==0.6.0",
@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='3.10',
+    version='4.0',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -42,10 +42,10 @@ setup(
         "web3==5.6.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.6dev0",
+        "sgx.py==0.6.dev13"
     ],
 
-    python_requires='>=3.6,<4',
+    python_requires='>=3.7,<4',
     extras_require=extras_require,
 
     keywords='skale',
@@ -55,7 +55,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 
     package_data={  # Optional
