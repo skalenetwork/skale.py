@@ -80,7 +80,7 @@ def test_get_beneficiary_plan_params(skale_allocator):
     beneficiary = skale_allocator.allocator.get_beneficiary_plan_params(wallet.address)
     assert beneficiary['planId'] == 1
     assert beneficiary['startMonth'] == 8
-    assert beneficiary['amountAfterLockup'] == 5000000000000000000000
+    assert beneficiary['amountAfterLockup'] == 1000000000000000000000
 
 
 def test_get_plan(skale_allocator):
