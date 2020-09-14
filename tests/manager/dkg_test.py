@@ -12,7 +12,7 @@ def test_broadcast(skale):
     chain_id = skale.web3.eth.chainId
     gas_limit = 8000000
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': gas_limit, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -33,7 +33,6 @@ def test_broadcast(skale):
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.broadcast(group_index, node_index, verification_vector,
                                 secret_key_contribution,
-                                gas_price=skale.dkg.gas_price(),
                                 gas_limit=gas_limit,
                                 wait_for=False)
             send_tx_mock.assert_called_with(HexBytes(exp))
@@ -45,7 +44,7 @@ def test_response(skale):
     chain_id = skale.web3.eth.chainId
     gas_limit = 11000000
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price * 2, 'chainId': chain_id,
         'gas': gas_limit, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -73,7 +72,6 @@ def test_response(skale):
                 multiplied_share=multiplied_share,
                 verification_vector=verification_vector,
                 secret_key_contribution=secret_key_contribution,
-                gas_price=skale.dkg.gas_price(),
                 wait_for=False,
                 gas_limit=gas_limit
             )
@@ -86,7 +84,7 @@ def test_alright(skale):
     chain_id = skale.web3.eth.chainId
     gas_limit = 10000000
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': gas_limit, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -104,7 +102,6 @@ def test_alright(skale):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.alright(group_index, from_node_index,
-                              gas_price=skale.dkg.gas_price(),
                               wait_for=False,
                               gas_limit=gas_limit)
             send_tx_mock.assert_called_with(HexBytes(exp))
@@ -116,7 +113,7 @@ def test_complaint(skale):
     chain_id = skale.web3.eth.chainId
     gas_limit = 8000000
     expected_txn = {
-        'value': 0, 'gasPrice': skale.gas_price * 5 // 4, 'chainId': chain_id,
+        'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': gas_limit, 'nonce': nonce,
         'to': contract_address,
         'data': (
@@ -134,7 +131,6 @@ def test_complaint(skale):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.complaint(group_index, from_node_index, to_node_index,
-                                gas_price=skale.dkg.gas_price(),
                                 wait_for=False,
                                 gas_limit=gas_limit)
             send_tx_mock.assert_called_with(HexBytes(exp))
