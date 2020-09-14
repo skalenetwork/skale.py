@@ -37,9 +37,6 @@ class G2Point:
 
 
 class DKG(BaseContract):
-    def gas_price(self):
-        return self.skale.gas_price * 5 // 4
-
     @retry_tx
     @transaction_method
     def broadcast(self, group_index, node_index,
