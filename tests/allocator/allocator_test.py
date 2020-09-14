@@ -78,9 +78,6 @@ def test_get_beneficiary_plan_params(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
     beneficiary = skale_allocator.allocator.get_beneficiary_plan_params(wallet.address)
-
-    print(beneficiary)
-
     assert beneficiary['planId'] == 1
     assert beneficiary['startMonth'] == 8
     assert beneficiary['amountAfterLockup'] == 5000000000000000000000
