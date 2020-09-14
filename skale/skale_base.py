@@ -24,9 +24,10 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
 from skale.wallets import BaseWallet
-from skale.utils.web3_utils import get_provider
 from skale.utils.abi_utils import get_contract_address_by_name, get_contract_abi_by_name
+from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
+from skale.utils.web3_utils import get_provider
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class SkaleBase:
 
     @property
     def gas_price(self):
-        return self.web3.eth.gasPrice * 2
+        return self.web3.eth.gasPrice * GAS_PRICE_COEFFICIENT
 
     @property
     def wallet(self):
