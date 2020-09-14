@@ -295,7 +295,7 @@ def test_get_and_update_bond_amount(skale):
     )
 
     # Skip time
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS + 3600 * 24)
 
     bond = skale.validator_service.get_and_update_bond_amount(D_VALIDATOR_ID)
     locked = skale.token_state.get_and_update_locked_amount(skale.wallet.address)
