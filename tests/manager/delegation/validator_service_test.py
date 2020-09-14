@@ -275,6 +275,7 @@ def test_disable_whitelist(skale):
 
 
 def test_get_and_update_bond_amount(skale):
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * 3)
     initial_bond = skale.validator_service.get_and_update_bond_amount(D_VALIDATOR_ID)
     additional_bond = skale.constants_holder.msr() * 2
 
@@ -294,13 +295,16 @@ def test_get_and_update_bond_amount(skale):
         wait_for=True
     )
 
+    initial_bts = skale.web3.eth.getBlock("latest").timestamp
     # Skip time
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS + 3600 * 24)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    bts = skale.web3.eth.getBlock("latest").timestamp
 
     bond = skale.validator_service.get_and_update_bond_amount(D_VALIDATOR_ID)
     locked = skale.token_state.get_and_update_locked_amount(skale.wallet.address)
     print(delegations)
-    assert bond == initial_bond + additional_bond, (bond, initial_bond + additional_bond, locked)
+    assert bond == initial_bond + additional_bond, (bond, initial_bond + additional_bond, locked,
+                                                    initial_bts, bts)
 
 
 def test_set_validator_mda(skale):
