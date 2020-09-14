@@ -22,6 +22,27 @@ from enum import IntEnum
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from skale.utils.helper import format_fields
+
+
+PLAN_FIELDS = [
+    'totalVestingDuration',
+    'vestingCliff',
+    'vestingIntervalTimeUnit',
+    'vestingInterval',
+    'isDelegationAllowed',
+    'isTerminatable'
+]
+
+BENEFICIARY_FIELDS = [
+    'planId',
+    'startMonth',
+    'fullAmount',
+    'amountAfterLockup'
+]
+
+MAX_NUM_OF_PLANS = 9999
+MAX_NUM_OF_BENEFICIARIES = 9999
 
 
 class TimeUnit(IntEnum):
@@ -89,6 +110,10 @@ class Allocator(BaseContract):
         return self.contract.functions.startVesting(beneficiary_address)
 
     @transaction_method
+    def stop_vesting(self, beneficiary_address: str) -> TxRes:
+        return self.contract.functions.stopVesting(beneficiary_address)
+
+    @transaction_method
     def grant_role(self, role: bytes, address: str) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
@@ -97,3 +122,28 @@ class Allocator(BaseContract):
 
     def has_role(self, role: bytes, address: str) -> bool:
         return self.contract.functions.hasRole(role, address).call()
+
+    def __get_beneficiary_plan_params_raw(self, beneficiary_address: str):
+        return self.contract.functions.getBeneficiaryPlanParams(beneficiary_address).call()
+
+    @format_fields(BENEFICIARY_FIELDS)
+    def get_beneficiary_plan_params(self, beneficiary_address: str) -> dict:
+        return self.__get_beneficiary_plan_params_raw(beneficiary_address)
+
+    def __get_plan_raw(self, plan_id: int):
+        return self.contract.functions.getPlan(plan_id).call()
+
+    @format_fields(PLAN_FIELDS)
+    def get_plan(self, plan_id: int) -> dict:
+        return self.__get_plan_raw(plan_id)
+
+    def get_all_plans(self) -> dict:
+        plans = []
+        for i in range(1, MAX_NUM_OF_PLANS):
+            try:
+                plan = self.get_plan(i)
+                plan['planId'] = i
+                plans.append(plan)
+            except ValueError:
+                break
+        return plans

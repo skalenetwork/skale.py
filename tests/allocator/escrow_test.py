@@ -144,3 +144,29 @@ def test_withdraw_bounty(skale, skale_allocator):
     )
     skale_allocator.wallet = main_wallet
     # todo: improve test
+
+
+def test_cancel_pending_delegation(skale_allocator, skale):
+    main_wallet = skale_allocator.wallet
+    wallet = generate_wallet(skale_allocator.web3)
+
+    _delegate_via_escrow(skale_allocator, wallet)
+
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        validator_id=D_VALIDATOR_ID
+    )
+    delegation_id = delegations[-1]['id']
+    skale_allocator.wallet = wallet
+
+    skale_allocator.escrow.cancel_pending_delegation(
+        delegation_id=delegation_id,
+        beneficiary_address=skale_allocator.wallet.address,
+        wait_for=True
+    )
+    skale_allocator.wallet = main_wallet
+
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        validator_id=D_VALIDATOR_ID
+    )
+    assert delegations[-1]['id'] == delegation_id
+    assert delegations[-1]['status'] == 'CANCELED'
