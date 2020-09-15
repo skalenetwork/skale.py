@@ -16,6 +16,9 @@ TEST_PLAN_PARAMS = {
         'isTerminatable': True
     }
 
+D_END_TIMESTAMP = 1693526400
+D_END_LOCKUP_TIMESTAMP = 1614556800
+
 
 def test_is_beneficiary_registered(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
@@ -93,3 +96,30 @@ def test_get_all_plans(skale_allocator):
     plan_params_with_id = TEST_PLAN_PARAMS.copy()
     plan_params_with_id['planId'] = 1
     assert plan_params_with_id == plans[0]
+
+
+def test_calculate_vested_amount(skale_allocator):
+    wallet = generate_wallet(skale_allocator.web3)
+    connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
+    assert skale_allocator.allocator.calculate_vested_amount(wallet.address) == 0
+
+
+def test_get_finish_vesting_time(skale_allocator):
+    wallet = generate_wallet(skale_allocator.web3)
+    connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
+    res = skale_allocator.allocator.get_finish_vesting_time(wallet.address)
+    assert res == D_END_TIMESTAMP
+
+
+def test_get_lockup_period_end_timestamp(skale_allocator):
+    wallet = generate_wallet(skale_allocator.web3)
+    connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
+    res = skale_allocator.allocator.get_lockup_period_end_timestamp(wallet.address)
+    assert res == D_END_LOCKUP_TIMESTAMP
+
+
+def test_get_time_of_next_vest(skale_allocator):
+    wallet = generate_wallet(skale_allocator.web3)
+    connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
+    res = skale_allocator.allocator.get_time_of_next_vest(wallet.address)
+    assert res == D_END_LOCKUP_TIMESTAMP
