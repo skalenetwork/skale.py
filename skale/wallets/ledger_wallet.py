@@ -21,6 +21,8 @@ import logging
 import os
 import struct
 
+from ledgerblue.commException import CommException
+
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
 from eth_account._utils.transactions import encode_transaction
@@ -79,7 +81,7 @@ class LedgerWallet(BaseWallet):
             self.dongle = getDongle(debug)
             self._web3 = web3
             self._address, self._public_key = self.get_address_with_public_key()
-        except OSError:
+        except (OSError, CommException):
             raise LedgerCommunicationError(
                 'Error occured during the interaction with Ledger device'
             )
