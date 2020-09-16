@@ -40,6 +40,10 @@ logger = logging.getLogger(__name__)
 DEFAULT_BIP32_PATH = "44'/60'/0'/0/0"
 
 
+class LedgerCommunicationError(Exception):
+    pass
+
+
 def encode_bip32_path(path=DEFAULT_BIP32_PATH):
     if len(path) == 0:
         return b''
@@ -71,9 +75,14 @@ class LedgerWallet(BaseWallet):
 
     def __init__(self, web3, debug=False):
         from ledgerblue.comm import getDongle
-        self.dongle = getDongle(debug)
-        self._web3 = web3
-        self._address, self._public_key = self.get_address_with_public_key()
+        try:
+            self.dongle = getDongle(debug)
+            self._web3 = web3
+            self._address, self._public_key = self.get_address_with_public_key()
+        except OSError:
+            raise LedgerCommunicationError(
+                'Error occured during the interaction with Ledger device'
+            )
 
     @property
     def address(self):
