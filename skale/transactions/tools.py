@@ -60,7 +60,10 @@ def make_dry_run_call(skale, method, gas_limit=None) -> dict:
 
 
 def estimate_gas(web3, method, opts):
-    block_gas_limit = get_block_gas_limit(web3)
+    try:
+        block_gas_limit = get_block_gas_limit(web3)
+    except AttributeError:
+        block_gas_limit = get_block_gas_limit(web3)
     estimated_gas = method.estimateGas(opts)
     normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
     if normalized_estimated_gas > block_gas_limit:
