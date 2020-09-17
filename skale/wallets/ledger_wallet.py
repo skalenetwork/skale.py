@@ -21,8 +21,6 @@ import logging
 import os
 import struct
 
-from ledgerblue.commException import CommException
-
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
 from eth_account._utils.transactions import encode_transaction
@@ -77,6 +75,7 @@ class LedgerWallet(BaseWallet):
 
     def __init__(self, web3, debug=False):
         from ledgerblue.comm import getDongle
+        from ledgerblue.commException import CommException
         try:
             self.dongle = getDongle(debug)
             self._web3 = web3
