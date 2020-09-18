@@ -66,20 +66,30 @@ def chunks(sequence, size):
     return (sequence[pos:pos + size] for pos in range(0, len(sequence), size))
 
 
-def get_bip32_path(address_index) -> str:
+def get_derivation_path(address_index, legacy) -> str:
+    if legacy:
+        return get_legacy_derivation_path(address_index)
+    return get_live_derivation_path(address_index)
+
+
+def get_live_derivation_path(address_index) -> str:
     return f'44\'/60\'/{address_index}\'/0/0'
+
+
+def get_legacy_derivation_path(address_index) -> str:
+    return f'44\'/60\'/0\'/{address_index}'
 
 
 class LedgerWallet(BaseWallet):
     CHUNK_SIZE = 255
     CLA = b'\xe0'
 
-    def __init__(self, web3, address_index, debug=False):
+    def __init__(self, web3, address_index, legacy=False, debug=False):
         from ledgerblue.comm import getDongle
         from ledgerblue.commException import CommException
 
         self._address_index = address_index
-        self._bip32_path = get_bip32_path(address_index)
+        self._bip32_path = get_derivation_path(address_index, legacy)
         try:
             self.dongle = getDongle(debug)
             self._web3 = web3
