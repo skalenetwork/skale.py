@@ -35,3 +35,7 @@ class Token(BaseContract):
 
     def get_and_update_slashed_amount(self, address: str) -> int:
         return self.contract.functions.getAndUpdateSlashedAmount(address).call()
+
+    @transaction_method
+    def mint(self, address, amount, user_data=b'', operator_data=b''):
+        return self.contract.functions.mint(address, amount, user_data, operator_data)
