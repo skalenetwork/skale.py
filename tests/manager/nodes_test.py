@@ -13,8 +13,8 @@ from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME, NOT_EXISTING_I
 
 
 def test_get_raw_not_exist(skale):
-    node_arr = skale.nodes._Nodes__get_raw(NOT_EXISTING_ID)
-    assert node_arr is None
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes._Nodes__get_raw(NOT_EXISTING_ID)
 
 
 def public_key_from_private(key):
