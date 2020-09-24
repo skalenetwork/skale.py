@@ -48,6 +48,14 @@ def test_get(skale):
         skale.nodes.get(NOT_EXISTING_ID)
 
 
+def test_wrong_node_id(skale):
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes.get_node_status(NOT_EXISTING_ID)
+
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes.get_node_finish_time(NOT_EXISTING_ID)
+
+
 def test_get_by_name(skale):
     node = skale.nodes.get_by_name(DEFAULT_NODE_NAME)
 
@@ -127,6 +135,9 @@ def test_get_node_public_key(skale):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     node_public_key = skale.nodes.get_node_public_key(node_id)
     assert node_public_key == skale.wallet.public_key
+
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes.get_node_public_key(NOT_EXISTING_ID)
 
 
 def test_node_in_maintenance(skale):
