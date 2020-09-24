@@ -53,7 +53,7 @@ class Nodes(BaseContract):
         try:
             return self.contract.functions.nodes(node_id).call()
         except (ValueError, BadFunctionCallOutput):
-            return None
+            raise InvalidNodeIdError(f'Node with ID = {node_id} doesn\'t exist!')
 
     def __get_raw_w_pk(self, node_id):
         raw_node_struct = self.__get_raw(node_id)
@@ -62,9 +62,6 @@ class Nodes(BaseContract):
 
     @format_fields(FIELDS)
     def get(self, node_id):
-        nodes_number = self.get_nodes_number()
-        if node_id not in range(nodes_number):
-            raise InvalidNodeIdError(f'Node with ID = {node_id} doesn\'t exist!')
         return self.__get_raw_w_pk(node_id)
 
     @format_fields(FIELDS)
