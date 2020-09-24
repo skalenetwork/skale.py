@@ -141,10 +141,10 @@ def create_validator(skale):
     )
 
 
-def create_nodes(skale):
+def create_nodes(skale, names=()):
     # create couple of nodes
     print('Creating two nodes')
-    node_names = [DEFAULT_NODE_NAME, SECOND_NODE_NAME]
+    node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)
     for name in node_names:
         ip, public_ip, port, _ = generate_random_node_data()
         skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
