@@ -53,7 +53,7 @@ class Nodes(BaseContract):
         try:
             return self.contract.functions.nodes(node_id).call()
         except (ValueError, BadFunctionCallOutput):
-            raise InvalidNodeIdError(f'Node with ID = {node_id} doesn\'t exist!')
+            raise InvalidNodeIdError(node_id)
 
     def __get_raw_w_pk(self, node_id):
         raw_node_struct = self.__get_raw(node_id)
@@ -110,13 +110,22 @@ class Nodes(BaseContract):
         return self.contract.functions.nodesNameToIndex(name_hash).call()
 
     def get_node_status(self, node_id):
-        return self.contract.functions.getNodeStatus(node_id).call()
+        try:
+            return self.contract.functions.getNodeStatus(node_id).call()
+        except (ValueError, BadFunctionCallOutput):
+            raise InvalidNodeIdError(node_id)
 
     def get_node_finish_time(self, node_id):
-        return self.contract.functions.getNodeFinishTime(node_id).call()
+        try:
+            return self.contract.functions.getNodeFinishTime(node_id).call()
+        except (ValueError, BadFunctionCallOutput):
+            raise InvalidNodeIdError(node_id)
 
     def __get_node_public_key_raw(self, node_id):
-        return self.contract.functions.getNodePublicKey(node_id).call()
+        try:
+            return self.contract.functions.getNodePublicKey(node_id).call()
+        except (ValueError, BadFunctionCallOutput):
+            raise InvalidNodeIdError(node_id)
 
     def get_node_public_key(self, node_id):
         raw_key = self.__get_node_public_key_raw(node_id)
