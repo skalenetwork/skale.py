@@ -277,3 +277,25 @@ class ValidatorService(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.confirmNewAddress(validator_id)
+
+    @transaction_method
+    def set_validator_name(self, new_name: str) -> TxRes:
+        """ Allows a validator to change the name.
+
+        :param new_name: New validator name
+        :type new_name: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.setValidatorName(new_name)
+
+    @transaction_method
+    def set_validator_description(self, new_description: str) -> TxRes:
+        """ Allows a validator to change the name.
+
+        :param new_description: New validator description
+        :type new_name: str
+        :returns: Transaction results
+        :rtype: TxRes
+        """
+        return self.contract.functions.setValidatorDescription(new_description)
