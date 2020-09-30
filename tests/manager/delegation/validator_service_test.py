@@ -371,3 +371,41 @@ def test_confirm_new_address(skale):
 
     validator = skale.validator_service.get(n_of_validators)
     assert validator['validator_address'] == new_wallet.address
+
+
+def test_set_validator_name(skale):
+    skale.wallet = _generate_new_validator(skale)
+    latest_id = skale.validator_service.number_of_validators()
+
+    new_test_name = 'test_123'
+    validator = skale.validator_service.get(latest_id)
+    assert validator['name'] == D_VALIDATOR_NAME
+    assert validator['name'] != new_test_name
+
+    skale.validator_service.set_validator_name(
+        new_name=new_test_name,
+        wait_for=True
+    )
+
+    validator = skale.validator_service.get(latest_id)
+    assert validator['name'] != D_VALIDATOR_NAME
+    assert validator['name'] == new_test_name
+
+
+def test_set_validator_description(skale):
+    skale.wallet = _generate_new_validator(skale)
+    latest_id = skale.validator_service.number_of_validators()
+
+    new_test_description = 'test_description'
+    validator = skale.validator_service.get(latest_id)
+    assert validator['description'] == D_VALIDATOR_DESC
+    assert validator['description'] != new_test_description
+
+    skale.validator_service.set_validator_description(
+        new_description=new_test_description,
+        wait_for=True
+    )
+
+    validator = skale.validator_service.get(latest_id)
+    assert validator['description'] != D_VALIDATOR_DESC
+    assert validator['description'] == new_test_description
