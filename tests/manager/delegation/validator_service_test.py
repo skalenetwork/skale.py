@@ -407,5 +407,5 @@ def test_set_validator_description(skale):
     )
 
     validator = skale.validator_service.get(latest_id)
-    assert validator['description'] == D_VALIDATOR_DESC
-    assert validator['description'] != new_test_description
+    assert validator['description'] != D_VALIDATOR_DESC
+    assert validator['description'] == new_test_description
