@@ -44,6 +44,24 @@ class DKG(BaseContract):
         return self.contract.functions.broadcast(group_index, node_index,
                                                  verification_vector,
                                                  secret_key_contribution)
+    
+    @retry_tx
+    @transaction_method
+    def pre_response(
+        self,
+        group_index: bytes,
+        from_node_index: int,
+        verification_vector: list,
+        verification_vector_mult: list,
+        secret_key_contribution: list
+    ):
+        return self.contract.functions.preResponse(
+            groupIndex=group_index,
+            fromNodeIndex=from_node_index,
+            verificationVector=verification_vector,
+            verificationVectorMult=verification_vector_mult,
+            secretKeyContribution=secret_key_contribution,
+        )
 
     @retry_tx
     @transaction_method
@@ -52,17 +70,13 @@ class DKG(BaseContract):
             group_index: bytes,
             from_node_index: int,
             secret_number: int,
-            multiplied_share: G2Point,
-            verification_vector: list,
-            secret_key_contribution: list,
+            multiplied_share: G2Point
     ):
         return self.contract.functions.response(
             groupIndex=group_index,
             fromNodeIndex=from_node_index,
             secretNumber=secret_number,
-            multipliedShare=multiplied_share,
-            verificationVector=verification_vector,
-            secretKeyContribution=secret_key_contribution,
+            multipliedShare=multiplied_share
         )
 
     @retry_tx

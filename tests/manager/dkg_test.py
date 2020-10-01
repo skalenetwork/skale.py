@@ -56,10 +56,26 @@ def test_response(skale):
     secret_number = 1
     multiplied_share = G2Point(1, 2, 3, 4).tuple
     verification_vector = [G2Point(1, 2, 3, 4).tuple for i in range(0, 3)]
+    verification_vector_mult = [G2Point(1, 2, 3, 4).tuple for i in range(0, 3)]
     secret_key_contribution = [KeyShare(skale.wallet.public_key, b'111').tuple]
 
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
+
+    with mock.patch.object(skale.dkg.contract.functions.pre_response, 'call',
+                           new=Mock(return_value=[])):
+        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+            send_tx_mock.return_value = b'hexstring'
+            skale.dkg.pre_response(
+                group_index=group_index,
+                from_node_index=from_node_index,
+                verification_vector=verification_vector,
+                verification_vector_mult=verification_vector_mult,
+                secret_key_contribution=secret_key_contribution,
+                wait_for=False,
+                gas_limit=gas_limit
+            )
+            send_tx_mock.assert_called_with(HexBytes(exp))
 
     with mock.patch.object(skale.dkg.contract.functions.response, 'call',
                            new=Mock(return_value=[])):
@@ -70,8 +86,6 @@ def test_response(skale):
                 from_node_index=from_node_index,
                 secret_number=secret_number,
                 multiplied_share=multiplied_share,
-                verification_vector=verification_vector,
-                secret_key_contribution=secret_key_contribution,
                 wait_for=False,
                 gas_limit=gas_limit
             )
