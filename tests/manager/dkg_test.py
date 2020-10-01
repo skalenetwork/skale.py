@@ -62,7 +62,7 @@ def test_response(skale):
     exp = skale.web3.eth.account.signTransaction(
         expected_txn, skale.wallet._private_key).rawTransaction
 
-    with mock.patch.object(skale.dkg.contract.functions.pre_response, 'call',
+    with mock.patch.object(skale.dkg.contract.functions.preResponse, 'call',
                            new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
