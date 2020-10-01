@@ -136,6 +136,35 @@ def test_complaint(skale):
             send_tx_mock.assert_called_with(HexBytes(exp))
 
 
+def test_complaint_bad_data(skale):
+    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
+    contract_address = skale.dkg.address
+    chain_id = skale.web3.eth.chainId
+    gas_limit = 8000000
+    expected_txn = {
+        'value': 0, 'gasPrice': skale.web3.eth.gasPrice * 2, 'chainId': chain_id,
+        'gas': gas_limit, 'nonce': nonce,
+        'to': contract_address,
+        'data': (
+            '0xd76c2c4fe629fa6598d732768f7c726b4b6212850000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'  # noqa
+        )
+    }
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    from_node_index = 0
+    to_node_index = 0
+
+    exp = skale.web3.eth.account.signTransaction(
+        expected_txn, skale.wallet._private_key).rawTransaction
+    with mock.patch.object(skale.dkg.contract.functions.complaintBadData,
+                           'call', new=Mock(return_value=[])):
+        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+            send_tx_mock.return_value = b'hexstring'
+            skale.dkg.complaint(group_index, from_node_index, to_node_index,
+                                wait_for=False,
+                                gas_limit=gas_limit)
+            send_tx_mock.assert_called_with(HexBytes(exp))
+
+
 def test_is_last_dkg_successful(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     assert skale.dkg.is_last_dkg_successful(group_index)
