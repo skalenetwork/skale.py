@@ -99,6 +99,7 @@ def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> s
         f'gasPrice: {gas_price}'
     )
     tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
+    print("TX DICT", tx_dict)
     tx_hash = wallet.sign_and_send(tx_dict)
     return tx_hash
 
