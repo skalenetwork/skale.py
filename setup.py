@@ -7,7 +7,7 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        "flake8==3.8.3",
+        "flake8==3.8.4",
         "isort>=4.2.15,<5.4.3",
     ],
     'dev': [
