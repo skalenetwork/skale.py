@@ -49,14 +49,14 @@ class DKG(BaseContract):
     @transaction_method
     def pre_response(
         self,
-        group_index: bytes,
+        group_index: str,
         from_node_index: int,
         verification_vector: list,
         verification_vector_mult: list,
         secret_key_contribution: list
     ):
         return self.contract.functions.preResponse(
-            groupIndex=group_index,
+            schainId=group_index,
             fromNodeIndex=from_node_index,
             verificationVector=verification_vector,
             verificationVectorMult=verification_vector_mult,
