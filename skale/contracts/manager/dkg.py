@@ -97,4 +97,4 @@ class DKG(BaseContract):
                                                         to_node_index)
 
     def is_last_dkg_successful(self, group_index):
-        return self.contract.functions.isLastDKGSuccesful(group_index).call()
+        return self.contract.functions.isLastDKGSuccessful(group_index).call()
