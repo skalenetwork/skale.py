@@ -73,7 +73,7 @@ class DKG(BaseContract):
             multiplied_share: G2Point
     ):
         return self.contract.functions.response(
-            groupIndex=group_index,
+            schainId=group_index,
             fromNodeIndex=from_node_index,
             secretNumber=secret_number,
             multipliedShare=multiplied_share
