@@ -42,3 +42,7 @@ class BaseWallet(ABC):
     @abstractmethod
     def public_key(self):
         pass
+
+    @abstractmethod
+    def wait_for_receipt(self, tx_dict) -> tuple:
+        pass

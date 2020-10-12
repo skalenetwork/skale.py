@@ -26,8 +26,8 @@ from web3 import Web3
 from skale.transactions.result import (is_success,
                                        is_success_or_not_performed,
                                        TxRes, check_balance_and_gas)
-from skale.transactions.tools import post_transaction, make_dry_run_call
-from skale.utils.web3_utils import wait_for_receipt_by_blocks, wait_for_confirmation_blocks
+from skale.transactions.tools import build_tx_dict, make_dry_run_call
+from skale.utils.web3_utils import wait_for_confirmation_blocks
 from skale.utils.account_tools import account_eth_balance_wei
 
 
@@ -62,17 +62,15 @@ def transaction_method(transaction):
             is_success_or_not_performed(dry_run_result)
 
         if rich_enough and should_send_transaction:
-            tx_hash = post_transaction(
-                self.skale.wallet, method, gas_limit,
-                gas_price, nonce
-            )
+            tx_dict = build_tx_dict(method, gas_limit, gas_limit, nonce)
             if wait_for:
-                receipt = wait_for_receipt_by_blocks(
-                    self.skale.web3,
-                    tx_hash,
+                tx_hash, receipt = self.skale.wallet.wait_for_receipt(
+                    tx_dict,
                     timeout=wait_timeout,
                     blocks_to_wait=blocks_to_wait
                 )
+            else:
+                tx_hash = self.skale.wallet.sign_and_send(tx_dict)
             if confirmation_blocks:
                 wait_for_confirmation_blocks(self.skale.web3, confirmation_blocks)
 

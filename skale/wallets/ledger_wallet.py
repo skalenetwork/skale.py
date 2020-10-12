@@ -30,7 +30,7 @@ from eth_utils.crypto import keccak
 from rlp import encode
 
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
-                                   to_checksum_address
+                                   to_checksum_address, wait_for_receipt_by_blocks
 
 from skale.wallets.common import BaseWallet
 
@@ -190,6 +190,12 @@ class LedgerWallet(BaseWallet):
         payload = self.make_payload()
         exchange_result = self.exchange_derive_payload(payload)
         return LedgerWallet.parse_derive_result(exchange_result)
+
+    def wait_for_receipt(self, tx_dict, *args, **kwargs):
+        tx_hash = self.sign_and_send(tx_dict)
+        receipt = wait_for_receipt_by_blocks(
+            self.web3, tx_hash, **args, **kwargs)
+        return tx_hash, receipt
 
 
 def hardware_sign_and_send(web3, method, gas_amount, wallet) -> str:
