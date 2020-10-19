@@ -75,3 +75,6 @@ class ConstantsHolder(BaseContract):
 
     def get_rotation_delay(self) -> int:
         return self.contract.functions.rotationDelay().call()
+    
+    def get_dkg_timeout(self) -> int:
+        return self.contract.functions.complaintTimelimit().call()
