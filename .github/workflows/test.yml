@@ -11,7 +11,7 @@ jobs:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      MANAGER_TAG: "1.5.2-develop.7"
+      MANAGER_TAG: "1.5.2-develop.20"
       ALLOCATOR_TAG: "2.2.0-develop.4"
     steps:
     - uses: actions/checkout@v2
