@@ -19,6 +19,7 @@
 """ SKALE base contract class """
 
 import logging
+import os
 from functools import wraps
 
 from web3 import Web3
@@ -27,28 +28,43 @@ from skale.transactions.result import (is_success,
                                        is_success_or_not_performed,
                                        TxRes, check_balance_and_gas)
 from skale.transactions.tools import post_transaction, make_dry_run_call
-from skale.utils.web3_utils import wait_for_receipt_by_blocks, wait_for_confirmation_blocks
 from skale.utils.account_tools import account_eth_balance_wei
+from skale.utils.constants import DEFAULT_GAS_LIMIT
+from skale.utils.web3_utils import wait_for_receipt_by_blocks, wait_for_confirmation_blocks
 
 
 logger = logging.getLogger(__name__)
+
+
+def execute_dry_run(skale, method, custom_gas_limit) -> tuple:
+    dry_run_result = make_dry_run_call(skale, method, custom_gas_limit)
+    estimated_gas_limit = None
+    if is_success(dry_run_result):
+        estimated_gas_limit = dry_run_result['payload']
+    return dry_run_result, estimated_gas_limit
 
 
 def transaction_method(transaction):
     @wraps(transaction)
     def wrapper(self, *args, wait_for=True,
                 wait_timeout=4, blocks_to_wait=50, gas_limit=None,
-                gas_price=None, nonce=None, dry_run_only=False, skip_dry_run=False,
+                gas_price=None, nonce=None,
+                dry_run_only=False, skip_dry_run=False,
                 raise_for_status=True, confirmation_blocks=0, **kwargs):
         method = transaction(self, *args, **kwargs)
         dry_run_result, tx_hash, receipt = None, None, None
 
+        disable_dry_run = os.getenv('DISABLE_DRY_RUN') == 'True'
+
         # Make dry_run
-        if not skip_dry_run:
-            dry_run_result = make_dry_run_call(self.skale, method, gas_limit)
-            success_dry_run = is_success(dry_run_result)
-            if success_dry_run:
-                gas_limit = dry_run_result['payload']
+        estimated_gas_limit = None
+        if not skip_dry_run and not disable_dry_run:
+            dry_run_result, estimated_gas_limit = execute_dry_run(
+                self.skale, method, gas_limit
+            )
+
+        # DEFAULT_GAS_LIMIT = 8000000
+        gas_limit = gas_limit or estimated_gas_limit or DEFAULT_GAS_LIMIT
 
         # Check balance
         balance = account_eth_balance_wei(self.skale.web3,

@@ -1,3 +1,4 @@
+import os
 import mock
 import pytest
 from web3 import Web3
@@ -30,6 +31,19 @@ def test_dry_run(skale):
     assert balance_to_after == balance_to_before
 
 
+def test_disable_dry_run_env(skale):
+    os.environ['DISABLE_DRY_RUN'] = 'True'
+    account = generate_account(skale.web3)
+    address_to = account['address']
+    amount = 10 * ETH_IN_WEI
+    with mock.patch(
+        'skale.contracts.base_contract.execute_dry_run'
+    ) as dry_run_mock:
+        skale.token.transfer(address_to, amount, dry_run_only=True)
+        dry_run_mock.assert_not_called()
+    os.environ.pop('DISABLE_DRY_RUN')
+
+
 def test_skip_dry_run(skale):
     account = generate_account(skale.web3)
     address_to = account['address']
@@ -39,9 +53,12 @@ def test_skip_dry_run(skale):
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
 
-    with pytest.raises(InsufficientBalanceError) as err:
-        skale.token.transfer(address_to, amount, skip_dry_run=True)
-        assert err == 'Gas limit is empty'
+    with mock.patch(
+        'skale.contracts.base_contract.DEFAULT_GAS_LIMIT', None
+    ):
+        with pytest.raises(InsufficientBalanceError) as err:
+            skale.token.transfer(address_to, amount, skip_dry_run=True)
+            assert err == 'Gas limit is empty'
 
     tx_res = skale.token.transfer(address_to, amount, skip_dry_run=True, gas_limit=TEST_GAS_LIMIT)
     assert tx_res.tx_hash is not None, tx_res
