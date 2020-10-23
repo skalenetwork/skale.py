@@ -31,8 +31,14 @@ def test_dry_run(skale):
     assert balance_to_after == balance_to_before
 
 
-def test_disable_dry_run_env(skale):
+@pytest.fixture
+def disable_dry_run_env():
     os.environ['DISABLE_DRY_RUN'] = 'True'
+    yield
+    os.environ.pop('DISABLE_DRY_RUN')
+
+
+def test_disable_dry_run_env(skale, disable_dry_run_env):
     account = generate_account(skale.web3)
     address_to = account['address']
     amount = 10 * ETH_IN_WEI
@@ -41,7 +47,6 @@ def test_disable_dry_run_env(skale):
     ) as dry_run_mock:
         skale.token.transfer(address_to, amount, dry_run_only=True)
         dry_run_mock.assert_not_called()
-    os.environ.pop('DISABLE_DRY_RUN')
 
 
 def test_skip_dry_run(skale):

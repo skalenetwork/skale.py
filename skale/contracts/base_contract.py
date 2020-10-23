@@ -63,7 +63,6 @@ def transaction_method(transaction):
                 self.skale, method, gas_limit
             )
 
-        # DEFAULT_GAS_LIMIT = 8000000
         gas_limit = gas_limit or estimated_gas_limit or DEFAULT_GAS_LIMIT
 
         # Check balance
