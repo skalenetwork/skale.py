@@ -41,6 +41,7 @@ def disable_dry_run_env():
     importlib.reload(config)
     yield
     os.environ.pop('DISABLE_DRY_RUN')
+    os.environ.pop('DEFAULT_GAS_LIMIT')
     importlib.reload(config)
 
 
@@ -70,7 +71,7 @@ def test_skip_dry_run(skale):
     amount = 10 * ETH_IN_WEI
 
     with mock.patch(
-        'skale.contracts.base_contract.DEFAULT_GAS_LIMIT', None
+        'skale.contracts.base_contract.config.DEFAULT_GAS_LIMIT', None
     ):
         with pytest.raises(InsufficientBalanceError) as err:
             skale.token.transfer(address_to, amount, skip_dry_run=True)
