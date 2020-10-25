@@ -1,15 +1,18 @@
+import importlib
 import os
+
 import mock
 import pytest
-from web3 import Web3
-
+import skale.config as config
 from skale.transactions.result import InsufficientBalanceError
 from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
 from tests.constants import TEST_GAS_LIMIT
+from web3 import Web3
 
 ETH_IN_WEI = 10 ** 18
+CUSTOM_DEFAULT_GAS_LIMIT = 2 * 10 ** 6
 
 
 def test_dry_run(skale):
@@ -34,8 +37,11 @@ def test_dry_run(skale):
 @pytest.fixture
 def disable_dry_run_env():
     os.environ['DISABLE_DRY_RUN'] = 'True'
+    os.environ['DEFAULT_GAS_LIMIT'] = str(CUSTOM_DEFAULT_GAS_LIMIT)
+    importlib.reload(config)
     yield
     os.environ.pop('DISABLE_DRY_RUN')
+    importlib.reload(config)
 
 
 def test_disable_dry_run_env(skale, disable_dry_run_env):
@@ -45,8 +51,13 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
     with mock.patch(
         'skale.contracts.base_contract.execute_dry_run'
     ) as dry_run_mock:
-        skale.token.transfer(address_to, amount, dry_run_only=True)
-        dry_run_mock.assert_not_called()
+        with mock.patch(
+            'skale.contracts.base_contract.post_transaction'
+        ) as post_transaction_mock:
+            skale.token.transfer(address_to, amount, wait_for=False)
+            dry_run_mock.assert_not_called()
+            assert post_transaction_mock.call_args[0][2] == \
+                CUSTOM_DEFAULT_GAS_LIMIT
 
 
 def test_skip_dry_run(skale):
