@@ -194,7 +194,7 @@ class LedgerWallet(BaseWallet):
     def wait_for_receipt(self, tx_dict, *args, **kwargs):
         tx_hash = self.sign_and_send(tx_dict)
         receipt = wait_for_receipt_by_blocks(
-            self.web3, tx_hash, **args, **kwargs)
+            self._web3, tx_hash, *args, **kwargs)
         return tx_hash, receipt
 
 

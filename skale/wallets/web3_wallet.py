@@ -25,41 +25,35 @@ from skale.wallets.common import BaseWallet
 from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
 
 
-def private_key_to_public(pr):
+def private_key_to_public(pr: str) -> str:
     pr_bytes = Web3.toBytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
-def public_key_to_address(pk):
+def public_key_to_address(pk: str) -> str:
     hash = Web3.keccak(hexstr=str(pk))
     return to_checksum_address(Web3.toHex(hash[-20:]))
 
 
-def private_key_to_address(pr):
+def private_key_to_address(pr: str) -> str:
     pk = private_key_to_public(pr)
     return public_key_to_address(pk)
 
 
-def to_checksum_address(address):
+def to_checksum_address(address: str) -> str:
     return Web3.toChecksumAddress(address)
 
 
-def generate_wallet(web3):
-    account = web3.eth.account.create()
-    private_key = account.key.hex()
-    return Web3Wallet(private_key, web3)
-
-
 class Web3Wallet(BaseWallet):
-    def __init__(self, private_key, web3):
+    def __init__(self, private_key: str, web3: Web3) -> None:
         self._private_key = private_key
         self._public_key = private_key_to_public(self._private_key)
         self._address = public_key_to_address(self._public_key)
 
         self._web3 = web3
 
-    def sign(self, tx_dict):
+    def sign(self, tx_dict: dict) -> str:
         if not tx_dict.get('nonce'):
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         return self._web3.eth.account.sign_transaction(
@@ -67,7 +61,7 @@ class Web3Wallet(BaseWallet):
             private_key=self._private_key
         )
 
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> str:
         unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
         return self._web3.eth.account.sign_message(
             unsigned_message,
@@ -79,15 +73,21 @@ class Web3Wallet(BaseWallet):
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
     @property
-    def address(self):
+    def address(self) -> str:
         return self._address
 
     @property
-    def public_key(self):
+    def public_key(self) -> str:
         return str(self._public_key)
 
-    def wait_for_receipt(self, tx_dict, *args, **kwargs):
+    def wait_for_receipt(self, tx_dict: dict, *args, **kwargs) -> tuple:
         tx_hash = self.sign_and_send(tx_dict)
         receipt = wait_for_receipt_by_blocks(
-            self.web3, tx_hash, **args, **kwargs)
+            self._web3, tx_hash, *args, **kwargs)
         return tx_hash, receipt
+
+
+def generate_wallet(web3: Web3) -> Web3Wallet:
+    account = web3.eth.account.create()
+    private_key = account.key.hex()
+    return Web3Wallet(private_key, web3)

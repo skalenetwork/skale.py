@@ -2,7 +2,6 @@ import mock
 import web3
 
 from hexbytes import HexBytes
-from eth_account.datastructures import AttributeDict
 from skale.wallets import SgxWallet
 from skale.utils.web3_utils import (
     init_web3,
@@ -11,51 +10,16 @@ from skale.utils.web3_utils import (
 )
 
 from tests.constants import ENDPOINT, ETH_PRIVATE_KEY
+from tests.wallets.utils import SgxClientMock
 
 ADDRESS = to_checksum_address(
     private_key_to_address(ETH_PRIVATE_KEY)
 )
 
 
-class SgxClient:
-    def __init__(self, endpoint, path_to_cert=None):
-        pass
-
-    def generate_key(self):
-        return AttributeDict({
-            'name': 'NEK:aaabbb',
-            'address': ADDRESS,
-            'public_key': 'ab00000000000000000000000000000000000000',
-        })
-
-    def get_account(self, key_name):
-        return AttributeDict({
-            'address': ADDRESS,
-            'public_key': 'ab00000000000000000000000000000000000000',
-        })
-
-    def sign(self, transaction_dict, key_name):
-        return AttributeDict({
-            'rawTransaction': HexBytes('0x000000000000'),
-            'hash': HexBytes('0x000000000000'),
-            'r': 100000000000,
-            's': 100000000000,
-            'v': 37,
-        })
-
-    def sign_hash(self, message, key_name, chain_id):
-        return AttributeDict({
-            'messageHash': HexBytes('0x31323331'),
-            'r': 123,
-            's': 123,
-            'v': 27,
-            'signature': HexBytes('0x6161616161613131313131')
-        })
-
-
 def test_sgx_sign():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
-                    new=SgxClient):
+                    new=SgxClientMock):
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3)
         tx_dict = {
@@ -72,7 +36,7 @@ def test_sgx_sign():
 
 def test_sgx_sign_without_nonce():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
-                    new=SgxClient):
+                    new=SgxClientMock):
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3)
         tx_dict = {
@@ -89,7 +53,7 @@ def test_sgx_sign_without_nonce():
 def test_sgx_sign_and_send_without_nonce():
     with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
         with mock.patch('skale.wallets.sgx_wallet.SgxClient',
-                        new=SgxClient):
+                        new=SgxClientMock):
             web3_inst = init_web3(ENDPOINT)
             wallet = SgxWallet('TEST_ENDPOINT', web3_inst)
             tx_dict = {
@@ -107,7 +71,7 @@ def test_sgx_sign_and_send_without_nonce():
 
 def test_sgx_sign_with_key():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
-                    new=SgxClient):
+                    new=SgxClientMock):
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3, key_name='TEST_KEY')
         tx_dict = {
@@ -124,7 +88,7 @@ def test_sgx_sign_with_key():
 
 def test_sgx_sign_hash():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
-                    new=SgxClient):
+                    new=SgxClientMock):
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3, key_name='TEST_KEY')
         unsigned_hash = '0x31323331'
@@ -134,7 +98,7 @@ def test_sgx_sign_hash():
 
 def test_sgx_key_init():
     with mock.patch('skale.wallets.sgx_wallet.SgxClient',
-                    new=SgxClient):
+                    new=SgxClientMock):
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3, 'TEST_KEY')
         assert wallet.key_name == 'TEST_KEY'

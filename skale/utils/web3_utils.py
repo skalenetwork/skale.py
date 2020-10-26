@@ -114,23 +114,23 @@ def wait_for_confirmation_blocks(web3, blocks_to_wait, request_timeout=5):
         time.sleep(request_timeout)
 
 
-def private_key_to_public(pr):
+def private_key_to_public(pr: str) -> str:
     pr_bytes = Web3.toBytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
-def public_key_to_address(pk):
+def public_key_to_address(pk: str) -> str:
     hash = Web3.keccak(hexstr=str(pk))
     return Web3.toHex(hash[-20:])
 
 
-def private_key_to_address(pr):
+def private_key_to_address(pr: str) -> str:
     pk = private_key_to_public(pr)
     return public_key_to_address(pk)
 
 
-def to_checksum_address(address):
+def to_checksum_address(address: str) -> str:
     return Web3.toChecksumAddress(address)
 
 
