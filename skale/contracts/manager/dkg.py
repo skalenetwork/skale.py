@@ -47,22 +47,36 @@ class DKG(BaseContract):
 
     @retry_tx
     @transaction_method
+    def pre_response(
+        self,
+        group_index: str,
+        from_node_index: int,
+        verification_vector: list,
+        verification_vector_mult: list,
+        secret_key_contribution: list
+    ):
+        return self.contract.functions.preResponse(
+            schainId=group_index,
+            fromNodeIndex=from_node_index,
+            verificationVector=verification_vector,
+            verificationVectorMult=verification_vector_mult,
+            secretKeyContribution=secret_key_contribution,
+        )
+
+    @retry_tx
+    @transaction_method
     def response(
             self,
             group_index: bytes,
             from_node_index: int,
             secret_number: int,
-            multiplied_share: G2Point,
-            verification_vector: list,
-            secret_key_contribution: list,
+            multiplied_share: G2Point
     ):
         return self.contract.functions.response(
-            groupIndex=group_index,
+            schainId=group_index,
             fromNodeIndex=from_node_index,
             secretNumber=secret_number,
-            multipliedShare=multiplied_share,
-            verificationVector=verification_vector,
-            secretKeyContribution=secret_key_contribution,
+            multipliedShare=multiplied_share
         )
 
     @retry_tx
@@ -76,5 +90,11 @@ class DKG(BaseContract):
         return self.contract.functions.complaint(group_index, from_node_index,
                                                  to_node_index)
 
+    @retry_tx
+    @transaction_method
+    def complaint_bad_data(self, group_index, from_node_index, to_node_index):
+        return self.contract.functions.complaintBadData(group_index, from_node_index,
+                                                        to_node_index)
+
     def is_last_dkg_successful(self, group_index):
-        return self.contract.functions.isLastDKGSuccesful(group_index).call()
+        return self.contract.functions.isLastDKGSuccessful(group_index).call()

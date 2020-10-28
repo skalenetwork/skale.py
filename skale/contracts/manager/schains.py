@@ -95,7 +95,7 @@ class SChains(BaseContract):
 
     def name_to_id(self, name):
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
-        return keccak_hash.hexdigest()
+        return '0x' + keccak_hash.hexdigest()
 
     def get_last_rotation_id(self, schain_name):
         rotation_data = self.node_rotation.get_rotation(schain_name)

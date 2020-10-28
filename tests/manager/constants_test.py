@@ -55,3 +55,8 @@ def test_get_set_rotation_delay(skale):
 def test_get_first_delegation_month(skale):
     fdm = skale.constants_holder.get_first_delegation_month()
     assert fdm == 0
+
+
+def test_get_dkg_timeout(skale):
+    dkg_timeout = skale.constants_holder.get_dkg_timeout()
+    assert dkg_timeout == 1800

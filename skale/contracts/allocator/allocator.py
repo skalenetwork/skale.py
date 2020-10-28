@@ -160,3 +160,15 @@ class Allocator(BaseContract):
             except ValueError:
                 break
         return plans
+
+    def calculate_vested_amount(self, address: str) -> int:
+        return self.contract.functions.calculateVestedAmount(address).call()
+
+    def get_finish_vesting_time(self, address: str) -> int:
+        return self.contract.functions.getFinishVestingTime(address).call()
+
+    def get_lockup_period_end_timestamp(self, address: str) -> int:
+        return self.contract.functions.getLockupPeriodEndTimestamp(address).call()
+
+    def get_time_of_next_vest(self, address: str) -> int:
+        return self.contract.functions.getTimeOfNextVest(address).call()

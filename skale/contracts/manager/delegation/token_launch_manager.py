@@ -16,26 +16,30 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE token operations """
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 
 
-class Token(BaseContract):
-    @transaction_method
-    def transfer(self, address, value):
-        return self.contract.functions.send(address, value, b'')
-
-    def get_balance(self, address):
-        return self.contract.functions.balanceOf(address).call()
+class TokenLaunchManager(BaseContract):
+    """Wrapper for TokenLaunchManager.sol functions"""
 
     @transaction_method
-    def add_authorized(self, address, wallet):  # pragma: no cover
-        return self.contract.functions.addAuthorized(address)
-
-    def get_and_update_slashed_amount(self, address: str) -> int:
-        return self.contract.functions.getAndUpdateSlashedAmount(address).call()
+    def approve_batch_of_transfers(self, wallet_addresses, values):
+        if len(wallet_addresses) != len(values):
+            raise ValueError('wallet_addresses and values length do not match')
+        return self.contract.functions.approveBatchOfTransfers(wallet_addresses, values)
 
     @transaction_method
-    def mint(self, address, amount, user_data=b'', operator_data=b''):
-        return self.contract.functions.mint(address, amount, user_data, operator_data)
+    def approve_transfer(self, wallet_address, value):
+        return self.contract.functions.approveBatchOfTransfers(wallet_address, value)
+
+    @transaction_method
+    def retrieve(self):
+        return self.contract.functions.retrieve()
+
+    @transaction_method
+    def complete_token_launch(self):
+        return self.contract.functions.completeTokenLaunch()
+
+    def approved(self, address: str) -> int:
+        return self.contract.functions.approved(address).call()

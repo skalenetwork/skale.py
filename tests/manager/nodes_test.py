@@ -13,8 +13,8 @@ from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME, NOT_EXISTING_I
 
 
 def test_get_raw_not_exist(skale):
-    node_arr = skale.nodes._Nodes__get_raw(NOT_EXISTING_ID)
-    assert node_arr is None
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes._Nodes__get_raw(NOT_EXISTING_ID)
 
 
 def public_key_from_private(key):
@@ -46,6 +46,14 @@ def test_get(skale):
 
     with pytest.raises(InvalidNodeIdError):
         skale.nodes.get(NOT_EXISTING_ID)
+
+
+def test_wrong_node_id(skale):
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes.get_node_status(NOT_EXISTING_ID)
+
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes.get_node_finish_time(NOT_EXISTING_ID)
 
 
 def test_get_by_name(skale):
@@ -127,6 +135,9 @@ def test_get_node_public_key(skale):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     node_public_key = skale.nodes.get_node_public_key(node_id)
     assert node_public_key == skale.wallet.public_key
+
+    with pytest.raises(InvalidNodeIdError):
+        skale.nodes.get_node_public_key(NOT_EXISTING_ID)
 
 
 def test_node_in_maintenance(skale):
