@@ -83,8 +83,8 @@ def test_run_tx_with_retry_tx_failed(patched_wallet_failed_tx_skale):
     assert skale.wallet.wait_for_receipt.call_count == retries_number
 
 
-def test_run_tx_with_retry_insufficient_balance(skale_wait_for_receipt_mock):
-    skale = skale_wait_for_receipt_mock
+def test_run_tx_with_retry_insufficient_balance(patched_wallet_failed_tx_skale):
+    skale = patched_wallet_failed_tx_skale
     wait_for_receipt_by_blocks_mock = mock.Mock()
 
     sender_skale = generate_new_skale()
