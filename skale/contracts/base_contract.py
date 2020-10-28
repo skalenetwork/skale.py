@@ -64,7 +64,8 @@ def transaction_method(transaction):
         balance = account_eth_balance_wei(self.skale.web3,
                                           self.skale.wallet.address)
         gas_price = gas_price or self.skale.gas_price
-        balance_check_result = check_balance_and_gas(balance, gas_price, gas_limit)
+        balance_check_result = check_balance_and_gas(balance, gas_price,
+                                                     gas_limit)
         rich_enough = is_success(balance_check_result)
 
         # Send transaction
@@ -82,7 +83,8 @@ def transaction_method(transaction):
             else:
                 tx_hash = self.skale.wallet.sign_and_send(tx_dict)
             if confirmation_blocks:
-                wait_for_confirmation_blocks(self.skale.web3, confirmation_blocks)
+                wait_for_confirmation_blocks(
+                    self.skale.web3, confirmation_blocks)
 
         tx_res = TxRes(dry_run_result, balance_check_result, tx_hash, receipt)
 

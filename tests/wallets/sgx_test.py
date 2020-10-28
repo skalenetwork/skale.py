@@ -6,15 +6,12 @@ from skale.wallets import SgxWallet
 from skale.utils.web3_utils import (
     init_web3,
     private_key_to_address,
+    private_key_to_public,
     to_checksum_address
 )
 
 from tests.constants import ENDPOINT, ETH_PRIVATE_KEY
 from tests.wallets.utils import SgxClientMock
-
-ADDRESS = to_checksum_address(
-    private_key_to_address(ETH_PRIVATE_KEY)
-)
 
 
 def test_sgx_sign():
@@ -102,5 +99,7 @@ def test_sgx_key_init():
         web3 = init_web3(ENDPOINT)
         wallet = SgxWallet('TEST_ENDPOINT', web3, 'TEST_KEY')
         assert wallet.key_name == 'TEST_KEY'
-        assert wallet.address == ADDRESS
-        assert wallet.public_key == 'ab00000000000000000000000000000000000000'
+        assert wallet.address == to_checksum_address(
+            private_key_to_address(ETH_PRIVATE_KEY)
+        )
+        assert wallet.public_key == private_key_to_public(ETH_PRIVATE_KEY)
