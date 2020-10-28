@@ -63,18 +63,8 @@ def test_run_tx_with_retry_dry_run_failed(skale):
     assert dry_run_call_mock.call_count == retries_number
 
 
-@pytest.fixture
-def skale_wait_for_receipt_mock(skale):
-    tmp_wait_for_receipt = skale.wallet.wait_for_receipt
-    skale.wallet.wait_for_receipt = mock.Mock(
-        return_value=('txHash', {'status': 0})
-    )
-    yield skale
-    skale.wallet.wait_for_receipt = tmp_wait_for_receipt
-
-
-def test_run_tx_with_retry_tx_failed(skale_wait_for_receipt_mock):
-    skale = skale_wait_for_receipt_mock
+def test_run_tx_with_retry_tx_failed(patched_wallet_failed_tx_skale):
+    skale = patched_wallet_failed_tx_skale
     account = generate_account(skale.web3)
     eth_amount = 5
     # Sending ether to perform transaction

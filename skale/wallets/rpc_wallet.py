@@ -29,6 +29,7 @@ from eth_account.datastructures import AttributeDict
 
 from skale.wallets.common import BaseWallet
 from skale.utils.exceptions import RPCWalletError
+from skale.utils.web3_utils import wait_for_receipt_by_blocks
 
 
 logger = logging.getLogger(__name__)
@@ -121,3 +122,9 @@ class RPCWallet(BaseWallet):
     def public_key(self):
         data = self._get(ROUTES['public_key'])
         return data['public_key']
+
+    def wait_for_receipt(self, tx_dict: dict, *args, **kwargs) -> tuple:
+        tx_hash = self.sign_and_send(tx_dict)
+        receipt = wait_for_receipt_by_blocks(
+            self._web3, tx_hash, *args, **kwargs)
+        return tx_hash, receipt

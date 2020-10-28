@@ -45,20 +45,18 @@ def disable_dry_run_env():
     importlib.reload(config)
 
 
-def test_disable_dry_run_env(skale, disable_dry_run_env):
+def test_disable_dry_run_env(patched_wallet_failed_tx_skale, disable_dry_run_env):
+    skale = patched_wallet_failed_tx_skale
     account = generate_account(skale.web3)
     address_to = account['address']
     amount = 10 * ETH_IN_WEI
     with mock.patch(
         'skale.contracts.base_contract.execute_dry_run'
     ) as dry_run_mock:
-        with mock.patch(
-            'skale.contracts.base_contract.post_transaction'
-        ) as post_transaction_mock:
-            skale.token.transfer(address_to, amount, wait_for=False)
-            dry_run_mock.assert_not_called()
-            assert post_transaction_mock.call_args[0][2] == \
-                CUSTOM_DEFAULT_GAS_LIMIT
+        skale.token.transfer(address_to, amount, raise_for_status=False)
+        dry_run_mock.assert_not_called()
+        assert skale.wallet.wait_for_receipt.call_args[0][0]['gas'] == \
+            CUSTOM_DEFAULT_GAS_LIMIT
 
 
 def test_skip_dry_run(skale):

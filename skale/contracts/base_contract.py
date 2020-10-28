@@ -73,7 +73,12 @@ def transaction_method(transaction):
             is_success_or_not_performed(dry_run_result)
 
         if rich_enough and should_send_transaction:
-            tx_dict = build_tx_dict(method, gas_limit, gas_limit, nonce)
+            tx_dict = build_tx_dict(
+                method=method,
+                gas_limit=gas_limit,
+                gas_price=gas_price,
+                nonce=nonce
+            )
             if wait_for:
                 tx_hash, receipt = self.skale.wallet.wait_for_receipt(
                     tx_dict,

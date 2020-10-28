@@ -1,5 +1,6 @@
 """ SKALE config test """
 
+import mock
 import pytest
 from web3.auto import w3
 
@@ -21,3 +22,13 @@ def skale_allocator():
 @pytest.fixture
 def empty_account():
     return w3.eth.account.create()
+
+
+@pytest.fixture
+def patched_wallet_failed_tx_skale(skale):
+    tmp_wait_for_receipt = skale.wallet.wait_for_receipt
+    skale.wallet.wait_for_receipt = mock.Mock(
+        return_value=('txHash', {'status': 0})
+    )
+    yield skale
+    skale.wallet.wait_for_receipt = tmp_wait_for_receipt

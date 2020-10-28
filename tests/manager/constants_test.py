@@ -1,4 +1,3 @@
-import mock
 import pytest
 from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
 from skale.transactions.result import DryRunFailedError
@@ -30,23 +29,16 @@ def test_get_set_latency(skale):
 
 
 def test_get_set_launch_timestamp(skale):
-    test_mock = mock.Mock()
     launch_ts = skale.constants_holder.get_launch_timestamp()
     assert isinstance(launch_ts, int)
-    with mock.patch('skale.contracts.base_contract.post_transaction',
-                    test_mock):
-        with mock.patch(
-                'skale.contracts.base_contract.wait_for_receipt_by_blocks',
-                test_mock
-        ):
-            with pytest.raises(DryRunFailedError):
-                skale.constants_holder.set_launch_timestamp(launch_ts, wait_for=True)
+    with pytest.raises(DryRunFailedError):
+        skale.constants_holder.set_launch_timestamp(launch_ts, wait_for=True)
 
 
 def test_get_set_rotation_delay(skale):
     rotation_delay = skale.constants_holder.get_rotation_delay()
-    assert isinstance(rotation_delay, int) and rotation_delay > 0
     new_rotation_delay = 1000
+    assert isinstance(rotation_delay, int) and rotation_delay > 0
     skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)
     rotation_delay = skale.constants_holder.get_rotation_delay()
     assert rotation_delay == new_rotation_delay

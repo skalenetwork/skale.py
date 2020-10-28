@@ -70,8 +70,10 @@ def test_sign_and_send_fails():
 
 def test_sign_and_send_sgx_unreachable_no_retries():
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
-    res_mock = response_mock(HTTPStatus.BAD_REQUEST, {'data': None,
-                                                      'error': 'Sgx server is unreachable'})
+    res_mock = response_mock(
+        HTTPStatus.BAD_REQUEST,
+        {'data': None, 'error': 'Sgx server is unreachable'}
+    )
     with mock.patch('requests.post', new=request_mock(res_mock)):
         with pytest.raises(RPCWalletError):
             wallet.sign_and_send(TX_DICT)
@@ -146,15 +148,19 @@ def test_sign_hash():
 
 def test_address():
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
-    res_mock = response_mock(HTTPStatus.OK,
-                             {'data': {'address': EMPTY_ETH_ACCOUNT}, 'error': None})
+    res_mock = response_mock(
+        HTTPStatus.OK,
+        {'data': {'address': EMPTY_ETH_ACCOUNT}, 'error': None}
+    )
     with mock.patch('requests.get', new=request_mock(res_mock)):
         assert wallet.address == EMPTY_ETH_ACCOUNT
 
 
 def test_public_key():
     wallet = RPCWallet(TEST_RPC_WALLET_URL)
-    res_mock = response_mock(HTTPStatus.OK,
-                             {'data': {'public_key': EMPTY_ETH_ACCOUNT}, 'error': None})
+    res_mock = response_mock(
+        HTTPStatus.OK,
+        {'data': {'public_key': EMPTY_ETH_ACCOUNT}, 'error': None}
+    )
     with mock.patch('requests.get', new=request_mock(res_mock)):
         assert wallet.public_key == EMPTY_ETH_ACCOUNT
