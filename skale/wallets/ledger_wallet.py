@@ -18,7 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import os
 import struct
 
 from hexbytes import HexBytes
@@ -29,6 +28,7 @@ from eth_account._utils.transactions import \
 from eth_utils.crypto import keccak
 from rlp import encode
 
+import skale.config as config
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
                                    to_checksum_address, wait_for_receipt_by_blocks
 
@@ -151,7 +151,7 @@ class LedgerWallet(BaseWallet):
         return exchange_result
 
     def sign(self, tx_dict):
-        if os.getenv('ENV') == 'dev':
+        if config.ENV == 'dev':
             tx_dict['chainId'] = None
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = self._web3.eth.getTransactionCount(self.address)

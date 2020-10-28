@@ -13,7 +13,7 @@ from skale.utils.exceptions import RPCWalletError
 
 from tests.constants import (EMPTY_ETH_ACCOUNT, NOT_EXISTING_RPC_WALLET_URL, EMPTY_HEX_STR,
                              TEST_RPC_WALLET_URL)
-from tests.utils import response_mock, request_mock
+from tests.helper import response_mock, request_mock
 
 
 TX_DICT = {
