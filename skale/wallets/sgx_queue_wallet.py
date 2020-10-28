@@ -64,7 +64,8 @@ class SgxQueueWallet(SgxWallet):
             'tx': tx
         }
 
-    def parse_message(self, message: dict) -> tuple:
+    @classmethod
+    def parse_message(cls, message: dict) -> tuple:
         msg_data = json.loads(message['data'].decode('utf-8'))
         return msg_data['status'], msg_data['payload']
 
@@ -96,7 +97,7 @@ class SgxQueueWallet(SgxWallet):
         while not finished and time.time() - start_ts < SgxQueueWallet.TIMEOUT:
             msg = sub.get_message()
             if msg['type'] == 'message':
-                status, payload = self.parse_message(msg)
+                status, payload = SgxQueueWallet.parse_message(msg)
                 finished = True
         return finished, status, payload
 
