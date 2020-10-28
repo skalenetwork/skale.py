@@ -90,14 +90,15 @@ class SgxQueueWallet(SgxWallet):
                 f'Unsopported errror type: {plain_error_type}'
             )
 
-    def wait_for_result(self, sub) -> dict:
+    @classmethod
+    def wait_for_result(cls, sub) -> dict:
         finished = False
         status, payload = None, None
         start_ts = time.time()
         while not finished and time.time() - start_ts < SgxQueueWallet.TIMEOUT:
             msg = sub.get_message()
             if msg['type'] == 'message':
-                status, payload = SgxQueueWallet.parse_message(msg)
+                status, payload = cls.parse_message(msg)
                 finished = True
         return finished, status, payload
 
