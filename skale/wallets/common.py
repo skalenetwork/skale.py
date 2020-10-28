@@ -18,24 +18,25 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
+from eth_account.datastructures import AttributeDict
 
 
 class BaseWallet(ABC):
     @abstractmethod
-    def sign(self, tx):
+    def sign(self, tx_dict: dict) -> AttributeDict:
         pass
 
     @abstractmethod
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(self, tx_dict: dict) -> str:
         pass
 
     @abstractmethod
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> AttributeDict:
         pass
 
     @property
     @abstractmethod
-    def address(self):
+    def address(self) -> str:
         pass
 
     @property
@@ -44,5 +45,5 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def wait_for_receipt(self, tx_dict) -> tuple:
+    def wait_for_receipt(self, tx_dict: dict, *args, **kwargs) -> tuple:
         pass

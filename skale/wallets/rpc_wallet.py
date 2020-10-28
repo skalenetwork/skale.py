@@ -95,15 +95,15 @@ class RPCWallet(BaseWallet):
             'transaction_dict': json.dumps(tx_dict)
         }
 
-    def sign(self, tx_dict):
+    def sign(self, tx_dict: dict) -> AttributeDict:
         data = self._post(ROUTES['sign'], self._compose_tx_data(tx_dict))
         return AttributeDict(data)
 
-    def sign_and_send(self, tx_dict):
+    def sign_and_send(self, tx_dict: dict) -> str:
         data = self._post(ROUTES['sign_and_send'], self._compose_tx_data(tx_dict))
         return data['transaction_hash']
 
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> AttributeDict:
         data = self._post(ROUTES['sign_hash'], {'unsigned_hash': unsigned_hash})
         return AttributeDict({
             'messageHash': HexBytes(data['messageHash']),
@@ -114,12 +114,12 @@ class RPCWallet(BaseWallet):
         })
 
     @property
-    def address(self):
+    def address(self) -> str:
         data = self._get(ROUTES['address'])
         return data['address']
 
     @property
-    def public_key(self):
+    def public_key(self) -> str:
         data = self._get(ROUTES['public_key'])
         return data['public_key']
 

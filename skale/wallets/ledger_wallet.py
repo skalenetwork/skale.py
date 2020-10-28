@@ -100,25 +100,20 @@ class LedgerWallet(BaseWallet):
             )
 
     @property
-    def address(self):
+    def address(self) -> str:
         return self._address
 
     @property
-    def public_key(self):
+    def public_key(self) -> str:
         return self._public_key
 
-    # todo: remove this method after making software wallet as class
-    def __getitem__(self, key):
-        items = {'address': self.address, 'public_key': self.public_key}
-        return items[key]
-
-    def make_payload(self, data=''):
+    def make_payload(self, data='') -> str:
         encoded_data = encode(data)
         path_prefix = derivation_path_prefix(self._bip32_path)
         return path_prefix + encoded_data
 
     @classmethod
-    def parse_sign_result(cls, tx, exchange_result):
+    def parse_sign_result(cls, tx, exchange_result) -> AttributeDict:
         sign_v = exchange_result[0]
         sign_r = int((exchange_result[1:1 + 32]).hex(), 16)
         sign_s = int((exchange_result[1 + 32: 1 + 32 + 32]).hex(), 16)
@@ -150,7 +145,7 @@ class LedgerWallet(BaseWallet):
             p1 = P1_SUBSEQUENT
         return exchange_result
 
-    def sign(self, tx_dict):
+    def sign(self, tx_dict: dict) -> AttributeDict:
         if config.ENV == 'dev':
             tx_dict['chainId'] = None
         if tx_dict.get('nonce') is None:
@@ -191,7 +186,7 @@ class LedgerWallet(BaseWallet):
         exchange_result = self.exchange_derive_payload(payload)
         return LedgerWallet.parse_derive_result(exchange_result)
 
-    def wait_for_receipt(self, tx_dict, *args, **kwargs):
+    def wait_for_receipt(self, tx_dict: dict, *args, **kwargs) -> dict:
         tx_hash = self.sign_and_send(tx_dict)
         receipt = wait_for_receipt_by_blocks(
             self._web3, tx_hash, *args, **kwargs)

@@ -58,7 +58,7 @@ class SgxQueueWallet(SgxWallet):
     def receipt_channel(self) -> str:
         return SgxQueueWallet.RECEIPT_CHANNEL_TEMPLATE.format(self.channel)
 
-    def compose_tx_message(self, tx: dict):
+    def compose_tx_message(self, tx: dict) -> dict:
         return {
             'channel': self.channel,
             'tx': tx
@@ -100,7 +100,7 @@ class SgxQueueWallet(SgxWallet):
                 finished = True
         return finished, status, payload
 
-    def wait_for_receipt(self, tx_dict: dict) -> dict:
+    def wait_for_receipt(self, tx_dict: dict, *args, **kwargs) -> dict:
         sub = self.redis.pubsub()
         sub.subscribe(self.receipt_channel)
         message = self.compose_tx_message(tx_dict)
@@ -116,6 +116,6 @@ class SgxQueueWallet(SgxWallet):
         else:
             self.raise_from_error_payload(payload)
 
-    def sign_and_send(self, *args, **kwargs):
+    def sign_and_send(self, tx_dict: dict):
         raise NotImplementedError(
             'This method is not supported in SgxQueueWallet')

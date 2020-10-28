@@ -21,6 +21,7 @@ import logging
 
 from sgx import SgxClient
 from web3 import Web3
+from eth_account.datastructures import AttributeDict
 
 from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
 from skale.wallets.common import BaseWallet
@@ -39,7 +40,7 @@ class SgxWallet(BaseWallet):
             self._key_name = key_name
             self._address, self._public_key = self._get_account(key_name)
 
-    def sign(self, tx_dict):
+    def sign(self, tx_dict: dict) -> AttributeDict:
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         return self.sgx_client.sign(tx_dict, self.key_name)
@@ -48,7 +49,7 @@ class SgxWallet(BaseWallet):
         signed_tx = self.sign(tx_dict)
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> AttributeDict:
         if unsigned_hash.startswith('0x'):
             unsigned_hash = unsigned_hash[2:]
 
@@ -60,28 +61,28 @@ class SgxWallet(BaseWallet):
         return self.sgx_client.sign_hash(hash_to_sign, self._key_name, chain_id)
 
     @property
-    def address(self):
+    def address(self) -> str:
         return self._address
 
     @property
-    def public_key(self):
+    def public_key(self) -> str:
         return self._public_key
 
     @property
-    def key_name(self):
+    def key_name(self) -> str:
         return self._key_name
 
-    def _generate(self):
+    def _generate(self) -> tuple:
         key = self.sgx_client.generate_key()
         # AttributeDict returns tuple of bytes with key.public_key
         return key.name, key.address, key['public_key']
 
-    def _get_account(self, key_name):
+    def _get_account(self, key_name: str) -> tuple:
         account = self.sgx_client.get_account(key_name)
         # AttributeDict returns tuple of bytes with key.public_key
         return account.address, account['public_key']
 
-    def wait_for_receipt(self, tx_dict, *args, **kwargs):
+    def wait_for_receipt(self, tx_dict, *args, **kwargs) -> tuple:
         tx_hash = self.sign_and_send(tx_dict)
         receipt = wait_for_receipt_by_blocks(
             self.web3, tx_hash, **args, **kwargs)

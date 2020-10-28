@@ -20,6 +20,7 @@
 from eth_keys import keys
 from web3 import Web3
 from eth_account import messages
+from eth_account.datastructures import AttributeDict
 
 from skale.wallets.common import BaseWallet
 from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
@@ -53,7 +54,7 @@ class Web3Wallet(BaseWallet):
 
         self._web3 = web3
 
-    def sign(self, tx_dict: dict) -> str:
+    def sign(self, tx_dict: dict) -> AttributeDict:
         if not tx_dict.get('nonce'):
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         return self._web3.eth.account.sign_transaction(
@@ -61,14 +62,14 @@ class Web3Wallet(BaseWallet):
             private_key=self._private_key
         )
 
-    def sign_hash(self, unsigned_hash: str) -> str:
+    def sign_hash(self, unsigned_hash: str) -> AttributeDict:
         unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
         return self._web3.eth.account.sign_message(
             unsigned_message,
             private_key=self._private_key
         )
 
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(self, tx_dict: dict) -> str:
         signed_tx = self.sign(tx_dict)
         return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
 
