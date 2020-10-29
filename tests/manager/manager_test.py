@@ -9,7 +9,7 @@ from hexbytes import HexBytes
 from mock import Mock
 
 from skale.wallets.web3_wallet import generate_wallet
-from skale.transactions.result import TransactionFailedError
+from skale.transactions.exceptions import TransactionFailedError
 
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data

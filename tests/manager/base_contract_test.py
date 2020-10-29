@@ -4,7 +4,7 @@ import os
 import mock
 import pytest
 import skale.config as config
-from skale.transactions.result import InsufficientBalanceError
+from skale.transactions.exceptions import InsufficientBalanceError
 from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.web3_utils import wait_for_receipt_by_blocks

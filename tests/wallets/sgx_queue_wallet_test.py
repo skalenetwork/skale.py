@@ -10,9 +10,9 @@ from skale.utils.web3_utils import (
 )
 from skale.wallets import SgxQueueWallet
 from skale.wallets.sgx_queue_wallet import (
-    TxFailedError,
-    TxNotFoundError,
-    TxNotSentError
+    QueueTxFailedError,
+    QueueTxNotFoundError,
+    QueueTxNotSentError
 )
 from tests.constants import (
     ENDPOINT,
@@ -103,7 +103,7 @@ def test_sgx_queue_wallet_tx_not_sent(skale):
     }
     with mock.patch('skale.wallets.sgx_queue_wallet.Redis', RedisClientMock):
         wallet = init_sgx_queue_wallet()
-        with pytest.raises(TxNotSentError):
+        with pytest.raises(QueueTxNotSentError):
             wallet.wait_for_receipt(compose_tx(skale))
 
 
@@ -114,7 +114,7 @@ def test_sgx_queue_wallet_tx_not_found(skale):
     }
     with mock.patch('skale.wallets.sgx_queue_wallet.Redis', RedisClientMock):
         wallet = init_sgx_queue_wallet()
-        with pytest.raises(TxNotFoundError):
+        with pytest.raises(QueueTxNotFoundError):
             wallet.wait_for_receipt(compose_tx(skale))
 
 
@@ -125,7 +125,7 @@ def test_sgx_queue_wallet_tx_failed(skale):
     }
     with mock.patch('skale.wallets.sgx_queue_wallet.Redis', RedisClientMock):
         wallet = init_sgx_queue_wallet()
-        with pytest.raises(TxFailedError):
+        with pytest.raises(QueueTxFailedError):
             wallet.wait_for_receipt(compose_tx(skale))
 
 

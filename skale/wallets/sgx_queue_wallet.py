@@ -4,30 +4,31 @@ import time
 
 from redis import Redis
 from skale.wallets.sgx_wallet import SgxWallet
-from web3.exceptions import TransactionNotFound
+from skale.transactions.exceptions import (
+    TransactionError, TransactionFailedError, TransactionNotFoundError)
 
 
 class SgxQueueWalletError(Exception):
     pass
 
 
-class TxNotSentError(SgxQueueWalletError):
+class QueueTxNotSentError(SgxQueueWalletError, TransactionError):
     pass
 
 
-class TxNotFoundError(SgxQueueWalletError, TransactionNotFound):
+class QueueTxNotFoundError(SgxQueueWalletError, TransactionNotFoundError):
     pass
 
 
-class TxFailedError(SgxQueueWalletError):
+class QueueTxFailedError(SgxQueueWalletError, TransactionFailedError):
     pass
 
 
-class ResponseNotReceivedError(SgxQueueWalletError):
+class QueueResponseNotReceivedError(SgxQueueWalletError, TransactionError):
     pass
 
 
-class InvalidMessageFormatError(SgxQueueWalletError):
+class QueueInvalidMessageFormatError(SgxQueueWalletError, TransactionError):
     pass
 
 
@@ -74,19 +75,19 @@ class SgxQueueWallet(SgxWallet):
         error_type = SgxQueueWallet.ErrorType(error_payload['type'])
         msg = error_payload['msg']
         if error_type == SgxQueueWallet.ErrorType.NOT_SENT:
-            raise TxNotSentError(f'Channel: {self.channel}, msg: {msg}')
+            raise QueueTxNotSentError(f'Channel: {self.channel}, msg: {msg}')
         elif error_type == SgxQueueWallet.ErrorType.NOT_FOUND:
             tx_hash = error_payload['tx_hash']
-            raise TxNotFoundError(
+            raise QueueTxNotFoundError(
                 f'Channel: {self.channel}, tx_hash: {tx_hash}, msg: {msg}')
         elif error_type == SgxQueueWallet.ErrorType.TX_FAILED:
             tx_hash = error_payload['tx_hash']
             receipt = error_payload['receipt']
-            raise TxFailedError(
+            raise QueueTxFailedError(
                 f'Channel: {self.channel}, tx_hash: {tx_hash}, '
                 f'receipt: {receipt}')
         else:
-            raise InvalidMessageFormatError(
+            raise QueueInvalidMessageFormatError(
                 f'Unsopported errror type: {plain_error_type}'
             )
 
@@ -110,7 +111,7 @@ class SgxQueueWallet(SgxWallet):
 
         finished, status, payload = self.wait_for_result(sub)
         if not finished:
-            raise ResponseNotReceivedError(
+            raise QueueResponseNotReceivedError(
                 f'Channel: {self.channel}'
             )
         if status == OK_STATUS:

@@ -2,9 +2,9 @@ import pytest
 import mock
 from web3 import Web3
 
-from skale.transactions.result import (DryRunFailedError,
-                                       InsufficientBalanceError,
-                                       TransactionFailedError)
+from skale.transactions.exceptions import (DryRunFailedError,
+                                           InsufficientBalanceError,
+                                           TransactionFailedError)
 from skale import Skale
 from skale.transactions.tools import run_tx_with_retry
 from skale.utils.account_tools import generate_account, send_ether

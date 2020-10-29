@@ -1,6 +1,6 @@
 import pytest
 from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
-from skale.transactions.result import DryRunFailedError
+from skale.transactions.exceptions import DryRunFailedError
 
 
 def test_get_set_periods(skale):

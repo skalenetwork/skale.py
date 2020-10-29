@@ -3,7 +3,7 @@
 import pytest
 
 from skale.contracts.manager.delegation.delegation_controller import FIELDS
-from skale.transactions.result import DryRunFailedError
+from skale.transactions.exceptions import DryRunFailedError
 from skale.utils.contracts_provision.main import _skip_evm_time
 
 from tests.constants import (NOT_EXISTING_ID, D_DELEGATION_ID, D_DELEGATION_INFO, D_VALIDATOR_ID,

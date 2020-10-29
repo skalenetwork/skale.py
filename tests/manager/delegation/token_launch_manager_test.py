@@ -4,7 +4,7 @@ import pytest
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.account_tools import send_ether
 from skale.utils.contracts_provision.allocator import transfer_tokens_to_token_launch_manager
-from skale.transactions.result import DryRunFailedError
+from skale.transactions.exceptions import DryRunFailedError
 
 
 N_OF_TOKEN_LAUNCH_WALLETS = 3
