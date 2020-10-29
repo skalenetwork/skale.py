@@ -17,7 +17,7 @@ from skale.wallets.sgx_queue_wallet import (
 from tests.constants import (
     ENDPOINT,
     ETH_PRIVATE_KEY,
-    TEST_REDIS_URL,
+    TEST_REDIS_URI,
     TEST_SGX_SERVER_URL
 )
 from tests.wallets.utils import RedisClientMock, SgxClientMock
@@ -35,7 +35,7 @@ def init_sgx_queue_wallet(
         TEST_SGX_SERVER_URL,
         web3,
         channel=channel,
-        redis_url=TEST_REDIS_URL
+        redis_uri=TEST_REDIS_URI
     )
 
 

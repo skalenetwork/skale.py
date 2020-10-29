@@ -45,11 +45,11 @@ class SgxQueueWallet(SgxWallet):
         NOT_FOUND = 'not-found'
         TX_FAILED = 'tx-failed'
 
-    def __init__(self, *args, channel, redis_url=None, **kwargs) -> None:
+    def __init__(self, *args, channel, redis_uri=None, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.channel = channel
-        redis_url = redis_url or 'redis://localhost:6379'
-        self.redis = Redis.from_url(url=redis_url, db=0)
+        redis_uri = redis_uri or 'redis://localhost:6379'
+        self.redis = Redis.from_url(url=redis_uri, db=0)
 
     @property
     def post_channel(self) -> str:
