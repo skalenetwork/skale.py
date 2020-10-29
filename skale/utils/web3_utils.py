@@ -26,6 +26,8 @@ from eth_keys import keys
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
 
+from skale.transactions.exceptions import TransactionNotFoundError
+
 logger = logging.getLogger(__name__)
 
 
@@ -77,7 +79,7 @@ def wait_for_receipt_by_blocks(web3, tx, timeout=4, blocks_to_wait=50):
             return receipt
         current_block = web3.eth.blockNumber
         time.sleep(timeout)
-    raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
+    raise TransactionNotFoundError(f"Transaction with hash: {tx} not found.")
 
 
 def wait_receipt(web3, tx, retries=30, timeout=5):
@@ -89,7 +91,7 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
         if receipt is not None:
             return receipt
         time.sleep(timeout)  # pragma: no cover
-    raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
+    raise TransactionNotFoundError(f"Transaction with hash: {tx} not found.")
 
 
 def check_receipt(receipt, raise_error=True):
