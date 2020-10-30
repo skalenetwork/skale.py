@@ -19,12 +19,13 @@
 
 import logging
 
-from skale.skale_base import SkaleBase
 import skale.contracts.allocator as contracts
 from skale.contracts.contract_manager import ContractManager
+from skale.skale_base import SkaleBase
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_abi, get_contracts_info
+from skale.wallets import BaseWallet
 
 
 logger = logging.getLogger(__name__)
@@ -40,12 +41,19 @@ CONTRACTS_INFO = [
 ]
 
 
-def spawn_skale_allocator_lib(skale):
-    return SkaleAllocator(skale._endpoint, skale._abi_filepath, skale.wallet)
-
-
 class SkaleAllocator(SkaleBase):
     def init_contracts(self):
         abi = get_abi(self._abi_filepath)
         self.add_lib_contract('contract_manager', ContractManager, abi)
-        self._SkaleBase__init_contracts_from_info(abi,  get_contracts_info(CONTRACTS_INFO))
+        self._SkaleBase__init_contracts_from_info(
+            abi, get_contracts_info(CONTRACTS_INFO)
+        )
+
+
+def spawn_skale_allocator_from(skale,
+                               wallet: BaseWallet = None,
+                               provider_timeout: int = 30) -> SkaleAllocator:
+    wallet = wallet or skale.wallet
+    provider_timeout = provider_timeout or skale._provider_timeout
+    return SkaleAllocator(skale._endpoint, skale._abi_filepath,
+                          wallet, provider_timeout)

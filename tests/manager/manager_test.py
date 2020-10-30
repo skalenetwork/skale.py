@@ -8,13 +8,17 @@ import web3
 from hexbytes import HexBytes
 from mock import Mock
 
-from skale.wallets.web3_wallet import generate_wallet
+from skale.skale_manager import SkaleManager, spawn_skale_manager_from
 from skale.transactions.exceptions import TransactionFailedError
 
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data
 )
-from tests.constants import TEST_GAS_LIMIT
+from skale.utils.web3_utils import init_web3
+from skale.wallets.web3_wallet import generate_wallet, Web3Wallet
+from tests.constants import (
+    ENDPOINT, ETH_PRIVATE_KEY, TEST_ABI_FILEPATH, TEST_GAS_LIMIT
+)
 
 
 def test_get_bounty(skale):
@@ -232,3 +236,25 @@ def test_grant_admin_role(skale):
         wait_for=True
     )
     assert skale.manager.has_role(admin_role, wallet.address)
+
+
+def test_spawn_skale_manager_from():
+    web3 = init_web3(ENDPOINT)
+    wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
+    provider_timeout = 20
+    manager = SkaleManager(ENDPOINT, TEST_ABI_FILEPATH, wallet,
+                           provider_timeout=provider_timeout)
+    new_manager = spawn_skale_manager_from(manager)
+    assert manager.wallet is new_manager.wallet
+    assert manager._provider_timeout == new_manager._provider_timeout
+    lib_contracts = manager._SkaleBase__contracts
+    new_lib_contracts = new_manager._SkaleBase__contracts
+    assert len(lib_contracts) == len(new_lib_contracts)
+
+    new_wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
+    new_provider_timeout = 30
+    new_manager = spawn_skale_manager_from(manager, wallet=new_wallet,
+                                           provider_timeout=new_provider_timeout)
+
+    assert new_manager.wallet is new_wallet
+    assert new_manager._provider_timeout == new_provider_timeout

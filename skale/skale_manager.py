@@ -19,12 +19,13 @@
 
 import logging
 
-from skale.skale_base import SkaleBase
 import skale.contracts.manager as contracts
 from skale.contracts.contract_manager import ContractManager
+from skale.skale_base import SkaleBase
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_abi, get_contracts_info
+from skale.wallets import BaseWallet
 
 
 logger = logging.getLogger(__name__)
@@ -75,10 +76,6 @@ DEBUG_CONTRACTS_INFO = [
 ]
 
 
-def spawn_skale_manager_lib(skale):
-    return SkaleManager(skale._endpoint, skale._abi_filepath, skale.wallet)
-
-
 class SkaleManager(SkaleBase):
     def init_contracts(self):
         abi = get_abi(self._abi_filepath)
@@ -87,3 +84,12 @@ class SkaleManager(SkaleBase):
         if self._SkaleBase__is_debug_contracts(abi):
             logger.info('Debug contracts found in ABI file')
             self._SkaleBase__init_contracts_from_info(abi, get_contracts_info(DEBUG_CONTRACTS_INFO))
+
+
+def spawn_skale_manager_from(skale,
+                             wallet: BaseWallet = None,
+                             provider_timeout: int = None) -> SkaleManager:
+    wallet = wallet or skale.wallet
+    provider_timeout = provider_timeout or skale._provider_timeout
+    return SkaleManager(skale._endpoint, skale._abi_filepath,
+                        wallet, provider_timeout)

@@ -41,6 +41,7 @@ class SkaleBase:
 
     def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30):
         logger.info(f'Initing skale.py, endpoint: {endpoint}, wallet: {type(wallet).__name__}')
+        self._provider_timeout = provider_timeout
         provider = get_provider(endpoint, timeout=provider_timeout)
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
