@@ -67,4 +67,4 @@ class SChainsInternal(BaseContract):
 
     def get_schain_complexity(self, name):
         id_ = self.schains.name_to_id(name)
-        return self.contract.functions.setSchainComplexity(id_)
+        return self.contract.functions.getSchainComplexity(id_).call()

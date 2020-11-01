@@ -72,7 +72,7 @@ def test_add_schain_by_foundation(skale):
                              skale.wallet.address)
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
     skale.schains.add_schain_by_foundation(
-        lifetime_seconds, type_of_nodes, 0, name, wait_for=True
+        lifetime_seconds, type_of_nodes, 0, name, complexity=100, wait_for=True
     )
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
@@ -83,6 +83,9 @@ def test_add_schain_by_foundation(skale):
     ]
     assert name in schains_names
 
+    complexity = skale.schains_internal.get_schain_complexity(name)
+    assert complexity == 100
+
     skale.manager.delete_schain(name, wait_for=True)
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
@@ -92,6 +95,9 @@ def test_add_schain_by_foundation(skale):
         for sid in schains_ids_after
     ]
     assert name not in schains_names
+
+    complexity = skale.schains_internal.get_schain_complexity(name)
+    assert complexity == 0
 
 
 def test_get_active_schains_for_node(skale):

@@ -62,3 +62,13 @@ def test_get_active_schain_ids(skale):
 
     assert isinstance(active_schains, list)
     assert len(active_schains) > 0
+
+
+def test_get_schain_complexity(skale):
+    assert skale.schains_internal.get_schain_complexity(DEFAULT_SCHAIN_NAME) == 0
+
+
+def test_set_schain_complexity(skale):
+    complexity = 100
+    skale.schains_internal.set_schain_complexity(DEFAULT_SCHAIN_NAME, complexity)
+    assert skale.schains_internal.get_schain_complexity(DEFAULT_SCHAIN_NAME) == 0
