@@ -61,9 +61,13 @@ class Manager(BaseContract):
                                   wait_for=True)
 
     @transaction_method
-    def create_schain(self, lifetime, type_of_nodes, deposit, name):
+    def create_schain(self, lifetime, type_of_nodes, deposit, name, complexity=None):
         logger.info(
             f'create_schain: type_of_nodes: {type_of_nodes}, name: {name}')
+
+        # TODO: remove complexity setting
+        if complexity:
+            self.skale.schains_internal.set_schain_complexity(name, complexity)
 
         token = self.skale.get_contract_by_name('token')
         skale_nonce = helper.generate_nonce()
