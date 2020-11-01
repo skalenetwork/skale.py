@@ -19,7 +19,7 @@
 """ SchainsInternal.sol functions """
 
 import functools
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import BaseContract, transaction_method
 
 
 class SChainsInternal(BaseContract):
@@ -59,3 +59,12 @@ class SChainsInternal(BaseContract):
 
     def get_active_schain_ids_for_node(self, node_id):
         return self.contract.functions.getActiveSchains(node_id).call()
+
+    @transaction_method
+    def set_schain_complexity(self, name, complexity):
+        id_ = self.schains.name_to_id(name)
+        return self.contract.functions.setSchainComplexity(id_, complexity)
+
+    def get_schain_complexity(self, name):
+        id_ = self.schains.name_to_id(name)
+        return self.contract.functions.setSchainComplexity(id_)
