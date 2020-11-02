@@ -59,11 +59,11 @@ class SgxQueueWallet(SgxWallet):
     def receipt_channel(self) -> str:
         return SgxQueueWallet.RECEIPT_CHANNEL_TEMPLATE.format(self.channel)
 
-    def compose_tx_message(self, tx: dict) -> dict:
-        return {
+    def compose_tx_message_bytes(self, tx: dict) -> bytes:
+        return json.dumps({
             'channel': self.channel,
             'tx': tx
-        }
+        }).encode('utf-8')
 
     @classmethod
     def parse_message(cls, message: dict) -> tuple:
@@ -106,7 +106,7 @@ class SgxQueueWallet(SgxWallet):
     def wait_for_receipt(self, tx_dict: dict, *args, **kwargs) -> dict:
         sub = self.redis.pubsub()
         sub.subscribe(self.receipt_channel)
-        message = self.compose_tx_message(tx_dict)
+        message = self.compose_tx_message_bytes(tx_dict)
         self.redis.publish(self.post_channel, message)
 
         finished, status, payload = self.wait_for_result(sub)
