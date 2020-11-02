@@ -125,7 +125,6 @@ def send_eth_with_skale(skale, address: str, amount_wei: int, *,
     logger.info(f'Waiting for receipt for {tx_hash}')
 
     if wait_for:
-        print('IVD HERE')
         receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
         print(receipt)
         check_receipt(receipt)
