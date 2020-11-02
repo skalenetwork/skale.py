@@ -28,11 +28,15 @@ from skale.transactions.result import (
 )
 from skale.utils.constants import GAS_LIMIT_COEFFICIENT
 from skale.utils.exceptions import RPCWalletError
-from skale.utils.web3_utils import get_eth_nonce
+from skale.utils.web3_utils import (check_receipt,
+                                    get_eth_nonce, wait_for_receipt_by_blocks)
 
 from web3._utils.transactions import get_block_gas_limit
 
 logger = logging.getLogger(__name__)
+
+
+DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
 def make_dry_run_call(skale, method, gas_limit=None) -> dict:
@@ -100,6 +104,32 @@ def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> s
     )
     tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
     tx_hash = wallet.sign_and_send(tx_dict)
+    return tx_hash
+
+
+def send_eth_with_skale(skale, address: str, amount_wei: int, *,
+                        gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
+                        gas_price: int = None,
+                        nonce: int = None, wait_for=True):
+    gas_limit = gas_limit or DEFAULT_ETH_SEND_GAS_LIMIT
+    gas_price = gas_price or skale.web3.eth.gasPrice
+    tx = {
+        'to': address,
+        'value': amount_wei,
+        'gasPrice': gas_price,
+        'gas': gas_limit,
+        'nonce': nonce
+    }
+    logger.info(f'Sending {amount_wei} WEI to {address}')
+    tx_hash = skale.wallet.sign_and_send(tx)
+    logger.info(f'Waiting for receipt for {tx_hash}')
+
+    if wait_for:
+        print('IVD HERE')
+        receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
+        print(receipt)
+        check_receipt(receipt)
+        return receipt
     return tx_hash
 
 
