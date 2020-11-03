@@ -126,7 +126,6 @@ def send_eth_with_skale(skale, address: str, amount_wei: int, *,
 
     if wait_for:
         receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
-        print(receipt)
         check_receipt(receipt)
         return receipt
     return tx_hash
