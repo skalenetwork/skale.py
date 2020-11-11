@@ -71,7 +71,8 @@ def estimate_gas(web3, method, opts):
     estimated_gas = method.estimateGas(opts)
     normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
     if normalized_estimated_gas > block_gas_limit:
-        logger.warning(f'Estimate gas for {method.fn_name} exceeds block gas limit')
+        logger.warning(
+            f'Estimate gas for {method.fn_name} exceeds block gas limit')
         return block_gas_limit
     return normalized_estimated_gas
 
@@ -94,7 +95,8 @@ def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
 
-def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> str:
+def post_transaction(wallet, method, gas_limit,
+                     gas_price=None, nonce=None) -> str:
     logger.info(
         f'Tx: {method.fn_name}, '
         f'sender: {wallet.address}, '
@@ -121,14 +123,16 @@ def send_eth_with_skale(skale, address: str, amount_wei: int, *,
         'nonce': nonce
     }
     logger.info(f'Sending {amount_wei} WEI to {address}')
-    tx_hash = skale.wallet.sign_and_send(tx)
-    logger.info(f'Waiting for receipt for {tx_hash}')
-
-    if wait_for:
-        receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
-        check_receipt(receipt)
-        return receipt
+    tx_hash, test = skale.wallet.wait_for_receipt(tx)
     return tx_hash
+    # tx_hash = skale.wallet.sign_and_send(tx)
+    # logger.info(f'Waiting for receipt for {tx_hash}')
+
+    # if wait_for:
+    #     receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
+    #     check_receipt(receipt)
+    #     return receipt
+    # return tx_hash
 
 
 def send_eth(web3, account, amount, wallet):
@@ -176,7 +180,8 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         try:
             tx_res = transaction(*args, **kwargs)
             tx_res.raise_for_status()
-        except (TransactionFailedError, DryRunFailedError, RPCWalletError) as err:
+        except (TransactionFailedError, DryRunFailedError,
+                RPCWalletError) as err:
             logger.error(f'Tx attempt {attempt}/{max_retries} failed',
                          exc_info=err)
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
