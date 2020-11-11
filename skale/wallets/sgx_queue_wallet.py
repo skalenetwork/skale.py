@@ -98,7 +98,7 @@ class SgxQueueWallet(SgxWallet):
         start_ts = time.time()
         while not finished and time.time() - start_ts < SgxQueueWallet.TIMEOUT:
             msg = sub.get_message()
-            if msg['type'] == 'message':
+            if msg is not None and msg.get('type') == 'message':
                 status, payload = cls.parse_message(msg)
                 finished = True
         return finished, status, payload
