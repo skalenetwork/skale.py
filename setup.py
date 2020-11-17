@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='4.1',
+    version='5.0',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -51,14 +51,10 @@ setup(
     keywords='skale',
     packages=find_packages(exclude=['tests']),
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.7',
-    ],
-
-    package_data={  # Optional
-        'contracts': ['utils/contracts_data.json', 'envs/envs.yml', 'envs/aws.json'],
-    },
+    ]
 )
