@@ -29,6 +29,10 @@ from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
 from skale.utils.web3_utils import get_provider
 
+from skale.utils.helper import get_abi
+from skale.contracts.contract_manager import ContractManager
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,9 +52,11 @@ class SkaleBase:
         self.web3.middleware_onion.inject(
             geth_poa_middleware, layer=0)  # todo: may cause issues
         self.__contracts = {}
+        self.__contracts_info = {}
+        self.init_contract_manager()
+        self.set_contracts_info()
         if wallet:
             self.wallet = wallet
-        self.init_contracts()
 
     @property
     def gas_price(self):
@@ -74,16 +80,19 @@ class SkaleBase:
         return abi.get('time_helpers_with_debug_address', None)
 
     @abc.abstractmethod
-    def init_contracts(self):
+    def set_contracts_info(self):
         return
 
-    def __init_contracts_from_info(self, abi, contracts_info):
-        for name in contracts_info:
-            info = contracts_info[name]
-            if info.upgradeable:
-                self.init_upgradeable_contract(info, abi)
-            else:
-                self.add_lib_contract(info.name, info.contract_class, abi)
+    def init_contract_manager(self):
+        abi = get_abi(self._abi_filepath)
+        self.add_lib_contract('contract_manager', ContractManager, abi)
+
+    def __init_contract_from_info(self, abi, contract_info):
+        if contract_info.upgradeable:
+            self.init_upgradeable_contract(contract_info, abi)
+        else:
+            self.add_lib_contract(contract_info.name, contract_info.contract_class,
+                                  abi)
 
     def init_upgradeable_contract(self, contract_info, abi):
         address = self.get_contract_address(contract_info.contract_name)
@@ -98,9 +107,8 @@ class SkaleBase:
         self.add_contract(name, contract_class(
             self, name, address, contract_abi))
 
-    def add_contract(self, name, skale_contract):
-        logger.debug(f'Init contract: {name}')
-        self.__contracts[name] = skale_contract
+    def add_contract(self, name, contract):
+        self.__contracts[name] = contract
 
     def get_contract_address(self, name):
         return self.contract_manager.get_contract_address(name)
@@ -110,5 +118,11 @@ class SkaleBase:
 
     def __getattr__(self, name):
         if name not in self.__contracts:
-            return None
+            if not self.__contracts_info.get(name):
+                logger.warning(f'{name} method/contract wasn\'t found')
+                return None
+            logger.debug(f'Contract {name} wasn\'t inited, creating now')
+            contract_info = self.__contracts_info[name]
+            abi = get_abi(self._abi_filepath)
+            self.__init_contract_from_info(abi, contract_info)
         return self.get_contract_by_name(name)
