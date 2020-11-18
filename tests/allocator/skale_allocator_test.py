@@ -11,10 +11,7 @@ def test_init_allocator():
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
     skale_allocator = SkaleAllocator(ENDPOINT, TEST_ALLOCATOR_ABI_FILEPATH, wallet,
                                      provider_timeout=20)
-    lib_contracts = skale_allocator._SkaleBase__contracts
-    assert len(lib_contracts) == 1
-
+    assert len(skale_allocator._SkaleBase__contracts) == 1
     assert skale_allocator.allocator
     assert skale_allocator.escrow
-
-    assert len(lib_contracts) == 3
+    assert len(skale_allocator._SkaleBase__contracts) == 3
