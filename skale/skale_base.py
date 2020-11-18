@@ -113,7 +113,7 @@ class SkaleBase:
     def get_contract_address(self, name):
         return self.contract_manager.get_contract_address(name)
 
-    def get_contract_by_name(self, name):
+    def __get_contract_by_name(self, name):
         return self.__contracts[name]
 
     def __getattr__(self, name):
@@ -125,4 +125,4 @@ class SkaleBase:
             contract_info = self.__contracts_info[name]
             abi = get_abi(self._abi_filepath)
             self.__init_contract_from_info(abi, contract_info)
-        return self.get_contract_by_name(name)
+        return self.__get_contract_by_name(name)

@@ -28,7 +28,7 @@ class NodeRotation(BaseContract):
     @property
     @functools.lru_cache()
     def schains(self):
-        return self.skale.get_contract_by_name('schains')
+        return self.skale.schains
 
     def get_rotation(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
