@@ -21,9 +21,9 @@ jobs:
       with:
         remote: true
     - name: Install host dependencies
-      run: bash .scripts/install_host_dependencies.sh
+      run: bash ./scripts/install_host_dependencies.sh
     - name: Install python dependencies
-      run: bash .scripts/install_python_dependencies.sh
+      run: bash ./scripts/install_python_dependencies.sh
     - name: Lint with flake8
       run: flake8 .
     - name: Deploy manager contracts
@@ -52,9 +52,9 @@ jobs:
       with:
         remote: true
     - name: Install host dependencies
-      run: bash .scripts/install_host_dependencies.sh
+      run: bash ./scripts/install_host_dependencies.sh
     - name: Install python dependencies
-      run: bash .scripts/install_python_dependencies.sh
+      run: bash ./scripts/install_python_dependencies.sh
     - name: Deploy allocator contracts
       run: |
         bash ./helper-scripts/deploy_test_allocator.sh
