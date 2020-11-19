@@ -10,6 +10,7 @@ jobs:
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       MANAGER_TAG: "1.6.0-develop.7"
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -32,6 +33,9 @@ jobs:
     - name: Run tests
       run: |
         bash ./scripts/run_manager_tests.sh
+    - name: Codecov
+      run: |
+        codecov -t $CODECOV_TOKEN
   test_allocator:
     runs-on: ubuntu-latest
     strategy:
