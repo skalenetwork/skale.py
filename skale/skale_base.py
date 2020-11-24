@@ -53,7 +53,6 @@ class SkaleBase:
             geth_poa_middleware, layer=0)  # todo: may cause issues
         self.__contracts = {}
         self.__contracts_info = {}
-        self.init_contract_manager()
         self.set_contracts_info()
         if wallet:
             self.wallet = wallet
