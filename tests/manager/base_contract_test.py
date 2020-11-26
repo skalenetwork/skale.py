@@ -44,6 +44,7 @@ def disable_dry_run_env():
     yield
     os.environ.pop('DISABLE_DRY_RUN')
     os.environ.pop('DEFAULT_GAS_LIMIT')
+    os.environ.pop('DEFAULT_GAS_PRICE_WEI')
     importlib.reload(config)
 
 
