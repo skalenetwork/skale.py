@@ -13,6 +13,7 @@ from web3 import Web3
 
 ETH_IN_WEI = 10 ** 18
 CUSTOM_DEFAULT_GAS_LIMIT = 2 * 10 ** 6
+CUSTOM_DEFAULT_GAS_PRICE_WEI = 1500000000
 
 
 def test_dry_run(skale):
@@ -38,6 +39,7 @@ def test_dry_run(skale):
 def disable_dry_run_env():
     os.environ['DISABLE_DRY_RUN'] = 'True'
     os.environ['DEFAULT_GAS_LIMIT'] = str(CUSTOM_DEFAULT_GAS_LIMIT)
+    os.environ['DEFAULT_GAS_PRICE_WEI'] = str(CUSTOM_DEFAULT_GAS_PRICE_WEI)
     importlib.reload(config)
     yield
     os.environ.pop('DISABLE_DRY_RUN')
@@ -59,6 +61,8 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
             dry_run_mock.assert_not_called()
             assert post_transaction_mock.call_args[0][2] == \
                 CUSTOM_DEFAULT_GAS_LIMIT
+            assert post_transaction_mock.call_args[0][6] == \
+                CUSTOM_DEFAULT_GAS_PRICE_WEI
 
 
 def test_skip_dry_run(skale):
@@ -77,7 +81,8 @@ def test_skip_dry_run(skale):
             skale.token.transfer(address_to, amount, skip_dry_run=True)
             assert err == 'Gas limit is empty'
 
-    tx_res = skale.token.transfer(address_to, amount, skip_dry_run=True, gas_limit=TEST_GAS_LIMIT)
+    tx_res = skale.token.transfer(address_to, amount,
+                                  skip_dry_run=True, gas_limit=TEST_GAS_LIMIT)
     assert tx_res.tx_hash is not None, tx_res
     assert tx_res.receipt is not None
     assert tx_res.dry_run_result is None
