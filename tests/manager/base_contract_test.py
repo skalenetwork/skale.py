@@ -61,7 +61,7 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
             dry_run_mock.assert_not_called()
             assert post_transaction_mock.call_args[0][2] == \
                 CUSTOM_DEFAULT_GAS_LIMIT
-            assert post_transaction_mock.call_args[0][6] == \
+            assert post_transaction_mock.call_args[0][3] == \
                 CUSTOM_DEFAULT_GAS_PRICE_WEI
 
 
