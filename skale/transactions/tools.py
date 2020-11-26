@@ -103,6 +103,8 @@ def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> s
         f'gasPrice: {gas_price}'
     )
     tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
+    import skale.config as config
+    print(config.DEFAULT_GAS_PRICE_WEI, tx_dict)
     tx_hash = wallet.sign_and_send(tx_dict)
     return tx_hash
 
