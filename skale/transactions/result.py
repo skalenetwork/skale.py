@@ -61,14 +61,16 @@ class TxRes:
 
     def __str__(self) -> str:
         return (
-            f'TxRes hash: {self.tx_hash}, dry_run_result {self.dry_run_result}, '
-            f'receipt {self.receipt}'
+            f'TxRes hash: {self.tx_hash}, '
+            f'dry_run_result: {self.dry_run_result}, '
+            f'receipt: {self.receipt}'
         )
 
     def __repr__(self) -> str:
         return (
-            f'TxRes hash: {self.tx_hash}, dry_run_result {self.dry_run_result}, '
-            f'receipt {self.receipt}'
+            f'TxRes hash: {self.tx_hash}, dry_run_result: '
+            f'{self.dry_run_result}, '
+            f'receipt: {self.receipt}'
         )
 
     def dry_run_failed(self) -> bool:
