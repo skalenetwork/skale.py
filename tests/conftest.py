@@ -3,19 +3,19 @@
 import pytest
 from web3.auto import w3
 
-from skale import Skale
-from skale.wallets import Web3Wallet
-from skale.utils.web3_utils import init_web3
-
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
+from tests.helper import init_skale, init_skale_allocator
 
 
 @pytest.fixture
 def skale():
-    '''Returns a SKALE instance with provider from config'''
-    web3 = init_web3(ENDPOINT)
-    wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    return Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
+    '''Returns a SKALE Manager instance with provider from config'''
+    return init_skale()
+
+
+@pytest.fixture
+def skale_allocator():
+    '''Returns a SKALE Allocator instance with provider from config'''
+    return init_skale_allocator()
 
 
 @pytest.fixture

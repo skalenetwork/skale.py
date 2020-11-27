@@ -6,12 +6,14 @@ from skale.transactions.result import (DryRunFailedError,
                                        InsufficientBalanceError,
                                        TransactionFailedError)
 from skale import Skale
-from skale.transactions.tools import run_tx_with_retry
-from skale.utils.account_tools import generate_account, send_ether
+from skale.transactions.tools import run_tx_with_retry, send_eth_with_skale
+from skale.utils.account_tools import (
+    generate_account,
+    send_ether
+)
+from skale.utils.web3_utils import init_web3, wait_receipt
 from skale.wallets import Web3Wallet
-from skale.utils.web3_utils import init_web3
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
-
+from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, TEST_GAS_LIMIT
 
 ETH_IN_WEI = 10 ** 18
 
@@ -108,7 +110,8 @@ def test_run_tx_with_retry_insufficient_balance(skale):
     token_amount = 10 * ETH_IN_WEI
     skale.token.transfer(sender_skale.wallet.address, token_amount + 1,
                          skip_dry_run=True,
-                         wait_for=True)
+                         wait_for=True,
+                         gas_limit=TEST_GAS_LIMIT)
     retries_number = 5
     with mock.patch('skale.contracts.base_contract.post_transaction',
                     post_transaction_mock):
@@ -128,3 +131,43 @@ def test_run_tx_with_retry_insufficient_balance(skale):
                 assert tx_res.receipt is None
             post_transaction_mock.assert_not_called()
             wait_for_receipt_by_blocks_mock.assert_not_called()
+
+
+def test_send_eth_with_skale(skale):
+    account = generate_account(skale.web3)
+    address_to = account['address']
+    address_from = Web3.toChecksumAddress(skale.wallet.address)
+    address_to = Web3.toChecksumAddress(address_to)
+    balance_from_before = skale.web3.eth.getBalance(address_from)
+    balance_to_before = skale.web3.eth.getBalance(address_to)
+    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
+
+    token_amount = 10 * ETH_IN_WEI
+    send_eth_with_skale(skale, address_to, token_amount, nonce=nonce)
+
+    fee_value = 10000
+    balance_from_after = skale.web3.eth.getBalance(address_from)
+    assert balance_from_after - balance_from_before + token_amount < fee_value
+    balance_to_after = skale.web3.eth.getBalance(address_to)
+    assert balance_to_after == balance_to_before + token_amount
+
+
+def test_send_eth_with_skale_without_wait_for_false(skale):
+    account = generate_account(skale.web3)
+    address_to = account['address']
+    address_from = Web3.toChecksumAddress(skale.wallet.address)
+    address_to = Web3.toChecksumAddress(address_to)
+    balance_from_before = skale.web3.eth.getBalance(address_from)
+    balance_to_before = skale.web3.eth.getBalance(address_to)
+
+    token_amount = 10 * ETH_IN_WEI
+    tx_hash = send_eth_with_skale(skale, address_to,
+                                  token_amount, wait_for=False)
+    receipt = wait_receipt(skale.web3, tx_hash)
+    assert receipt['status'] == 1
+
+    fee_value = 10000
+    balance_from_after = skale.web3.eth.getBalance(address_from)
+    assert balance_from_after - balance_from_before + token_amount < fee_value
+    balance_to_after = skale.web3.eth.getBalance(address_to)
+    assert balance_to_after == balance_to_before + token_amount

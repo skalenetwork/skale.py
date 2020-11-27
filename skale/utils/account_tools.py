@@ -90,7 +90,7 @@ def check_skale_balance(skale, address):
 
 def generate_account(web3):
     account = web3.eth.account.create()
-    private_key = account.privateKey.hex()
+    private_key = account.key.hex()
     logger.info(f'Generated account: {account.address}')
     return {'address': account.address, 'private_key': private_key}
 

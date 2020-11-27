@@ -26,30 +26,54 @@ from skale.transactions.result import (
     InsufficientBalanceError,
     TransactionFailedError, TxRes
 )
+from skale.utils.constants import GAS_LIMIT_COEFFICIENT
 from skale.utils.exceptions import RPCWalletError
-from skale.utils.web3_utils import get_eth_nonce
+from skale.utils.web3_utils import (check_receipt,
+                                    get_eth_nonce, wait_for_receipt_by_blocks)
+
+from web3._utils.transactions import get_block_gas_limit
 
 logger = logging.getLogger(__name__)
 
 
-def make_dry_run_call(wallet, method, gas_limit) -> dict:
+DEFAULT_ETH_SEND_GAS_LIMIT = 22000
+
+
+def make_dry_run_call(skale, method, gas_limit=None) -> dict:
     opts = {
-        'from': wallet.address,
-        'gas': gas_limit
+        'from': skale.wallet.address,
     }
     logger.info(
         f'Dry run tx: {method.fn_name}, '
-        f'sender: {wallet.address}, '
-        f'wallet: {wallet.__class__.__name__}, '
-        f'gasLimit: {gas_limit}'
+        f'sender: {skale.wallet.address}, '
+        f'wallet: {skale.wallet.__class__.__name__}, '
     )
     try:
-        call_result = method.call(opts)
+        if gas_limit:
+            estimated_gas = gas_limit
+            opts.update({'gas': gas_limit})
+            method.call(opts)
+        else:
+            estimated_gas = estimate_gas(skale.web3, method, opts)
+        logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
     except Exception as err:
         logger.error('Dry run for method failed with error', exc_info=err)
         return {'status': 0, 'error': str(err)}
 
-    return {'status': 1, 'payload': call_result}
+    return {'status': 1, 'payload': estimated_gas}
+
+
+def estimate_gas(web3, method, opts):
+    try:
+        block_gas_limit = get_block_gas_limit(web3)
+    except AttributeError:
+        block_gas_limit = get_block_gas_limit(web3)
+    estimated_gas = method.estimateGas(opts)
+    normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
+    if normalized_estimated_gas > block_gas_limit:
+        logger.warning(f'Estimate gas for {method.fn_name} exceeds block gas limit')
+        return block_gas_limit
+    return normalized_estimated_gas
 
 
 def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
@@ -80,6 +104,30 @@ def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> s
     )
     tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
     tx_hash = wallet.sign_and_send(tx_dict)
+    return tx_hash
+
+
+def send_eth_with_skale(skale, address: str, amount_wei: int, *,
+                        gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
+                        gas_price: int = None,
+                        nonce: int = None, wait_for=True):
+    gas_limit = gas_limit or DEFAULT_ETH_SEND_GAS_LIMIT
+    gas_price = gas_price or skale.web3.eth.gasPrice
+    tx = {
+        'to': address,
+        'value': amount_wei,
+        'gasPrice': gas_price,
+        'gas': gas_limit,
+        'nonce': nonce
+    }
+    logger.info(f'Sending {amount_wei} WEI to {address}')
+    tx_hash = skale.wallet.sign_and_send(tx)
+    logger.info(f'Waiting for receipt for {tx_hash}')
+
+    if wait_for:
+        receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
+        check_receipt(receipt)
+        return receipt
     return tx_hash
 
 

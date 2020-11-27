@@ -39,3 +39,10 @@ class IncompatibleAbiError(Exception):
     def __init__(self, key):
         message = f'Required field was not found in the ABI file: {key}'
         super().__init__(message)
+
+
+class InvalidNodeIdError(Exception):
+    """Raised when wrong node id passed"""
+    def __init__(self, node_id):
+        message = f'Node with ID = {node_id} doesn\'t exist!'
+        super().__init__(message)

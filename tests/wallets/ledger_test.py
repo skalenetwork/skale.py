@@ -24,7 +24,8 @@ def test_hardware_sign_and_send():
     with mock.patch('ledgerblue.comm.getDongle',
                     new=get_dongle_mock):
         web3 = init_web3(ENDPOINT)
-        wallet = LedgerWallet(web3)
+        default_address_index = 0
+        wallet = LedgerWallet(web3, default_address_index)
         tx_dict = {
             'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
             'value': 9,
