@@ -17,29 +17,29 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from dataclasses import dataclass
 from skale.dataclasses.skaled_ports import SkaledPorts
 
 
+@dataclass
 class NodeInfo():
-    def __init__(self, node_id, node_name, base_port):
-        self.node_id = node_id
-        self.node_name = node_name
-        self.base_port = base_port
-        self.calc_ports()
+    """Dataclass that represents base info about the node"""
+    node_id: int
+    name: str
+    base_port: int
 
     def calc_ports(self):
-        self.http_rpc_port = self.base_port + SkaledPorts.HTTP_JSON.value
-        self.https_rpc_port = self.base_port + SkaledPorts.HTTPS_JSON.value
-        self.ws_rpc_port = self.base_port + SkaledPorts.WS_JSON.value
-        self.wss_rpc_port = self.base_port + SkaledPorts.WSS_JSON.value
+        return {
+            'httpRpcPort': self.base_port + SkaledPorts.HTTP_JSON.value,
+            'httpsRpcPort': self.base_port + SkaledPorts.HTTPS_JSON.value,
+            'wsRpcPort': self.base_port + SkaledPorts.WS_JSON.value,
+            'wssRpcPort': self.base_port + SkaledPorts.WSS_JSON.value
+        }
 
-    def to_config(self):
+    def to_dict(self):
         return {
             'nodeID': self.node_id,
-            'nodeName': self.node_name,
+            'nodeName': self.name,
             'basePort': self.base_port,
-            'httpRpcPort': self.http_rpc_port,
-            'httpsRpcPort': self.https_rpc_port,
-            'wsRpcPort': self.ws_rpc_port,
-            'wssRpcPort': self.wss_rpc_port
+            **self.calc_ports()
         }
