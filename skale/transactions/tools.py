@@ -28,8 +28,7 @@ from skale.transactions.result import (
 )
 from skale.utils.constants import GAS_LIMIT_COEFFICIENT
 from skale.utils.exceptions import RPCWalletError
-from skale.utils.web3_utils import (check_receipt,
-                                    get_eth_nonce, wait_for_receipt_by_blocks)
+from skale.utils.web3_utils import get_eth_nonce
 
 from web3._utils.transactions import get_block_gas_limit
 
