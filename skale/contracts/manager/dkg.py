@@ -127,10 +127,8 @@ class DKG(BaseContract):
             {'from': address}
         )
 
-    def is_all_data_received(self, group_index, node_from, address):
-        return self.contract.functions.isAllDataReceived(group_index, node_from).call(
-            {'from': address}
-        )
+    def is_all_data_received(self, group_index, node_from):
+        return self.contract.functions.isAllDataReceived(group_index, node_from).call()
 
     def is_everyone_broadcasted(self, group_index, address):
         return self.contract.functions.isEveryoneBroadcasted(group_index).call(

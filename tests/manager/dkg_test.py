@@ -197,7 +197,7 @@ def test_is_last_dkg_successful(skale):
 
 def test_channel_opened(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
-    assert skale.dkg.is_channel_opened(group_index)
+    assert not skale.dkg.is_channel_opened(group_index)
 
 
 def test_broadcast_possible(skale):
@@ -234,7 +234,7 @@ def test_response_possible(skale):
 def test_all_data_received(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     node_from = 0
-    assert skale.dkg.is_all_data_received(group_index, node_from, skale.wallet.address)
+    assert skale.dkg.is_all_data_received(group_index, node_from)
 
 
 def test_everyone_broadcasted(skale):
@@ -264,7 +264,7 @@ def test_alright_started_time(skale):
 
 def test_complaint_data(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
-    assert skale.dkg.get_complaint_data(group_index) == (0, 0)
+    assert skale.dkg.get_complaint_data(group_index) == [0, 0]
 
 
 def test_time_of_last_successful_dkg(skale):
