@@ -193,3 +193,82 @@ def test_complaint_bad_data(skale):
 def test_is_last_dkg_successful(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     assert skale.dkg.is_last_dkg_successful(group_index)
+
+
+def test_channel_opened(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.is_channel_opened(group_index, skale.wallet.address)
+
+
+def test_broadcast_possible(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    node_id = 0
+    assert skale.dkg.is_broadcast_possible(group_index, node_id, skale.wallet.address)
+
+
+def test_alright_possible(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    node_id = 0
+    assert skale.dkg.is_alright_possible(group_index, node_id, skale.wallet.address)
+
+
+def test_complaint_possible(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    node_to = 0
+    node_from = 1
+    assert skale.dkg.is_complaint_possible(group_index, node_from, node_to, skale.wallet.address)
+
+
+def test_pre_response_possible(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    node_id = 0
+    assert skale.dkg.is_pre_response_possible(group_index, node_id, skale.wallet.address)
+
+
+def test_response_possible(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    node_id = 0
+    assert skale.dkg.is_response_possible(group_index, node_id, skale.wallet.address)
+
+
+def test_all_data_received(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    node_from = 0
+    assert skale.dkg.is_all_data_received(group_index, node_from, skale.wallet.address)
+
+
+def test_everyone_broadcasted(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.is_everyone_broadcasted(group_index, skale.wallet.address)
+
+
+def test_number_of_completed(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.get_number_of_completed(group_index) == 0
+
+
+def test_channel_started_time(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.get_channel_started_time(group_index) > 0
+    assert skale.dkg.get_channel_started_time(group_index) < \
+        skale.web3.eth.getBlock("latest")["timestamp"]
+
+
+def test_complaint_started_time(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.get_complaint_started_time(group_index) == 0
+
+
+def test_alright_started_time(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.get_alright_started_time(group_index) == 0
+
+
+def test_complaint_data(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.get_complaint_data(group_index) == (-1, -1)
+
+
+def test_time_of_last_successful_dkg(skale):
+    group_index = 'e629fa6598d732768f7c726b4b621285'
+    assert skale.dkg.get_time_of_last_successful_dkg(group_index) == 0
