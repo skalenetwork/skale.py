@@ -197,19 +197,19 @@ def test_is_last_dkg_successful(skale):
 
 def test_channel_opened(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
-    assert skale.dkg.is_channel_opened(group_index, skale.wallet.address)
+    assert skale.dkg.is_channel_opened(group_index)
 
 
 def test_broadcast_possible(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     node_id = 0
-    assert skale.dkg.is_broadcast_possible(group_index, node_id, skale.wallet.address)
+    assert not skale.dkg.is_broadcast_possible(group_index, node_id, skale.wallet.address)
 
 
 def test_alright_possible(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     node_id = 0
-    assert skale.dkg.is_alright_possible(group_index, node_id, skale.wallet.address)
+    assert not skale.dkg.is_alright_possible(group_index, node_id, skale.wallet.address)
 
 
 def test_complaint_possible(skale):
@@ -222,13 +222,13 @@ def test_complaint_possible(skale):
 def test_pre_response_possible(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     node_id = 0
-    assert skale.dkg.is_pre_response_possible(group_index, node_id, skale.wallet.address)
+    assert not skale.dkg.is_pre_response_possible(group_index, node_id, skale.wallet.address)
 
 
 def test_response_possible(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     node_id = 0
-    assert skale.dkg.is_response_possible(group_index, node_id, skale.wallet.address)
+    assert not skale.dkg.is_response_possible(group_index, node_id, skale.wallet.address)
 
 
 def test_all_data_received(skale):
@@ -249,9 +249,7 @@ def test_number_of_completed(skale):
 
 def test_channel_started_time(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
-    assert skale.dkg.get_channel_started_time(group_index) > 0
-    assert skale.dkg.get_channel_started_time(group_index) < \
-        skale.web3.eth.getBlock("latest")["timestamp"]
+    assert skale.dkg.get_channel_started_time(group_index) == 0
 
 
 def test_complaint_started_time(skale):
@@ -266,7 +264,7 @@ def test_alright_started_time(skale):
 
 def test_complaint_data(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
-    assert skale.dkg.get_complaint_data(group_index) == (-1, -1)
+    assert skale.dkg.get_complaint_data(group_index) == (0, 0)
 
 
 def test_time_of_last_successful_dkg(skale):
