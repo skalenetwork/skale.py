@@ -212,13 +212,6 @@ def test_alright_possible(skale):
     assert not skale.dkg.is_alright_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_complaint_possible(skale):
-    group_index = 'e629fa6598d732768f7c726b4b621285'
-    node_to = 0
-    node_from = 1
-    assert skale.dkg.is_complaint_possible(group_index, node_from, node_to, skale.wallet.address)
-
-
 def test_pre_response_possible(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     node_id = 0
@@ -229,12 +222,6 @@ def test_response_possible(skale):
     group_index = 'e629fa6598d732768f7c726b4b621285'
     node_id = 0
     assert not skale.dkg.is_response_possible(group_index, node_id, skale.wallet.address)
-
-
-def test_all_data_received(skale):
-    group_index = 'e629fa6598d732768f7c726b4b621285'
-    node_from = 0
-    assert skale.dkg.is_all_data_received(group_index, node_from)
 
 
 def test_everyone_broadcasted(skale):
