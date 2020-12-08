@@ -93,7 +93,8 @@ class DKG(BaseContract):
     @retry_tx
     @transaction_method
     def complaint_bad_data(self, group_index, from_node_index, to_node_index):
-        return self.contract.functions.complaintBadData(group_index, from_node_index,
+        return self.contract.functions.complaintBadData(group_index,
+                                                        from_node_index,
                                                         to_node_index)
 
     def is_last_dkg_successful(self, group_index):

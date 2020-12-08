@@ -48,4 +48,7 @@ class SkaleAllocator(SkaleBase):
     def init_contracts(self):
         abi = get_abi(self._abi_filepath)
         self.add_lib_contract('contract_manager', ContractManager, abi)
-        self._SkaleBase__init_contracts_from_info(abi,  get_contracts_info(CONTRACTS_INFO))
+        self._SkaleBase__init_contracts_from_info(
+            abi,
+            get_contracts_info(CONTRACTS_INFO)
+        )
