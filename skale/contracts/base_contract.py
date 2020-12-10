@@ -58,14 +58,16 @@ def transaction_method(transaction):
                 self.skale, method, gas_limit
             )
 
-        gas_limit = gas_limit or estimated_gas_limit or config.DEFAULT_GAS_LIMIT
+        gas_limit = gas_limit or estimated_gas_limit or \
+            config.DEFAULT_GAS_LIMIT
 
         # Check balance
         balance = account_eth_balance_wei(self.skale.web3,
                                           self.skale.wallet.address)
-        gas_price = gas_price or self.skale.gas_price
-        balance_check_result = check_balance_and_gas(balance, gas_price,
-                                                     gas_limit)
+        gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or \
+            self.skale.gas_price
+        balance_check_result = check_balance_and_gas(balance,
+                                                     gas_price, gas_limit)
         rich_enough = is_success(balance_check_result)
 
         # Send transaction

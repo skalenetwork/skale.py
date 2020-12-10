@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
-MAX_WAITING_TIME = 1200
+MAX_WAITING_TIME = 3 * 60 * 60  # 3 hours
 
 
 def get_provider(endpoint, timeout=10, request_kwargs={}):
