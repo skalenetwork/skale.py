@@ -23,7 +23,7 @@ from skale.contracts.base_contract import BaseContract
 
 
 class NodeRotation(BaseContract):
-    """Wrapper for some of the NodeRotation.sol functions"""
+    """Wrapper for NodeRotation.sol functions"""
 
     @property
     @functools.lru_cache()
