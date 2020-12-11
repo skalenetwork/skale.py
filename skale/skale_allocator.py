@@ -24,7 +24,7 @@ import skale.contracts.allocator as contracts
 from skale.contracts.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_abi, get_contracts_info
+from skale.utils.helper import get_contracts_info
 
 
 logger = logging.getLogger(__name__)
@@ -45,10 +45,5 @@ def spawn_skale_allocator_lib(skale):
 
 
 class SkaleAllocator(SkaleBase):
-    def init_contracts(self):
-        abi = get_abi(self._abi_filepath)
-        self.add_lib_contract('contract_manager', ContractManager, abi)
-        self._SkaleBase__init_contracts_from_info(
-            abi,
-            get_contracts_info(CONTRACTS_INFO)
-        )
+    def set_contracts_info(self):
+        self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
