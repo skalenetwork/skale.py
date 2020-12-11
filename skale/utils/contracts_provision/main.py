@@ -67,7 +67,6 @@ def setup_validator(skale):
     else:
         print('Skipping default validator creation')
     set_test_msr(skale)
-    add_delegation_period(skale)
     delegate_to_validator(skale)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
     accept_pending_delegation(skale, delegations[-1]['id'])

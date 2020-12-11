@@ -76,6 +76,7 @@ DEBUG_CONTRACTS_INFO = [
 
 
 def spawn_skale_manager_lib(skale):
+    """ Clone skale manager object with the same wallet """
     return SkaleManager(skale._endpoint, skale._abi_filepath, skale.wallet)
 
 
