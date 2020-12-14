@@ -82,6 +82,7 @@ def spawn_skale_manager_lib(skale):
 
 class SkaleManager(SkaleBase):
     def set_contracts_info(self):
+        self.init_contract_manager()
         abi = get_abi(self._abi_filepath)
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
         if self._SkaleBase__is_debug_contracts(abi):
