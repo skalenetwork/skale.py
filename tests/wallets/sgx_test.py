@@ -2,7 +2,8 @@ import mock
 import web3
 
 from hexbytes import HexBytes
-from eth_account.datastructures import AttributeDict
+from eth_account.datastructures import SignedTransaction, SignedMessage
+from sgx.sgx import Account
 from skale.wallets import SgxWallet
 from skale.utils.web3_utils import (
     init_web3,
@@ -22,35 +23,36 @@ class SgxClient:
         pass
 
     def generate_key(self):
-        return AttributeDict({
-            'name': 'NEK:aaabbb',
-            'address': ADDRESS,
-            'public_key': 'ab00000000000000000000000000000000000000',
-        })
+        return Account(
+            name='NEK:aaabbb',
+            address=ADDRESS,
+            public_key='ab00000000000000000000000000000000000000'
+        )
 
     def get_account(self, key_name):
-        return AttributeDict({
-            'address': ADDRESS,
-            'public_key': 'ab00000000000000000000000000000000000000',
-        })
+        return Account(
+            name='NEK:aaabbb',
+            address=ADDRESS,
+            public_key='ab00000000000000000000000000000000000000'
+        )
 
     def sign(self, transaction_dict, key_name):
-        return AttributeDict({
-            'rawTransaction': HexBytes('0x000000000000'),
-            'hash': HexBytes('0x000000000000'),
-            'r': 100000000000,
-            's': 100000000000,
-            'v': 37,
-        })
+        return SignedTransaction(
+            rawTransaction=HexBytes('0x000000000000'),
+            hash=HexBytes('0x000000000000'),
+            r=100000000000,
+            s=100000000000,
+            v=37
+        )
 
     def sign_hash(self, message, key_name, chain_id):
-        return AttributeDict({
-            'messageHash': HexBytes('0x31323331'),
-            'r': 123,
-            's': 123,
-            'v': 27,
-            'signature': HexBytes('0x6161616161613131313131')
-        })
+        return SignedMessage(
+            messageHash=HexBytes('0x31323331'),
+            r=123,
+            s=123,
+            v=27,
+            signature=HexBytes('0x6161616161613131313131')
+        )
 
 
 def test_sgx_sign():
