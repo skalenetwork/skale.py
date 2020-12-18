@@ -206,3 +206,11 @@ def test_request_undelegate(skale):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
+
+
+def test_get_delegated_to_validator(skale):
+    res = skale.delegation_controller.get_delegated_to_validator(
+        D_VALIDATOR_ID,
+        D_DELEGATION_PERIOD*30
+    )
+    assert isinstance(res, int)
