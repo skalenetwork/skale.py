@@ -41,12 +41,12 @@ class SChains(BaseContract):
     @property
     @functools.lru_cache()
     def schains_internal(self):
-        return self.skale.get_contract_by_name('schains_internal')
+        return self.skale.schains_internal
 
     @property
     @functools.lru_cache()
     def node_rotation(self):
-        return self.skale.get_contract_by_name('node_rotation')
+        return self.skale.node_rotation
 
     @format_fields(FIELDS)
     def get(self, id_):

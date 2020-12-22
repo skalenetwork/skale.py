@@ -1,6 +1,7 @@
 """ SKALE node test """
 
 import socket
+from datetime import datetime
 
 import pytest
 from eth_keys import keys
@@ -149,3 +150,11 @@ def test_node_in_maintenance(skale):
 
     skale.nodes.remove_node_from_in_maintenance(node_id)
     assert skale.nodes.get_node_status(node_id) == NodeStatus.ACTIVE.value
+
+
+def test_get_node_next_reward_date(skale):
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    next_reward_date_ts = skale.nodes.get_node_next_reward_date(node_id)
+    next_reward_date = datetime.utcfromtimestamp(next_reward_date_ts)
+    present = datetime.now()
+    assert next_reward_date > present
