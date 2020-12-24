@@ -300,21 +300,3 @@ class ValidatorService(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.setValidatorDescription(new_description)
-
-    @transaction_method
-    def enable_auto_accepting(self) -> TxRes:
-        """ Allows a validator to automatically accept all new delegation requests.
-
-        :returns: Transaction results
-        :rtype: TxRes
-        """
-        return self.contract.functions.enableAutoAccepting()
-
-    @transaction_method
-    def disable_auto_accepting(self) -> TxRes:
-        """ Allows a validator to stop automatic accepting of all new delegation requests.
-
-        :returns: Transaction results
-        :rtype: TxRes
-        """
-        return self.contract.functions.disableAutoAccepting()

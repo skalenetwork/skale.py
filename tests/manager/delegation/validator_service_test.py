@@ -409,26 +409,3 @@ def test_set_validator_description(skale):
     validator = skale.validator_service.get(latest_id)
     assert validator['description'] != D_VALIDATOR_DESC
     assert validator['description'] == new_test_description
-
-
-def test_enable_auto_accepting(skale):
-    validator = skale.validator_service.get(D_VALIDATOR_ID)
-    assert not validator['auto_accept_delegations']
-
-    skale.validator_service.enable_auto_accepting(wait_for=True)
-
-    validator = skale.validator_service.get(D_VALIDATOR_ID)
-    assert validator['auto_accept_delegations']
-
-    skale.validator_service.disable_auto_accepting(wait_for=True)
-
-
-def test_disable_auto_accepting(skale):
-    skale.validator_service.enable_auto_accepting(wait_for=True)
-
-    validator = skale.validator_service.get(D_VALIDATOR_ID)
-    assert validator['auto_accept_delegations']
-
-    skale.validator_service.disable_auto_accepting(wait_for=True)
-    validator = skale.validator_service.get(D_VALIDATOR_ID)
-    assert not validator['auto_accept_delegations']
