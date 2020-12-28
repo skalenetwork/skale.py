@@ -6,7 +6,7 @@ import pytest
 import mock
 
 from hexbytes import HexBytes
-from eth_account.datastructures import AttributeDict
+from eth_account.datastructures import SignedTransaction, SignedMessage
 
 from skale.wallets.rpc_wallet import RPCWallet
 from skale.utils.exceptions import RPCWalletError
@@ -115,7 +115,7 @@ def test_sign():
                              {'data': signed_data, 'error': None})
     with mock.patch('requests.post', new=request_mock(res_mock)):
         res = wallet.sign(TX_DICT)
-        assert res == AttributeDict(signed_data)
+        assert res == SignedTransaction(**signed_data)
 
 
 def test_sign_hash():
@@ -133,14 +133,12 @@ def test_sign_hash():
     res_mock = response_mock(HTTPStatus.OK, sign_hash_response_data)
     with mock.patch('requests.post', new=request_mock(res_mock)):
         signed_hash = wallet.sign_hash(TX_DICT)
-        assert signed_hash == AttributeDict(
-            {
-                'messageHash': HexBytes('0x00'),
-                'r': 123,
-                's': 123,
-                'v': 27,
-                'signature': HexBytes('0x00')
-            }
+        assert signed_hash == SignedMessage(
+            messageHash=HexBytes('0x00'),
+            r=123,
+            s=123,
+            v=27,
+            signature=HexBytes('0x00')
         )
 
 

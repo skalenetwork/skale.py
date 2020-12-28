@@ -1,5 +1,7 @@
 import mock
 import pytest
+import random
+
 from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
 from skale.transactions.result import DryRunFailedError
 
@@ -57,6 +59,10 @@ def test_get_first_delegation_month(skale):
     assert fdm == 0
 
 
-def test_get_dkg_timeout(skale):
-    dkg_timeout = skale.constants_holder.get_dkg_timeout()
-    assert dkg_timeout == 1800
+def test_get_set_complaint_timelimit(skale):
+    new_dkg_timeout = random.randint(100, 100000)
+    dkg_timeout_before = skale.constants_holder.get_dkg_timeout()
+    skale.constants_holder.set_complaint_timelimit(new_dkg_timeout, wait_for=True)
+    dkg_timeout_after = skale.constants_holder.get_dkg_timeout()
+    assert dkg_timeout_after != dkg_timeout_before
+    assert dkg_timeout_after == new_dkg_timeout

@@ -9,3 +9,4 @@ from skale.skale_manager import SkaleManager
 from skale.skale_manager import SkaleManager as Skale  # todo: deprecated naming, will be removed in skale.py v5
 
 from skale.skale_allocator import SkaleAllocator
+from skale.skale_ima import SkaleIma
