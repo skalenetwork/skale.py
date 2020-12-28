@@ -21,6 +21,7 @@ import logging
 import time
 from functools import partial, wraps
 
+import skale.config as config
 from skale.transactions.result import (
     DryRunFailedError,
     InsufficientBalanceError,
@@ -131,19 +132,21 @@ def send_eth_with_skale(skale, address: str, amount_wei: int, *,
     return tx_hash
 
 
-def send_eth(web3, account, amount, wallet):
+def send_eth(web3, account, amount, wallet, gas_price=None):
     eth_nonce = get_eth_nonce(web3, wallet.address)
     logger.info(f'Transaction nonce {eth_nonce}')
+    gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or web3.eth.gasPrice
     txn = {
         'to': account,
         'value': amount,
-        'gasPrice': web3.eth.gasPrice,
+        'gasPrice': gas_price,
         'gas': 22000,
         'nonce': eth_nonce
     }
-    signed_txn = wallet.sign(txn)
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
 
+    signed_txn = wallet.sign(txn)
+
+    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
     logger.info(
         f'ETH transfer {wallet.address} => {account}, {amount} wei,'
         f'tx: {web3.toHex(tx)}'
