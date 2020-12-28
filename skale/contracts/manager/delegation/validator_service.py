@@ -28,7 +28,7 @@ from skale.transactions.result import TxRes
 FIELDS = [
     'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
     'registration_time', 'minimum_delegation_amount', 'accept_new_requests',
-    'auto_accept_delegations', 'trusted'
+    'trusted'
 ]
 
 
