@@ -21,6 +21,8 @@
 import logging
 from functools import wraps
 
+from web3 import Web3
+
 import skale.config as config
 from skale.transactions.result import (TxRes, check_balance_and_gas,
                                        is_success, is_success_or_not_performed)
@@ -28,7 +30,9 @@ from skale.transactions.tools import make_dry_run_call, post_transaction
 from skale.utils.account_tools import account_eth_balance_wei
 from skale.utils.web3_utils import (wait_for_confirmation_blocks,
                                     wait_for_receipt_by_blocks)
-from web3 import Web3
+
+from skale.utils.helper import to_camel_case
+
 
 logger = logging.getLogger(__name__)
 
@@ -105,3 +109,17 @@ class BaseContract:
         self.name = name
         self.address = Web3.toChecksumAddress(address)
         self.contract = skale.web3.eth.contract(address=self.address, abi=abi)
+
+    def __getattr__(self, attr):
+        """Fallback for contract calls"""
+        logger.debug("Calling contract function: "+attr)
+
+        def wrapper(*args, **kw):
+            logger.debug('called with %r and %r' % (args, kw))
+            camel_case_fn_name = to_camel_case(attr)
+            if hasattr(self.contract.functions, camel_case_fn_name):
+                return getattr(self.contract.functions, camel_case_fn_name)(*args, **kw).call()
+            if hasattr(self.contract.functions, attr):
+                return getattr(self.contract.functions, attr)(*args, **kw).call()
+            raise AttributeError(attr)
+        return wrapper
