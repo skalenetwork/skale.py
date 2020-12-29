@@ -39,6 +39,10 @@ class TransactionFailedError(TransactionError):
     pass
 
 
+class RevertError(TransactionError, SolidityError):
+    pass
+
+
 def check_balance(balance: int, gas_price: int, gas_limit: int) -> dict:
     tx_cost = gas_price * gas_limit
     if balance < tx_cost:
@@ -100,7 +104,7 @@ class TxRes:
     def raise_for_status(self) -> None:
         if self.dry_run_failed():
             if is_revert_error(self.dry_run_result):
-                raise SolidityError(self.dry_run_result['error'])
+                raise RevertError(self.dry_run_result['error'])
             raise DryRunFailedError(f'Dry run check failed. '
                                     f'See result {self.dry_run_result}')
         if self.balance_check_failed():

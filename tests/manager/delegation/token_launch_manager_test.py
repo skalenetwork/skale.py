@@ -4,7 +4,7 @@ import pytest
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.account_tools import send_ether
 from skale.utils.contracts_provision.allocator import transfer_tokens_to_token_launch_manager
-from skale.transactions.result import DryRunFailedError
+from skale.transactions.result import RevertError
 
 
 N_OF_TOKEN_LAUNCH_WALLETS = 3
@@ -34,7 +34,7 @@ def test_approve_transfers(skale):
 
     main_wallet = skale.wallet
     skale.wallet = wallets[0]
-    with pytest.raises(DryRunFailedError):
+    with pytest.raises(RevertError):
         skale.token_launch_manager.retrieve()
 
     for (i, wallet) in enumerate(wallets):
