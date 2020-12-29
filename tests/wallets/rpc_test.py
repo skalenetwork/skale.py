@@ -2,18 +2,24 @@
 
 
 from http import HTTPStatus
+
 import pytest
 import mock
 
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
-
-from skale.wallets.rpc_wallet import RPCWallet
+from skale.wallets import RPCWallet
 from skale.utils.exceptions import RPCWalletError
 
-from tests.constants import (EMPTY_ETH_ACCOUNT, NOT_EXISTING_RPC_WALLET_URL, EMPTY_HEX_STR,
-                             TEST_RPC_WALLET_URL)
+from tests.constants import (
+    ENDPOINT, EMPTY_HEX_STR, ETH_PRIVATE_KEY,
+    NOT_EXISTING_RPC_WALLET_URL, TEST_SGX_ENDPOINT, TEST_RPC_WALLET_URL
+)
 from tests.helper import response_mock, request_mock
+from tests.wallets.utils import SgxClient
+from skale.utils.web3_utils import (
+    init_web3, private_key_to_address, to_checksum_address
+)
 
 
 TX_DICT = {
@@ -26,27 +32,42 @@ TX_DICT = {
     'data': '0x0'
 }
 
+ADDRESS = to_checksum_address(
+    private_key_to_address(ETH_PRIVATE_KEY)
+)
+EMPTY_ETH_ACCOUNT = '0x0000000000000000000000000000000000000000'
 TEST_MAX_RETRIES = 3
 
 
-def test_rpc_not_available():
-    wallet = RPCWallet(NOT_EXISTING_RPC_WALLET_URL)
+@pytest.fixture
+def web3():
+    return init_web3(ENDPOINT)
+
+
+@pytest.fixture
+@mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
+def wallet(web3):
+    return RPCWallet(TEST_RPC_WALLET_URL, TEST_SGX_ENDPOINT, web3,
+                     retry_if_failed=True)
+
+
+@mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
+def test_rpc_not_available(web3):
+    wallet = RPCWallet(NOT_EXISTING_RPC_WALLET_URL, TEST_SGX_ENDPOINT, web3)
     with pytest.raises(RPCWalletError):
-        wallet.address
+        wallet.sign_and_send({})
 
 
-def test_sign_and_send():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL)
+def test_rpc_sign_and_send(wallet):
     res_mock = response_mock(HTTPStatus.OK,
-                             {'data': {'transaction_hash': EMPTY_HEX_STR}, 'error': None})
+                             {'data': {'transaction_hash': EMPTY_HEX_STR},
+                              'error': None})
     with mock.patch('requests.post', new=request_mock(res_mock)):
         tx_hash = wallet.sign_and_send(TX_DICT)
         assert tx_hash == EMPTY_HEX_STR
 
 
-def test_sign_and_send_fails():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL, retry_if_failed=True)
-
+def test_rpc_sign_and_send_fails(wallet):
     cnt = 0
 
     def post_mock(*args, **kwargs):
@@ -68,19 +89,19 @@ def test_sign_and_send_fails():
         assert cnt == TEST_MAX_RETRIES
 
 
-def test_sign_and_send_sgx_unreachable_no_retries():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL)
-    res_mock = response_mock(HTTPStatus.BAD_REQUEST, {'data': None,
-                                                      'error': 'Sgx server is unreachable'})
+@mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
+def test_rpc_sign_and_send_sgx_unreachable_no_retries(web3):
+    res_mock = response_mock(HTTPStatus.BAD_REQUEST,
+                             {'data': None,
+                              'error': 'Sgx server is unreachable'})
+    wallet = RPCWallet(NOT_EXISTING_RPC_WALLET_URL, TEST_SGX_ENDPOINT, web3)
     with mock.patch('requests.post', new=request_mock(res_mock)):
         with pytest.raises(RPCWalletError):
             wallet.sign_and_send(TX_DICT)
             assert res_mock.call_count == 1
 
 
-def test_sign_and_send_sgx_unreachable():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL, retry_if_failed=True)
-
+def test_rpc_sign_and_send_sgx_unreachable(wallet):
     cnt = 0
 
     def post_mock(*args, **kwargs):
@@ -102,7 +123,7 @@ def test_sign_and_send_sgx_unreachable():
         assert cnt == TEST_MAX_RETRIES
 
 
-def test_sign():
+def test_sign(wallet):
     signed_data = {
         'hash': HexBytes('0x00'),
         'rawTransaction': HexBytes('0x00'),
@@ -110,7 +131,6 @@ def test_sign():
         's': 123,
         'v': 27
     }
-    wallet = RPCWallet(TEST_RPC_WALLET_URL)
     res_mock = response_mock(HTTPStatus.OK,
                              {'data': signed_data, 'error': None})
     with mock.patch('requests.post', new=request_mock(res_mock)):
@@ -118,8 +138,7 @@ def test_sign():
         assert res == AttributeDict(signed_data)
 
 
-def test_sign_hash():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL)
+def test_sign_hash(wallet):
     sign_hash_response_data = {
         'data': {
             'messageHash': '0x0',
@@ -144,17 +163,17 @@ def test_sign_hash():
         )
 
 
-def test_address():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL)
-    res_mock = response_mock(HTTPStatus.OK,
-                             {'data': {'address': EMPTY_ETH_ACCOUNT}, 'error': None})
+def test_address(wallet):
+    res_mock = response_mock(
+        HTTPStatus.OK,
+        {'data': {'address': EMPTY_ETH_ACCOUNT}, 'error': None})
     with mock.patch('requests.get', new=request_mock(res_mock)):
         assert wallet.address == EMPTY_ETH_ACCOUNT
 
 
-def test_public_key():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL)
-    res_mock = response_mock(HTTPStatus.OK,
-                             {'data': {'public_key': EMPTY_ETH_ACCOUNT}, 'error': None})
+def test_public_key(wallet):
+    res_mock = response_mock(
+        HTTPStatus.OK,
+        {'data': {'public_key': EMPTY_ETH_ACCOUNT}, 'error': None})
     with mock.patch('requests.get', new=request_mock(res_mock)):
         assert wallet.public_key == EMPTY_ETH_ACCOUNT

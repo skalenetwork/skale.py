@@ -125,12 +125,16 @@ def rpc_request(func):
 
 
 class RPCWallet(SgxWallet):
-    def __init__(self, *args, url=None,
-                 retry_if_failed=False, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, url, sgx_endpoint, web3, key_name=None,
+                 path_to_cert=None, retry_if_failed=False) -> None:
+        super().__init__(sgx_endpoint=sgx_endpoint,
+                         web3=web3, key_name=key_name,
+                         path_to_cert=path_to_cert)
         self._url = url
+        self._retry_if_failed = retry_if_failed
 
-    def _construct_url(self, host, url):
+    @classmethod
+    def _construct_url(cls, host, url):
         return urllib.parse.urljoin(host, url)
 
     @rpc_request
@@ -143,7 +147,8 @@ class RPCWallet(SgxWallet):
         request_url = self._construct_url(self._url, route)
         return requests.get(request_url, data=data)
 
-    def _compose_tx_data(self, tx_dict):
+    @classmethod
+    def _compose_tx_data(cls, tx_dict):
         return {
             'transaction_dict': json.dumps(tx_dict)
         }
