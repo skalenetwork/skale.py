@@ -3,7 +3,7 @@ import pytest
 import random
 
 from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
-from skale.transactions.result import DryRunFailedError
+from skale.transactions.result import RevertError
 
 
 def test_get_set_periods(skale):
@@ -41,7 +41,7 @@ def test_get_set_launch_timestamp(skale):
                 'skale.contracts.base_contract.wait_for_receipt_by_blocks',
                 test_mock
         ):
-            with pytest.raises(DryRunFailedError):
+            with pytest.raises(RevertError):
                 skale.constants_holder.set_launch_timestamp(launch_ts, wait_for=True)
 
 

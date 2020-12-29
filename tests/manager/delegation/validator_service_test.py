@@ -4,7 +4,7 @@ import random
 import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
-from skale.transactions.result import DryRunFailedError
+from skale.transactions.result import RevertError
 from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
 from skale.wallets.web3_wallet import generate_wallet
@@ -194,7 +194,7 @@ def test_is_accepting_new_requests(skale):
 
 
 def test_register_existing_validator(skale):
-    with pytest.raises(DryRunFailedError):
+    with pytest.raises(RevertError):
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,
@@ -332,7 +332,7 @@ def test_request_for_new_address(skale):
     validator = skale.validator_service.get(D_VALIDATOR_ID)
     assert validator['requested_address'] == '0x0000000000000000000000000000000000000000'
 
-    with pytest.raises(DryRunFailedError):
+    with pytest.raises(RevertError):
         skale.validator_service.request_for_new_address(
             new_validator_address=main_wallet.address,
             wait_for=True
@@ -409,3 +409,16 @@ def test_set_validator_description(skale):
     validator = skale.validator_service.get(latest_id)
     assert validator['description'] != D_VALIDATOR_DESC
     assert validator['description'] == new_test_description
+
+
+def test_revert_reason(skale):
+    try:
+        skale.validator_service.register_validator(
+            name=D_VALIDATOR_NAME,
+            description=D_VALIDATOR_DESC,
+            fee_rate=D_VALIDATOR_FEE,
+            min_delegation_amount=D_VALIDATOR_MIN_DEL,
+            wait_for=True
+        )
+    except RevertError as err:
+        assert str(err) == 'execution reverted: VM Exception while processing transaction: revert Validator with such address already exists' # noqa
