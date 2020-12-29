@@ -53,14 +53,15 @@ def send_tokens(skale, sender_wallet, receiver_account, amount,
 
 
 def send_ether(web3, sender_wallet, receiver_account, amount,
-               wait_for=True):
+               gas_price=None, wait_for=True):
     logger.info(
         f'Sending {amount} ETH from {sender_wallet.address} => '
         f'{receiver_account}'
     )
 
     wei_amount = web3.toWei(amount, 'ether')
-    tx = send_eth(web3, receiver_account, wei_amount, sender_wallet)
+    tx = send_eth(web3, receiver_account, wei_amount, sender_wallet,
+                  gas_price=gas_price)
     if wait_for:
         receipt = wait_for_receipt_by_blocks(web3, tx)
         check_receipt(receipt)
