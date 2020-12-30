@@ -1,11 +1,12 @@
-import pytest
 import mock
+import pytest
 from hexbytes import HexBytes
 
 from skale.wallets import SgxWallet
 from skale.utils.web3_utils import (
     init_web3,
     private_key_to_address,
+    private_key_to_public,
     to_checksum_address
 )
 
@@ -23,11 +24,11 @@ def web3():
 
 
 @pytest.fixture
-def wallet():
+@mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
+def wallet(web3):
     return SgxWallet(TEST_SGX_ENDPOINT, web3)
 
 
-@mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
 def test_sgx_sign(wallet):
     tx_dict = {
         'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
@@ -41,33 +42,21 @@ def test_sgx_sign(wallet):
     wallet.sign(tx_dict)
 
 
-@mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
-def test_sgx_sign_without_nonce(wallet):
+def test_sgx_sign_and_send_without_nonce(wallet):
+    send_tx_mock = mock.Mock()
+    wallet._web3.eth.sendRawTransaction = send_tx_mock
+    wallet._web3.eth.getTransactionCount = mock.Mock(return_value=0)
     tx_dict = {
-        'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
+        'to': '0x1057dc7277a31',
         'value': 9,
         'gas': 200000,
         'gasPrice': 1,
         'chainId': None,
         'data': b'\x9b\xd9\xbb\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x95qY\xc4i\xfc;\xba\xa8\xe3\x9e\xe0\xa3$\xc28\x8a\xd6Q\xe5\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\xe0\xb6\xb3\xa7d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x006\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa8\xc0\x04/Rglamorous-kitalpha\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'  # noqa
     }
-    wallet.sign(tx_dict)
-
-
-@mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
-def test_sgx_sign_and_send_without_nonce(wallet):
-    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
-        tx_dict = {
-            'to': '0x1057dc7277a31',
-            'value': 9,
-            'gas': 200000,
-            'gasPrice': 1,
-            'chainId': None,
-            'data': b'\x9b\xd9\xbb\xc6\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x95qY\xc4i\xfc;\xba\xa8\xe3\x9e\xe0\xa3$\xc28\x8a\xd6Q\xe5\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\xe0\xb6\xb3\xa7d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00`\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x006\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xa8\xc0\x04/Rglamorous-kitalpha\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'  # noqa
-        }
-        signed = wallet.sign(tx_dict)
-        wallet.sign_and_send(tx_dict)
-        send_tx_mock.assert_called_with(signed.rawTransaction)
+    signed = wallet.sign(tx_dict)
+    wallet.sign_and_send(tx_dict)
+    send_tx_mock.assert_called_with(signed.rawTransaction)
 
 
 @mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
@@ -96,6 +85,7 @@ def test_sgx_sign_hash(web3):
 @mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
 def test_sgx_key_init(web3):
     wallet = SgxWallet(TEST_SGX_ENDPOINT, web3, 'TEST_KEY')
+    pk = private_key_to_public(ETH_PRIVATE_KEY)
     assert wallet.key_name == 'TEST_KEY'
     assert wallet.address == ADDRESS
-    assert wallet.public_key == 'ab00000000000000000000000000000000000000'
+    assert wallet.public_key == pk
