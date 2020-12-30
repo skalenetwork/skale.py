@@ -35,6 +35,11 @@ from skale.wallets.common import BaseWallet
 logger = logging.getLogger(__name__)
 
 
+ATTEMPTS = 10
+TIMEOUTS = [2 ** p for p in range(ATTEMPTS)]
+SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
+
+
 class SgxWallet(BaseWallet):
     def __init__(self, sgx_endpoint, web3, key_name=None, path_to_cert=None):
         self.sgx_client = SgxClient(sgx_endpoint, path_to_cert=path_to_cert)
@@ -84,19 +89,6 @@ class SgxWallet(BaseWallet):
     def _get_account(self, key_name):
         account = self.sgx_client.get_account(key_name)
         return account.address, account.public_key
-
-
-ROUTES = {
-    'sign': '/sign',
-    'sign_and_send': '/sign-and-send',
-    'sign_hash': '/sign-hash',
-    'address': '/address',
-    'public_key': '/public-key',
-}
-
-ATTEMPTS = 10
-TIMEOUTS = [2 ** p for p in range(ATTEMPTS)]
-SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
 
 
 def rpc_request(func):
@@ -154,6 +146,6 @@ class RPCWallet(SgxWallet):
         }
 
     def sign_and_send(self, tx_dict):
-        data = self._post(ROUTES['sign_and_send'],
+        data = self._post('/sign_and_send',
                           self._compose_tx_data(tx_dict))
         return data['transaction_hash']

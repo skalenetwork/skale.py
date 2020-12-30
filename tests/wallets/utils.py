@@ -2,6 +2,7 @@ from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
 from skale.utils.web3_utils import (
     private_key_to_address,
+    private_key_to_public,
     to_checksum_address
 )
 from tests.constants import ETH_PRIVATE_KEY
@@ -9,6 +10,7 @@ from tests.constants import ETH_PRIVATE_KEY
 ADDRESS = to_checksum_address(
     private_key_to_address(ETH_PRIVATE_KEY)
 )
+PUBLIC_KEY = private_key_to_public(ETH_PRIVATE_KEY)
 
 
 class SgxClient:
@@ -19,13 +21,13 @@ class SgxClient:
         return AttributeDict({
             'name': 'NEK:aaabbb',
             'address': ADDRESS,
-            'public_key': 'ab00000000000000000000000000000000000000',
+            'public_key': PUBLIC_KEY
         })
 
     def get_account(self, key_name):
         return AttributeDict({
             'address': ADDRESS,
-            'public_key': 'ab00000000000000000000000000000000000000',
+            'public_key': PUBLIC_KEY
         })
 
     def sign(self, transaction_dict, key_name):

@@ -7,7 +7,6 @@ import pytest
 import mock
 
 from hexbytes import HexBytes
-from eth_account.datastructures import AttributeDict
 from skale.wallets import RPCWallet
 from skale.utils.exceptions import RPCWalletError
 
@@ -18,7 +17,9 @@ from tests.constants import (
 from tests.helper import response_mock, request_mock
 from tests.wallets.utils import SgxClient
 from skale.utils.web3_utils import (
-    init_web3, private_key_to_address, to_checksum_address
+    init_web3,
+    private_key_to_address, private_key_to_public,
+    to_checksum_address
 )
 
 
@@ -32,9 +33,6 @@ TX_DICT = {
     'data': '0x0'
 }
 
-ADDRESS = to_checksum_address(
-    private_key_to_address(ETH_PRIVATE_KEY)
-)
 EMPTY_ETH_ACCOUNT = '0x0000000000000000000000000000000000000000'
 TEST_MAX_RETRIES = 3
 
@@ -123,57 +121,19 @@ def test_rpc_sign_and_send_sgx_unreachable(wallet):
         assert cnt == TEST_MAX_RETRIES
 
 
-def test_sign(wallet):
-    signed_data = {
-        'hash': HexBytes('0x00'),
-        'rawTransaction': HexBytes('0x00'),
-        'r': 123,
-        's': 123,
-        'v': 27
-    }
-    res_mock = response_mock(HTTPStatus.OK,
-                             {'data': signed_data, 'error': None})
-    with mock.patch('requests.post', new=request_mock(res_mock)):
-        res = wallet.sign(TX_DICT)
-        assert res == AttributeDict(signed_data)
+def test_rpc_sign_hash(wallet):
+    unsigned_hash = '0x31323331'
+    signed_message = wallet.sign_hash(unsigned_hash)
+    assert signed_message.signature == HexBytes('0x6161616161613131313131')
 
 
-def test_sign_hash(wallet):
-    sign_hash_response_data = {
-        'data': {
-            'messageHash': '0x0',
-            'r': 123,
-            's': 123,
-            'v': 27,
-            'signature': '0x0'
-        },
-        'error': None
-    }
-    res_mock = response_mock(HTTPStatus.OK, sign_hash_response_data)
-    with mock.patch('requests.post', new=request_mock(res_mock)):
-        signed_hash = wallet.sign_hash(TX_DICT)
-        assert signed_hash == AttributeDict(
-            {
-                'messageHash': HexBytes('0x00'),
-                'r': 123,
-                's': 123,
-                'v': 27,
-                'signature': HexBytes('0x00')
-            }
-        )
+def test_rpc_address(wallet):
+    address = to_checksum_address(
+        private_key_to_address(ETH_PRIVATE_KEY)
+    )
+    assert wallet.address == address
 
 
-def test_address(wallet):
-    res_mock = response_mock(
-        HTTPStatus.OK,
-        {'data': {'address': EMPTY_ETH_ACCOUNT}, 'error': None})
-    with mock.patch('requests.get', new=request_mock(res_mock)):
-        assert wallet.address == EMPTY_ETH_ACCOUNT
-
-
-def test_public_key(wallet):
-    res_mock = response_mock(
-        HTTPStatus.OK,
-        {'data': {'public_key': EMPTY_ETH_ACCOUNT}, 'error': None})
-    with mock.patch('requests.get', new=request_mock(res_mock)):
-        assert wallet.public_key == EMPTY_ETH_ACCOUNT
+def test_rpc_public_key(wallet):
+    pk = private_key_to_public(ETH_PRIVATE_KEY)
+    assert wallet.public_key == pk
