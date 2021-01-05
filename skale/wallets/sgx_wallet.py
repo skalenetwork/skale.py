@@ -35,9 +35,8 @@ from skale.wallets.common import BaseWallet
 logger = logging.getLogger(__name__)
 
 
-ATTEMPTS = 10
+ATTEMPTS = 100
 TIMEOUTS = [2 ** p for p in range(ATTEMPTS)]
-SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
 
 
 class SgxWallet(BaseWallet):
@@ -94,7 +93,7 @@ class SgxWallet(BaseWallet):
 def rpc_request(func):
     @functools.wraps(func)
     def wrapper(self, route, *args, **kwargs):
-        data, error = None, None
+        data, error, response = None, None, None
         for i, timeout in enumerate(TIMEOUTS):
             logger.info(f'Sending request to tm for {route}. Try {i}')
             try:
@@ -146,6 +145,6 @@ class RPCWallet(SgxWallet):
         }
 
     def sign_and_send(self, tx_dict):
-        data = self._post('/sign_and_send',
+        data = self._post('/sign-and-send',
                           self._compose_tx_data(tx_dict))
         return data['transaction_hash']
