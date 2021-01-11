@@ -73,8 +73,8 @@ class SgxWallet(BaseWallet):
 
     def _generate(self):
         key = self.sgx_client.generate_key()
-        return key.name, key.address, key.public_key
+        return key['name'], key['address'], key['public_key']
 
     def _get_account(self, key_name):
         account = self.sgx_client.get_account(key_name)
-        return account.address, account.public_key
+        return account['address'], account['public_key']
