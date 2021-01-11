@@ -19,4 +19,4 @@
 
 # flake8: noqa: E402, F401
 
-PORTS_PER_SCHAIN = 11
+PORTS_PER_SCHAIN = 64
