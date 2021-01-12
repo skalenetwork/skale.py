@@ -20,17 +20,22 @@
 
 import logging
 import time
+from functools import wraps
 from urllib.parse import urlparse
 
 from eth_keys import keys
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
 
+import skale.config as config
+
 logger = logging.getLogger(__name__)
 
 
 WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 MAX_WAITING_TIME = 3 * 60 * 60  # 3 hours
+BLOCK_WAITING_TIMEOUT = 1
+MAX_BLOCK_WAITING_TIME = 24 * 60 * 60  # 24 hours
 
 
 def get_provider(endpoint, timeout=10, request_kwargs={}):
@@ -139,3 +144,33 @@ def wallet_to_public_key(wallet):
         return private_key_to_public(wallet['private_key'])
     else:
         return wallet['public_key']
+
+
+def is_block_checking_enabled():
+    return config.LAST_BLOCK_FILE is not None
+
+
+def get_last_knowing_block() -> int:
+    with open(config.LAST_BLOCK_FILE) as last_block_file:
+        return int(last_block_file.read())
+
+
+def get_last_block(web3: Web3):
+    return web3.eth.blockNumber
+
+
+def wait_for_block_syncing(web3: Web3) -> None:
+    local_block = get_last_knowing_block()
+    start_ts = time.time()
+    while web3.eth.blockNumber < local_block and \
+            time.time() - start_ts < MAX_BLOCK_WAITING_TIME:
+        time.sleep(BLOCK_WAITING_TIMEOUT)
+
+
+def rpc_call(actual_call):
+    @wraps
+    def wrapper(self, *args, **kwargs):
+        if is_block_checking_enabled():
+            wait_for_block_syncing(self.skale.web3)
+        actual_call(*args, **kwargs)
+    return wrapper
