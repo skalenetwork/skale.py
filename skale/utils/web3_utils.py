@@ -19,6 +19,7 @@
 """ SKALE web3 utilities """
 
 import logging
+import os
 import time
 from functools import wraps
 from urllib.parse import urlparse
@@ -36,9 +37,10 @@ WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 MAX_WAITING_TIME = 3 * 60 * 60  # 3 hours
 BLOCK_WAITING_TIMEOUT = 1
 MAX_BLOCK_WAITING_TIME = 24 * 60 * 60  # 24 hours
+DEFAULT_HTTP_TIMEOUT = 120
 
 
-def get_provider(endpoint, timeout=10, request_kwargs={}):
+def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
         kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
@@ -146,16 +148,23 @@ def wallet_to_public_key(wallet):
         return wallet['public_key']
 
 
-def is_block_checking_enabled():
+def is_block_checking_enabled() -> bool:
     return config.LAST_BLOCK_FILE is not None
 
 
 def get_last_knowing_block() -> int:
+    if not os.path.isfile(config.LAST_BLOCK_FILE):
+        return 0
     with open(config.LAST_BLOCK_FILE) as last_block_file:
         return int(last_block_file.read())
 
 
-def get_last_block(web3: Web3):
+def save_last_knowing_block(block: int) -> None:
+    with open(config.LAST_BLOCK_FILE, 'w') as last_block_file:
+        last_block_file.write(str(block))
+
+
+def get_last_block(web3: Web3) -> int:
     return web3.eth.blockNumber
 
 
@@ -167,10 +176,12 @@ def wait_for_block_syncing(web3: Web3) -> None:
         time.sleep(BLOCK_WAITING_TIMEOUT)
 
 
-def rpc_call(actual_call):
-    @wraps
+def rpc_call(call):
+    @wraps(call)
     def wrapper(self, *args, **kwargs):
         if is_block_checking_enabled():
             wait_for_block_syncing(self.skale.web3)
-        actual_call(*args, **kwargs)
+        result = call(self, *args, **kwargs)
+        save_last_knowing_block(self.skale.web3.eth.blockNumber)
+        return result
     return wrapper
