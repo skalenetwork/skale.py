@@ -29,8 +29,14 @@ from skale.transactions.result import (
 )
 from skale.utils.constants import GAS_LIMIT_COEFFICIENT
 from skale.utils.exceptions import RPCWalletError
-from skale.utils.web3_utils import (check_receipt,
-                                    get_eth_nonce, wait_for_receipt_by_blocks)
+from skale.utils.web3_utils import (
+    check_receipt,
+    get_eth_nonce,
+    is_block_checking_enabled,
+    save_last_knowing_block,
+    wait_for_block_syncing,
+    wait_for_receipt_by_blocks,
+)
 
 from web3._utils.transactions import get_block_gas_limit
 
@@ -49,6 +55,9 @@ def make_dry_run_call(skale, method, gas_limit=None) -> dict:
         f'sender: {skale.wallet.address}, '
         f'wallet: {skale.wallet.__class__.__name__}, '
     )
+
+    if is_block_checking_enabled():
+        wait_for_block_syncing(skale.web3)
     try:
         if gas_limit:
             estimated_gas = gas_limit
@@ -61,6 +70,7 @@ def make_dry_run_call(skale, method, gas_limit=None) -> dict:
         logger.error('Dry run for method failed with error', exc_info=err)
         return {'status': 0, 'error': str(err)}
 
+    save_last_knowing_block(skale.web3.eth.blockNumber)
     return {'status': 1, 'payload': estimated_gas}
 
 
@@ -69,6 +79,7 @@ def estimate_gas(web3, method, opts):
         block_gas_limit = get_block_gas_limit(web3)
     except AttributeError:
         block_gas_limit = get_block_gas_limit(web3)
+
     estimated_gas = method.estimateGas(opts)
     normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
     if normalized_estimated_gas > block_gas_limit:
