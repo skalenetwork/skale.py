@@ -90,6 +90,7 @@ class Manager(BaseContract):
     def grant_role(self, role: bytes, address: str) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
+    @rpc_call
     def default_admin_role(self) -> bytes:
         return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
 
