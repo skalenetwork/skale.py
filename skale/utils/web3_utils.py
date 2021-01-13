@@ -153,7 +153,8 @@ def is_block_checking_enabled() -> bool:
 
 
 def get_last_knowing_block() -> int:
-    if not os.path.isfile(config.LAST_BLOCK_FILE):
+    if not config.LAST_BLOCK_FILE or \
+            not os.path.isfile(config.LAST_BLOCK_FILE):
         return 0
     with open(config.LAST_BLOCK_FILE) as last_block_file:
         return int(last_block_file.read())
@@ -168,12 +169,23 @@ def get_last_block(web3: Web3) -> int:
     return web3.eth.blockNumber
 
 
+class BlockWaitingTimeoutError(Exception):
+    pass
+
+
+def wait_until_block(web3: Web3, block: int,
+                     max_waiting_time: int = MAX_BLOCK_WAITING_TIME) -> None:
+    start_ts = time.time()
+    while web3.eth.blockNumber < block and \
+            time.time() - start_ts < max_waiting_time:
+        time.sleep(BLOCK_WAITING_TIMEOUT)
+    if web3.eth.blockNumber < block:
+        raise BlockWaitingTimeoutError()
+
+
 def wait_for_block_syncing(web3: Web3) -> None:
     local_block = get_last_knowing_block()
-    start_ts = time.time()
-    while web3.eth.blockNumber < local_block and \
-            time.time() - start_ts < MAX_BLOCK_WAITING_TIME:
-        time.sleep(BLOCK_WAITING_TIMEOUT)
+    wait_until_block(web3, local_block)
 
 
 def rpc_call(call):
