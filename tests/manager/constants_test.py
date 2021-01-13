@@ -1,5 +1,6 @@
 import mock
 import pytest
+
 from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
 from skale.transactions.result import DryRunFailedError
 
