@@ -54,15 +54,18 @@ def test_rpc_call_with_call(skale, last_block_file):
     save_last_knowing_block(needed_block)
     skale.validator_service.ls()
     assert skale.web3.eth.blockNumber >= needed_block
+    assert get_last_knowing_block() >= current_block
 
 
 def test_transaction_with_last_block_file(skale, last_block_file):
     new_rotation_delay = 100
     skale.constants_holder.set_rotation_delay(new_rotation_delay,
                                               wait_for=True)
-    last_block = skale.web3.eth.blockNumber + 5
+    current_block = skale.web3.eth.blockNumber
+    last_block = current_block + 5
     save_last_knowing_block(last_block)
     new_rotation_delay = 101
     skale.constants_holder.set_rotation_delay(new_rotation_delay,
                                               wait_for=True)
     assert skale.web3.eth.blockNumber >= last_block
+    assert get_last_knowing_block() >= current_block
