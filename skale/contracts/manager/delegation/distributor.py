@@ -21,6 +21,7 @@ from functools import wraps
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from skale.utils.web3_utils import rpc_call
 
 
 def formatter(method):
@@ -38,6 +39,7 @@ class Distributor(BaseContract):
     """Wrapper for Distributor.sol functions"""
 
     @formatter
+    @rpc_call
     def get_earned_bounty_amount(self, validator_id: int, address: str) -> dict:
         """Get earned bounty amount for the validator
 
@@ -51,6 +53,7 @@ class Distributor(BaseContract):
         })
 
     @formatter
+    @rpc_call
     def get_earned_fee_amount(self, address: str) -> dict:
         """Get earned fee amount for the address
 

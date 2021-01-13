@@ -1,5 +1,6 @@
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from skale.utils.web3_utils import rpc_call
 
 
 class SlashingTable(BaseContract):
@@ -16,6 +17,7 @@ class SlashingTable(BaseContract):
         """
         return self.contract.functions.setPenalty(offense, penalty)
 
+    @rpc_call
     def get_penalty(self, offense) -> int:
         """ Get slashing penalty value
         :param offense: reason of slashing

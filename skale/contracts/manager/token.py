@@ -19,6 +19,7 @@
 """ SKALE token operations """
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.utils.web3_utils import rpc_call
 
 
 class Token(BaseContract):
@@ -26,6 +27,7 @@ class Token(BaseContract):
     def transfer(self, address, value):
         return self.contract.functions.send(address, value, b'')
 
+    @rpc_call
     def get_balance(self, address):
         return self.contract.functions.balanceOf(address).call()
 
@@ -33,6 +35,7 @@ class Token(BaseContract):
     def add_authorized(self, address, wallet):  # pragma: no cover
         return self.contract.functions.addAuthorized(address)
 
+    @rpc_call
     def get_and_update_slashed_amount(self, address: str) -> int:
         return self.contract.functions.getAndUpdateSlashedAmount(address).call()
 

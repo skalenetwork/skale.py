@@ -20,6 +20,7 @@
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.tools import retry_tx
 from skale.utils.helper import split_public_key
+from skale.utils.web3_utils import rpc_call
 
 
 class KeyShare:
@@ -97,59 +98,74 @@ class DKG(BaseContract):
                                                         from_node_index,
                                                         to_node_index)
 
+    @rpc_call
     def is_last_dkg_successful(self, group_index):
         return self.contract.functions.isLastDKGSuccessful(group_index).call()
 
+    @rpc_call
     def is_channel_opened(self, group_index):
         return self.contract.functions.isChannelOpened(group_index).call()
 
+    @rpc_call
     def is_broadcast_possible(self, group_index, node_id, address):
         return self.contract.functions.isBroadcastPossible(group_index, node_id).call(
             {'from': address}
         )
 
+    @rpc_call
     def is_alright_possible(self, group_index, node_id, address):
         return self.contract.functions.isAlrightPossible(group_index, node_id).call(
             {'from': address}
         )
 
+    @rpc_call
     def is_complaint_possible(self, group_index, node_from, node_to, address):
         return self.contract.functions.isComplaintPossible(group_index, node_from, node_to).call(
             {'from': address}
         )
 
+    @rpc_call
     def is_pre_response_possible(self, group_index, node_id, address):
         return self.contract.functions.isPreResponsePossible(group_index, node_id).call(
             {'from': address}
         )
 
+    @rpc_call
     def is_response_possible(self, group_index, node_id, address):
         return self.contract.functions.isResponsePossible(group_index, node_id).call(
             {'from': address}
         )
 
+    @rpc_call
     def is_all_data_received(self, group_index, node_from):
         return self.contract.functions.isAllDataReceived(group_index, node_from).call()
 
+    @rpc_call
     def is_everyone_broadcasted(self, group_index, address):
         return self.contract.functions.isEveryoneBroadcasted(group_index).call(
             {'from': address}
         )
 
+    @rpc_call
     def get_number_of_completed(self, group_index):
         return self.contract.functions.getNumberOfCompleted(group_index).call()
 
+    @rpc_call
     def get_channel_started_time(self, group_index):
         return self.contract.functions.getChannelStartedTime(group_index).call()
 
+    @rpc_call
     def get_complaint_started_time(self, group_index):
         return self.contract.functions.getComplaintStartedTime(group_index).call()
 
+    @rpc_call
     def get_alright_started_time(self, group_index):
         return self.contract.functions.getAlrightStartedTime(group_index).call()
 
+    @rpc_call
     def get_complaint_data(self, group_index):
         return self.contract.functions.getComplaintData(group_index).call()
 
+    @rpc_call
     def get_time_of_last_successful_dkg(self, group_index):
         return self.contract.functions.getTimeOfLastSuccesfulDKG(group_index).call()

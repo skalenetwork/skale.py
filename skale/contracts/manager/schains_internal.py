@@ -20,6 +20,7 @@
 
 import functools
 from skale.contracts.base_contract import BaseContract
+from skale.utils.web3_utils import rpc_call
 
 
 class SChainsInternal(BaseContract):
@@ -30,32 +31,41 @@ class SChainsInternal(BaseContract):
     def schains(self):
         return self.skale.get_contract_by_name('schains')
 
+    @rpc_call
     def get_raw(self, name):
         return self.contract.functions.schains(name).call()
 
+    @rpc_call
     def get_all_schains_ids(self):
         return self.contract.functions.getSchains().call()
 
+    @rpc_call
     def get_schains_number(self):
         return self.contract.functions.numberOfSchains().call()
 
+    @rpc_call
     def get_schain_list_size(self, account):
         return self.contract.functions.getSchainListSize(account).call(
             {'from': account})
 
+    @rpc_call
     def get_schain_id_by_index_for_owner(self, account, index):
         return self.contract.functions.schainIndexes(account, index).call()
 
+    @rpc_call
     def get_node_ids_for_schain(self, name):
         id_ = self.schains.name_to_id(name)
         return self.contract.functions.getNodesInGroup(id_).call()
 
+    @rpc_call
     def get_schain_ids_for_node(self, node_id):
         return self.contract.functions.getSchainIdsForNode(node_id).call()
 
+    @rpc_call
     def is_schain_exist(self, name):
         id_ = self.schains.name_to_id(name)
         return self.contract.functions.isSchainExist(id_).call()
 
+    @rpc_call
     def get_active_schain_ids_for_node(self, node_id):
         return self.contract.functions.getActiveSchains(node_id).call()

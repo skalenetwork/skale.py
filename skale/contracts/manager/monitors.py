@@ -22,6 +22,7 @@ import socket
 from web3 import Web3
 from skale.contracts.base_contract import BaseContract
 from skale.utils.helper import format_fields
+from skale.utils.web3_utils import rpc_call
 
 FIELDS = ['id', 'rep_date', 'ip']
 
@@ -41,8 +42,10 @@ class Monitors(BaseContract):
             node['ip'] = socket.inet_ntoa(node['ip'])
         return checked_array
 
+    @rpc_call
     def get_last_bounty_block(self, node_index):
         return self.contract.functions.getLastBountyBlock(node_index).call()
 
+    @rpc_call
     def get_last_received_verdict_block(self, node_index):
         return self.contract.functions.getLastReceivedVerdictBlock(node_index).call()

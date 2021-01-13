@@ -26,6 +26,7 @@ from eth_abi import encode_abi
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils import helper
+from skale.utils.web3_utils import rpc_call
 from skale.transactions.result import TxRes
 
 logger = logging.getLogger(__name__)
@@ -92,8 +93,10 @@ class Manager(BaseContract):
     def default_admin_role(self) -> bytes:
         return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
 
+    @rpc_call
     def admin_role(self) -> bytes:
         return self.contract.functions.ADMIN_ROLE().call()
 
+    @rpc_call
     def has_role(self, role: bytes, address: str) -> bool:
         return self.contract.functions.hasRole(role, address).call()

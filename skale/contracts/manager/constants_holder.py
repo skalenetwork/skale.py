@@ -18,16 +18,22 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.utils.web3_utils import rpc_call
 
 
 class ConstantsHolder(BaseContract):
     @transaction_method
     def set_periods(self, new_reward_period, new_delta_period):
-        return self.contract.functions.setPeriods(new_reward_period, new_delta_period)
+        return self.contract.functions.setPeriods(
+            new_reward_period,
+            new_delta_period
+        )
 
+    @rpc_call
     def get_reward_period(self):
         return self.contract.functions.rewardPeriod().call()
 
+    @rpc_call
     def get_delta_period(self):
         return self.contract.functions.deltaPeriod().call()
 
@@ -35,6 +41,7 @@ class ConstantsHolder(BaseContract):
     def set_check_time(self, new_check_time):
         return self.contract.functions.setCheckTime(new_check_time)
 
+    @rpc_call
     def get_check_time(self):
         return self.contract.functions.checkTime().call()
 
@@ -42,12 +49,15 @@ class ConstantsHolder(BaseContract):
     def set_latency(self, new_allowable_latency):
         return self.contract.functions.setLatency(new_allowable_latency)
 
+    @rpc_call
     def get_latency(self):
         return self.contract.functions.allowableLatency().call()
 
+    @rpc_call
     def get_first_delegation_month(self):
         return self.contract.functions.firstDelegationsMonth().call()
 
+    @rpc_call
     def msr(self) -> int:
         """Minimum staking requirement to create a node.
 
@@ -61,6 +71,7 @@ class ConstantsHolder(BaseContract):
         """For internal usage only"""
         return self.contract.functions.setMSR(new_msr)
 
+    @rpc_call
     def get_launch_timestamp(self) -> int:
         return self.contract.functions.launchTimestamp().call()
 
@@ -73,8 +84,10 @@ class ConstantsHolder(BaseContract):
         """For internal usage only"""
         return self.contract.functions.setRotationDelay(rotation_delay)
 
+    @rpc_call
     def get_rotation_delay(self) -> int:
         return self.contract.functions.rotationDelay().call()
 
+    @rpc_call
     def get_dkg_timeout(self) -> int:
         return self.contract.functions.complaintTimelimit().call()

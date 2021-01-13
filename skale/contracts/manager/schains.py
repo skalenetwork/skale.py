@@ -24,6 +24,7 @@ from Crypto.Hash import keccak
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from skale.utils.helper import format_fields
+from skale.utils.web3_utils import rpc_call
 
 
 FIELDS = [
@@ -106,6 +107,7 @@ class SChains(BaseContract):
                 schain['owner'] != '0x0000000000000000000000000000000000000000':
             return True
 
+    @rpc_call
     def get_schain_price(self, index_of_type, lifetime):
         return self.contract.functions.getSchainPrice(index_of_type,
                                                       lifetime).call()
@@ -121,5 +123,6 @@ class SChains(BaseContract):
     def grant_role(self, role: bytes, owner: str) -> TxRes:
         return self.contract.functions.grantRole(role, owner)
 
+    @rpc_call
     def schain_creator_role(self):
         return self.contract.functions.SCHAIN_CREATOR_ROLE().call()

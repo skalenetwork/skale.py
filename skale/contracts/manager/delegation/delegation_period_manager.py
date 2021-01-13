@@ -18,18 +18,21 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.utils.web3_utils import rpc_call
 
 
 class DelegationPeriodManager(BaseContract):
     """Wrapper for DelegationPeriodManager.sol functions"""
 
     @transaction_method
-    def set_delegation_period(self, months_count: int, stake_multiplier: int) -> None:
+    def set_delegation_period(self, months_count: int,
+                              stake_multiplier: int) -> None:
         return self.contract.functions.setDelegationPeriod(
             monthsCount=months_count,
             stakeMultiplier=stake_multiplier
         )
 
+    @rpc_call
     def is_delegation_period_allowed(self, months_count: int) -> bool:
         return self.contract.functions.isDelegationPeriodAllowed(
             monthsCount=months_count
