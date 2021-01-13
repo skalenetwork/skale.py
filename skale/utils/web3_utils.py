@@ -153,7 +153,7 @@ def is_block_checking_enabled() -> bool:
 
 
 def get_last_knowing_block() -> int:
-    if not config.LAST_BLOCK_FILE or \
+    if not is_block_checking_enabled() or \
             not os.path.isfile(config.LAST_BLOCK_FILE):
         return 0
     with open(config.LAST_BLOCK_FILE) as last_block_file:
@@ -161,6 +161,8 @@ def get_last_knowing_block() -> int:
 
 
 def save_last_knowing_block(block: int) -> None:
+    if not is_block_checking_enabled():
+        return
     with open(config.LAST_BLOCK_FILE, 'w') as last_block_file:
         last_block_file.write(str(block))
 
