@@ -23,7 +23,6 @@ from enum import IntEnum
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from skale.utils.helper import format_fields
-from skale.utils.web3_utils import rpc_call
 
 
 PLAN_FIELDS = [
@@ -61,7 +60,6 @@ class BeneficiaryStatus(IntEnum):
 
 
 class Allocator(BaseContract):
-    @rpc_call
     def is_beneficiary_registered(self, beneficiary_address: str) -> bool:
         """Confirms whether the beneficiary is registered in a Plan.
 
@@ -70,15 +68,12 @@ class Allocator(BaseContract):
         """
         return self.contract.functions.isBeneficiaryRegistered(beneficiary_address).call()
 
-    @rpc_call
     def is_delegation_allowed(self, beneficiary_address: str) -> bool:
         return self.contract.functions.isDelegationAllowed(beneficiary_address).call()
 
-    @rpc_call
     def is_vesting_active(self, beneficiary_address: str) -> bool:
         return self.contract.functions.isVestingActive(beneficiary_address).call()
 
-    @rpc_call
     def get_escrow_address(self, beneficiary_address: str) -> str:
         return self.contract.functions.getEscrowAddress(beneficiary_address).call()
 
@@ -130,15 +125,12 @@ class Allocator(BaseContract):
     def grant_role(self, role: bytes, address: str) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
-    @rpc_call
     def vesting_manager_role(self) -> bytes:
         return self.contract.functions.VESTING_MANAGER_ROLE().call()
 
-    @rpc_call
     def has_role(self, role: bytes, address: str) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
-    @rpc_call
     def __get_beneficiary_plan_params_raw(self, beneficiary_address: str):
         return self.contract.functions.getBeneficiaryPlanParams(beneficiary_address).call()
 
@@ -151,7 +143,6 @@ class Allocator(BaseContract):
         plan_params['statusName'] = BeneficiaryStatus(plan_params['status']).name
         return plan_params
 
-    @rpc_call
     def __get_plan_raw(self, plan_id: int):
         return self.contract.functions.getPlan(plan_id).call()
 
@@ -170,18 +161,14 @@ class Allocator(BaseContract):
                 break
         return plans
 
-    @rpc_call
     def calculate_vested_amount(self, address: str) -> int:
         return self.contract.functions.calculateVestedAmount(address).call()
 
-    @rpc_call
     def get_finish_vesting_time(self, address: str) -> int:
         return self.contract.functions.getFinishVestingTime(address).call()
 
-    @rpc_call
     def get_lockup_period_end_timestamp(self, address: str) -> int:
         return self.contract.functions.getLockupPeriodEndTimestamp(address).call()
 
-    @rpc_call
     def get_time_of_next_vest(self, address: str) -> int:
         return self.contract.functions.getTimeOfNextVest(address).call()

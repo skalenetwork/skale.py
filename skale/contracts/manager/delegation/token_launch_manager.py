@@ -18,7 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.utils.web3_utils import rpc_call
 
 
 class TokenLaunchManager(BaseContract):
@@ -42,6 +41,5 @@ class TokenLaunchManager(BaseContract):
     def complete_token_launch(self):
         return self.contract.functions.completeTokenLaunch()
 
-    @rpc_call
     def approved(self, address: str) -> int:
         return self.contract.functions.approved(address).call()

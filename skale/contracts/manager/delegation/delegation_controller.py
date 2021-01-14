@@ -21,7 +21,6 @@ from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 from skale.transactions.result import TxRes
 from skale.dataclasses.delegation_status import DelegationStatus
-from skale.utils.web3_utils import rpc_call
 
 
 FIELDS = [
@@ -53,7 +52,6 @@ class DelegationController(BaseContract):
         delegation['status'] = self._get_delegation_status(delegation_id)
         return delegation
 
-    @rpc_call
     def __raw_get_delegation(self, delegation_id: int) -> list:
         """Returns raw delegation fields.
 
@@ -62,7 +60,6 @@ class DelegationController(BaseContract):
         """
         return self.contract.functions.getDelegation(delegation_id).call()
 
-    @rpc_call
     def _get_delegation_ids_by_validator(self, validator_id: int) -> list:
         delegation_ids_len = self._get_delegation_ids_len_by_validator(
             validator_id)
@@ -72,7 +69,6 @@ class DelegationController(BaseContract):
             for _id in range(delegation_ids_len)
         ]
 
-    @rpc_call
     def _get_delegation_ids_by_holder(self, address: str) -> list:
         delegation_ids_len = self._get_delegation_ids_len_by_holder(address)
         return [
@@ -80,15 +76,12 @@ class DelegationController(BaseContract):
             for _id in range(delegation_ids_len)
         ]
 
-    @rpc_call
     def _get_delegation_ids_len_by_validator(self, validator_id: int) -> list:
         return self.contract.functions.getDelegationsByValidatorLength(validator_id).call()
 
-    @rpc_call
     def _get_delegation_ids_len_by_holder(self, address: str) -> list:
         return self.contract.functions.getDelegationsByHolderLength(address).call()
 
-    @rpc_call
     def _get_delegation_state_index(self, delegation_id: int) -> str:
         return self.contract.functions.getState(delegation_id).call()
 
@@ -183,7 +176,6 @@ class DelegationController(BaseContract):
         """
         return self.contract.functions.requestUndelegation(delegation_id)
 
-    @rpc_call
     def get_delegated_to_validator_now(self, validator_id: int) -> int:
         """Amount of delegated tokens to the validator
 
@@ -194,7 +186,6 @@ class DelegationController(BaseContract):
         """
         return self.contract.functions.getAndUpdateDelegatedToValidatorNow(validator_id).call()
 
-    @rpc_call
     def get_delegated_amount(self, address: str) -> int:
         """Amount of delegated tokens by token holder
 

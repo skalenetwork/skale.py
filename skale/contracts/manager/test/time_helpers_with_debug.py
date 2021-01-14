@@ -19,7 +19,6 @@
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
-from skale.utils.web3_utils import rpc_call
 
 
 class TimeHelpersWithDebug(BaseContract):
@@ -36,7 +35,6 @@ class TimeHelpersWithDebug(BaseContract):
         """
         return self.contract.functions.skipTime(sec)
 
-    @rpc_call
     def get_current_month(self) -> int:
         """Get current month from contract
 

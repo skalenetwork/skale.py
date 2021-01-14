@@ -18,18 +18,14 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract
-from skale.utils.web3_utils import rpc_call
 
 
 class KeyStorage(BaseContract):
-    @rpc_call
     def get_common_public_key(self, group_index):
         return self.contract.functions.getCommonPublicKey(group_index).call()
 
-    @rpc_call
     def get_previous_public_key(self, group_index):
         return self.contract.functions.getPreviousPublicKey(group_index).call()
 
-    @rpc_call
     def get_all_previous_public_keys(self, group_index):
         return self.contract.functions.getAllPreviousPublicKeys(group_index).call()

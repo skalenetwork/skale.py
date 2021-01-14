@@ -48,7 +48,7 @@ def test_get_save_last_knowing_block(last_block_file):
     assert get_last_knowing_block() == last_block
 
 
-def test_rpc_call_with_call(skale, last_block_file):
+def test_call_with_last_block_file(skale, last_block_file):
     current_block = skale.web3.eth.blockNumber
     needed_block = current_block + 10
     save_last_knowing_block(needed_block)

@@ -23,7 +23,6 @@ from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils.helper import format_fields
 
 from skale.transactions.result import TxRes
-from skale.utils.web3_utils import rpc_call
 
 
 FIELDS = [
@@ -36,7 +35,6 @@ FIELDS = [
 class ValidatorService(BaseContract):
     """Wrapper for ValidatorService.sol functions"""
 
-    @rpc_call
     def __get_raw(self, _id) -> list:
         """Returns raw validator info.
 
@@ -67,7 +65,6 @@ class ValidatorService(BaseContract):
         validator['id'] = _id
         return validator
 
-    @rpc_call
     def number_of_validators(self):
         """Returns number of registered validators.
 
@@ -92,7 +89,6 @@ class ValidatorService(BaseContract):
         ]
         return validators
 
-    @rpc_call
     def get_linked_addresses_by_validator_address(self, address: str) -> list:
         """Returns list of node addresses linked to the validator address.
 
@@ -103,7 +99,6 @@ class ValidatorService(BaseContract):
             'from': address
         })
 
-    @rpc_call
     def get_linked_addresses_by_validator_id(self, validator_id: int) -> list:
         """Returns list of node addresses linked to the validator ID.
 
@@ -130,7 +125,6 @@ class ValidatorService(BaseContract):
 
         return validator_address == validator['validator_address']
 
-    @rpc_call
     def validator_address_exists(self, validator_address: str) -> bool:
         """Checks if there is a validator with provided address
 
@@ -139,7 +133,6 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.validatorAddressExists(validator_address).call()
 
-    @rpc_call
     def validator_exists(self, validator_id: str) -> bool:
         """Checks if there is a validator with provided ID
 
@@ -148,7 +141,6 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.validatorExists(validator_id).call()
 
-    @rpc_call
     def validator_id_by_address(self, validator_address: str) -> int:
         """Returns validator ID by validator address
 
@@ -157,7 +149,6 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.getValidatorId(validator_address).call()
 
-    @rpc_call
     def get_trusted_validator_ids(self) -> list:
         """Returns list of trusted validators id.
 
@@ -176,12 +167,10 @@ class ValidatorService(BaseContract):
         """For internal usage only"""
         return self.contract.functions.disableValidator(validator_id)
 
-    @rpc_call
     def _is_authorized_validator(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.isAuthorizedValidator(validator_id).call()
 
-    @rpc_call
     def is_accepting_new_requests(self, validator_id: int) -> bool:
         """For internal usage only"""
         return self.contract.functions.isAcceptingNewRequests(validator_id).call()
@@ -242,7 +231,6 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.disableWhitelist()
 
-    @rpc_call
     def get_use_whitelist(self) -> bool:
         """ Return useWhitelist contract variable
         :returns: useWhitelist value
@@ -250,7 +238,6 @@ class ValidatorService(BaseContract):
         """
         return self.contract.functions.useWhitelist().call()
 
-    @rpc_call
     def get_and_update_bond_amount(self, validator_id: int) -> int:
         """Return amount of token that validator delegated to himself
            :param validator_id: id of the validator

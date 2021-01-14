@@ -18,13 +18,11 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract
-from skale.utils.web3_utils import rpc_call
 
 
 class TokenState(BaseContract):
     """Wrapper for TokenState.sol functions"""
 
-    @rpc_call
     def get_and_update_locked_amount(self, holder_address: str) -> int:
         """This method is for check quantity of `freezed` tokens
            :param holder_address: Address of the holder

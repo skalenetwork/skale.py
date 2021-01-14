@@ -20,7 +20,6 @@
 
 import functools
 from skale.contracts.base_contract import BaseContract
-from skale.utils.web3_utils import rpc_call
 
 
 class NodeRotation(BaseContract):
@@ -31,7 +30,6 @@ class NodeRotation(BaseContract):
     def schains(self):
         return self.skale.get_contract_by_name('schains')
 
-    @rpc_call
     def get_rotation(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
         rotation_data = self.contract.functions.getRotation(schain_id).call()
@@ -42,7 +40,6 @@ class NodeRotation(BaseContract):
             'rotation_id': rotation_data[3]
         }
 
-    @rpc_call
     def get_leaving_history(self, node_id):
         raw_history = self.contract.functions.getLeavingHistory(node_id).call()
         history = [
@@ -54,12 +51,10 @@ class NodeRotation(BaseContract):
         ]
         return history
 
-    @rpc_call
     def is_rotation_in_progress(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
         return self.contract.functions.isRotationInProgress(schain_id).call()
 
-    @rpc_call
     def wait_for_new_node(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
         return self.contract.functions.waitForNewNode(schain_id).call()

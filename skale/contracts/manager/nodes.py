@@ -27,7 +27,6 @@ from web3.exceptions import BadFunctionCallOutput
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.helper import format_fields
-from skale.utils.web3_utils import rpc_call
 
 FIELDS = [
     'name', 'ip', 'publicIP', 'port', 'start_block',
@@ -50,7 +49,6 @@ class NodeStatus(IntEnum):
 
 
 class Nodes(BaseContract):
-    @rpc_call
     def __get_raw(self, node_id):
         try:
             return self.contract.functions.nodes(node_id).call()
@@ -67,13 +65,11 @@ class Nodes(BaseContract):
         return self.__get_raw_w_pk(node_id)
 
     @format_fields(FIELDS)
-    @rpc_call
     def get_by_name(self, name):
         name_hash = self.name_to_id(name)
         _id = self.contract.functions.nodesNameToIndex(name_hash).call()
         return self.__get_raw_w_pk(_id)
 
-    @rpc_call
     def get_nodes_number(self):
         return self.contract.functions.getNumberOfNodes().call()
 
@@ -93,7 +89,6 @@ class Nodes(BaseContract):
             if self.get_node_status(node_id) == NodeStatus.ACTIVE
         ]
 
-    @rpc_call
     def get_active_node_ids_by_address(self, account):
         return self.contract.functions.getActiveNodesByAddress().call(
             {'from': account})
@@ -102,36 +97,30 @@ class Nodes(BaseContract):
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
         return keccak_hash.hexdigest()
 
-    @rpc_call
     def is_node_name_available(self, name):
         node_id = self.name_to_id(name)
         return not self.contract.functions.nodesNameCheck(node_id).call()
 
-    @rpc_call
     def is_node_ip_available(self, ip):
         ip_bytes = socket.inet_aton(ip)
         return not self.contract.functions.nodesIPCheck(ip_bytes).call()
 
-    @rpc_call
     def node_name_to_index(self, name):
         name_hash = self.name_to_id(name)
         return self.contract.functions.nodesNameToIndex(name_hash).call()
 
-    @rpc_call
     def get_node_status(self, node_id):
         try:
             return self.contract.functions.getNodeStatus(node_id).call()
         except (ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
-    @rpc_call
     def get_node_finish_time(self, node_id):
         try:
             return self.contract.functions.getNodeFinishTime(node_id).call()
         except (ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
-    @rpc_call
     def __get_node_public_key_raw(self, node_id):
         try:
             return self.contract.functions.getNodePublicKey(node_id).call()
@@ -143,7 +132,6 @@ class Nodes(BaseContract):
         key_bytes = raw_key[0] + raw_key[1]
         return self.skale.web3.toHex(key_bytes)
 
-    @rpc_call
     def get_validator_node_indices(self, validator_id: int) -> list:
         """Returns list of node indices to the validator
 
