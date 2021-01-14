@@ -5,7 +5,7 @@ from web3.auto import w3
 
 from skale.utils.web3_utils import init_web3
 
-from tests.constants import (ENDPOINT)
+from tests.constants import ENDPOINT
 from tests.helper import init_skale, init_skale_allocator
 
 
