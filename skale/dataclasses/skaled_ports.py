@@ -30,3 +30,4 @@ class SkaledPorts(Enum):
     MTA = 6
     WSS_JSON = 7
     HTTPS_JSON = 8
+    INFO_HTTP_JSON = 9
