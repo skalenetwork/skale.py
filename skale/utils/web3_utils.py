@@ -26,7 +26,7 @@ from urllib.parse import urlparse
 from eth_keys import keys
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
-from web3.middleware import geth_poa_middleware
+from web3.middleware import attrdict_middleware, geth_poa_middleware
 
 import skale.config as config
 
@@ -59,7 +59,7 @@ def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
 
 def block_waiting_middleware(make_request, web3):
     def middleware(method, params):
-        if method == 'eth_getBlockByNumber':
+        if method == 'eth_blockNumber':
             response = make_request(method, params)
         else:
             block_checking = is_block_checking_enabled()
@@ -75,7 +75,8 @@ def block_waiting_middleware(make_request, web3):
 def init_web3(
     endpoint,
     provider_timeout=DEFAULT_HTTP_TIMEOUT,
-    middewares=(geth_poa_middleware, block_waiting_middleware)
+    middewares=(geth_poa_middleware,
+                block_waiting_middleware, attrdict_middleware)
 ):
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
@@ -205,7 +206,7 @@ def wait_until_block(web3: Web3, block: int,
 
 
 def get_latest_block_number(web3: Web3) -> int:
-    return web3.eth.getBlock('latest').get('number', 0)
+    return web3.eth.blockNumber
 
 
 def wait_for_block_syncing(web3: Web3) -> None:
