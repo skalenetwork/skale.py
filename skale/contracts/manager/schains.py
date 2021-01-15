@@ -72,7 +72,8 @@ class SChains(BaseContract):
         for i in range(0, list_size):
             id_ = self.schains_internal.get_schain_id_by_index_for_owner(account, i)
             schain = self.get(id_)
-            schains.append(schain)
+            if schain['name']:
+                schains.append(schain)
         return schains
 
     def get_schains_for_node(self, node_id):
@@ -80,8 +81,9 @@ class SChains(BaseContract):
         schain_ids = self.schains_internal.get_schain_ids_for_node(node_id)
         for schain_id in schain_ids:
             schain = self.get(schain_id)
-            schain['active'] = True if self.schain_active(schain) else False
-            schains.append(schain)
+            if schain['name']:
+                schain['active'] = True if self.schain_active(schain) else False
+                schains.append(schain)
         return schains
 
     def get_active_schains_for_node(self, node_id):
@@ -89,8 +91,9 @@ class SChains(BaseContract):
         schain_ids = self.schains_internal.get_active_schain_ids_for_node(node_id)
         for schain_id in schain_ids:
             schain = self.get(schain_id)
-            schain['active'] = True
-            schains.append(schain)
+            if schain['name']:
+                schain['active'] = True
+                schains.append(schain)
         return schains
 
     def name_to_id(self, name):
