@@ -12,13 +12,14 @@ extras_require = {
     ],
     'dev': [
         "bumpversion==0.6.0",
-        "pytest==5.4.3",
         "click==7.1.2",
-        "twine==3.1.1",
+        "freezegun==1.0.0",
         "mock==4.0.2",
-        "when-changed",
+        "pytest==5.4.3",
+        "pytest-cov==2.8.1",
         "Random-Word==1.0.4",
-        "pytest-cov==2.8.1"
+        "twine==3.1.1",
+        "when-changed"
     ],
     'hw-wallet': [
         "ledgerblue==0.1.31"

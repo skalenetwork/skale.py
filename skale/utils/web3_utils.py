@@ -21,12 +21,17 @@
 import logging
 import os
 import time
+from typing import Iterable
 from urllib.parse import urlparse
 
 from eth_keys import keys
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
-from web3.middleware import attrdict_middleware, geth_poa_middleware
+from web3.middleware import (
+    attrdict_middleware,
+    geth_poa_middleware,
+    http_retry_request_middleware
+)
 
 import skale.config as config
 
@@ -57,27 +62,60 @@ def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
     )
 
 
-def block_waiting_middleware(make_request, web3):
-    def middleware(method, params):
-        if method == 'eth_blockNumber':
-            response = make_request(method, params)
-        else:
-            block_checking = is_block_checking_enabled()
-            if block_checking:
-                wait_for_block_syncing(web3)
-            response = make_request(method, params)
-            if block_checking:
-                save_last_knowing_block(get_latest_block_number(web3))
-        return response
-    return middleware
+class EthClientOutdatedError(Exception):
+    pass
 
 
-def init_web3(
-    endpoint,
-    provider_timeout=DEFAULT_HTTP_TIMEOUT,
-    middewares=(geth_poa_middleware,
-                block_waiting_middleware, attrdict_middleware)
-):
+def get_last_knowing_block_number(state_path: str) -> int:
+    if not os.path.isfile(state_path):
+        return 0
+    with open(state_path) as last_block_file:
+        return int(last_block_file.read())
+
+
+def save_last_knowing_block_number(state_path: str, block_number: int) -> None:
+    with open(state_path, 'w') as last_block_file:
+        last_block_file.write(str(block_number))
+
+
+def make_client_checking_middleware(allowed_ts_diff: int,
+                                    state_path: str = None):
+    def eth_client_checking_middleware(make_request, web3):
+        def middleware(method, params):
+            if method in ('eth_blockNumber', 'eth_getBlockByNumber'):
+                response = make_request(method, params)
+            else:
+                latest_block = web3.eth.getBlock('latest')
+
+                if time.time() - latest_block['timestamp'] > allowed_ts_diff:
+                    raise EthClientOutdatedError(method)
+
+                if state_path:
+                    saved_number = get_last_knowing_block_number(state_path)
+                    if latest_block['number'] < saved_number:
+                        raise EthClientOutdatedError(method)
+                    save_last_knowing_block_number(state_path,
+                                                   latest_block['number'])
+                response = make_request(method, params)
+            return response
+        return middleware
+    return eth_client_checking_middleware
+
+
+def init_web3(endpoint: str,
+              provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
+              middlewares: Iterable = None,
+              state_path: str = None, ts_diff: str = None):
+    if not middlewares:
+        ts_diff = config.ALLOWED_TS_DIFF
+        state_path = state_path or config.LAST_BLOCK_FILE
+        sync_middleware = make_client_checking_middleware(ts_diff, state_path)
+        middewares = (
+            geth_poa_middleware,
+            http_retry_request_middleware,
+            sync_middleware
+        )
+
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
     for middleware in middewares:
@@ -169,46 +207,3 @@ def wallet_to_public_key(wallet):
         return private_key_to_public(wallet['private_key'])
     else:
         return wallet['public_key']
-
-
-def is_block_checking_enabled() -> bool:
-    return config.LAST_BLOCK_FILE is not None
-
-
-def get_last_knowing_block() -> int:
-    if not is_block_checking_enabled() or \
-            not os.path.isfile(config.LAST_BLOCK_FILE):
-        return 0
-    with open(config.LAST_BLOCK_FILE) as last_block_file:
-        return int(last_block_file.read())
-
-
-def save_last_knowing_block(block: int) -> None:
-    if not is_block_checking_enabled():
-        return
-    with open(config.LAST_BLOCK_FILE, 'w') as last_block_file:
-        last_block_file.write(str(block))
-
-
-class BlockWaitingTimeoutError(Exception):
-    pass
-
-
-def wait_until_block(web3: Web3, block: int,
-                     max_waiting_time: int = MAX_BLOCK_WAITING_TIME) -> None:
-    start_ts = time.time()
-    while get_latest_block_number(web3) < block and \
-            time.time() - start_ts < max_waiting_time:
-        time.sleep(BLOCK_WAITING_TIMEOUT)
-    current_block = get_latest_block_number(web3)
-    if current_block < block:
-        raise BlockWaitingTimeoutError()
-
-
-def get_latest_block_number(web3: Web3) -> int:
-    return web3.eth.blockNumber
-
-
-def wait_for_block_syncing(web3: Web3) -> None:
-    local_block = get_last_knowing_block()
-    wait_until_block(web3, local_block)
