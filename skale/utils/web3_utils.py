@@ -28,6 +28,7 @@ from eth_keys import keys
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
 from web3.middleware import (
+    attrdict_middleware,
     geth_poa_middleware,
     http_retry_request_middleware
 )
@@ -112,7 +113,8 @@ def init_web3(endpoint: str,
         middewares = (
             geth_poa_middleware,
             http_retry_request_middleware,
-            sync_middleware
+            sync_middleware,
+            attrdict_middleware
         )
 
     provider = get_provider(endpoint, timeout=provider_timeout)
