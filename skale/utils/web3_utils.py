@@ -29,6 +29,7 @@ from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
 from web3.middleware import (
     attrdict_middleware,
+    geth_poa_middleware,
     http_retry_request_middleware
 )
 
@@ -117,6 +118,8 @@ def init_web3(endpoint: str,
 
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
+    # required for rinkeby
+    web3.middleware_onion.inject(geth_poa_middleware, layer=0)
     for middleware in middewares:
         web3.middleware_onion.add(middleware)  # todo: may cause issues
     return web3
