@@ -165,7 +165,7 @@ def test_set_domain_name(skale):
     skale.nodes.set_domain_name(node_id, random_domain)
 
     node = skale.nodes.get(node_id)
-    assert node['domain_name'] != random_domain
+    assert node['domain_name'] == random_domain
 
     skale.nodes.set_domain_name(node_id, DEFAULT_DOMAIN_NAME)
 
