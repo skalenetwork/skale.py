@@ -30,7 +30,7 @@ from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'ip', 'publicIP', 'port', 'start_block',
-    'last_reward_date', 'finish_time', 'status', 'validator_id', 'publicKey'
+    'last_reward_date', 'finish_time', 'status', 'validator_id', 'domain_name', 'publicKey'
 ]
 
 COMPACT_FIELDS = ['schainIndex', 'nodeID', 'ip', 'basePort']
@@ -147,3 +147,10 @@ class Nodes(BaseContract):
     @transaction_method
     def remove_node_from_in_maintenance(self, node_id):
         return self.contract.functions.removeNodeFromInMaintenance(node_id)
+
+    @transaction_method
+    def set_domain_name(self, node_id: int, domain_name: str):
+        return self.contract.functions.setDomainName(node_id, domain_name)
+
+    def get_domain_name(self, node_id: int):
+        return self.contract.functions.getNodeDomainName(node_id).call()

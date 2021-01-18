@@ -20,7 +20,7 @@
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
-    DEFAULT_SCHAIN_NAME, D_STAKE_MULTIPLIER, INITIAL_DELEGATION_PERIOD
+    DEFAULT_SCHAIN_NAME, D_STAKE_MULTIPLIER, INITIAL_DELEGATION_PERIOD, DEFAULT_DOMAIN_NAME
 )
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
@@ -146,7 +146,14 @@ def create_nodes(skale, names=()):
     node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)
     for name in node_names:
         ip, public_ip, port, _ = generate_random_node_data()
-        skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+        skale.manager.create_node(
+            ip=ip,
+            port=port,
+            name=name,
+            domain_name=DEFAULT_DOMAIN_NAME,
+            public_ip=public_ip,
+            wait_for=True
+        )
 
 
 def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME):
