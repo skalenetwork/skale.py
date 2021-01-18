@@ -36,11 +36,17 @@ class EmptyPrivateKey(Exception):
 class SkaleBase:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30):
-        logger.info(f'Initing skale.py, endpoint: {endpoint}, wallet: {type(wallet).__name__}')
+    def __init__(self, endpoint, abi_filepath,
+                 wallet=None, state_path=None,
+                 ts_diff=None, provider_timeout=30):
+        logger.info(f'Initing skale.py, endpoint: {endpoint}, '
+                    f'wallet: {type(wallet).__name__}')
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
-        self.web3 = init_web3(endpoint, provider_timeout=provider_timeout)
+        self.web3 = init_web3(endpoint,
+                              state_path=state_path,
+                              ts_diff=ts_diff,
+                              provider_timeout=provider_timeout)
         self.__contracts = {}
         if wallet:
             self.wallet = wallet

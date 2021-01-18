@@ -105,7 +105,7 @@ def make_client_checking_middleware(allowed_ts_diff: int,
 def init_web3(endpoint: str,
               provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
               middlewares: Iterable = None,
-              state_path: str = None, ts_diff: str = None):
+              state_path: str = None, ts_diff: int = None):
     if not middlewares:
         ts_diff = config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
