@@ -58,7 +58,7 @@ def test_call_with_outdated_client(skale):
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff)
     with freeze_time(dt):
         skale.validator_service.ls()
-    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 4)
+    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 7)
     with freeze_time(dt):
         with pytest.raises(EthClientOutdatedError):
             skale.validator_service.ls()
@@ -96,7 +96,7 @@ def test_transaction_with_outdated_client(skale):
         skale.constants_holder.set_rotation_delay(
             new_rotation_delay, wait_for=True)
 
-    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 5)
+    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 15)
     new_rotation_delay = 101
     with freeze_time(dt):
         with pytest.raises(EthClientOutdatedError):
