@@ -29,6 +29,10 @@ def generate_random_name(len=8):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=len))
 
 
+def generate_domain(len=8):
+    return generate_random_name() + '.com'
+
+
 def generate_random_port():
     return random.randint(0, 60000)
 

@@ -46,7 +46,8 @@ def send_tokens(skale, sender_wallet, receiver_account, amount,
     )
 
     wei_amount = skale.web3.toWei(amount, 'ether')
-    tx_res = skale.token.transfer(receiver_account, wei_amount, wait_for=wait_for)
+    tx_res = skale.token.transfer(receiver_account,
+                                  wei_amount, wait_for=wait_for)
     if wait_for:
         check_receipt(tx_res.receipt)
     return tx_res
@@ -119,3 +120,20 @@ def generate_accounts(skale,
         logger.info(LONG_LINE)
 
     return results
+
+
+def generate_account_with_balance(
+    web3,
+    sender_wallet,
+    wei_amount
+):
+    account = generate_account(web3)
+    tx_hash = send_eth(
+        web3,
+        account['address'],
+        wei_amount,
+        sender_wallet
+    )
+    receipt = wait_for_receipt_by_blocks(web3, tx_hash)
+    check_receipt(receipt)
+    return account
