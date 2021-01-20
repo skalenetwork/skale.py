@@ -300,3 +300,13 @@ class ValidatorService(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.setValidatorDescription(new_description)
+
+    def get_validator_id_by_node_address(self, node_address: str) -> int:
+        """ Return validator id that owns node with specified address
+
+           :param node_address: address of node account
+           :returns:
+           :rtype: int
+        """
+        return self.contract.functions.getValidatorIdByNodeAddress(
+            node_address).call()
