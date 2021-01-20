@@ -3,7 +3,7 @@
 import pytest
 
 from skale.contracts.manager.delegation.delegation_controller import FIELDS
-from skale.transactions.result import DryRunFailedError
+from skale.transactions.result import RevertError
 from skale.utils.contracts_provision.main import _skip_evm_time
 
 from tests.constants import (NOT_EXISTING_ID, D_DELEGATION_ID, D_DELEGATION_INFO, D_VALIDATOR_ID,
@@ -183,7 +183,7 @@ def test_request_undelegate(skale):
     )
 
     # Transaction failed if delegation period is in progress
-    with pytest.raises(DryRunFailedError):
+    with pytest.raises(RevertError):
         tx_res = skale.delegation_controller.request_undelegation(
             delegation_id,
             wait_for=True,
@@ -206,3 +206,11 @@ def test_request_undelegate(skale):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
+
+
+def test_get_delegated_to_validator(skale):
+    res = skale.delegation_controller.get_delegated_to_validator(
+        D_VALIDATOR_ID,
+        D_DELEGATION_PERIOD*30
+    )
+    assert isinstance(res, int)

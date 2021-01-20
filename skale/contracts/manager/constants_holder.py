@@ -78,3 +78,7 @@ class ConstantsHolder(BaseContract):
 
     def get_dkg_timeout(self) -> int:
         return self.contract.functions.complaintTimelimit().call()
+
+    @transaction_method
+    def set_complaint_timelimit(self, complaint_timelimit: int):
+        return self.contract.functions.setComplaintTimelimit(complaint_timelimit)
