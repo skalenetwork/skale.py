@@ -8,8 +8,8 @@ from freezegun import freeze_time
 import skale.config as config
 from skale.utils.web3_utils import (
     EthClientOutdatedError,
-    get_last_knowing_block_number,
-    save_last_knowing_block_number
+    get_last_known_block_number,
+    save_last_known_block_number
 )
 
 
@@ -25,30 +25,30 @@ def last_block_file():
     importlib.reload(config)
 
 
-def test_default_get_last_knowing_block_number():
-    assert get_last_knowing_block_number('') == 0
+def test_default_get_last_known_block_number():
+    assert get_last_known_block_number('') == 0
 
 
-def test_get_save_last_knowing_block_number(last_block_file):
+def test_get_save_last_known_block_number(last_block_file):
     state_path = last_block_file
     last_block = 15
-    save_last_knowing_block_number(state_path, last_block)
-    assert get_last_knowing_block_number(state_path) == last_block
+    save_last_known_block_number(state_path, last_block)
+    assert get_last_known_block_number(state_path) == last_block
 
 
 def test_call_with_last_block_file(last_block_file, skale):
     state_path = last_block_file
     current_block = skale.web3.eth.blockNumber
     needed_block = current_block
-    save_last_knowing_block_number(state_path, needed_block)
+    save_last_known_block_number(state_path, needed_block)
     skale.validator_service.ls()
 
     current_block = skale.web3.eth.blockNumber
     needed_block = current_block + 10
-    save_last_knowing_block_number(state_path, needed_block)
+    save_last_known_block_number(state_path, needed_block)
     with pytest.raises(EthClientOutdatedError):
         skale.validator_service.ls()
-    assert get_last_knowing_block_number(state_path) >= needed_block
+    assert get_last_known_block_number(state_path) >= needed_block
 
 
 def test_call_with_outdated_client(skale):
@@ -68,7 +68,7 @@ def test_transaction_with_last_block_file(last_block_file, skale):
     state_path = last_block_file
     current_block = skale.web3.eth.blockNumber
     needed_block = current_block
-    save_last_knowing_block_number(state_path, needed_block)
+    save_last_known_block_number(state_path, needed_block)
 
     new_rotation_delay = 100
     skale.constants_holder.set_rotation_delay(new_rotation_delay,
@@ -76,7 +76,7 @@ def test_transaction_with_last_block_file(last_block_file, skale):
 
     current_block = skale.web3.eth.blockNumber
     last_block = current_block + 5
-    save_last_knowing_block_number(state_path, last_block)
+    save_last_known_block_number(state_path, last_block)
     new_rotation_delay = 101
     with pytest.raises(EthClientOutdatedError):
         skale.constants_holder.set_rotation_delay(

@@ -66,14 +66,14 @@ class EthClientOutdatedError(Exception):
     pass
 
 
-def get_last_knowing_block_number(state_path: str) -> int:
+def get_last_known_block_number(state_path: str) -> int:
     if not os.path.isfile(state_path):
         return 0
     with open(state_path) as last_block_file:
         return int(last_block_file.read())
 
 
-def save_last_knowing_block_number(state_path: str, block_number: int) -> None:
+def save_last_known_block_number(state_path: str, block_number: int) -> None:
     with open(state_path, 'w') as last_block_file:
         last_block_file.write(str(block_number))
 
@@ -91,11 +91,11 @@ def make_client_checking_middleware(allowed_ts_diff: int,
                     raise EthClientOutdatedError(method)
 
                 if state_path:
-                    saved_number = get_last_knowing_block_number(state_path)
+                    saved_number = get_last_known_block_number(state_path)
                     if latest_block['number'] < saved_number:
                         raise EthClientOutdatedError(method)
-                    save_last_knowing_block_number(state_path,
-                                                   latest_block['number'])
+                    save_last_known_block_number(state_path,
+                                                 latest_block['number'])
                 response = make_request(method, params)
             return response
         return middleware
