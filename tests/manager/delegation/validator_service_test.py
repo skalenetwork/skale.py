@@ -5,10 +5,12 @@ import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
 from skale.transactions.result import DryRunFailedError
-from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
-from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.main import _skip_evm_time
+from skale.utils.web3_utils import (
+    check_receipt, public_key_to_address, to_checksum_address
+)
+from skale.wallets.web3_wallet import generate_wallet
 
 from tests.constants import (
     D_DELEGATION_PERIOD, D_VALIDATOR_ID, D_VALIDATOR_NAME, D_VALIDATOR_DESC,
@@ -409,3 +411,15 @@ def test_set_validator_description(skale):
     validator = skale.validator_service.get(latest_id)
     assert validator['description'] != D_VALIDATOR_DESC
     assert validator['description'] == new_test_description
+
+
+@pytest.mark.nodes_amount(1)
+def test_get_validator_id_by_node_address(skale, nodes_on_contracts):
+    nid = nodes_on_contracts[0].node_id
+    print(skale.nodes.get(nid))
+    public_key = skale.nodes.get(nid)['publicKey']
+    address = to_checksum_address(public_key_to_address(public_key))
+    vid = skale.validator_service.get_validator_id_by_node_address(address)
+    linked_nodes = skale.validator_service \
+        .get_linked_addresses_by_validator_id(vid)
+    assert address in linked_nodes
