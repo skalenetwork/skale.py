@@ -1,6 +1,8 @@
 """ SKALE node test """
 
 import socket
+import random
+import string
 from datetime import datetime
 
 import pytest
@@ -10,6 +12,8 @@ from web3 import Web3
 import skale.utils.helper as Helper
 from skale.contracts.manager.nodes import FIELDS, NodeStatus
 from skale.utils.exceptions import InvalidNodeIdError
+from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
+
 from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
 
@@ -150,6 +154,27 @@ def test_node_in_maintenance(skale):
 
     skale.nodes.remove_node_from_in_maintenance(node_id)
     assert skale.nodes.get_node_status(node_id) == NodeStatus.ACTIVE.value
+
+
+def test_set_domain_name(skale):
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    node = skale.nodes.get(node_id)
+    random_domain = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+    assert node['domain_name'] != random_domain
+
+    skale.nodes.set_domain_name(node_id, random_domain)
+
+    node = skale.nodes.get(node_id)
+    assert node['domain_name'] == random_domain
+
+    skale.nodes.set_domain_name(node_id, DEFAULT_DOMAIN_NAME)
+
+
+def test_get_domain_name(skale):
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    node = skale.nodes.get(node_id)
+    assert node['domain_name'] == DEFAULT_DOMAIN_NAME
 
 
 def test_get_node_next_reward_date(skale):

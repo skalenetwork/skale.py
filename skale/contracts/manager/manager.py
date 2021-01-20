@@ -34,9 +34,9 @@ logger = logging.getLogger(__name__)
 class Manager(BaseContract):
 
     @transaction_method
-    def create_node(self, ip, port, name, public_ip=None):
+    def create_node(self, ip, port, name, domain_name, public_ip=None):
         logger.info(
-            f'create_node: {ip}:{port}, public ip: {public_ip} name: {name}')
+            f'create_node: {ip}:{port}, name: {name}, domain_name: {domain_name}')
         skale_nonce = helper.generate_nonce()
         if not public_ip:
             public_ip = ip
@@ -49,7 +49,8 @@ class Manager(BaseContract):
             ip_bytes,
             public_ip_bytes,
             pk_parts_bytes,
-            name
+            name,
+            domain_name
         )
 
     def create_default_schain(self, name):
