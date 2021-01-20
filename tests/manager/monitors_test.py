@@ -5,7 +5,7 @@ from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_INDEX
 
 def test_get_checked_array_raw(skale):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
-    raw_checked_array = skale.monitors._Monitors__get_checked_array_raw(node_id)
+    raw_checked_array = skale.monitors._get_checked_array_raw(node_id)
     assert len(raw_checked_array) == 0
 
 

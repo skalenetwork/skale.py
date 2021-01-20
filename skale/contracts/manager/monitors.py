@@ -27,13 +27,13 @@ FIELDS = ['id', 'rep_date', 'ip']
 
 
 class Monitors(BaseContract):
-    def __get_checked_array_raw(self, node_id):
+    def _get_checked_array_raw(self, node_id):
         node_id_bytes = Web3.solidityKeccak(['uint256'], [node_id])
         return self.contract.functions.getCheckedArray(node_id_bytes).call()
 
     @format_fields(FIELDS, flist=True)
     def get_checked_array_struct(self, node_id):
-        return self.__get_checked_array_raw(node_id)
+        return self._get_checked_array_raw(node_id)
 
     def get_checked_array(self, node_id):
         checked_array = self.get_checked_array_struct(node_id)
@@ -45,4 +45,5 @@ class Monitors(BaseContract):
         return self.contract.functions.getLastBountyBlock(node_index).call()
 
     def get_last_received_verdict_block(self, node_index):
-        return self.contract.functions.getLastReceivedVerdictBlock(node_index).call()
+        return self.contract.functions.getLastReceivedVerdictBlock(
+            node_index).call()
