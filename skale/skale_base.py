@@ -20,14 +20,11 @@
 import abc
 import logging
 
-from web3 import Web3
-from web3.middleware import geth_poa_middleware
-
 from skale.wallets import BaseWallet
 from skale.utils.abi_utils import get_contract_address_by_name, get_contract_abi_by_name
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
-from skale.utils.web3_utils import get_provider
+from skale.utils.web3_utils import init_web3
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +36,17 @@ class EmptyPrivateKey(Exception):
 class SkaleBase:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, endpoint, abi_filepath, wallet=None, provider_timeout=30):
-        logger.info(f'Initing skale.py, endpoint: {endpoint}, wallet: {type(wallet).__name__}')
-        provider = get_provider(endpoint, timeout=provider_timeout)
+    def __init__(self, endpoint, abi_filepath,
+                 wallet=None, state_path=None,
+                 ts_diff=None, provider_timeout=30):
+        logger.info(f'Initing skale.py, endpoint: {endpoint}, '
+                    f'wallet: {type(wallet).__name__}')
         self._abi_filepath = abi_filepath
         self._endpoint = endpoint
-        self.web3 = Web3(provider)
-        self.web3.middleware_onion.inject(
-            geth_poa_middleware, layer=0)  # todo: may cause issues
+        self.web3 = init_web3(endpoint,
+                              state_path=state_path,
+                              ts_diff=ts_diff,
+                              provider_timeout=provider_timeout)
         self.__contracts = {}
         if wallet:
             self.wallet = wallet
@@ -90,7 +90,8 @@ class SkaleBase:
         self.add_lib_contract(contract_info.name, contract_info.contract_class,
                               abi, address)
 
-    def add_lib_contract(self, name, contract_class, abi, contract_address=None):
+    def add_lib_contract(self, name, contract_class,
+                         abi, contract_address=None):
         address = contract_address or get_contract_address_by_name(
             abi, name)
         logger.debug(f'Fetching abi for {name}, address {address}')
