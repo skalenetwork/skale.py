@@ -35,6 +35,11 @@ CONTRACTS_INFO = [
 ]
 
 
+def spawn_skale_ima_lib(skale_ima):
+    """ Clone skale ima object with the same wallet """
+    return SkaleIma(skale_ima._endpoint, skale_ima._abi_filepath, skale_ima.wallet)
+
+
 class SkaleIma(SkaleBase):
     def set_contracts_info(self):
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
