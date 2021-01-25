@@ -109,7 +109,7 @@ def test_add_schain_by_foundation_custom_owner(skale):
 
     new_schain = skale.schains.get_by_name(name)
     assert new_schain['owner'] != skale.wallet.address
-    assert new_schain['owner'] == custom_wallet.wallet.address
+    assert new_schain['owner'] == custom_wallet.address
 
     skale.manager.delete_schain(name, wait_for=True)
 
