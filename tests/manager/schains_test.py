@@ -3,6 +3,7 @@
 from hexbytes import HexBytes
 
 from skale.contracts.manager.schains import FIELDS
+from skale.transactions.tools import send_eth_with_skale
 from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
@@ -111,6 +112,8 @@ def test_add_schain_by_foundation_custom_owner(skale):
     assert new_schain['owner'] != skale.wallet.address
     assert new_schain['owner'] == custom_wallet.address
 
+    send_eth_with_skale(skale, custom_wallet.address, 10 ** 18)
+    skale.wallet = custom_wallet
     skale.manager.delete_schain(name, wait_for=True)
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
