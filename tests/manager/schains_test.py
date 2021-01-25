@@ -104,7 +104,7 @@ def test_add_schain_by_foundation_custom_owner(skale):
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
     custom_wallet = generate_wallet(skale.web3)
     skale.schains.add_schain_by_foundation(
-        lifetime_seconds, type_of_nodes, 0, name, custom_wallet, wait_for=True
+        lifetime_seconds, type_of_nodes, 0, name, custom_wallet.address, wait_for=True
     )
 
     new_schain = skale.schains.get_by_name(name)
