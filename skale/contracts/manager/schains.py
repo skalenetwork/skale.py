@@ -115,10 +115,10 @@ class SChains(BaseContract):
                                  nonce: int, name: str, schain_owner=None) -> TxRes:
         if schain_owner is None:
             return self.contract.functions.addSchainByFoundation(
-                lifetime, type_of_nodes, nonce, name, schain_owner
+                lifetime, type_of_nodes, nonce, name
             )
         return self.contract.functions.addSchainByFoundation(
-            lifetime, type_of_nodes, nonce, name
+            lifetime, type_of_nodes, nonce, name, schain_owner
         )
 
     @transaction_method
