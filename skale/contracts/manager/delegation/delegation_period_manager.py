@@ -24,7 +24,8 @@ class DelegationPeriodManager(BaseContract):
     """Wrapper for DelegationPeriodManager.sol functions"""
 
     @transaction_method
-    def set_delegation_period(self, months_count: int, stake_multiplier: int) -> None:
+    def set_delegation_period(self, months_count: int,
+                              stake_multiplier: int) -> None:
         return self.contract.functions.setDelegationPeriod(
             monthsCount=months_count,
             stakeMultiplier=stake_multiplier
