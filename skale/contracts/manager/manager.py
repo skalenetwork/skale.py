@@ -65,14 +65,12 @@ class Manager(BaseContract):
     def create_schain(self, lifetime, type_of_nodes, deposit, name):
         logger.info(
             f'create_schain: type_of_nodes: {type_of_nodes}, name: {name}')
-
-        token = self.skale.get_contract_by_name('token')
         skale_nonce = helper.generate_nonce()
         tx_data = encode_abi(
             ['uint', 'uint8', 'uint16', 'string'],
             [lifetime, type_of_nodes, skale_nonce, name]
         )
-        return token.contract.functions.send(self.address, deposit, tx_data)
+        return self.skale.token.contract.functions.send(self.address, deposit, tx_data)
 
     @transaction_method
     def get_bounty(self, node_id):
