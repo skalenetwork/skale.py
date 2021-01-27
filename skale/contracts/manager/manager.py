@@ -81,6 +81,10 @@ class Manager(BaseContract):
         return self.contract.functions.deleteSchain(schain_name)
 
     @transaction_method
+    def delete_schain_by_root(self, schain_name):
+        return self.contract.functions.deleteSchainByRoot(schain_name)
+
+    @transaction_method
     def node_exit(self, node_id):
         return self.contract.functions.nodeExit(node_id)
 
