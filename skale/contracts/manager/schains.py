@@ -112,9 +112,11 @@ class SChains(BaseContract):
 
     @transaction_method
     def add_schain_by_foundation(self, lifetime: int, type_of_nodes: int,
-                                 nonce: int, name: str) -> TxRes:
+                                 nonce: int, name: str, schain_owner=None) -> TxRes:
+        if schain_owner is None:
+            schain_owner = self.skale.wallet.address
         return self.contract.functions.addSchainByFoundation(
-            lifetime, type_of_nodes, nonce, name
+            lifetime, type_of_nodes, nonce, name, schain_owner
         )
 
     @transaction_method
