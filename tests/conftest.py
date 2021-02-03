@@ -5,25 +5,31 @@ import os
 import pytest
 from web3.auto import w3
 
+from tests.constants import ENDPOINT
 from tests.helper import (
     create_validator_nodes, init_skale, init_skale_allocator
 )
+from skale.utils.web3_utils import init_web3
 
-
-ENDPOINT = os.getenv('ENDPOINT')
 TEST_ABI_FILEPATH = os.getenv('TEST_ABI_FILEPATH')
 
 
 @pytest.fixture
-def skale():
-    '''Returns a SKALE Manager instance with provider from config'''
-    return init_skale()
+def web3():
+    """ Returns a SKALE Manager instance with provider from config """
+    return init_web3(ENDPOINT)
 
 
 @pytest.fixture
-def skale_allocator():
+def skale(web3):
+    """ Returns a SKALE Manager instance with provider from config """
+    return init_skale(web3)
+
+
+@pytest.fixture
+def skale_allocator(web3):
     '''Returns a SKALE Allocator instance with provider from config'''
-    return init_skale_allocator()
+    return init_skale_allocator(web3)
 
 
 @pytest.fixture

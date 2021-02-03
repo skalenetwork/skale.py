@@ -19,21 +19,33 @@
 """ SKALE web3 utilities """
 
 import logging
+import os
 import time
+from typing import Iterable
 from urllib.parse import urlparse
 
 from eth_keys import keys
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
+from web3.middleware import (
+    attrdict_middleware,
+    geth_poa_middleware,
+    http_retry_request_middleware
+)
+
+import skale.config as config
 
 logger = logging.getLogger(__name__)
 
 
 WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 MAX_WAITING_TIME = 3 * 60 * 60  # 3 hours
+BLOCK_WAITING_TIMEOUT = 1
+MAX_BLOCK_WAITING_TIME = 24 * 60 * 60  # 24 hours
+DEFAULT_HTTP_TIMEOUT = 120
 
 
-def get_provider(endpoint, timeout=10, request_kwargs={}):
+def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
         kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
@@ -50,9 +62,67 @@ def get_provider(endpoint, timeout=10, request_kwargs={}):
     )
 
 
-def init_web3(endpoint):
-    provider = get_provider(endpoint)
-    return Web3(provider)
+class EthClientOutdatedError(Exception):
+    pass
+
+
+def get_last_known_block_number(state_path: str) -> int:
+    if not os.path.isfile(state_path):
+        return 0
+    with open(state_path) as last_block_file:
+        return int(last_block_file.read())
+
+
+def save_last_known_block_number(state_path: str, block_number: int) -> None:
+    with open(state_path, 'w') as last_block_file:
+        last_block_file.write(str(block_number))
+
+
+def make_client_checking_middleware(allowed_ts_diff: int,
+                                    state_path: str = None):
+    def eth_client_checking_middleware(make_request, web3):
+        def middleware(method, params):
+            if method in ('eth_blockNumber', 'eth_getBlockByNumber'):
+                response = make_request(method, params)
+            else:
+                latest_block = web3.eth.getBlock('latest')
+
+                if time.time() - latest_block['timestamp'] > allowed_ts_diff:
+                    raise EthClientOutdatedError(method)
+
+                if state_path:
+                    saved_number = get_last_known_block_number(state_path)
+                    if latest_block['number'] < saved_number:
+                        raise EthClientOutdatedError(method)
+                    save_last_known_block_number(state_path,
+                                                 latest_block['number'])
+                response = make_request(method, params)
+            return response
+        return middleware
+    return eth_client_checking_middleware
+
+
+def init_web3(endpoint: str,
+              provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
+              middlewares: Iterable = None,
+              state_path: str = None, ts_diff: int = None):
+    if not middlewares:
+        ts_diff = config.ALLOWED_TS_DIFF
+        state_path = state_path or config.LAST_BLOCK_FILE
+        sync_middleware = make_client_checking_middleware(ts_diff, state_path)
+        middewares = (
+            http_retry_request_middleware,
+            sync_middleware,
+            attrdict_middleware
+        )
+
+    provider = get_provider(endpoint, timeout=provider_timeout)
+    web3 = Web3(provider)
+    # required for rinkeby
+    web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+    for middleware in middewares:
+        web3.middleware_onion.add(middleware)  # todo: may cause issues
+    return web3
 
 
 def get_receipt(web3, tx):
