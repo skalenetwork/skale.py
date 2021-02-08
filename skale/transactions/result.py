@@ -37,8 +37,8 @@ class TransactionFailedError(TransactionError):
     pass
 
 
-def check_balance(balance: int, gas_price: int, gas_limit: int) -> dict:
-    tx_cost = gas_price * gas_limit
+def check_balance(balance: int, gas_price: int, gas_limit: int, value: int) -> dict:
+    tx_cost = gas_price * gas_limit + value
     if balance < tx_cost:
         status = 0
         msg = f'Transaction requires {tx_cost}. Wallet has {balance} wei'
@@ -48,9 +48,9 @@ def check_balance(balance: int, gas_price: int, gas_limit: int) -> dict:
     return {'status': status, 'msg': msg}
 
 
-def check_balance_and_gas(balance, gas_price, gas_limit):
+def check_balance_and_gas(balance, gas_price, gas_limit, value):
     if gas_limit:
-        return check_balance(balance, gas_price, gas_limit)
+        return check_balance(balance, gas_price, gas_limit, value)
     return {'status': 0, 'msg': 'Gas limit is empty'}
 
 
