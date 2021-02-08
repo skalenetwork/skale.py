@@ -43,14 +43,16 @@ logger = logging.getLogger(__name__)
 DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
-def make_dry_run_call(skale, method, gas_limit=None) -> dict:
+def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
     opts = {
         'from': skale.wallet.address,
+        'value': value
     }
     logger.info(
         f'Dry run tx: {method.fn_name}, '
         f'sender: {skale.wallet.address}, '
         f'wallet: {skale.wallet.__class__.__name__}, '
+        f'value: {value}, '
     )
 
     try:
@@ -82,10 +84,11 @@ def estimate_gas(web3, method, opts):
     return normalized_estimated_gas
 
 
-def build_tx_dict(method, gas_limit, gas_price=None, nonce=None):
+def build_tx_dict(method, gas_limit, gas_price=None, nonce=None, value=0):
     tx_dict_fields = {
         'gas': gas_limit,
-        'nonce': nonce
+        'nonce': nonce,
+        'value': value
     }
     if gas_price is not None:
         tx_dict_fields.update({'gasPrice': gas_price})
@@ -100,15 +103,16 @@ def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
 
-def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None) -> str:
+def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None, value=0) -> str:
     logger.info(
         f'Tx: {method.fn_name}, '
         f'sender: {wallet.address}, '
         f'wallet: {wallet.__class__.__name__}, '
         f'gasLimit: {gas_limit}, '
-        f'gasPrice: {gas_price}'
+        f'gasPrice: {gas_price}, '
+        f'value: {value}'
     )
-    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce)
+    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce, value)
     tx_hash = wallet.sign_and_send(tx_dict)
     return tx_hash
 

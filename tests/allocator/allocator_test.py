@@ -98,10 +98,12 @@ def test_get_all_plans(skale_allocator):
     assert plan_params_with_id == plans[0]
 
 
+# TODO: improve test
 def test_calculate_vested_amount(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
-    assert skale_allocator.allocator.calculate_vested_amount(wallet.address) == 0
+    vested_amount = skale_allocator.allocator.calculate_vested_amount(wallet.address)
+    assert vested_amount == 1000000000000000000000
 
 
 def test_get_finish_vesting_time(skale_allocator):
@@ -118,8 +120,9 @@ def test_get_lockup_period_end_timestamp(skale_allocator):
     assert res == D_END_LOCKUP_TIMESTAMP
 
 
+# TODO: improve test
 def test_get_time_of_next_vest(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
     res = skale_allocator.allocator.get_time_of_next_vest(wallet.address)
-    assert res == D_END_LOCKUP_TIMESTAMP
+    assert res == 1630454400
