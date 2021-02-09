@@ -31,5 +31,10 @@ class Wallets(BaseContract):
         return self.contract.functions.getValidatorBalance(validator_id).call()
 
     @transaction_method
-    def recharge(self, amount: int, address: str) -> TxRes:
-        pass
+    def recharge_validator_wallet(self, validator_id: int) -> TxRes:
+        """Pass value kwarg (in wei) to the function when calling it"""
+        return self.contract.functions.rechargeValidatorWallet(validator_id)
+
+    @transaction_method
+    def withdraw_funds_from_validator_wallet(self, amount: int) -> TxRes:
+        return self.contract.functions.withdrawFundsFromValidatorWallet(amount)
