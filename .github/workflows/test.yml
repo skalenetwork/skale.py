@@ -2,16 +2,48 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  test:
+  test_manager:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.7]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      ENDPOINT: ${{ secrets.ENDPOINT }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       MANAGER_TAG: "test-srw-2"
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@master
+      with:
+        remote: true
+    - name: Install host dependencies
+      run: bash ./scripts/install_host_dependencies.sh
+    - name: Install python dependencies
+      run: bash ./scripts/install_python_dependencies.sh
+    - name: Lint with flake8
+      run: flake8 .
+    - name: Deploy manager contracts
+      run: |
+        bash ./helper-scripts/deploy_test_manager.sh
+    - name: Run tests
+      run: |
+        bash ./scripts/run_manager_tests.sh
+    - name: Codecov
+      run: |
+        codecov -t $CODECOV_TOKEN
+  test_allocator:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    env:
+      ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
+      MANAGER_TAG: "1.6.0-develop.7"
       ALLOCATOR_TAG: "2.2.0-develop.4"
     steps:
     - uses: actions/checkout@v2
@@ -24,25 +56,12 @@ jobs:
       with:
         remote: true
     - name: Install host dependencies
-      run: |
-        sudo apt-get update --fix-missing
-        sudo apt-get install libudev-dev
-        sudo apt-get install libusb-1.0-0-dev
+      run: bash ./scripts/install_host_dependencies.sh
     - name: Install python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -e .
-        pip install -e .[dev]
-        pip install codecov pytest-cov
-    - name: Lint with flake8
-      run: |
-        flake8 .
-    - name: Deploy manager and allocator contracts
+      run: bash ./scripts/install_python_dependencies.sh
+    - name: Deploy allocator contracts
       run: |
         bash ./helper-scripts/deploy_test_allocator.sh
     - name: Run tests
       run: |
-        bash ./scripts/run_tests.sh
-    - name: Codecov
-      run: |
-        codecov -t $CODECOV_TOKEN
+        bash ./scripts/run_allocator_tests.sh

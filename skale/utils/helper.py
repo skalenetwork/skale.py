@@ -174,3 +174,8 @@ def get_contracts_info(contracts_data):
     for contract_info in contracts_data:
         contracts_info[contract_info.name] = contract_info
     return contracts_info
+
+
+def to_camel_case(snake_str):
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
