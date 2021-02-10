@@ -33,8 +33,8 @@ from web3 import Web3
 logger = logging.getLogger(__name__)
 
 
-def execute_dry_run(skale, method, custom_gas_limit) -> tuple:
-    dry_run_result = make_dry_run_call(skale, method, custom_gas_limit)
+def execute_dry_run(skale, method, custom_gas_limit, value=0) -> tuple:
+    dry_run_result = make_dry_run_call(skale, method, custom_gas_limit, value)
     estimated_gas_limit = None
     if is_success(dry_run_result):
         estimated_gas_limit = dry_run_result['payload']
@@ -45,7 +45,7 @@ def transaction_method(transaction):
     @wraps(transaction)
     def wrapper(self, *args, wait_for=True,
                 wait_timeout=4, blocks_to_wait=50, gas_limit=None,
-                gas_price=None, nonce=None,
+                gas_price=None, nonce=None, value=0,
                 dry_run_only=False, skip_dry_run=False,
                 raise_for_status=True, confirmation_blocks=0, **kwargs):
         method = transaction(self, *args, **kwargs)
@@ -55,7 +55,7 @@ def transaction_method(transaction):
         estimated_gas_limit = None
         if not skip_dry_run and not config.DISABLE_DRY_RUN:
             dry_run_result, estimated_gas_limit = execute_dry_run(
-                self.skale, method, gas_limit
+                self.skale, method, gas_limit, value
             )
 
         gas_limit = gas_limit or estimated_gas_limit or \
@@ -66,8 +66,8 @@ def transaction_method(transaction):
                                           self.skale.wallet.address)
         gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or \
             self.skale.gas_price
-        balance_check_result = check_balance_and_gas(balance,
-                                                     gas_price, gas_limit)
+        balance_check_result = check_balance_and_gas(balance, gas_price,
+                                                     gas_limit, value)
         rich_enough = is_success(balance_check_result)
 
         # Send transaction
@@ -77,7 +77,7 @@ def transaction_method(transaction):
         if rich_enough and should_send_transaction:
             tx_hash = post_transaction(
                 self.skale.wallet, method, gas_limit,
-                gas_price, nonce
+                gas_price, nonce, value
             )
             if wait_for:
                 receipt = wait_for_receipt_by_blocks(

@@ -30,7 +30,7 @@ from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'ip', 'publicIP', 'port', 'start_block',
-    'last_reward_date', 'finish_time', 'status', 'validator_id', 'publicKey'
+    'last_reward_date', 'finish_time', 'status', 'validator_id', 'publicKey', 'domain_name'
 ]
 
 COMPACT_FIELDS = ['schainIndex', 'nodeID', 'ip', 'basePort']
@@ -60,15 +60,20 @@ class Nodes(BaseContract):
         raw_node_struct.append(self.get_node_public_key(node_id))
         return raw_node_struct
 
+    def __get_raw_w_pk_w_domain(self, node_id):
+        raw_node_struct_w_pk = self.__get_raw_w_pk(node_id)
+        raw_node_struct_w_pk.append(self.get_domain_name(node_id))
+        return raw_node_struct_w_pk
+
     @format_fields(FIELDS)
     def get(self, node_id):
-        return self.__get_raw_w_pk(node_id)
+        return self.__get_raw_w_pk_w_domain(node_id)
 
     @format_fields(FIELDS)
     def get_by_name(self, name):
         name_hash = self.name_to_id(name)
         _id = self.contract.functions.nodesNameToIndex(name_hash).call()
-        return self.__get_raw_w_pk(_id)
+        return self.__get_raw_w_pk_w_domain(_id)
 
     def get_nodes_number(self):
         return self.contract.functions.getNumberOfNodes().call()
@@ -147,3 +152,10 @@ class Nodes(BaseContract):
     @transaction_method
     def remove_node_from_in_maintenance(self, node_id):
         return self.contract.functions.removeNodeFromInMaintenance(node_id)
+
+    @transaction_method
+    def set_domain_name(self, node_id: int, domain_name: str):
+        return self.contract.functions.setDomainName(node_id, domain_name)
+
+    def get_domain_name(self, node_id: int):
+        return self.contract.functions.getNodeDomainName(node_id).call()

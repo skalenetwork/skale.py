@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2021-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -18,20 +18,23 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 
 
-class DelegationPeriodManager(BaseContract):
-    """Wrapper for DelegationPeriodManager.sol functions"""
+class Wallets(BaseContract):
+    def get_validator_balance(self, validator_id: int) -> int:
+        """Returns SRW balance by validator id (in wei).
+
+        :returns: SRW balance (wei)
+        :rtype: int
+        """
+        return self.contract.functions.getValidatorBalance(validator_id).call()
 
     @transaction_method
-    def set_delegation_period(self, months_count: int,
-                              stake_multiplier: int) -> None:
-        return self.contract.functions.setDelegationPeriod(
-            monthsCount=months_count,
-            stakeMultiplier=stake_multiplier
-        )
+    def recharge_validator_wallet(self, validator_id: int) -> TxRes:
+        """Pass value kwarg (in wei) to the function when calling it"""
+        return self.contract.functions.rechargeValidatorWallet(validator_id)
 
-    def is_delegation_period_allowed(self, months_count: int) -> bool:
-        return self.contract.functions.isDelegationPeriodAllowed(
-            monthsCount=months_count
-        ).call()
+    @transaction_method
+    def withdraw_funds_from_validator_wallet(self, amount: int) -> TxRes:
+        return self.contract.functions.withdrawFundsFromValidatorWallet(amount)

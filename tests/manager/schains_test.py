@@ -3,11 +3,13 @@
 from hexbytes import HexBytes
 
 from skale.contracts.manager.schains import FIELDS
+from skale.transactions.tools import send_eth_with_skale
 from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
 
 from skale.utils.contracts_provision.main import generate_random_schain_data, create_schain
+from skale.wallets.web3_wallet import generate_wallet
 
 
 def test_get(skale):
@@ -83,6 +85,35 @@ def test_add_schain_by_foundation(skale):
     ]
     assert name in schains_names
 
+    new_schain = skale.schains.get_by_name(name)
+    assert new_schain['owner'] == skale.wallet.address
+
+    skale.manager.delete_schain(name, wait_for=True)
+
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name not in schains_names
+
+
+def test_add_schain_by_foundation_custom_owner(skale):
+    skale.schains.grant_role(skale.schains.schain_creator_role(),
+                             skale.wallet.address)
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    custom_wallet = generate_wallet(skale.web3)
+    skale.schains.add_schain_by_foundation(
+        lifetime_seconds, type_of_nodes, 0, name, custom_wallet.address, wait_for=True
+    )
+
+    new_schain = skale.schains.get_by_name(name)
+    assert new_schain['owner'] != skale.wallet.address
+    assert new_schain['owner'] == custom_wallet.address
+
+    send_eth_with_skale(skale, custom_wallet.address, 10 ** 18)
+    skale.wallet = custom_wallet
     skale.manager.delete_schain(name, wait_for=True)
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()

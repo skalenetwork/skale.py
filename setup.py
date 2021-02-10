@@ -12,13 +12,14 @@ extras_require = {
     ],
     'dev': [
         "bumpversion==0.6.0",
-        "pytest==5.4.3",
         "click==7.1.2",
-        "twine==3.1.1",
+        "freezegun==1.0.0",
         "mock==4.0.2",
-        "when-changed",
+        "pytest==5.4.3",
+        "pytest-cov==2.8.1",
         "Random-Word==1.0.4",
-        "pytest-cov==2.8.1"
+        "twine==3.1.1",
+        "when-changed"
     ],
     'hw-wallet': [
         "ledgerblue==0.1.31"
@@ -39,10 +40,10 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==5.6.0",
+        "web3==5.8.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.6.dev14"
+        "sgx.py==0.6b1"
     ],
 
     python_requires='>=3.7,<4',
