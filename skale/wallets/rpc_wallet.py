@@ -67,7 +67,7 @@ def rpc_request(func):
 
         if error is not None:
             raise RPCWalletError(error)
-        logger.info(f'{route} returned {data}')
+        logger.info(f'Rpc wallet {route} request returned {data}')
         return data
     return wrapper
 
