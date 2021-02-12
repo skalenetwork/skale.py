@@ -59,7 +59,9 @@ def rpc_request(func):
                 error = 'RPC request failed'
                 logger.error(error, exc_info=err)
 
-            if not error or not self._retry_if_failed:
+            if isinstance(error, str) and \
+                error.startswith('Dry run error') or \
+                    not error or not self._retry_if_failed:
                 break
 
             logger.info(f'Sleeping {timeout}s ...')
