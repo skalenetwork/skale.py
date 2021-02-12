@@ -111,7 +111,7 @@ def test_sign_and_send_dry_run():
         nonlocal cnt
         response_mock = mock.Mock()
         if cnt < TEST_MAX_RETRIES:
-            rv = {'data': None, 'error': 'Dry run error {"Test"}'}
+            rv = {'data': None, 'error': 'Dry run failed: {"Test"}'}
             cnt += 1
         else:
             rv = {'data': 'test', 'error': ''}

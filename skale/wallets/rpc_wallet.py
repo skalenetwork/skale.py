@@ -60,7 +60,7 @@ def rpc_request(func):
                 logger.error(error, exc_info=err)
 
             if isinstance(error, str) and \
-                error.startswith('Dry run error') or \
+                error.startswith('Dry run failed') or \
                     not error or not self._retry_if_failed:
                 break
 
