@@ -17,6 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3.exceptions import SolidityError
+
 
 SUCCESS_STATUS = 1
 
@@ -34,6 +36,10 @@ class InsufficientBalanceError(TransactionError):
 
 
 class TransactionFailedError(TransactionError):
+    pass
+
+
+class RevertError(TransactionError, SolidityError):
     pass
 
 
@@ -60,6 +66,10 @@ def is_success(result: dict) -> bool:
 
 def is_success_or_not_performed(result: dict) -> bool:
     return result is None or is_success(result)
+
+
+def is_revert_error(result: dict) -> bool:
+    return result and result.get('error', None) and 'reverted' in result['error'].lower()
 
 
 class TxRes:
@@ -93,6 +103,8 @@ class TxRes:
 
     def raise_for_status(self) -> None:
         if self.dry_run_failed():
+            if is_revert_error(self.dry_run_result):
+                raise RevertError(self.dry_run_result['error'])
             raise DryRunFailedError(f'Dry run check failed. '
                                     f'See result {self.dry_run_result}')
         if self.balance_check_failed():
