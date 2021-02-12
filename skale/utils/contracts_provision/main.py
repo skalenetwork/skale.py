@@ -27,6 +27,9 @@ from skale.utils.contracts_provision.utils import (
 )
 
 
+TEST_SRW_FUND_VALUE = 3000000000000000000
+
+
 def _skip_evm_time(web3, seconds) -> int:
     """For test purposes only, works only with ganache node"""
     res = web3.provider.make_request("evm_increaseTime", [seconds])
@@ -160,13 +163,16 @@ def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME):
     print('Creating schain')
     # create 1 s-chain
     type_of_nodes, lifetime_seconds, _ = generate_random_schain_data()
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes,
-                                                  lifetime_seconds)
-
-    skale.manager.create_schain(
+    _ = skale.schains.get_schain_price(
+        type_of_nodes, lifetime_seconds
+    )
+    skale.schains.grant_role(skale.schains.schain_creator_role(),
+                             skale.wallet.address)
+    skale.schains.add_schain_by_foundation(
         lifetime_seconds,
         type_of_nodes,
-        price_in_wei,
+        0,
         schain_name,
-        wait_for=True
+        wait_for=True,
+        value=TEST_SRW_FUND_VALUE
     )
