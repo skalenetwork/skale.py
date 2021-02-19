@@ -127,9 +127,7 @@ def test_rpc_sign_hash(wallet):
     assert signed_message.signature == HexBytes('0x6161616161613131313131')
 
 
-def test_sign_and_send_dry_run():
-    wallet = RPCWallet(TEST_RPC_WALLET_URL, retry_if_failed=True)
-
+def test_sign_and_send_dry_run(wallet):
     cnt = 0
 
     def post_mock(*args, **kwargs):
