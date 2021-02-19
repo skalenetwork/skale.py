@@ -186,6 +186,7 @@ def test_complaint_bad_data(skale):
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.complaint(group_index, from_node_index, to_node_index,
                                 wait_for=False,
+                                skip_dry_run=True,
                                 gas_limit=gas_limit)
             send_tx_mock.assert_called_with(HexBytes(exp))
 

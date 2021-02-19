@@ -25,4 +25,6 @@ from skale.contracts.manager.delegation.token_launch_manager import TokenLaunchM
 from skale.contracts.manager.dkg import DKG
 from skale.contracts.manager.key_storage import KeyStorage
 
+from skale.contracts.manager.wallets import Wallets
+
 from skale.contracts.manager.test.time_helpers_with_debug import TimeHelpersWithDebug

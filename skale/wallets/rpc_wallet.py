@@ -41,7 +41,7 @@ def rpc_request(func):
     def wrapper(self, route, *args, **kwargs):
         data, error, response = None, None, None
         for i, timeout in enumerate(TIMEOUTS):
-            logger.info(f'Sending request to tm for {route}. Try {i}')
+            logger.info(f'Sending wallet rpc {route} request. Attempt {i}')
             try:
                 response = func(self, route, *args, **kwargs).json()
                 data, error = response.get('data'), response.get('error')
@@ -49,7 +49,9 @@ def rpc_request(func):
                 error = 'RPC request failed'
                 logger.error(error, exc_info=err)
 
-            if not error or not self._retry_if_failed:
+            if isinstance(error, str) and \
+                error.startswith('Dry run failed') or \
+                    not error or not self._retry_if_failed:
                 break
 
             logger.info(f'Sleeping {timeout}s ...')
@@ -57,6 +59,7 @@ def rpc_request(func):
 
         if error is not None:
             raise RPCWalletError(error)
+        logger.info(f'Rpc wallet {route} request returned {data}')
         return data
     return wrapper
 
