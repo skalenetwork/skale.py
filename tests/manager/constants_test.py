@@ -8,6 +8,7 @@ from skale.transactions.result import RevertError
 
 
 def test_get_set_periods(skale):
+    skale.constants_holder.set_check_time(10, wait_for=True)
     tx_res = skale.constants_holder.set_periods(NEW_REWARD_PERIOD, NEW_DELTA_PERIOD, wait_for=True)
     assert tx_res.receipt['status'] == 1
     reward_period = skale.constants_holder.get_reward_period()

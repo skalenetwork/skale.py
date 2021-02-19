@@ -9,8 +9,10 @@ jobs:
         python-version: [3.7]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      MANAGER_TAG: "test-srw-2"
+      ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      MANAGER_TAG: "1.8.0-develop.9"
+      ALLOCATOR_TAG: "2.2.0-develop.4"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}

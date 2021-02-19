@@ -127,6 +127,30 @@ def test_rpc_sign_hash(wallet):
     assert signed_message.signature == HexBytes('0x6161616161613131313131')
 
 
+def test_sign_and_send_dry_run():
+    wallet = RPCWallet(TEST_RPC_WALLET_URL, retry_if_failed=True)
+
+    cnt = 0
+
+    def post_mock(*args, **kwargs):
+        nonlocal cnt
+        response_mock = mock.Mock()
+        if cnt < TEST_MAX_RETRIES:
+            rv = {'data': None, 'error': 'Dry run failed: {"Test"}'}
+            cnt += 1
+        else:
+            rv = {'data': 'test', 'error': ''}
+
+        response_mock.json = mock.Mock(return_value=rv)
+        return response_mock
+
+    with mock.patch('requests.post', post_mock):
+        with pytest.raises(RPCWalletError):
+            wallet.sign_and_send(TX_DICT)
+
+        assert cnt == 1
+
+
 def test_rpc_address(wallet):
     address = to_checksum_address(
         private_key_to_address(ETH_PRIVATE_KEY)
