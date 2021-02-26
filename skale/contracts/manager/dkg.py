@@ -152,4 +152,4 @@ class DKG(BaseContract):
         return self.contract.functions.getComplaintData(group_index).call()
 
     def get_time_of_last_successful_dkg(self, group_index):
-        return self.contract.functions.getTimeOfLastSuccesfulDKG(group_index).call()
+        return self.contract.functions.getTimeOfLastSuccessfulDKG(group_index).call()
