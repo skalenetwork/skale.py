@@ -26,7 +26,9 @@ def generate_random_ip():
 
 
 def generate_random_name(len=8):
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=len))
+    return ''.join(
+        random.choices(string.ascii_uppercase + string.digits, k=len)
+    )
 
 
 def generate_random_port():
@@ -34,11 +36,11 @@ def generate_random_port():
 
 
 def generate_random_node_data():
-    return generate_random_ip(), generate_random_ip(), generate_random_port(), \
-        generate_random_name()
+    return generate_random_ip(), generate_random_ip(), \
+        generate_random_port(), generate_random_name()
 
 
-def generate_random_schain_data():
+def generate_random_schain_data(skale):
+    schain_type = skale.schains_internal.number_of_schain_types()
     lifetime_seconds = 3600  # 1 hour
-    type_of_nodes = 4
-    return type_of_nodes, lifetime_seconds, generate_random_name()
+    return schain_type, lifetime_seconds, generate_random_name()

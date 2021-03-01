@@ -72,7 +72,7 @@ def test_get_schain_price(skale):
 def test_add_schain_by_foundation(skale):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name, wait_for=True
     )
@@ -102,7 +102,7 @@ def test_add_schain_by_foundation(skale):
 def test_add_schain_by_foundation_custom_owner(skale):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     custom_wallet = generate_wallet(skale.web3)
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name, custom_wallet.address, wait_for=True
