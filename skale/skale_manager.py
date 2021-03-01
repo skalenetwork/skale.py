@@ -57,8 +57,6 @@ CONTRACTS_INFO = [
                  ContractTypes.API, False),
     ContractInfo('token_state', 'TokenState', contracts.TokenState,
                  ContractTypes.API, False),
-    ContractInfo('token_launch_manager', 'TokenLaunchManager', contracts.TokenLaunchManager,
-                 ContractTypes.API, False),
     ContractInfo('distributor', 'Distributor', contracts.Distributor,
                  ContractTypes.API, False),
     ContractInfo('slashing_table', 'Distributor', contracts.SlashingTable,

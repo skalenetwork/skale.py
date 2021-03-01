@@ -42,8 +42,8 @@ def transfer_tokens_to_allocator(skale_manager, skale_allocator, amount=TEST_SKA
     send_tokens(skale_manager, skale_allocator.wallet, skale_allocator.allocator.address, amount)
 
 
-def transfer_tokens_to_token_launch_manager(skale, amount=TEST_SKALE_AMOUNT):
-    send_tokens(skale, skale.wallet, skale.token_launch_manager.address, amount)
+# def transfer_tokens_to_token_launch_manager(skale, amount=TEST_SKALE_AMOUNT):
+#     send_tokens(skale, skale.wallet, skale.token_launch_manager.address, amount)
 
 
 def add_test_plan(skale_allocator):

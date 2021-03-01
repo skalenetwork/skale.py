@@ -19,7 +19,6 @@ from skale.contracts.manager.delegation.validator_service import ValidatorServic
 from skale.contracts.manager.delegation.token_state import TokenState
 from skale.contracts.manager.delegation.distributor import Distributor
 from skale.contracts.manager.delegation.slashing_table import SlashingTable
-from skale.contracts.manager.delegation.token_launch_manager import TokenLaunchManager
 
 from skale.contracts.manager.dkg import DKG
 from skale.contracts.manager.key_storage import KeyStorage
