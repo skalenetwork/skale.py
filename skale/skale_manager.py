@@ -47,8 +47,6 @@ CONTRACTS_INFO = [
                  ContractTypes.API, True),
     ContractInfo('schains_internal', 'SchainsInternal', contracts.SChainsInternal,
                  ContractTypes.API, True),
-    ContractInfo('monitors', 'Monitors', contracts.Monitors,
-                 ContractTypes.API, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
     ContractInfo('key_storage', 'KeyStorage', contracts.KeyStorage, ContractTypes.API, True),
     ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,

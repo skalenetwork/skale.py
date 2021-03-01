@@ -12,7 +12,6 @@ from skale.contracts.manager.schains import SChains
 from skale.contracts.manager.schains_internal import SChainsInternal
 from skale.contracts.manager.nodes import Nodes
 from skale.contracts.manager.node_rotation import NodeRotation
-from skale.contracts.manager.monitors import Monitors
 
 from skale.contracts.manager.delegation.delegation_controller import DelegationController
 from skale.contracts.manager.delegation.delegation_period_manager import DelegationPeriodManager
