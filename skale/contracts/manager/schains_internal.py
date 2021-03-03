@@ -19,7 +19,8 @@
 """ SchainsInternal.sol functions """
 
 import functools
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 
 
 class SChainsInternal(BaseContract):
@@ -59,3 +60,13 @@ class SChainsInternal(BaseContract):
 
     def get_active_schain_ids_for_node(self, node_id):
         return self.contract.functions.getActiveSchains(node_id).call()
+
+    def number_of_schain_types(self) -> int:
+        return self.contract.functions.numberOfSchainTypes().call()
+
+    @transaction_method
+    def add_schain_type(
+        self, part_of_node: int, number_of_nodes: int
+    ) -> TxRes:
+        return self.contract.functions.addSchainType(
+            part_of_node, number_of_nodes)

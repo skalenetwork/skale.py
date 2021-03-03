@@ -55,7 +55,7 @@ class Manager(BaseContract):
 
     def create_default_schain(self, name):
         lifetime = 3600
-        nodes_type = 4
+        nodes_type = self.skale.schains_internal.number_of_schain_types()
         price_in_wei = self.skale.schains.get_schain_price(
             nodes_type, lifetime)
         return self.create_schain(lifetime, nodes_type, price_in_wei, name,

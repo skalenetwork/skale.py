@@ -4,7 +4,6 @@ from hexbytes import HexBytes
 
 from skale.contracts.manager.schains import FIELDS
 from skale.transactions.tools import send_eth_with_skale
-from skale.utils.constants import SCHAIN_TYPES
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
 
@@ -62,17 +61,15 @@ def test_get_all_schains_ids(skale):
 
 
 def test_get_schain_price(skale):
-    for schain_type in SCHAIN_TYPES:
-        schain_price = skale.schains.get_schain_price(SCHAIN_TYPES[schain_type],
-                                                      LIFETIME_SECONDS)
-        assert schain_price > 0
-        assert type(schain_price) is int
+    schain_price = skale.schains.get_schain_price(1, LIFETIME_SECONDS)
+    assert schain_price > 0
+    assert type(schain_price) is int
 
 
 def test_add_schain_by_foundation(skale):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name, wait_for=True
     )
@@ -102,7 +99,7 @@ def test_add_schain_by_foundation(skale):
 def test_add_schain_by_foundation_custom_owner(skale):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     custom_wallet = generate_wallet(skale.web3)
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name, custom_wallet.address, wait_for=True

@@ -17,6 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from skale.transactions.result import TxRes
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
@@ -35,6 +36,14 @@ def _skip_evm_time(web3, seconds) -> int:
     res = web3.provider.make_request("evm_increaseTime", [seconds])
     web3.provider.make_request("evm_mine", [])
     return res['result']
+
+
+def add_test_schain_type(skale) -> TxRes:
+    part_of_node = 1
+    number_of_nodes = 2
+    return skale.schains_internal.add_schain_type(
+        part_of_node, number_of_nodes
+    )
 
 
 def cleanup_nodes_schains(skale):
@@ -164,7 +173,7 @@ def create_nodes(skale, names=()):
 def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME):
     print('Creating schain')
     # create 1 s-chain
-    type_of_nodes, lifetime_seconds, _ = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, _ = generate_random_schain_data(skale)
     _ = skale.schains.get_schain_price(
         type_of_nodes, lifetime_seconds
     )
