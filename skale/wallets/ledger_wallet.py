@@ -21,7 +21,7 @@ import logging
 import struct
 
 from hexbytes import HexBytes
-from eth_account.datastructures import AttributeDict
+from eth_account.datastructures import SignedTransaction
 from eth_account._utils.transactions import encode_transaction
 from eth_account._utils.transactions import \
     serializable_unsigned_transaction_from_dict as tx_from_dict
@@ -125,14 +125,13 @@ class LedgerWallet(BaseWallet):
         enctx = encode_transaction(tx, (sign_v, sign_r, sign_s))
         transaction_hash = keccak(enctx)
 
-        signed_txn = AttributeDict({
-            'rawTransaction': HexBytes(enctx),
-            'hash': HexBytes(transaction_hash),
-            'v': sign_v,
-            'r': sign_r,
-            's': sign_s,
-        })
-        return signed_txn
+        return SignedTransaction(
+            rawTransaction=HexBytes(enctx),
+            hash=HexBytes(transaction_hash),
+            v=sign_v,
+            r=sign_r,
+            s=sign_s
+        )
 
     def exchange_sign_payload_by_chunks(self, payload):
         INS = b'\x04'

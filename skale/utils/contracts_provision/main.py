@@ -62,11 +62,13 @@ def validator_exist(skale):
 
 
 def add_delegation_period(skale):
-    skale.delegation_period_manager.set_delegation_period(
-        months_count=D_DELEGATION_PERIOD,
-        stake_multiplier=D_STAKE_MULTIPLIER,
-        wait_for=True
-    )
+    is_added = skale.delegation_period_manager.is_delegation_period_allowed(D_DELEGATION_PERIOD)
+    if not is_added:
+        skale.delegation_period_manager.set_delegation_period(
+            months_count=D_DELEGATION_PERIOD,
+            stake_multiplier=D_STAKE_MULTIPLIER,
+            wait_for=True
+        )
 
 
 def setup_validator(skale):

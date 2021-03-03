@@ -152,6 +152,25 @@ def test_create_delete_schain(skale):
     assert name not in schains_names
 
 
+def test_delete_schain_by_root(skale):
+    schains_ids = skale.schains_internal.get_all_schains_ids()
+    name = ''.join(random.choice('abcde') for _ in range(4))
+    skale.manager.create_default_schain(name)
+
+    tx_res = skale.manager.delete_schain_by_root(name, wait_for=True)
+    assert tx_res.receipt['status'] == 1
+
+    schains_ids_number_after = skale.schains_internal.get_schains_number()
+    assert schains_ids_number_after == len(schains_ids)
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name not in schains_names
+
+
 def test_create_delete_default_schain(skale):
     schains_ids = skale.schains_internal.get_all_schains_ids()
     name = ''.join(random.choice('abcde') for _ in range(4))

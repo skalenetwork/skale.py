@@ -29,7 +29,7 @@ class SChainsInternal(BaseContract):
     @property
     @functools.lru_cache()
     def schains(self):
-        return self.skale.get_contract_by_name('schains')
+        return self.skale.schains
 
     def get_raw(self, name):
         return self.contract.functions.schains(name).call()
