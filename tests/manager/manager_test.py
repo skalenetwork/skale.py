@@ -121,7 +121,7 @@ def test_send_verdicts(skale):
 def test_create_delete_schain(skale):
     schains_ids = skale.schains_internal.get_all_schains_ids()
 
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     price_in_wei = skale.schains.get_schain_price(type_of_nodes,
                                                   lifetime_seconds)
     tx_res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,

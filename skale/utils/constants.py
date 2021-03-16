@@ -25,8 +25,7 @@ LONG_LINE = '=' * 100
 
 
 SCHAIN_TYPES = {
-    'tiny': 1,
-    'small': 2,
-    'medium': 3,
-    'test': 4,
+    'small': 1,
+    'medium': 2,
+    'large': 3
 }

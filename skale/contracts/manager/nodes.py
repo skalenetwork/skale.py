@@ -94,10 +94,6 @@ class Nodes(BaseContract):
             if self.get_node_status(node_id) == NodeStatus.ACTIVE
         ]
 
-    def get_active_node_ids_by_address(self, account):
-        return self.contract.functions.getActiveNodesByAddress().call(
-            {'from': account})
-
     def name_to_id(self, name):
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
         return keccak_hash.hexdigest()

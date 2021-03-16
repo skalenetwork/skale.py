@@ -185,7 +185,7 @@ def test_block_limit_estimate_gas(skale):
 def test_value_option(skale):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data()
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     value_wei = 1000
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name, wait_for=True, value=value_wei

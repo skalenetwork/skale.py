@@ -96,16 +96,6 @@ def test_get_active_node_ips(skale):
                for node_ip in active_node_ips])
 
 
-def test_get_active_node_ids_by_address(skale):
-    active_node_ids = skale.nodes.get_active_node_ids_by_address(
-        skale.wallet.address
-    )
-    assert isinstance(active_node_ids, list)
-
-    node = skale.nodes.get(active_node_ids[-1])
-    assert list(node.keys()) == FIELDS
-
-
 def test_name_to_id(skale):
     node_name_hash = skale.nodes.name_to_id(DEFAULT_NODE_NAME)
     expected = DEFAULT_NODE_HASH
