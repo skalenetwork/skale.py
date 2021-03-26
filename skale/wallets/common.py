@@ -20,6 +20,13 @@
 from abc import ABC, abstractmethod
 
 
+def ensure_chain_id(tx_dict, web3):
+    if not tx_dict.get('chainId'):
+        tx_dict['chainId'] = web3.eth.chainId
+    if not tx_dict.get('chainId'):
+        raise ValueError('chainId must be in tx_dict (see EIP-155)')
+
+
 class BaseWallet(ABC):
     @abstractmethod
     def sign(self, tx):
