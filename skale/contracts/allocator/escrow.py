@@ -36,7 +36,7 @@ class Escrow(BaseContract):
     @property
     @functools.lru_cache()
     def allocator(self):
-        return self.skale.get_contract_by_name('allocator')
+        return self.skale.allocator
 
     def init_beneficiary_contract(self, beneficiary_address: str):
         beneficiary_escrow_address = self.allocator.get_escrow_address(beneficiary_address)

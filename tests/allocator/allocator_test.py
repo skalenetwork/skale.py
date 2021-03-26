@@ -98,7 +98,6 @@ def test_get_all_plans(skale_allocator):
     assert plan_params_with_id == plans[0]
 
 
-# TODO: improve test
 def test_calculate_vested_amount(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
