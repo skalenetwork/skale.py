@@ -21,7 +21,7 @@ from eth_keys import keys
 from web3 import Web3
 from eth_account import messages
 
-from skale.wallets.common import BaseWallet
+from skale.wallets.common import BaseWallet, ensure_chain_id
 from skale.utils.web3_utils import get_eth_nonce
 
 
@@ -47,7 +47,7 @@ def to_checksum_address(address):
 
 def generate_wallet(web3):
     account = web3.eth.account.create()
-    private_key = account.privateKey.hex()
+    private_key = account.key.hex()
     return Web3Wallet(private_key, web3)
 
 
@@ -62,6 +62,7 @@ class Web3Wallet(BaseWallet):
     def sign(self, tx_dict):
         if not tx_dict.get('nonce'):
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
+        ensure_chain_id(tx_dict, self._web3)
         return self._web3.eth.account.sign_transaction(
             tx_dict,
             private_key=self._private_key

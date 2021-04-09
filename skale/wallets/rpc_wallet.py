@@ -17,12 +17,13 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import functools
 import json
 import logging
+import time
 import urllib
-import functools
-import requests
 
+import requests
 from hexbytes import HexBytes
 from eth_account.datastructures import AttributeDict
 
@@ -30,7 +31,7 @@ from skale.wallets.common import BaseWallet
 from skale.utils.exceptions import RPCWalletError
 
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 ROUTES = {
     'sign': '/sign',
@@ -40,22 +41,43 @@ ROUTES = {
     'public_key': '/public-key',
 }
 
+ATTEMPTS = 10
+TIMEOUTS = [2 ** p for p in range(ATTEMPTS)]
+SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
+
 
 def rpc_request(func):
     @functools.wraps(func)
-    def wrapper_decorator(*args, **kwargs):
-        res = func(*args, **kwargs)
-        res_json = res.json()
-        if res_json['error']:
-            raise RPCWalletError(res_json['error'])
-        else:
-            return res_json['data']
-    return wrapper_decorator
+    def wrapper(self, route, *args, **kwargs):
+        data, error = None, None
+        for i, timeout in enumerate(TIMEOUTS):
+            logger.info(f'Sending wallet rpc {route} request. Attempt {i}')
+            try:
+                response = func(self, route, *args, **kwargs).json()
+                data, error = response.get('data'), response.get('error')
+            except Exception as err:
+                error = 'RPC request failed'
+                logger.error(error, exc_info=err)
+
+            if isinstance(error, str) and \
+                error.startswith('Dry run failed') or \
+                    not error or not self._retry_if_failed:
+                break
+
+            logger.info(f'Sleeping {timeout}s ...')
+            time.sleep(timeout)
+
+        if error is not None:
+            raise RPCWalletError(error)
+        logger.info(f'Rpc wallet {route} request returned {data}')
+        return data
+    return wrapper
 
 
 class RPCWallet(BaseWallet):
-    def __init__(self, url):
+    def __init__(self, url, retry_if_failed=False):
         self._url = url
+        self._retry_if_failed = retry_if_failed
 
     def _construct_url(self, host, url):
         return urllib.parse.urljoin(host, url)
@@ -77,7 +99,7 @@ class RPCWallet(BaseWallet):
 
     def sign(self, tx_dict):
         data = self._post(ROUTES['sign'], self._compose_tx_data(tx_dict))
-        return data['transaction_hash']
+        return AttributeDict(data)
 
     def sign_and_send(self, tx_dict):
         data = self._post(ROUTES['sign_and_send'], self._compose_tx_data(tx_dict))

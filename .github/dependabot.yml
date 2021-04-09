@@ -1,0 +1,12 @@
+version: 2
+updates:
+- package-ecosystem: "pip"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "saturday"
+  allow:
+    - dependency-type: "production"
+    - dependency-name: "ledgerblue"
+      dependency-type: "direct"
+    

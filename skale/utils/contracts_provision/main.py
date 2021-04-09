@@ -17,14 +17,18 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from skale.transactions.result import TxRes
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
     D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
-    DEFAULT_SCHAIN_NAME
+    DEFAULT_SCHAIN_NAME, D_STAKE_MULTIPLIER, INITIAL_DELEGATION_PERIOD, DEFAULT_DOMAIN_NAME
 )
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
 )
+
+
+TEST_SRW_FUND_VALUE = 3000000000000000000
 
 
 def _skip_evm_time(web3, seconds) -> int:
@@ -34,19 +38,35 @@ def _skip_evm_time(web3, seconds) -> int:
     return res['result']
 
 
+def add_test_schain_type(skale) -> TxRes:
+    part_of_node = 1
+    number_of_nodes = 2
+    return skale.schains_internal.add_schain_type(
+        part_of_node, number_of_nodes
+    )
+
+
 def cleanup_nodes_schains(skale):
     print('Cleanup nodes and schains')
-    for schain_id in skale.schains_data.get_all_schains_ids():
-        schain_data = skale.schains_data.get(schain_id)
+    for schain_id in skale.schains_internal.get_all_schains_ids():
+        schain_data = skale.schains.get(schain_id)
         schain_name = schain_data.get('name', None)
         if schain_name is not None:
             skale.manager.delete_schain(schain_name, wait_for=True)
-    for node_id in skale.nodes_data.get_active_node_ids():
-        skale.manager.deregister(node_id, wait_for=True)
+    for node_id in skale.nodes.get_active_node_ids():
+        skale.manager.node_exit(node_id, wait_for=True)
 
 
 def validator_exist(skale):
     return skale.validator_service.number_of_validators() > 0
+
+
+def add_delegation_period(skale):
+    skale.delegation_period_manager.set_delegation_period(
+        months_count=D_DELEGATION_PERIOD,
+        stake_multiplier=D_STAKE_MULTIPLIER,
+        wait_for=True
+    )
 
 
 def setup_validator(skale):
@@ -57,7 +77,6 @@ def setup_validator(skale):
     else:
         print('Skipping default validator creation')
     set_test_msr(skale)
-
     delegate_to_validator(skale)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
     accept_pending_delegation(skale, delegations[-1]['id'])
@@ -102,12 +121,16 @@ def set_test_msr(skale):
     )
 
 
+def set_test_mda(skale):
+    skale.validator_service.set_validator_mda(0, wait_for=True)
+
+
 def delegate_to_validator(skale):
     print(f'Delegating tokens to validator ID: {D_VALIDATOR_ID}')
     skale.delegation_controller.delegate(
         validator_id=D_VALIDATOR_ID,
         amount=get_test_delegation_amount(skale),
-        delegation_period=D_DELEGATION_PERIOD,
+        delegation_period=INITIAL_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
         wait_for=True
     )
@@ -129,26 +152,36 @@ def create_validator(skale):
     )
 
 
-def create_nodes(skale):
+def create_nodes(skale, names=()):
     # create couple of nodes
     print('Creating two nodes')
-    node_names = [DEFAULT_NODE_NAME, SECOND_NODE_NAME]
+    node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)
     for name in node_names:
         ip, public_ip, port, _ = generate_random_node_data()
-        skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
+        skale.manager.create_node(
+            ip=ip,
+            port=port,
+            name=name,
+            domain_name=DEFAULT_DOMAIN_NAME,
+            public_ip=public_ip,
+            wait_for=True
+        )
 
 
-def create_schain(skale):
+def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME):
     print('Creating schain')
     # create 1 s-chain
-    type_of_nodes, lifetime_seconds, _ = generate_random_schain_data()
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes,
-                                                  lifetime_seconds)
-
-    skale.manager.create_schain(
+    type_of_nodes, lifetime_seconds, _ = generate_random_schain_data(skale)
+    _ = skale.schains.get_schain_price(
+        type_of_nodes, lifetime_seconds
+    )
+    skale.schains.grant_role(skale.schains.schain_creator_role(),
+                             skale.wallet.address)
+    skale.schains.add_schain_by_foundation(
         lifetime_seconds,
         type_of_nodes,
-        price_in_wei,
-        DEFAULT_SCHAIN_NAME,
-        wait_for=True
+        0,
+        schain_name,
+        wait_for=True,
+        value=TEST_SRW_FUND_VALUE
     )

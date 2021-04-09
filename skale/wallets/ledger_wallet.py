@@ -18,7 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import os
 import struct
 
 from hexbytes import HexBytes
@@ -29,18 +28,20 @@ from eth_account._utils.transactions import \
 from eth_utils.crypto import keccak
 from rlp import encode
 
+import skale.config as config
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
                                    to_checksum_address
 
-from skale.wallets.common import BaseWallet
+from skale.wallets.common import BaseWallet, ensure_chain_id
 
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_BIP32_PATH = "44'/60'/0'/0/0"
+class LedgerCommunicationError(Exception):
+    pass
 
 
-def encode_bip32_path(path=DEFAULT_BIP32_PATH):
+def encode_bip32_path(path):
     if len(path) == 0:
         return b''
     encoded_chunks = []
@@ -55,7 +56,7 @@ def encode_bip32_path(path=DEFAULT_BIP32_PATH):
     return b''.join(encoded_chunks)
 
 
-def derivation_path_prefix(bin32_path=DEFAULT_BIP32_PATH):
+def derivation_path_prefix(bin32_path):
     encoded_path = encode_bip32_path(bin32_path)
     encoded_path_len_bytes = (len(encoded_path) // 4).to_bytes(1, 'big')
     return encoded_path_len_bytes + encoded_path
@@ -65,15 +66,38 @@ def chunks(sequence, size):
     return (sequence[pos:pos + size] for pos in range(0, len(sequence), size))
 
 
+def get_derivation_path(address_index, legacy) -> str:
+    if legacy:
+        return get_legacy_derivation_path(address_index)
+    return get_live_derivation_path(address_index)
+
+
+def get_live_derivation_path(address_index) -> str:
+    return f'44\'/60\'/{address_index}\'/0/0'
+
+
+def get_legacy_derivation_path(address_index) -> str:
+    return f'44\'/60\'/0\'/{address_index}'
+
+
 class LedgerWallet(BaseWallet):
     CHUNK_SIZE = 255
     CLA = b'\xe0'
 
-    def __init__(self, web3, debug=False):
+    def __init__(self, web3, address_index, legacy=False, debug=False):
         from ledgerblue.comm import getDongle
-        self.dongle = getDongle(debug)
-        self._web3 = web3
-        self._address, self._public_key = self.get_address_with_public_key()
+        from ledgerblue.commException import CommException
+
+        self._address_index = address_index
+        self._bip32_path = get_derivation_path(address_index, legacy)
+        try:
+            self.dongle = getDongle(debug)
+            self._web3 = web3
+            self._address, self._public_key = self.get_address_with_public_key()
+        except (OSError, CommException):
+            raise LedgerCommunicationError(
+                'Error occured during the interaction with Ledger device'
+            )
 
     @property
     def address(self):
@@ -88,10 +112,9 @@ class LedgerWallet(BaseWallet):
         items = {'address': self.address, 'public_key': self.public_key}
         return items[key]
 
-    @classmethod
-    def make_payload(cls, data=''):
+    def make_payload(self, data=''):
         encoded_data = encode(data)
-        path_prefix = derivation_path_prefix()
+        path_prefix = derivation_path_prefix(self._bip32_path)
         return path_prefix + encoded_data
 
     @classmethod
@@ -128,10 +151,13 @@ class LedgerWallet(BaseWallet):
         return exchange_result
 
     def sign(self, tx_dict):
-        if os.getenv('ENV') == 'dev':
+        ensure_chain_id(tx_dict, self._web3)
+        if config.ENV == 'dev':  # fix for big chainId in ganache
             tx_dict['chainId'] = None
+        if tx_dict.get('nonce') is None:
+            tx_dict['nonce'] = self._web3.eth.getTransactionCount(self.address)
         tx = tx_from_dict(tx_dict)
-        payload = LedgerWallet.make_payload(tx)
+        payload = self.make_payload(tx)
         exchange_result = self.exchange_sign_payload_by_chunks(payload)
         return LedgerWallet.parse_sign_result(tx, exchange_result)
 
@@ -162,7 +188,7 @@ class LedgerWallet(BaseWallet):
         return self.dongle.exchange(apdu)
 
     def get_address_with_public_key(self):
-        payload = LedgerWallet.make_payload()
+        payload = self.make_payload()
         exchange_result = self.exchange_derive_payload(payload)
         return LedgerWallet.parse_derive_result(exchange_result)
 

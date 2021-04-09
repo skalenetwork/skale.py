@@ -27,6 +27,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install host dependencies
       run: |
+        sudo apt-get update --fix-missing
         sudo apt-get install libudev-dev
         sudo apt-get install libusb-1.0-0-dev
     - name: Install python dependencies
@@ -40,7 +41,7 @@ jobs:
         export BRANCH=${GITHUB_REF##*/}
         echo "Branch $BRANCH"
         export VERSION=$(bash ./scripts/calculate_version.sh)
-        echo "::set-env name=VERSION::$VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
         echo "Version $VERSION"
         bash ./scripts/build.sh
     - name: Publish to pip

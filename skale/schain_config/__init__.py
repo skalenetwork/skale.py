@@ -19,9 +19,4 @@
 
 # flake8: noqa: E402, F401
 
-SCHAIN_OWNER_ALLOC = 1000000000000000000000  # todo: tmp!
-NODE_OWNER_ALLOC = 1000000000000000000000  # todo: tmp!
-
-PORTS_PER_SCHAIN = 11
-
-from skale.schain_config.generator import generate_skale_schain_config
+PORTS_PER_SCHAIN = 64

@@ -7,18 +7,19 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        "flake8==3.7.9",
-        "isort>=4.2.15,<4.3.22",
+        "flake8==3.8.3",
+        "isort>=4.2.15,<5.4.3",
     ],
     'dev': [
-        "bumpversion==0.5.3",
-        "pytest==5.4.1",
-        "click==7.1.1",
-        "twine==3.1.1",
+        "bumpversion==0.6.0",
+        "click==7.1.2",
+        "freezegun==1.0.0",
         "mock==4.0.2",
-        "when-changed",
+        "pytest==5.4.3",
+        "pytest-cov==2.8.1",
         "Random-Word==1.0.4",
-        "pytest-cov==2.8.1"
+        "twine==3.1.1",
+        "when-changed"
     ],
     'hw-wallet': [
         "ledgerblue==0.1.31"
@@ -31,7 +32,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='3.5',
+    version='4.1',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -39,13 +40,13 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==5.6.0",
+        "web3==5.8.0",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.5dev0",
+        "sgx.py==0.6b1"
     ],
 
-    python_requires='>=3.6,<4',
+    python_requires='>=3.7,<4',
     extras_require=extras_require,
 
     keywords='skale',
@@ -55,7 +56,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 
     package_data={  # Optional

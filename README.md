@@ -8,7 +8,7 @@
 
 Python client library used in SKALE network components.
 
-- Python 3.6+ support
+- Python 3.7+ support
 - Compatibility with `web3.py` v5
 
 ### Installation
@@ -31,7 +31,7 @@ pip install skale.py
 With embeded Web3Wallet
 
 ```python
-from skale import Skale
+from skale import SkaleManager
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 
@@ -43,7 +43,7 @@ skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
 With external transactions manager:
 
 ```python
-from skale import Skale
+from skale import SkaleManager
 from skale.wallets import RPCWallet
 
 web3 = init_web3(ENDPOINT)
@@ -54,8 +54,8 @@ skale = Skale(ENDPOINT, ABI_FILEPATH, wallet)
 Interactions with SKALE contracts
 
 ```python
-active_nodes = skale.nodes_data.get_active_node_ips()
-schains = skale.schains_data.get_schains_for_owner('0x...')
+active_nodes = skale.nodes.get_active_node_ips()
+schains = skale.schains.get_schains_for_owner('0x...')
 ```
 
 #### Working in multiple threads

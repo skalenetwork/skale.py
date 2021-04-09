@@ -53,14 +53,15 @@ def send_tokens(skale, sender_wallet, receiver_account, amount,
 
 
 def send_ether(web3, sender_wallet, receiver_account, amount,
-               wait_for=True):
+               gas_price=None, wait_for=True):
     logger.info(
         f'Sending {amount} ETH from {sender_wallet.address} => '
         f'{receiver_account}'
     )
 
     wei_amount = web3.toWei(amount, 'ether')
-    tx = send_eth(web3, receiver_account, wei_amount, sender_wallet)
+    tx = send_eth(web3, receiver_account, wei_amount, sender_wallet,
+                  gas_price=gas_price)
     if wait_for:
         receipt = wait_for_receipt_by_blocks(web3, tx)
         check_receipt(receipt)
@@ -69,8 +70,12 @@ def send_ether(web3, sender_wallet, receiver_account, amount,
         return tx
 
 
+def account_eth_balance_wei(web3, address):
+    return web3.eth.getBalance(address)
+
+
 def check_ether_balance(web3, address):
-    balance_wei = web3.eth.getBalance(address)
+    balance_wei = account_eth_balance_wei(web3, address)
     balance = web3.fromWei(balance_wei, 'ether')
 
     logger.info(f'{address} balance: {balance} ETH')
@@ -86,7 +91,7 @@ def check_skale_balance(skale, address):
 
 def generate_account(web3):
     account = web3.eth.account.create()
-    private_key = account.privateKey.hex()
+    private_key = account.key.hex()
     logger.info(f'Generated account: {account.address}')
     return {'address': account.address, 'private_key': private_key}
 

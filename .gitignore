@@ -111,10 +111,12 @@ wallet*.json
 creds.tar.gz
 data.json
 schain.json
+sample_config.json
 
 abi.json
 test_abi.json
 unique.json
+allocator_contracts_data/
 
 .DS_Store
 
