@@ -34,6 +34,8 @@ from web3.middleware import (
 )
 
 import skale.config as config
+from skale.utils.helper import is_test_env
+
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +82,7 @@ def save_last_known_block_number(state_path: str, block_number: int) -> None:
 
 def outdated_client_time_msg(method, current_time, latest_block_timestamp, allowed_ts_diff):
     return f'{method} failed; \
-{current_time}: {current_time}, latest_block_timestamp: {latest_block_timestamp}, \
+current_time: {current_time}, latest_block_timestamp: {latest_block_timestamp}, \
 allowed_ts_diff: {allowed_ts_diff}'
 
 
@@ -98,7 +100,8 @@ def make_client_checking_middleware(allowed_ts_diff: int,
             else:
                 latest_block = web3.eth.getBlock('latest')
                 current_time = time.time()
-                if abs(current_time - latest_block['timestamp']) > allowed_ts_diff:
+                ts_diff = abs(current_time - latest_block['timestamp'])
+                if ts_diff > allowed_ts_diff and not is_test_env():
                     raise EthClientOutdatedError(outdated_client_time_msg(
                         method,
                         current_time,
