@@ -78,6 +78,17 @@ def save_last_known_block_number(state_path: str, block_number: int) -> None:
         last_block_file.write(str(block_number))
 
 
+def outdated_client_time_msg(method, current_time, latest_block_timestamp, allowed_ts_diff):
+    return f'{method} failed; \
+{current_time}: {current_time}, latest_block_timestamp: {latest_block_timestamp}, \
+allowed_ts_diff: {allowed_ts_diff}'
+
+
+def outdated_client_file_msg(method, latest_block_number, saved_number, state_path):
+    return f'{method} failed: latest_block_number: {latest_block_number}, \
+        saved_number: {saved_number}, state_path: {state_path}'
+
+
 def make_client_checking_middleware(allowed_ts_diff: int,
                                     state_path: str = None):
     def eth_client_checking_middleware(make_request, web3):
@@ -86,14 +97,24 @@ def make_client_checking_middleware(allowed_ts_diff: int,
                 response = make_request(method, params)
             else:
                 latest_block = web3.eth.getBlock('latest')
-
-                if time.time() - latest_block['timestamp'] > allowed_ts_diff:
-                    raise EthClientOutdatedError(method)
+                current_time = time.time()
+                if abs(current_time - latest_block['timestamp']) > allowed_ts_diff:
+                    raise EthClientOutdatedError(outdated_client_time_msg(
+                        method,
+                        current_time,
+                        latest_block['timestamp'],
+                        allowed_ts_diff
+                    ))
 
                 if state_path:
                     saved_number = get_last_known_block_number(state_path)
                     if latest_block['number'] < saved_number:
-                        raise EthClientOutdatedError(method)
+                        raise EthClientOutdatedError(outdated_client_file_msg(
+                            method,
+                            latest_block['number'],
+                            saved_number,
+                            state_path
+                        ))
                     save_last_known_block_number(state_path,
                                                  latest_block['number'])
                 response = make_request(method, params)
