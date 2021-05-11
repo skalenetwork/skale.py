@@ -32,7 +32,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='4.1',
+    version='5.0',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -40,10 +40,10 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==5.8.0",
+        "web3==5.13.1",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.6b1"
+        "sgx.py==0.7dev2"
     ],
 
     python_requires='>=3.7,<4',
@@ -52,14 +52,10 @@ setup(
     keywords='skale',
     packages=find_packages(exclude=['tests']),
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.7',
-    ],
-
-    package_data={  # Optional
-        'contracts': ['utils/contracts_data.json', 'envs/envs.yml', 'envs/aws.json'],
-    },
+    ]
 )

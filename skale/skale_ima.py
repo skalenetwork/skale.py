@@ -20,8 +20,7 @@
 import logging
 
 from skale.skale_base import SkaleBase
-import skale.contracts.allocator as contracts
-from skale.contracts.contract_manager import ContractManager
+import skale.contracts.ima as contracts
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info
@@ -31,20 +30,16 @@ logger = logging.getLogger(__name__)
 
 
 CONTRACTS_INFO = [
-    ContractInfo('contract_manager', 'ContractManager',
-                 ContractManager, ContractTypes.API, False),
-    ContractInfo('escrow', 'Escrow', contracts.Escrow,
-                 ContractTypes.API, True),
-    ContractInfo('allocator', 'Allocator', contracts.Allocator,
-                 ContractTypes.API, True)
+    ContractInfo('linker', 'Linker',
+                 contracts.Linker, ContractTypes.API, False)
 ]
 
 
-def spawn_skale_allocator_lib(skale):
-    return SkaleAllocator(skale._endpoint, skale._abi_filepath, skale.wallet)
+def spawn_skale_ima_lib(skale_ima):
+    """ Clone skale ima object with the same wallet """
+    return SkaleIma(skale_ima._endpoint, skale_ima._abi_filepath, skale_ima.wallet)
 
 
-class SkaleAllocator(SkaleBase):
+class SkaleIma(SkaleBase):
     def set_contracts_info(self):
-        self.init_contract_manager()
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)

@@ -19,37 +19,27 @@
 
 import functools
 import json
-import logging
 import time
+import logging
 import urllib
 
 import requests
-from hexbytes import HexBytes
-from eth_account.datastructures import AttributeDict
 
-from skale.wallets.common import BaseWallet
 from skale.utils.exceptions import RPCWalletError
+from skale.wallets import SgxWallet
 
 
 logger = logging.getLogger(__name__)
 
-ROUTES = {
-    'sign': '/sign',
-    'sign_and_send': '/sign-and-send',
-    'sign_hash': '/sign-hash',
-    'address': '/address',
-    'public_key': '/public-key',
-}
 
-ATTEMPTS = 10
+ATTEMPTS = 100
 TIMEOUTS = [2 ** p for p in range(ATTEMPTS)]
-SGX_UNREACHABLE_MESSAGE = 'Sgx server is unreachable'
 
 
 def rpc_request(func):
     @functools.wraps(func)
     def wrapper(self, route, *args, **kwargs):
-        data, error = None, None
+        data, error, response = None, None, None
         for i, timeout in enumerate(TIMEOUTS):
             logger.info(f'Sending wallet rpc {route} request. Attempt {i}')
             try:
@@ -74,12 +64,17 @@ def rpc_request(func):
     return wrapper
 
 
-class RPCWallet(BaseWallet):
-    def __init__(self, url, retry_if_failed=False):
+class RPCWallet(SgxWallet):
+    def __init__(self, url, sgx_endpoint, web3, key_name=None,
+                 path_to_cert=None, retry_if_failed=False) -> None:
+        super().__init__(sgx_endpoint=sgx_endpoint,
+                         web3=web3, key_name=key_name,
+                         path_to_cert=path_to_cert)
         self._url = url
         self._retry_if_failed = retry_if_failed
 
-    def _construct_url(self, host, url):
+    @classmethod
+    def _construct_url(cls, host, url):
         return urllib.parse.urljoin(host, url)
 
     @rpc_request
@@ -92,35 +87,13 @@ class RPCWallet(BaseWallet):
         request_url = self._construct_url(self._url, route)
         return requests.get(request_url, data=data)
 
-    def _compose_tx_data(self, tx_dict):
+    @classmethod
+    def _compose_tx_data(cls, tx_dict):
         return {
             'transaction_dict': json.dumps(tx_dict)
         }
 
-    def sign(self, tx_dict):
-        data = self._post(ROUTES['sign'], self._compose_tx_data(tx_dict))
-        return AttributeDict(data)
-
     def sign_and_send(self, tx_dict):
-        data = self._post(ROUTES['sign_and_send'], self._compose_tx_data(tx_dict))
+        data = self._post('/sign-and-send',
+                          self._compose_tx_data(tx_dict))
         return data['transaction_hash']
-
-    def sign_hash(self, unsigned_hash: str):
-        data = self._post(ROUTES['sign_hash'], {'unsigned_hash': unsigned_hash})
-        return AttributeDict({
-            'messageHash': HexBytes(data['messageHash']),
-            'r': data['r'],
-            's': data['s'],
-            'v': data['v'],
-            'signature': HexBytes(data['signature']),
-        })
-
-    @property
-    def address(self):
-        data = self._get(ROUTES['address'])
-        return data['address']
-
-    @property
-    def public_key(self):
-        data = self._get(ROUTES['public_key'])
-        return data['public_key']
