@@ -79,7 +79,8 @@ def estimate_gas(web3, method, opts):
     estimated_gas = method.estimateGas(opts)
     normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
     if normalized_estimated_gas > block_gas_limit:
-        logger.warning(f'Estimate gas for {method.fn_name} exceeds block gas limit')
+        logger.warning(f'Estimate gas for {method.fn_name} - {normalized_estimated_gas} exceeds \
+block gas limit, going to use block_gas_limit ({block_gas_limit}) for this transaction')
         return block_gas_limit
     return normalized_estimated_gas
 
