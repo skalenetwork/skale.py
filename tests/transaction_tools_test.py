@@ -15,8 +15,9 @@ from skale.utils.account_tools import (
 )
 from skale.utils.web3_utils import init_web3, wait_receipt
 from skale.wallets import Web3Wallet
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, TEST_GAS_LIMIT
+from skale.wallets.web3_wallet import generate_wallet
 
+from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, TEST_GAS_LIMIT
 from tests.constants import (
     D_VALIDATOR_NAME, D_VALIDATOR_DESC,
     D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL,
@@ -181,6 +182,9 @@ def test_send_eth_with_skale_without_wait_for_false(skale):
 
 
 def test_estimate_gas(skale):
+    main_wallet = skale.wallet
+    skale.wallet = generate_wallet(skale.web3)
+
     method = skale.validator_service.contract.functions.registerValidator(
         D_VALIDATOR_NAME,
         D_VALIDATOR_DESC,
@@ -202,3 +206,4 @@ def test_estimate_gas(skale):
         estimated_gas = estimate_gas(skale.web3, method, opts)
 
     assert estimated_gas == block_gas_limit
+    skale.wallet = main_wallet
