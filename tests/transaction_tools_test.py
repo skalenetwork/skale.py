@@ -6,7 +6,9 @@ from skale.transactions.result import (DryRunFailedError,
                                        InsufficientBalanceError,
                                        TransactionFailedError)
 from skale import Skale
-from skale.transactions.tools import run_tx_with_retry, send_eth_with_skale
+from skale.transactions.tools import (
+    run_tx_with_retry, send_eth_with_skale, estimate_gas, get_block_gas_limit
+)
 from skale.utils.account_tools import (
     generate_account,
     send_ether
@@ -14,6 +16,11 @@ from skale.utils.account_tools import (
 from skale.utils.web3_utils import init_web3, wait_receipt
 from skale.wallets import Web3Wallet
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, TEST_GAS_LIMIT
+
+from tests.constants import (
+    D_VALIDATOR_NAME, D_VALIDATOR_DESC,
+    D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL,
+)
 
 ETH_IN_WEI = 10 ** 18
 
@@ -171,3 +178,27 @@ def test_send_eth_with_skale_without_wait_for_false(skale):
     assert balance_from_after - balance_from_before + token_amount < fee_value
     balance_to_after = skale.web3.eth.getBalance(address_to)
     assert balance_to_after == balance_to_before + token_amount
+
+
+def test_estimate_gas(skale):
+    method = skale.validator_service.contract.functions.registerValidator(
+        D_VALIDATOR_NAME,
+        D_VALIDATOR_DESC,
+        D_VALIDATOR_FEE,
+        D_VALIDATOR_MIN_DEL
+    )
+    opts = {
+        'from': skale.wallet.address,
+        'value': 0
+    }
+
+    block_gas_limit = get_block_gas_limit(skale.web3)
+    estimated_gas = estimate_gas(skale.web3, method, opts)
+
+    assert isinstance(estimated_gas, int)
+    assert estimated_gas != block_gas_limit
+
+    with mock.patch.object(method, 'estimateGas', return_value=10000000000):
+        estimated_gas = estimate_gas(skale.web3, method, opts)
+
+    assert estimated_gas == block_gas_limit
