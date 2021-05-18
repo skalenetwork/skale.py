@@ -23,7 +23,7 @@ from sgx import SgxClient
 from web3 import Web3
 
 from skale.utils.web3_utils import get_eth_nonce
-from skale.wallets.common import BaseWallet
+from skale.wallets.common import BaseWallet, ensure_chain_id
 
 
 logger = logging.getLogger(__name__)
@@ -42,6 +42,7 @@ class SgxWallet(BaseWallet):
     def sign(self, tx_dict):
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
+        ensure_chain_id(tx_dict, self._web3)
         return self.sgx_client.sign(tx_dict, self.key_name)
 
     def sign_and_send(self, tx_dict) -> str:
