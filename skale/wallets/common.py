@@ -38,15 +38,19 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> str:
         pass
 
     @property
     @abstractmethod
-    def address(self):
+    def address(self) -> str:
         pass
 
     @property
     @abstractmethod
-    def public_key(self):
+    def public_key(self) -> str:
+        pass
+
+    @abstractmethod
+    def wait(self, tx: str):
         pass

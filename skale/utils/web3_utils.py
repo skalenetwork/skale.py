@@ -35,6 +35,7 @@ from web3.middleware import (
 
 import skale.config as config
 from skale.utils.helper import is_test_env
+from skale.transactions.exceptions import TransactionNotMinedError
 
 
 logger = logging.getLogger(__name__)
@@ -43,8 +44,8 @@ logger = logging.getLogger(__name__)
 WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 MAX_WAITING_TIME = 3 * 60 * 60  # 3 hours
 BLOCK_WAITING_TIMEOUT = 1
-MAX_BLOCK_WAITING_TIME = 24 * 60 * 60  # 24 hours
 DEFAULT_HTTP_TIMEOUT = 120
+DEFAULT_BLOCKS_TO_WAIT = 50
 
 
 def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
@@ -161,11 +162,18 @@ def get_eth_nonce(web3, address):
     return web3.eth.getTransactionCount(address)
 
 
-def wait_for_receipt_by_blocks(web3, tx, timeout=4, blocks_to_wait=50):
+def wait_for_receipt_by_blocks(
+    web3,
+    tx,
+    blocks_to_wait=DEFAULT_BLOCKS_TO_WAIT,
+    timeout=MAX_WAITING_TIME
+):
+    blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
+    timeout = timeout or MAX_WAITING_TIME
     previous_block = web3.eth.blockNumber
     current_block = previous_block
     wait_start_time = time.time()
-    while time.time() - wait_start_time < MAX_WAITING_TIME and \
+    while time.time() - wait_start_time < timeout and \
             current_block <= previous_block + blocks_to_wait:
         try:
             receipt = get_receipt(web3, tx)
@@ -175,7 +183,9 @@ def wait_for_receipt_by_blocks(web3, tx, timeout=4, blocks_to_wait=50):
             return receipt
         current_block = web3.eth.blockNumber
         time.sleep(timeout)
-    raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
+    raise TransactionNotMinedError(
+        f'Transaction with hash: {tx} not found in {blocks_to_wait} blocks.'
+    )
 
 
 def wait_receipt(web3, tx, retries=30, timeout=5):
@@ -187,7 +197,9 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
         if receipt is not None:
             return receipt
         time.sleep(timeout)  # pragma: no cover
-    raise TransactionNotFound(f"Transaction with hash: {tx} not found.")
+    raise TransactionNotMinedError(
+        f'Transaction with hash: {tx} not mined after {retries} retries.'
+    )
 
 
 def check_receipt(receipt, raise_error=True):
@@ -199,14 +211,19 @@ def check_receipt(receipt, raise_error=True):
     return True
 
 
-def wait_for_confirmation_blocks(web3, blocks_to_wait, request_timeout=5):
+def wait_for_confirmation_blocks(
+    web3,
+    blocks_to_wait,
+    timeout=MAX_WAITING_TIME,
+    request_timeout=5
+):
     current_block = start_block = web3.eth.blockNumber
     logger.info(
         f'Current block number is {current_block}, '
         f'waiting for {blocks_to_wait} confimration blocks to be mined'
     )
     wait_start_time = time.time()
-    while time.time() - wait_start_time < MAX_WAITING_TIME and \
+    while time.time() - wait_start_time < timeout and \
             current_block <= start_block + blocks_to_wait:
         current_block = web3.eth.blockNumber
         time.sleep(request_timeout)

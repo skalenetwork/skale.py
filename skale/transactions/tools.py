@@ -22,13 +22,10 @@ import time
 from functools import partial, wraps
 
 import skale.config as config
-from skale.transactions.result import (
-    DryRunFailedError,
-    InsufficientBalanceError,
-    TransactionFailedError, TxRes
-)
+from skale.transactions.exceptions import TransactionError
+from skale.transactions.result import TxRes
 from skale.utils.constants import GAS_LIMIT_COEFFICIENT
-from skale.utils.exceptions import RPCWalletError
+from skale.wallets.redis_wallet import RedisAdapterError
 from skale.utils.web3_utils import (
     check_receipt,
     get_eth_nonce,
@@ -189,15 +186,12 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         try:
             tx_res = transaction(*args, **kwargs)
             tx_res.raise_for_status()
-        except (TransactionFailedError, DryRunFailedError, RPCWalletError) as err:
+        except (RedisAdapterError, TransactionError) as err:
             logger.error(f'Tx attempt {attempt}/{max_retries} failed',
                          exc_info=err)
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
             exp_timeout *= 2
-        except InsufficientBalanceError as err:
-            logger.error('Sender balance is too low', exc_info=err)
-            raise err
         else:
             success = True
         attempt += 1

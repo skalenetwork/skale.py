@@ -21,8 +21,9 @@ from eth_keys import keys
 from web3 import Web3
 from eth_account import messages
 
-from skale.wallets.common import BaseWallet, ensure_chain_id
+from skale.transactions.tools import wait_for_receipt_by_blocks
 from skale.utils.web3_utils import get_eth_nonce
+from skale.wallets.common import BaseWallet, ensure_chain_id
 
 
 def private_key_to_public(pr):
@@ -77,7 +78,9 @@ class Web3Wallet(BaseWallet):
 
     def sign_and_send(self, tx_dict) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        return self._web3.eth.sendRawTransaction(
+            signed_tx.rawTransaction
+        ).hex()
 
     @property
     def address(self):
@@ -86,3 +89,11 @@ class Web3Wallet(BaseWallet):
     @property
     def public_key(self):
         return str(self._public_key)
+
+    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+        return wait_for_receipt_by_blocks(
+            self._web3,
+            tx_hash,
+            blocks_to_wait=blocks_to_wait,
+            timeout=timeout
+        )

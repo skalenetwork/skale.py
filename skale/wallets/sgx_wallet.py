@@ -24,6 +24,7 @@ from web3 import Web3
 
 from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.common import BaseWallet, ensure_chain_id
+from skale.transactions.tools import wait_for_receipt_by_blocks
 
 
 logger = logging.getLogger(__name__)
@@ -79,3 +80,11 @@ class SgxWallet(BaseWallet):
     def _get_account(self, key_name):
         account = self.sgx_client.get_account(key_name)
         return account.address, account.public_key
+
+    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+        return wait_for_receipt_by_blocks(
+            self._web3,
+            tx_hash,
+            blocks_to_wait=blocks_to_wait,
+            timeout=timeout
+        )

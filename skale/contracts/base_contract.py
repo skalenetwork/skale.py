@@ -28,8 +28,11 @@ from skale.transactions.result import (TxRes, check_balance_and_gas,
                                        is_success, is_success_or_not_performed)
 from skale.transactions.tools import make_dry_run_call, post_transaction
 from skale.utils.account_tools import account_eth_balance_wei
-from skale.utils.web3_utils import (wait_for_confirmation_blocks,
-                                    wait_for_receipt_by_blocks)
+from skale.utils.web3_utils import (
+    DEFAULT_BLOCKS_TO_WAIT,
+    MAX_WAITING_TIME,
+    wait_for_confirmation_blocks
+)
 
 from skale.utils.helper import to_camel_case
 
@@ -47,13 +50,17 @@ def execute_dry_run(skale, method, custom_gas_limit, value=0) -> tuple:
 
 def transaction_method(transaction):
     @wraps(transaction)
-    def wrapper(self, *args, wait_for=True,
-                wait_timeout=4, blocks_to_wait=50, gas_limit=None,
-                gas_price=None, nonce=None, value=0,
-                dry_run_only=False, skip_dry_run=False,
-                raise_for_status=True, confirmation_blocks=0, **kwargs):
+    def wrapper(
+        self, *args, wait_for=True,
+        blocks_to_wait=DEFAULT_BLOCKS_TO_WAIT,
+        timeout=MAX_WAITING_TIME,
+        gas_limit=None,
+        gas_price=None, nonce=None, value=0,
+        dry_run_only=False, skip_dry_run=False,
+        raise_for_status=True, confirmation_blocks=0, **kwargs
+    ):
         method = transaction(self, *args, **kwargs)
-        dry_run_result, tx_hash, receipt = None, None, None
+        dry_run_result, tx, receipt = None, None, None
 
         # Make dry_run and estimate gas limit
         estimated_gas_limit = None
@@ -79,22 +86,17 @@ def transaction_method(transaction):
             is_success_or_not_performed(dry_run_result)
 
         if rich_enough and should_send_transaction:
-            tx_hash = post_transaction(
+            tx = post_transaction(
                 self.skale.wallet, method, gas_limit,
                 gas_price, nonce, value
             )
             if wait_for:
-                receipt = wait_for_receipt_by_blocks(
-                    self.skale.web3,
-                    tx_hash,
-                    timeout=wait_timeout,
-                    blocks_to_wait=blocks_to_wait
-                )
+                receipt = self.skale.wallet.wait(tx)
             if confirmation_blocks:
                 wait_for_confirmation_blocks(self.skale.web3,
                                              confirmation_blocks)
 
-        tx_res = TxRes(dry_run_result, balance_check_result, tx_hash, receipt)
+        tx_res = TxRes(dry_run_result, balance_check_result, tx, receipt)
 
         if raise_for_status:
             tx_res.raise_for_status()
@@ -112,14 +114,16 @@ class BaseContract:
 
     def __getattr__(self, attr):
         """Fallback for contract calls"""
-        logger.debug("Calling contract function: "+attr)
+        logger.debug("Calling contract function: %s", attr)
 
         def wrapper(*args, **kw):
             logger.debug('called with %r and %r' % (args, kw))
             camel_case_fn_name = to_camel_case(attr)
             if hasattr(self.contract.functions, camel_case_fn_name):
-                return getattr(self.contract.functions, camel_case_fn_name)(*args, **kw).call()
+                return getattr(self.contract.functions,
+                               camel_case_fn_name)(*args, **kw).call()
             if hasattr(self.contract.functions, attr):
-                return getattr(self.contract.functions, attr)(*args, **kw).call()
+                return getattr(self.contract.functions,
+                               attr)(*args, **kw).call()
             raise AttributeError(attr)
         return wrapper
