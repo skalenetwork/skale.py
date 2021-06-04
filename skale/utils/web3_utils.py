@@ -182,7 +182,7 @@ def wait_for_receipt_by_blocks(
         if receipt is not None:
             return receipt
         current_block = web3.eth.blockNumber
-        time.sleep(timeout)
+        time.sleep(3)
     raise TransactionNotMinedError(
         f'Transaction with hash: {tx} not found in {blocks_to_wait} blocks.'
     )

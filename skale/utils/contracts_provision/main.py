@@ -41,6 +41,7 @@ def _skip_evm_time(web3, seconds) -> int:
 def add_test_schain_type(skale) -> TxRes:
     part_of_node = 1
     number_of_nodes = 2
+
     return skale.schains_internal.add_schain_type(
         part_of_node, number_of_nodes
     )
