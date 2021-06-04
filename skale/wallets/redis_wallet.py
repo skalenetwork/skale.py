@@ -26,6 +26,8 @@ from typing import Dict, Optional, Tuple
 
 from redis import Redis
 
+from skale.config import DEFAULT_GAS_MULTIPLIER, DEFAULT_PRIORITY
+
 from skale.transactions.exceptions import (
     TransactionNotMinedError,
     TransactionNotSentError
@@ -86,11 +88,17 @@ class RedisWalletAdapter:
         return priority * 10 ** len(str(ts)) + ts
 
     @classmethod
-    def _make_record(cls, tx: Dict, score: int) -> Tuple[bytes, bytes]:
+    def _make_record(
+        cls,
+        tx: Dict,
+        score: int,
+        multiplier: int = DEFAULT_GAS_MULTIPLIER
+    ) -> Tuple[bytes, bytes]:
         tx_id = cls._make_raw_id()
         record = json.dumps({
             'status': 'PROPOSED',
             'score': score,
+            'multiplier': multiplier,
             'tx_hash': None,
             **tx
         }).encode('utf-8')
@@ -103,11 +111,20 @@ class RedisWalletAdapter:
     def _to_id(cls, raw_id: str) -> str:
         return raw_id.decode('utf-8')
 
-    def sign_and_send(self, tx: Dict, priority: int = 1) -> str:
+    def sign_and_send(
+        self,
+        tx: Dict,
+        multiplier: int = DEFAULT_GAS_MULTIPLIER,
+        priority: int = DEFAULT_PRIORITY
+    ) -> str:
         try:
             logger.info(f'Sending {tx} to redis pool ...')
             score = self._make_score(priority)
-            raw_id, tx_record = self._make_record(tx, score)
+            raw_id, tx_record = self._make_record(
+                tx,
+                score,
+                multiplier=multiplier
+            )
             pipe = self.rs.pipeline()
             logger.info(f'Adding tx {raw_id} to the pool')
             pipe.zadd(self.pool, {raw_id: score})
@@ -115,9 +132,9 @@ class RedisWalletAdapter:
             pipe.set(raw_id, tx_record)
             pipe.execute()
             return self._to_id(raw_id)
-        except Exception:
+        except Exception as err:
             logger.exception(f'Sending {tx} with redis wallet errored')
-            raise RedisAdapterSendError('Sending tx failed')
+            raise RedisAdapterSendError(err)
 
     def get_status(self, tx_id: str) -> str:
         return self.get_record(tx_id)['status']
