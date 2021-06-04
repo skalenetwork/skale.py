@@ -18,6 +18,8 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
+from typing import Dict
+
 from skale.utils.exceptions import ChainIdError
 
 
@@ -34,7 +36,12 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(
+        self,
+        tx_dict: Dict,
+        multiplier: int = None,
+        priority: int = None
+    ) -> str:
         pass
 
     @abstractmethod
@@ -52,5 +59,5 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def wait(self, tx: str):
+    def wait(self, tx: str, confirmation_blocks: int = None):
         pass

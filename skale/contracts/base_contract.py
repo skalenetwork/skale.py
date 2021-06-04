@@ -51,13 +51,22 @@ def execute_dry_run(skale, method, custom_gas_limit, value=0) -> tuple:
 def transaction_method(transaction):
     @wraps(transaction)
     def wrapper(
-        self, *args, wait_for=True,
+        self,
+        *args,
+        wait_for=True,
         blocks_to_wait=DEFAULT_BLOCKS_TO_WAIT,
         timeout=MAX_WAITING_TIME,
         gas_limit=None,
-        gas_price=None, nonce=None, value=0,
-        dry_run_only=False, skip_dry_run=False,
-        raise_for_status=True, confirmation_blocks=0, **kwargs
+        gas_price=None,
+        nonce=None,
+        value=0,
+        dry_run_only=False,
+        skip_dry_run=False,
+        raise_for_status=True,
+        multiplier=None,
+        priority=None,
+        confirmation_blocks=0,
+        **kwargs
     ):
         method = transaction(self, *args, **kwargs)
         dry_run_result, tx, receipt = None, None, None
@@ -88,13 +97,15 @@ def transaction_method(transaction):
         if rich_enough and should_send_transaction:
             tx = post_transaction(
                 self.skale.wallet, method, gas_limit,
-                gas_price, nonce, value
+                gas_price, nonce, value, multiplier, priority
             )
             if wait_for:
                 receipt = self.skale.wallet.wait(tx)
             if confirmation_blocks:
-                wait_for_confirmation_blocks(self.skale.web3,
-                                             confirmation_blocks)
+                wait_for_confirmation_blocks(
+                    self.skale.web3,
+                    confirmation_blocks
+                )
 
         tx_res = TxRes(dry_run_result, balance_check_result, tx, receipt)
 

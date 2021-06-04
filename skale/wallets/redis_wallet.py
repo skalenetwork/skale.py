@@ -26,8 +26,7 @@ from typing import Dict, Optional, Tuple
 
 from redis import Redis
 
-from skale.config import DEFAULT_GAS_MULTIPLIER, DEFAULT_PRIORITY
-
+import skale.config as config
 from skale.transactions.exceptions import (
     TransactionNotMinedError,
     TransactionNotSentError
@@ -92,7 +91,7 @@ class RedisWalletAdapter:
         cls,
         tx: Dict,
         score: int,
-        multiplier: int = DEFAULT_GAS_MULTIPLIER
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER
     ) -> Tuple[bytes, bytes]:
         tx_id = cls._make_raw_id()
         record = json.dumps({
@@ -114,8 +113,8 @@ class RedisWalletAdapter:
     def sign_and_send(
         self,
         tx: Dict,
-        multiplier: int = DEFAULT_GAS_MULTIPLIER,
-        priority: int = DEFAULT_PRIORITY
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int = config.DEFAULT_PRIORITY
     ) -> str:
         try:
             logger.info(f'Sending {tx} to redis pool ...')

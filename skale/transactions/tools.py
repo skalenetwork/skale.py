@@ -101,7 +101,16 @@ def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
 
-def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None, value=0) -> str:
+def post_transaction(
+    wallet,
+    method,
+    gas_limit,
+    gas_price=None,
+    nonce=None,
+    value=0,
+    multiplier: int = None,
+    priority: int = None
+) -> str:
     logger.info(
         f'Tx: {method.fn_name}, '
         f'sender: {wallet.address}, '
@@ -111,7 +120,11 @@ def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None, valu
         f'value: {value}'
     )
     tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce, value)
-    tx_hash = wallet.sign_and_send(tx_dict)
+    tx_hash = wallet.sign_and_send(
+        tx_dict,
+        multiplier=multiplier,
+        priority=priority
+    )
     return tx_hash
 
 

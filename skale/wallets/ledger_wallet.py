@@ -19,6 +19,7 @@
 
 import logging
 import struct
+from typing import Dict
 
 from hexbytes import HexBytes
 from eth_account.datastructures import SignedTransaction
@@ -94,7 +95,8 @@ class LedgerWallet(BaseWallet):
         try:
             self.dongle = getDongle(debug)
             self._web3 = web3
-            self._address, self._public_key = self.get_address_with_public_key()
+            self._address, self._public_key = \
+                self.get_address_with_public_key()
         except (OSError, CommException):
             raise LedgerCommunicationError(
                 'Error occured during the interaction with Ledger device'
@@ -161,12 +163,21 @@ class LedgerWallet(BaseWallet):
         exchange_result = self.exchange_sign_payload_by_chunks(payload)
         return LedgerWallet.parse_sign_result(tx, exchange_result)
 
-    def sign_and_send(self, tx) -> str:
+    def sign_and_send(
+        self,
+        tx: Dict,
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int = config.DEFAULT_PRIORITY
+    ) -> str:
         signed_tx = self.sign(tx)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        return self._web3.eth.sendRawTransaction(
+            signed_tx.rawTransaction
+        ).hex()
 
     def sign_hash(self, unsigned_hash: str):
-        raise NotImplementedError('sign_hash is not implemented for hardware wallet')
+        raise NotImplementedError(
+            'sign_hash is not implemented for hardware wallet'
+        )
 
     @classmethod
     def parse_derive_result(cls, exchange_result):

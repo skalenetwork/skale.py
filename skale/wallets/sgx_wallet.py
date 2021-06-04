@@ -18,10 +18,12 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+from typing import Dict
 
 from sgx import SgxClient
 from web3 import Web3
 
+import skale.config as config
 from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.common import BaseWallet, ensure_chain_id
 from skale.transactions.tools import wait_for_receipt_by_blocks
@@ -46,9 +48,16 @@ class SgxWallet(BaseWallet):
         ensure_chain_id(tx_dict, self._web3)
         return self.sgx_client.sign(tx_dict, self.key_name)
 
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(
+        self,
+        tx_dict: Dict,
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int = config.DEFAULT_PRIORITY
+    ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        return self._web3.eth.sendRawTransaction(
+            signed_tx.rawTransaction
+        ).hex()
 
     def sign_hash(self, unsigned_hash: str):
         if unsigned_hash.startswith('0x'):
@@ -59,7 +68,11 @@ class SgxWallet(BaseWallet):
         normalized_hash = header + body
         hash_to_sign = Web3.keccak(hexstr='0x' + normalized_hash.hex())
         chain_id = None
-        return self.sgx_client.sign_hash(hash_to_sign, self._key_name, chain_id)
+        return self.sgx_client.sign_hash(
+            hash_to_sign,
+            self._key_name,
+            chain_id
+        )
 
     @property
     def address(self):
