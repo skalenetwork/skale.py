@@ -43,7 +43,8 @@ setup(
         "web3==5.13.1",
         "asyncio==3.4.3",
         "pyyaml==5.3.1",
-        "sgx.py==0.7dev2"
+        "sgx.py==0.7dev2",
+        "redis==3.5.3"
     ],
 
     python_requires='>=3.7,<4',
