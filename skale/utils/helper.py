@@ -28,6 +28,9 @@ import sys
 from logging import Formatter, StreamHandler
 from random import randint
 
+from skale.config import ENV
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -179,3 +182,7 @@ def get_contracts_info(contracts_data):
 def to_camel_case(snake_str):
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])
+
+
+def is_test_env():
+    return "pytest" in sys.modules or ENV == 'test'

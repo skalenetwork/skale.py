@@ -23,11 +23,11 @@ from skale.utils.web3_utils import to_checksum_address
 DEFAULT_TOKEN_MANAGER_ADDRESS = '0x57ad607c6e90df7d7f158985c3e436007a15d744'
 
 
-class LockAndData(BaseContract):
+class Linker(BaseContract):
     @transaction_method
-    def add_schain(self, schain_name, token_manager_address=DEFAULT_TOKEN_MANAGER_ADDRESS):
+    def connect_schain(self, schain_name, token_manager_address=DEFAULT_TOKEN_MANAGER_ADDRESS):
         address_fx = to_checksum_address(token_manager_address)
-        return self.contract.functions.addSchain(
+        return self.contract.functions.connectSchain(
             schain_name,
-            address_fx
+            [address_fx, address_fx, address_fx]
         )

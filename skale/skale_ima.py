@@ -30,8 +30,8 @@ logger = logging.getLogger(__name__)
 
 
 CONTRACTS_INFO = [
-    ContractInfo('lock_and_data_for_mainnet', 'LockAndData',
-                 contracts.LockAndData, ContractTypes.API, False)
+    ContractInfo('linker', 'Linker',
+                 contracts.Linker, ContractTypes.API, False)
 ]
 
 
