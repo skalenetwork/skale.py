@@ -38,6 +38,20 @@ def _skip_evm_time(web3, seconds) -> int:
     return res['result']
 
 
+def add_test_permissions(skale):
+    schain_type_manager_role = skale.schains_internal.schain_type_manager_role()
+    if not skale.schains_internal.has_role(schain_type_manager_role, skale.wallet.address):
+        skale.schains_internal.grant_role(schain_type_manager_role, skale.wallet.address)
+
+    validator_manager_role = skale.validator_service.validator_manager_role()
+    if not skale.validator_service.has_role(validator_manager_role, skale.wallet.address):
+        skale.validator_service.grant_role(validator_manager_role, skale.wallet.address)
+
+    constants_holder_role = skale.constants_holder.constants_holder_role()
+    if not skale.constants_holder.has_role(constants_holder_role, skale.wallet.address):
+        skale.constants_holder.grant_role(constants_holder_role, skale.wallet.address)
+
+
 def add_test_schain_type(skale) -> TxRes:
     part_of_node = 1
     number_of_nodes = 2
