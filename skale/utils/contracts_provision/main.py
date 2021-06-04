@@ -38,6 +38,34 @@ def _skip_evm_time(web3, seconds) -> int:
     return res['result']
 
 
+def add_test_permissions(skale):
+    schain_type_manager_role = skale.schains_internal.schain_type_manager_role()
+    if not skale.schains_internal.has_role(schain_type_manager_role, skale.wallet.address):
+        skale.schains_internal.grant_role(schain_type_manager_role, skale.wallet.address)
+
+    validator_manager_role = skale.validator_service.validator_manager_role()
+    if not skale.validator_service.has_role(validator_manager_role, skale.wallet.address):
+        skale.validator_service.grant_role(validator_manager_role, skale.wallet.address)
+
+    constants_holder_role = skale.constants_holder.constants_holder_role()
+    if not skale.constants_holder.has_role(constants_holder_role, skale.wallet.address):
+        skale.constants_holder.grant_role(constants_holder_role, skale.wallet.address)
+
+    schain_deleter_role = skale.manager.schain_deleter_role()
+    if not skale.manager.has_role(schain_deleter_role, skale.wallet.address):
+        skale.manager.grant_role(schain_deleter_role, skale.wallet.address)
+
+    delegation_period_setter_role = skale.delegation_period_manager.delegation_period_setter_role()
+    if not skale.delegation_period_manager.has_role(delegation_period_setter_role,
+                                                    skale.wallet.address):
+        skale.delegation_period_manager.grant_role(
+            delegation_period_setter_role, skale.wallet.address)
+
+    penalty_setter_role = skale.slashing_table.penalty_setter_role()
+    if not skale.slashing_table.has_role(penalty_setter_role, skale.wallet.address):
+        skale.slashing_table.grant_role(penalty_setter_role, skale.wallet.address)
+
+
 def add_test_schain_type(skale) -> TxRes:
     part_of_node = 1
     number_of_nodes = 2
