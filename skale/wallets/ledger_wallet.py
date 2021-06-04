@@ -32,7 +32,7 @@ import skale.config as config
 from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
                                    to_checksum_address
 
-from skale.wallets.common import BaseWallet
+from skale.wallets.common import BaseWallet, ensure_chain_id
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +150,8 @@ class LedgerWallet(BaseWallet):
         return exchange_result
 
     def sign(self, tx_dict):
-        if config.ENV == 'dev':
+        ensure_chain_id(tx_dict, self._web3)
+        if config.ENV == 'dev':  # fix for big chainId in ganache
             tx_dict['chainId'] = None
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = self._web3.eth.getTransactionCount(self.address)
