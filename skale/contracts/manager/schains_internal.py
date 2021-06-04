@@ -52,7 +52,7 @@ class SChainsInternal(BaseContract):
         return self.contract.functions.getNodesInGroup(id_).call()
 
     def get_schain_ids_for_node(self, node_id):
-        return self.contract.functions.getSchainIdsForNode(node_id).call()
+        return self.contract.functions.getSchainHashsForNode(node_id).call()
 
     def is_schain_exist(self, name):
         id_ = self.schains.name_to_id(name)

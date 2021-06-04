@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 
 
 class DelegationPeriodManager(BaseContract):
@@ -35,3 +36,13 @@ class DelegationPeriodManager(BaseContract):
         return self.contract.functions.isDelegationPeriodAllowed(
             monthsCount=months_count
         ).call()
+
+    @transaction_method
+    def grant_role(self, role: bytes, address: str) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
+
+    def delegation_period_setter_role(self) -> bytes:
+        return self.contract.functions.DELEGATION_PERIOD_SETTER_ROLE().call()
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
