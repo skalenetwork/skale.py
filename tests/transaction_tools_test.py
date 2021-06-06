@@ -2,9 +2,11 @@ import pytest
 import mock
 from web3 import Web3
 
-from skale.transactions.result import (DryRunFailedError,
-                                       InsufficientBalanceError,
-                                       TransactionFailedError)
+from skale.transactions.exceptions import (
+    DryRunFailedError,
+    InsufficientBalanceError,
+    TransactionFailedError
+)
 from skale import Skale
 from skale.transactions.tools import (
     run_tx_with_retry, send_eth_with_skale, estimate_gas, get_block_gas_limit
@@ -101,27 +103,21 @@ def test_run_tx_with_retry_tx_failed(failed_skale):
 
 def test_run_tx_with_retry_insufficient_balance(skale):
     sender_skale = generate_new_skale()
-    # eth_amount = 1
-    # send_ether(skale.web3, skale.wallet, sender_skale.address, eth_amount)
-
     token_amount = 10 * ETH_IN_WEI
     skale.token.transfer(sender_skale.wallet.address, token_amount + 1,
                          skip_dry_run=True,
                          wait_for=True,
                          gas_limit=TEST_GAS_LIMIT)
     retries_number = 5
-    with pytest.raises(InsufficientBalanceError):
-        tx_res = run_tx_with_retry(
-            sender_skale.token.transfer,
-            skale.wallet.address, token_amount, wait_for=True,
-            raise_for_status=False,
-            max_retries=retries_number,
-        )
+    run_tx_with_retry(
+        sender_skale.token.transfer,
+        skale.wallet.address, token_amount, wait_for=True,
+        raise_for_status=False,
+        max_retries=retries_number,
+    )
 
-        assert tx_res.tx_hash is None
-        assert tx_res.receipt is None
-    sender_skale.wallet.sign_and_send.assert_not_called()
-    sender_skale.wallet.wait.assert_not_called()
+    assert skale.wallet.sign_and_send.call_count == retries_number
+    assert skale.wallet.wait.call_count == retries_number
 
 
 def test_send_eth_with_skale(skale):

@@ -9,10 +9,6 @@ class DryRunFailedError(TransactionError):
     pass
 
 
-class InsufficientBalanceError(TransactionError):
-    pass
-
-
 class TransactionNotSentError(TransactionError):
     pass
 
