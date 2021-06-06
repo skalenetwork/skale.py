@@ -1,10 +1,9 @@
-import pytest
 import mock
+import pytest
 from web3 import Web3
 
 from skale.transactions.exceptions import (
     DryRunFailedError,
-    InsufficientBalanceError,
     TransactionFailedError
 )
 from skale import Skale
