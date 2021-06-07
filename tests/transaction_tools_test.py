@@ -108,6 +108,7 @@ def test_run_tx_with_retry_insufficient_balance(skale):
                          wait_for=True,
                          gas_limit=TEST_GAS_LIMIT)
     retries_number = 5
+    sender_skale.wallet.wait = mock.Mock()
     run_tx_with_retry(
         sender_skale.token.transfer,
         skale.wallet.address, token_amount, wait_for=True,
@@ -115,7 +116,6 @@ def test_run_tx_with_retry_insufficient_balance(skale):
         max_retries=retries_number,
     )
 
-    assert skale.wallet.sign_and_send.call_count == retries_number
     assert skale.wallet.wait.call_count == retries_number
 
 
