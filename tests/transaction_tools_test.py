@@ -116,7 +116,8 @@ def test_run_tx_with_retry_insufficient_balance(skale):
         max_retries=retries_number,
     )
 
-    assert sender_skale.wallet.wait.call_count == retries_number
+    assert sender_skale.wallet.sign_and_send.call_count == retries_number
+    assert sender_skale.wallet.wait.call_count == 0
 
 
 def test_send_eth_with_skale(skale):
