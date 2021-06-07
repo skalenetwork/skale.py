@@ -113,10 +113,11 @@ class RedisWalletAdapter(BaseWallet):
     def sign_and_send(
         self,
         tx: Dict,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        multiplier: Optional[float] = None,
         priority: Optional[int] = None
     ) -> str:
         priority = priority or config.DEFAULT_PRIORITY
+        multiplier = multiplier or config.DEFAULT_GAS_MULTIPLIER
         try:
             logger.info(f'Sending {tx} to redis pool ...')
             score = self._make_score(priority)
