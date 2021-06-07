@@ -26,15 +26,18 @@ from eth_account.datastructures import SignedTransaction
 from eth_account._utils.transactions import encode_transaction
 from eth_account._utils.transactions import \
     serializable_unsigned_transaction_from_dict as tx_from_dict
+
 from eth_utils.crypto import keccak
 from rlp import encode
 
 import skale.config as config
-from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
-                                   to_checksum_address
-
+from skale.utils.web3_utils import (
+    get_eth_nonce,
+    public_key_to_address,
+    to_checksum_address,
+    wait_for_receipt_by_blocks
+)
 from skale.wallets.common import BaseWallet, ensure_chain_id
-from skale.transactions.tools import wait_for_receipt_by_blocks
 
 logger = logging.getLogger(__name__)
 

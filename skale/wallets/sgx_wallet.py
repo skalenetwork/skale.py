@@ -24,9 +24,8 @@ from sgx import SgxClient
 from web3 import Web3
 
 import skale.config as config
-from skale.utils.web3_utils import get_eth_nonce
+from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
 from skale.wallets.common import BaseWallet, ensure_chain_id
-from skale.transactions.tools import wait_for_receipt_by_blocks
 
 
 logger = logging.getLogger(__name__)
