@@ -24,12 +24,12 @@ from functools import partial, wraps
 import skale.config as config
 from skale.transactions.exceptions import TransactionError
 from skale.transactions.result import TxRes
-from skale.utils.constants import GAS_LIMIT_COEFFICIENT
+from skale.utils.constants import ESTIMATE_GAS_MULTIPLIER
 from skale.wallets.redis_wallet import RedisAdapterError
 from skale.utils.web3_utils import (
     check_receipt,
     get_eth_nonce,
-    wait_for_receipt_by_blocks,
+    wait_for_confirmation_blocks
 )
 
 from web3._utils.transactions import get_block_gas_limit
@@ -74,7 +74,7 @@ def estimate_gas(web3, method, opts):
         block_gas_limit = get_block_gas_limit(web3)
 
     estimated_gas = method.estimateGas(opts)
-    normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
+    normalized_estimated_gas = int(estimated_gas * ESTIMATE_GAS_MULTIPLIER)
     if normalized_estimated_gas > block_gas_limit:
         logger.warning(f'Estimate gas for {method.fn_name} - {normalized_estimated_gas} exceeds \
 block gas limit, going to use block_gas_limit ({block_gas_limit}) for this transaction')
@@ -128,10 +128,13 @@ def post_transaction(
     return tx_hash
 
 
-def send_eth_with_skale(skale, address: str, amount_wei: int, *,
-                        gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
-                        gas_price: int = None,
-                        nonce: int = None, wait_for=True):
+def send_eth_with_skale(
+    skale, address: str, amount_wei: int, *,
+    gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
+    gas_price: int = None,
+    nonce: int = None, wait_for=True,
+    confirmation_blocks=0
+):
     gas_limit = gas_limit or DEFAULT_ETH_SEND_GAS_LIMIT
     gas_price = gas_price or skale.web3.eth.gasPrice
     tx = {
@@ -142,14 +145,19 @@ def send_eth_with_skale(skale, address: str, amount_wei: int, *,
         'nonce': nonce
     }
     logger.info(f'Sending {amount_wei} WEI to {address}')
-    tx_hash = skale.wallet.sign_and_send(tx)
-    logger.info(f'Waiting for receipt for {tx_hash}')
-
+    tx = skale.wallet.sign_and_send(tx)
+    logger.info(f'Waiting for receipt for {tx}')
     if wait_for:
-        receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
+        receipt = skale.wallet.wait(tx)
         check_receipt(receipt)
         return receipt
-    return tx_hash
+
+    if confirmation_blocks:
+        wait_for_confirmation_blocks(
+            skale.web3,
+            confirmation_blocks
+        )
+    return tx
 
 
 def send_eth(web3, account, amount, wallet, gas_price=None):
