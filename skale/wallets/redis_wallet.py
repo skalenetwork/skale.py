@@ -117,7 +117,6 @@ class RedisWalletAdapter(BaseWallet):
         priority: Optional[int] = None
     ) -> str:
         priority = priority or config.DEFAULT_PRIORITY
-        multiplier = multiplier or config.DEFAULT_GAS_MULTIPLIER
         try:
             logger.info(f'Sending {tx} to redis pool ...')
             score = self._make_score(priority)
