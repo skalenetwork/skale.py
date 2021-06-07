@@ -136,7 +136,7 @@ def init_web3(endpoint: str,
               middlewares: Iterable = None,
               state_path: str = None, ts_diff: int = None):
     if not middlewares:
-        ts_diff = config.ALLOWED_TS_DIFF
+        ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
         sync_middleware = make_client_checking_middleware(ts_diff, state_path)
         middewares = (

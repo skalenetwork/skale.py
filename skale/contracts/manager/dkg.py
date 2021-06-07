@@ -56,7 +56,7 @@ class DKG(BaseContract):
         secret_key_contribution: list
     ):
         return self.contract.functions.preResponse(
-            schainId=group_index,
+            schainHash=group_index,
             fromNodeIndex=from_node_index,
             verificationVector=verification_vector,
             verificationVectorMult=verification_vector_mult,
@@ -73,7 +73,7 @@ class DKG(BaseContract):
             multiplied_share: G2Point
     ):
         return self.contract.functions.response(
-            schainId=group_index,
+            schainHash=group_index,
             fromNodeIndex=from_node_index,
             secretNumber=secret_number,
             multipliedShare=multiplied_share
