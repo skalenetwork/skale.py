@@ -24,7 +24,6 @@ from functools import partial, wraps
 import skale.config as config
 from skale.transactions.exceptions import TransactionError
 from skale.transactions.result import TxRes
-from skale.utils.constants import ESTIMATE_GAS_MULTIPLIER
 from skale.wallets.redis_wallet import RedisAdapterError
 from skale.utils.web3_utils import (
     check_receipt,
@@ -74,7 +73,9 @@ def estimate_gas(web3, method, opts):
         block_gas_limit = get_block_gas_limit(web3)
 
     estimated_gas = method.estimateGas(opts)
-    normalized_estimated_gas = int(estimated_gas * ESTIMATE_GAS_MULTIPLIER)
+    normalized_estimated_gas = int(
+        estimated_gas * config.DEFAULT_GAS_MULTIPLIER
+    )
     if normalized_estimated_gas > block_gas_limit:
         logger.warning(f'Estimate gas for {method.fn_name} - {normalized_estimated_gas} exceeds \
 block gas limit, going to use block_gas_limit ({block_gas_limit}) for this transaction')
