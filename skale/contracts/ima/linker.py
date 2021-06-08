@@ -18,16 +18,24 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.utils.web3_utils import to_checksum_address
-
-DEFAULT_TOKEN_MANAGER_ADDRESS = '0x57ad607c6e90df7d7f158985c3e436007a15d744'
 
 
 class Linker(BaseContract):
     @transaction_method
-    def connect_schain(self, schain_name, token_manager_address=DEFAULT_TOKEN_MANAGER_ADDRESS):
-        address_fx = to_checksum_address(token_manager_address)
+    def connect_schain(
+            self,
+            schain_name: str,
+            community_locker_address: str,
+            token_manager_eth_address: str,
+            token_manager_erc20_address: str,
+            token_manager_erc721_address: str
+    ):
         return self.contract.functions.connectSchain(
             schain_name,
-            [address_fx, address_fx, address_fx]
+            [
+                community_locker_address,
+                token_manager_eth_address,
+                token_manager_erc20_address,
+                token_manager_erc721_address
+            ]
         )
