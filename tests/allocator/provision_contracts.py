@@ -5,7 +5,7 @@ from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
 from skale.utils.contracts_provision.allocator import transfer_tokens_to_allocator, add_test_plan
-from skale.utils.contracts_provision.main import setup_validator
+from skale.utils.contracts_provision.main import setup_validator, add_test_permissions
 from tests.constants import (ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY,
                              TEST_ALLOCATOR_ABI_FILEPATH)
 
@@ -20,6 +20,7 @@ def init_libs():
 def provision_contracts():
     init_default_logger()
     skale_manager, skale_allocator = init_libs()
+    add_test_permissions(skale_manager)
     setup_validator(skale_manager)
 
     launch_ts = skale_manager.constants_holder.get_launch_timestamp()

@@ -21,7 +21,7 @@ from time import sleep
 
 from skale.utils.account_tools import send_tokens
 from skale.utils.contracts_provision import (
-    TEST_SKALE_AMOUNT, TEST_VESTING_SLIFF, TEST_TOTAL_VESTING_DURATION,
+    TEST_SKALE_AMOUNT, TEST_VESTING_CLIFF, TEST_TOTAL_VESTING_DURATION,
     TEST_VESTING_INTERVAL_TIME_UNIT, TEST_VESTING_INTERVAL, TEST_CAN_DELEGATE,
     TEST_IS_TERMINATABLE, POLL_INTERVAL, TEST_START_MONTH, TEST_FULL_AMOUNT, TEST_LOCKUP_AMOUNT
 )
@@ -33,7 +33,7 @@ def _catch_event(event_obj):
         toBlock='latest'
     )
     while True:
-        for event in event_filter.get_new_entries():
+        for event in event_filter.get_all_entries():
             return event
         sleep(POLL_INTERVAL)
 
@@ -47,9 +47,8 @@ def transfer_tokens_to_allocator(skale_manager, skale_allocator, amount=TEST_SKA
 
 
 def add_test_plan(skale_allocator):
-    event = _catch_event(skale_allocator.allocator.contract.events.PlanCreated)
     skale_allocator.allocator.add_plan(
-        vesting_cliff=TEST_VESTING_SLIFF,
+        vesting_cliff=TEST_VESTING_CLIFF,
         total_vesting_duration=TEST_TOTAL_VESTING_DURATION,
         vesting_interval_time_unit=TEST_VESTING_INTERVAL_TIME_UNIT,
         vesting_interval=TEST_VESTING_INTERVAL,
@@ -57,7 +56,7 @@ def add_test_plan(skale_allocator):
         is_terminatable=TEST_IS_TERMINATABLE,
         wait_for=False
     )
-    return event.args['id']
+    return len(skale_allocator.allocator.get_all_plans())
 
 
 def connect_test_beneficiary(skale_allocator, plan_id, wallet):
