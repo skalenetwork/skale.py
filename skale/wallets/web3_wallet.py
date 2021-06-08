@@ -17,12 +17,14 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from typing import Dict
 from eth_keys import keys
 from web3 import Web3
 from eth_account import messages
 
+import skale.config as config
+from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
 from skale.wallets.common import BaseWallet, ensure_chain_id
-from skale.utils.web3_utils import get_eth_nonce
 
 
 def private_key_to_public(pr):
@@ -75,9 +77,16 @@ class Web3Wallet(BaseWallet):
             private_key=self._private_key
         )
 
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(
+        self,
+        tx_dict: Dict,
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int = config.DEFAULT_PRIORITY
+    ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        return self._web3.eth.sendRawTransaction(
+            signed_tx.rawTransaction
+        ).hex()
 
     @property
     def address(self):
@@ -86,3 +95,11 @@ class Web3Wallet(BaseWallet):
     @property
     def public_key(self):
         return str(self._public_key)
+
+    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+        return wait_for_receipt_by_blocks(
+            self._web3,
+            tx_hash,
+            blocks_to_wait=blocks_to_wait,
+            timeout=timeout
+        )

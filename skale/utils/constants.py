@@ -18,7 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 NODE_DEPOSIT = 100000000000000000000
-GAS_LIMIT_COEFFICIENT = 1.8
 GAS_PRICE_COEFFICIENT = 2
 
 LONG_LINE = '=' * 100

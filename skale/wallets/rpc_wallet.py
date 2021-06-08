@@ -26,7 +26,7 @@ import urllib
 import requests
 
 from skale.utils.exceptions import RPCWalletError
-from skale.wallets import SgxWallet
+from skale.wallets.sgx_wallet import SgxWallet
 
 
 logger = logging.getLogger(__name__)
