@@ -47,6 +47,7 @@ def transfer_tokens_to_allocator(skale_manager, skale_allocator, amount=TEST_SKA
 
 
 def add_test_plan(skale_allocator):
+    event = _catch_event(skale_allocator.allocator.contract.events.PlanCreated)
     skale_allocator.allocator.add_plan(
         vesting_cliff=TEST_VESTING_SLIFF,
         total_vesting_duration=TEST_TOTAL_VESTING_DURATION,
@@ -56,7 +57,6 @@ def add_test_plan(skale_allocator):
         is_terminatable=TEST_IS_TERMINATABLE,
         wait_for=False
     )
-    event = _catch_event(skale_allocator.allocator.contract.events.PlanCreated)
     return event.args['id']
 
 
