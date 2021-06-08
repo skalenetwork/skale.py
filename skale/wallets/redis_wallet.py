@@ -27,10 +27,6 @@ from typing import Dict, Optional, Tuple
 from redis import Redis
 
 import skale.config as config
-from skale.transactions.exceptions import (
-    TransactionNotMinedError,
-    TransactionNotSentError
-)
 from skale.utils.web3_utils import get_receipt, MAX_WAITING_TIME
 from skale.wallets import BaseWallet
 
@@ -41,11 +37,11 @@ class RedisAdapterError(Exception):
     pass
 
 
-class RedisAdapterSendError(Exception):
+class RedisAdapterSendError(RedisAdapterError):
     pass
 
 
-class RedisAdapterWaitError(Exception):
+class RedisAdapterWaitError(RedisAdapterError):
     pass
 
 
@@ -155,7 +151,7 @@ class RedisWalletAdapter(BaseWallet):
         while time.time() - start_ts < timeout:
             try:
                 status = self.get_status(tx_id)
-                if status in ('SUCCESS', 'FAILED', 'CONFIRMED'):
+                if status in ('SUCCESS', 'FAILED', 'DROPPED'):
                     r = self.get_record(tx_id)
                     return get_receipt(self.wallet._web3, r['tx_hash'])
             except Exception:
@@ -165,8 +161,6 @@ class RedisWalletAdapter(BaseWallet):
         if status is None:
             raise RedisAdapterError('Tx status is None')
         if status == 'DROPPED':
-            raise TransactionNotSentError('Tx was not sent')
-        elif status == 'TIMEOUT':
-            raise TransactionNotMinedError('Tx was not mined')
+            raise RedisAdapterWaitError('Tx was dropped after max retries')
         else:
             raise RedisAdapterWaitError(f'Tx finished with status {status}')
