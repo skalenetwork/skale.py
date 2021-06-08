@@ -25,17 +25,9 @@ class Linker(BaseContract):
     def connect_schain(
             self,
             schain_name: str,
-            community_locker_address: str,
-            token_manager_eth_address: str,
-            token_manager_erc20_address: str,
-            token_manager_erc721_address: str
+            mainnet_contracts: list
     ):
         return self.contract.functions.connectSchain(
             schain_name,
-            [
-                community_locker_address,
-                token_manager_eth_address,
-                token_manager_erc20_address,
-                token_manager_erc721_address
-            ]
+            mainnet_contracts
         )
