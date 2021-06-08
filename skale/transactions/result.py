@@ -17,30 +17,14 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from web3.exceptions import SolidityError
-
+from skale.transactions.exceptions import (
+    DryRunFailedError,
+    InsufficientBalanceError,
+    RevertError,
+    TransactionFailedError
+)
 
 SUCCESS_STATUS = 1
-
-
-class TransactionError(Exception):
-    pass
-
-
-class DryRunFailedError(TransactionError):
-    pass
-
-
-class InsufficientBalanceError(TransactionError):
-    pass
-
-
-class TransactionFailedError(TransactionError):
-    pass
-
-
-class RevertError(TransactionError, SolidityError):
-    pass
 
 
 def check_balance(balance: int, gas_price: int, gas_limit: int, value: int) -> dict:
