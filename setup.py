@@ -43,7 +43,7 @@ setup(
         "web3==5.13.1",
         "asyncio==3.4.3",
         "pyyaml==5.4",
-        "sgx.py==0.7dev2",
+        "sgx.py==0.7.dev3",
         "redis==3.5.3"
     ],
 
