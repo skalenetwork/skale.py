@@ -37,11 +37,19 @@ class RedisAdapterError(Exception):
     pass
 
 
-class RedisAdapterSendError(RedisAdapterError):
+class DroppedError(RedisAdapterError):
     pass
 
 
-class RedisAdapterWaitError(RedisAdapterError):
+class EmptyStatusError(RedisAdapterError):
+    pass
+
+
+class AdapterSendError(RedisAdapterError):
+    pass
+
+
+class AdapterWaitError(RedisAdapterError):
     pass
 
 
@@ -78,6 +86,7 @@ class RedisWalletAdapter(BaseWallet):
         unique = binascii.b2a_hex(os.urandom(cls.ID_SIZE // 2))
         return prefix + unique
 
+    @classmethod
     def _make_score(cls, priority: int) -> int:
         ts = int(time.time())
         return priority * 10 ** len(str(ts)) + ts
@@ -130,7 +139,7 @@ class RedisWalletAdapter(BaseWallet):
             return self._to_id(raw_id)
         except Exception as err:
             logger.exception(f'Sending {tx} with redis wallet errored')
-            raise RedisAdapterSendError(err)
+            raise AdapterSendError(err)
 
     def get_status(self, tx_id: str) -> str:
         return self.get_record(tx_id)['status']
@@ -151,16 +160,18 @@ class RedisWalletAdapter(BaseWallet):
         while time.time() - start_ts < timeout:
             try:
                 status = self.get_status(tx_id)
-                if status in ('SUCCESS', 'FAILED', 'DROPPED'):
+                if status == 'DROPPED':
+                    break
+                if status in ('SUCCESS', 'FAILED'):
                     r = self.get_record(tx_id)
                     return get_receipt(self.wallet._web3, r['tx_hash'])
-            except Exception:
+            except Exception as err:
                 logger.exception(f'Waiting for tx {tx_id} errored')
-                raise RedisAdapterError(f'Waiting for {tx_id} failed')
+                raise AdapterWaitError(err)
 
         if status is None:
-            raise RedisAdapterError('Tx status is None')
+            raise EmptyStatusError('Tx status is None')
         if status == 'DROPPED':
-            raise RedisAdapterWaitError('Tx was dropped after max retries')
+            raise DroppedError('Tx was dropped after max retries')
         else:
-            raise RedisAdapterWaitError(f'Tx finished with status {status}')
+            raise AdapterWaitError(f'Tx finished with status {status}')
