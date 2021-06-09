@@ -1,5 +1,8 @@
 """ SKALE test utilities """
 
+from contextlib import contextmanager
+from timeit import default_timer as timer
+
 from mock import Mock, MagicMock
 from web3 import Web3
 
@@ -39,3 +42,11 @@ def init_skale_allocator(
 ) -> SkaleAllocator:
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
     return SkaleAllocator(ENDPOINT, TEST_ALLOCATOR_ABI_FILEPATH, wallet)
+
+
+@contextmanager
+def in_time(seconds):
+    start_ts = timer()
+    yield
+    ts_diff = timer() - start_ts
+    assert ts_diff < seconds, (ts_diff, seconds)
