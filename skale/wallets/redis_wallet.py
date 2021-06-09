@@ -151,7 +151,9 @@ class RedisWalletAdapter(BaseWallet):
         while time.time() - start_ts < timeout:
             try:
                 status = self.get_status(tx_id)
-                if status in ('SUCCESS', 'FAILED', 'DROPPED'):
+                if status == 'DROPPED':
+                    break
+                if status in ('SUCCESS', 'FAILED'):
                     r = self.get_record(tx_id)
                     return get_receipt(self.wallet._web3, r['tx_hash'])
             except Exception:
