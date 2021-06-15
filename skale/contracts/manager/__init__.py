@@ -23,6 +23,9 @@ from skale.contracts.manager.delegation.slashing_table import SlashingTable
 from skale.contracts.manager.dkg import DKG
 from skale.contracts.manager.key_storage import KeyStorage
 
+from skale.contracts.manager.bounty_v2 import BountyV2
+from skale.contracts.manager.punisher import Punisher
+
 from skale.contracts.manager.wallets import Wallets
 
 from skale.contracts.manager.test.time_helpers_with_debug import TimeHelpersWithDebug

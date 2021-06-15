@@ -75,8 +75,11 @@ class SChainsInternal(BaseContract):
     def grant_role(self, role: bytes, address: str) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
+
     def schain_type_manager_role(self) -> bytes:
         return self.contract.functions.SCHAIN_TYPE_MANAGER_ROLE().call()
 
-    def has_role(self, role: bytes, address: str) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
+    def debugger_role(self):
+        return self.contract.functions.DEBUGGER_ROLE().call()

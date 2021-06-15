@@ -11,7 +11,7 @@ jobs:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      MANAGER_TAG: "1.8.0-develop.44"
+      MANAGER_TAG: "1.8.1-develop.6"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -44,7 +44,7 @@ jobs:
         python-version: [3.7]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      MANAGER_TAG: "1.8.0-develop.44"
+      MANAGER_TAG: "1.8.1-develop.6"
       ALLOCATOR_TAG: "2.2.0-develop.4"
     steps:
     - uses: actions/checkout@v2
