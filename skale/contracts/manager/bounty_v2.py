@@ -30,6 +30,4 @@ class BountyV2(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     def bounty_reduction_manager_role(self):
-        print(f'COntract address: {self.address}')
-        exit(1)
         return self.contract.functions.BOUNTY_REDUCTION_MANAGER_ROLE().call()
