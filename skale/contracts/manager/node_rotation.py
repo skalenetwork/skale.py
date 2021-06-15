@@ -19,7 +19,9 @@
 """ NodeRotation.sol functions """
 
 import functools
-from skale.contracts.base_contract import BaseContract
+
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 
 
 class NodeRotation(BaseContract):
@@ -58,3 +60,13 @@ class NodeRotation(BaseContract):
     def wait_for_new_node(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
         return self.contract.functions.waitForNewNode(schain_id).call()
+
+    @transaction_method
+    def grant_role(self, role: bytes, owner: str) -> TxRes:
+        return self.contract.functions.grantRole(role, owner)
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
+
+    def debugger_role(self):
+        return self.contract.functions.DEBUGGER_ROLE().call()

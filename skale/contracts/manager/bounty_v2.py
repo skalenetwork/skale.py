@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2021 SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -21,18 +21,7 @@ from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 
 
-class TokenState(BaseContract):
-    """Wrapper for TokenState.sol functions"""
-
-    def get_and_update_locked_amount(self, holder_address: str) -> int:
-        """This method is for check quantity of `freezed` tokens
-           :param holder_address: Address of the holder
-           :type holder_address: str
-           :returns:
-           :rtype: int
-        """
-        return self.contract.functions.getAndUpdateLockedAmount(holder_address).call()
-
+class BountyV2(BaseContract):
     @transaction_method
     def grant_role(self, role: bytes, owner: str) -> TxRes:
         return self.contract.functions.grantRole(role, owner)
@@ -40,5 +29,7 @@ class TokenState(BaseContract):
     def has_role(self, role: bytes, address: str) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
-    def locker_manager_role(self):
-        return self.contract.functions.LOCKER_MANAGER_ROLE().call()
+    def bounty_reduction_manager_role(self):
+        print(f'COntract address: {self.address}')
+        exit(1)
+        return self.contract.functions.BOUNTY_REDUCTION_MANAGER_ROLE().call()
