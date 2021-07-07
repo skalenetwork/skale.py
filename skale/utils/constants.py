@@ -21,10 +21,3 @@ NODE_DEPOSIT = 100000000000000000000
 GAS_PRICE_COEFFICIENT = 2
 
 LONG_LINE = '=' * 100
-
-
-SCHAIN_TYPES = {
-    'small': 1,
-    'medium': 2,
-    'large': 3
-}
