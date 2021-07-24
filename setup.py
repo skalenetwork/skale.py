@@ -44,7 +44,7 @@ setup(
         "asyncio==3.4.3",
         "pyyaml==5.4",
         "sgx.py==0.7dev2",
-        "eth-account==0.5.3",
+        "eth-account==0.5.5",
         "redis==3.5.3"
     ],
 
