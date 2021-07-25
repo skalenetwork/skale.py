@@ -25,6 +25,8 @@ from Crypto.Hash import keccak
 from web3.exceptions import BadFunctionCallOutput
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
+
 from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.helper import format_fields
 
@@ -155,3 +157,16 @@ class Nodes(BaseContract):
 
     def get_domain_name(self, node_id: int):
         return self.contract.functions.getNodeDomainName(node_id).call()
+
+    @transaction_method
+    def grant_role(self, role: bytes, owner: str) -> TxRes:
+        return self.contract.functions.grantRole(role, owner)
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
+
+    def node_manager_role(self):
+        return self.contract.functions.NODE_MANAGER_ROLE().call()
+
+    def compliance_role(self):
+        return self.contract.functions.COMPLIANCE_ROLE().call()

@@ -98,5 +98,8 @@ class Manager(BaseContract):
     def admin_role(self) -> bytes:
         return self.contract.functions.ADMIN_ROLE().call()
 
+    def schain_deleter_role(self) -> bytes:
+        return self.contract.functions.SCHAIN_DELETER_ROLE().call()
+
     def has_role(self, role: bytes, address: str) -> bool:
         return self.contract.functions.hasRole(role, address).call()
