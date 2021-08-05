@@ -72,7 +72,10 @@ def estimate_gas(web3, method, opts):
     except AttributeError:
         block_gas_limit = get_block_gas_limit(web3)
 
-    estimated_gas = method.estimateGas(opts)
+    estimated_gas = method.estimateGas(
+        opts,
+        block_identifier='latest'
+    )
     normalized_estimated_gas = int(
         estimated_gas * config.DEFAULT_GAS_MULTIPLIER
     )
