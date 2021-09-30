@@ -35,13 +35,6 @@ FIELDS = [
     'last_reward_date', 'finish_time', 'status', 'validator_id', 'publicKey', 'domain_name'
 ]
 
-COMPACT_FIELDS = ['schainIndex', 'nodeID', 'ip', 'basePort']
-SCHAIN_CONFIG_FIELDS = [
-    'schainIndex', 'nodeID', 'nodeName', 'ip', 'basePort',
-    'publicKey', 'publicIP', 'owner',
-    'httpRpcPort', 'httpsRpcPort', 'wsRpcPort', 'wssRpcPort'
-]
-
 
 class NodeStatus(IntEnum):
     ACTIVE = 0
