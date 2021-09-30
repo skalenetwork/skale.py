@@ -59,7 +59,7 @@ class DKG(BaseContract):
             group_index,
             fromNodeIndex=from_node_index,
             verificationVector=verification_vector,
-            verificationVectorMult=verification_vector_mult,
+            verificationVectorMultiplication=verification_vector_mult,
             secretKeyContribution=secret_key_contribution,
         )
 
