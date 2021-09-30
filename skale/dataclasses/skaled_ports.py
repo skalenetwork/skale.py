@@ -31,3 +31,8 @@ class SkaledPorts(Enum):
     WSS_JSON = 7
     HTTPS_JSON = 8
     INFO_HTTP_JSON = 9
+
+    PG_HTTP_RPC_JSON = 10
+    PG_HTTPS_RPC_JSON = 11
+    PG_INFO_HTTP_RPC_JSON = 12
+    PG_INFO_HTTPS_RPC_JSON = 13
