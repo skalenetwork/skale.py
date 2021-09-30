@@ -81,11 +81,11 @@ class ConstantsHolder(BaseContract):
         return self.contract.functions.rotationDelay().call()
 
     def get_dkg_timeout(self) -> int:
-        return self.contract.functions.complaintTimelimit().call()
+        return self.contract.functions.complaintTimeLimit().call()
 
     @transaction_method
     def set_complaint_timelimit(self, complaint_timelimit: int):
-        return self.contract.functions.setComplaintTimelimit(complaint_timelimit)
+        return self.contract.functions.setComplaintTimeLimit(complaint_timelimit)
 
     @transaction_method
     def grant_role(self, role: bytes, address: str) -> TxRes:
