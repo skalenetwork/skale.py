@@ -51,9 +51,9 @@ def add_all_permissions(skale, address):
     if not skale.schains.has_role(schain_creator_role, address):
         skale.schains.grant_role(schain_creator_role, address)
 
-    schain_deleter_role = skale.manager.schain_deleter_role()
-    if not skale.manager.has_role(schain_deleter_role, address):
-        skale.manager.grant_role(schain_deleter_role, address)
+    schain_removal_role = skale.manager.schain_removal_role()
+    if not skale.manager.has_role(schain_removal_role, address):
+        skale.manager.grant_role(schain_removal_role, address)
 
     bounty_reduction_manager_role = skale.bounty_v2.bounty_reduction_manager_role()
     if not skale.bounty_v2.has_role(bounty_reduction_manager_role, address):
