@@ -99,7 +99,7 @@ def test_get_all_plans(skale_allocator):
     assert plan_params_with_id == plans[0]
 
 
-@pytest.mark.skip('test should be updated')
+@pytest.skip('test should be updated')
 def test_calculate_vested_amount(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
@@ -121,7 +121,8 @@ def test_get_lockup_period_end_timestamp(skale_allocator):
     assert res == D_END_LOCKUP_TIMESTAMP
 
 
-@pytest.mark.skip('test should be updated')
+# TODO: improve test
+@pytest.skip('test should be updated')
 def test_get_time_of_next_vest(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
