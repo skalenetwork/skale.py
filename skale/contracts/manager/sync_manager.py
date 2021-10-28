@@ -40,7 +40,7 @@ class SyncManager(BaseContract):
     """Wrapper for SyncManager.sol functions"""
 
     @transaction_method
-    def add_ip_range(self, name, start_ip: bytes, end_ip: bytes) -> TxRes:
+    def add_ip_range(self, name, start_ip: str, end_ip: str) -> TxRes:
         return self.contract.functions.addIPRange(
             name,
             socket.inet_aton(start_ip),
@@ -58,7 +58,7 @@ class SyncManager(BaseContract):
         packed = self.contract.functions.getIPRangeByIndex(index).call()
         return IpRange.from_packed(packed)
 
-    def get_ip_range_by_name(self, name: str) -> tuple:
+    def get_ip_range_by_name(self, name: str) -> IpRange:
         packed = self.contract.functions.getIPRangeByName(name).call()
         return IpRange.from_packed(packed)
 
