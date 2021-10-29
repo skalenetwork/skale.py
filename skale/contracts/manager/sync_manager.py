@@ -19,20 +19,20 @@
 
 from __future__ import annotations
 
-import socket
 from collections import namedtuple
 from typing import List
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from skale.utils.helper import ip_from_bytes, ip_to_bytes
 
 
 class IpRange(namedtuple('IpRange', ['start_ip', 'end_ip'])):
     @classmethod
     def from_packed(cls, packed_ips: List[bytes]) -> IpRange:
         return cls(
-            socket.inet_ntoa(packed_ips[0]),
-            socket.inet_ntoa(packed_ips[1])
+            ip_from_bytes(packed_ips[0]),
+            ip_from_bytes(packed_ips[1])
         )
 
 
@@ -43,8 +43,8 @@ class SyncManager(BaseContract):
     def add_ip_range(self, name, start_ip: str, end_ip: str) -> TxRes:
         return self.contract.functions.addIPRange(
             name,
-            socket.inet_aton(start_ip),
-            socket.inet_aton(end_ip)
+            ip_to_bytes(start_ip),
+            ip_to_bytes(end_ip)
         )
 
     @transaction_method

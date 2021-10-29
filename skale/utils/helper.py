@@ -75,11 +75,11 @@ def format_fields(fields, flist=False):
     return real_decorator
 
 
-def ip_from_bytes(bytes):
-    return socket.inet_ntoa(bytes)
+def ip_from_bytes(packed: bytes) -> str:
+    return socket.inet_ntoa(packed)
 
 
-def ip_to_bytes(ip):  # pragma: no cover
+def ip_to_bytes(ip: str) -> bytes:  # pragma: no cover
     return socket.inet_aton(ip)
 
 
