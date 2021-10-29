@@ -47,8 +47,9 @@ def test_remove_range_bad_params(skale, sync_manager_powers):
 
 
 def test_get_range_bad_params(skale, sync_manager_powers):
+    num = skale.sync_manager.get_ip_ranges_number()
     with pytest.raises(SolidityError):
-        r = skale.sync_manager.get_ip_range_by_index(9999999)
+        r = skale.sync_manager.get_ip_range_by_index(num)
     with pytest.raises(SolidityError):
         r = skale.sync_manager.get_ip_range_by_index(0)
     r = skale.sync_manager.get_ip_range_by_name('phantom')
