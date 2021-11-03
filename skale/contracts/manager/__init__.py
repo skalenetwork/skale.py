@@ -28,4 +28,6 @@ from skale.contracts.manager.punisher import Punisher
 
 from skale.contracts.manager.wallets import Wallets
 
+from skale.contracts.manager.sync_manager import SyncManager
+
 from skale.contracts.manager.test.time_helpers_with_debug import TimeHelpersWithDebug
