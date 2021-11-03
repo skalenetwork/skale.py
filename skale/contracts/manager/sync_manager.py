@@ -68,6 +68,6 @@ class SyncManager(BaseContract):
     def sync_manager_role(self) -> bytes:
         return self.contract.functions.SYNC_MANAGER_ROLE().call()
 
-    @ transaction_method
+    @transaction_method
     def grant_role(self, role: bytes, owner: str) -> TxRes:
         return self.contract.functions.grantRole(role, owner)
