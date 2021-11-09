@@ -14,14 +14,12 @@ jobs:
       MANAGER_TAG: "1.8.2-develop.37"
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Checkout submodules
-      uses: textbook/git-checkout-submodule-action@master
-      with:
-        remote: true
     - name: Install host dependencies
       run: bash ./scripts/install_host_dependencies.sh
     - name: Install python dependencies
@@ -48,14 +46,12 @@ jobs:
       ALLOCATOR_TAG: "2.2.0-develop.4"
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Checkout submodules
-      uses: textbook/git-checkout-submodule-action@master
-      with:
-        remote: true
     - name: Install host dependencies
       run: bash ./scripts/install_host_dependencies.sh
     - name: Install python dependencies
