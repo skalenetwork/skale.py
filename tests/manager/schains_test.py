@@ -83,7 +83,7 @@ def test_add_schain_by_foundation(skale):
     assert name in schains_names
 
     new_schain = skale.schains.get_by_name(name)
-    assert new_schain['owner'] == skale.wallet.address
+    assert new_schain['mainnetOwner'] == skale.wallet.address
 
     skale.manager.delete_schain(name, wait_for=True)
 
@@ -106,8 +106,8 @@ def test_add_schain_by_foundation_custom_owner(skale):
     )
 
     new_schain = skale.schains.get_by_name(name)
-    assert new_schain['owner'] != skale.wallet.address
-    assert new_schain['owner'] == custom_wallet.address
+    assert new_schain['mainnetOwner'] != skale.wallet.address
+    assert new_schain['mainnetOwner'] == custom_wallet.address
 
     send_eth_with_skale(skale, custom_wallet.address, 10 ** 18)
     skale.wallet = custom_wallet

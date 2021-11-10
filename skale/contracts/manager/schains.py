@@ -27,7 +27,7 @@ from skale.utils.helper import format_fields
 
 
 FIELDS = [
-    'name', 'owner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
+    'name', 'mainnetOwner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
     'deposit', 'index', 'chainId'
 ]
 
@@ -103,7 +103,7 @@ class SChains(BaseContract):
 
     def schain_active(self, schain):
         if schain['name'] != '' and \
-                schain['owner'] != '0x0000000000000000000000000000000000000000':
+                schain['mainnetOwner'] != '0x0000000000000000000000000000000000000000':
             return True
 
     def get_schain_price(self, index_of_type, lifetime):
