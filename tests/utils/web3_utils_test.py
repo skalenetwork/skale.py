@@ -75,7 +75,7 @@ def test_transaction_with_last_block_file(last_block_file, skale):
                                               wait_for=True)
 
     current_block = skale.web3.eth.blockNumber
-    last_block = current_block + 5
+    last_block = current_block + 10
     save_last_known_block_number(state_path, last_block)
     new_rotation_delay = 101
     with pytest.raises(EthClientOutdatedError):

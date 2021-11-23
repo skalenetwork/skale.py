@@ -71,6 +71,9 @@ class SChainsInternal(BaseContract):
         return self.contract.functions.addSchainType(
             part_of_node, number_of_nodes)
 
+    def current_generation(self) -> int:
+        return self.contract.functions.currentGeneration().call()
+
     @transaction_method
     def grant_role(self, role: bytes, address: str) -> TxRes:
         return self.contract.functions.grantRole(role, address)
@@ -83,3 +86,10 @@ class SChainsInternal(BaseContract):
 
     def debugger_role(self):
         return self.contract.functions.DEBUGGER_ROLE().call()
+
+    def generation_manager_role(self):
+        return self.contract.functions.GENERATION_MANAGER_ROLE().call()
+
+    @transaction_method
+    def new_generation(self) -> TxRes:
+        return self.contract.functions.newGeneration()

@@ -24,7 +24,7 @@ from skale.contracts.allocator.allocator import TimeUnit
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 
-DEFAULT_SCHAIN_NAME = 'test_schain'
+DEFAULT_SCHAIN_NAME = 'test_schain_1'
 
 DEFAULT_DOMAIN_NAME = 'skale.test'
 
