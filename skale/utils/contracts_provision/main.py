@@ -91,6 +91,10 @@ def add_all_permissions(skale, address):
     if not skale.schains_internal.has_role(debugger_schains_role, address):
         skale.schains_internal.grant_role(debugger_schains_role, address)
 
+    generation_manager_role = skale.schains_internal.generation_manager_role()
+    if not skale.schains_internal.has_role(generation_manager_role, address):
+        skale.schains_internal.grant_role(generation_manager_role, address)
+
     forgiver_role = skale.punisher.forgiver_role()
     if not skale.punisher.has_role(forgiver_role, address):
         skale.punisher.grant_role(forgiver_role, address)

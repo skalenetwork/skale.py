@@ -28,7 +28,7 @@ from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'mainnetOwner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
-    'deposit', 'index', 'chainId'
+    'deposit', 'index', 'generation', 'chainId'
 ]
 
 

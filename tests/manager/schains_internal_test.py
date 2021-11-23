@@ -62,3 +62,23 @@ def test_get_active_schain_ids(skale):
 
     assert isinstance(active_schains, list)
     assert len(active_schains) > 0
+
+
+def test_get_current_generation(skale):
+    current_generation = skale.schains_internal.current_generation()
+    assert isinstance(current_generation, int)
+
+
+def test_generation_manager_role(skale):
+    test_address = skale.web3.eth.account.create().address
+    role = skale.schains_internal.generation_manager_role()
+    assert not skale.schains_internal.has_role(role, test_address)
+    skale.schains_internal.grant_role(role, test_address)
+    assert skale.schains_internal.has_role(role, test_address)
+
+
+def test_new_generation(skale):
+    current_generation = skale.schains_internal.current_generation()
+    skale.schains_internal.new_generation()
+    new_generation = skale.schains_internal.current_generation()
+    assert current_generation + 1 == new_generation
