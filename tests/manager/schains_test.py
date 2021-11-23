@@ -51,7 +51,6 @@ def test_get_schains_for_node(skale):
 
 def test_name_to_id(skale):
     schain_id = skale.schains.name_to_id(DEFAULT_SCHAIN_NAME)
-    print(schain_id)
     assert schain_id == DEFAULT_SCHAIN_ID
 
 
