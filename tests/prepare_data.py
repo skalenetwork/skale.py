@@ -58,7 +58,7 @@ def prepare_data(cleanup_only):
             active_node_ids = skale.nodes.get_active_node_ids()
             print(active_node_ids)
 
-            deploy_sample_payable_contract(skale.web3)
+            deploy_sample_payable_contract(skale.web3, skale.wallet)
         except Exception as err:
             cleanup_nodes_schains(skale)
             raise err
