@@ -2,19 +2,26 @@
 
 from hexbytes import HexBytes
 
-from skale.contracts.manager.schains import FIELDS
+from skale.contracts.manager.schains import FIELDS, SchainStructure
+from skale.utils.contracts_provision.sample_contract import SAMPLE_CONTRACT_DATA_PATH
 from skale.transactions.tools import send_eth_with_skale
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
 
 from skale.utils.contracts_provision.main import generate_random_schain_data, create_schain
 from skale.wallets.web3_wallet import generate_wallet
+from skale.utils.helper import get_abi
 
 
 def test_get(skale):
     schain = skale.schains.get(DEFAULT_SCHAIN_ID)
     assert list(schain.keys()) == FIELDS
     assert [k for k, v in schain.items() if v is None] == []
+
+
+def test_get_object(skale):
+    schain = skale.schains.get(DEFAULT_SCHAIN_ID, obj=True)
+    assert isinstance(schain, SchainStructure)
 
 
 def test_get_by_name(skale):
@@ -112,6 +119,36 @@ def test_add_schain_by_foundation_custom_owner(skale):
     send_eth_with_skale(skale, custom_wallet.address, 10 ** 18)
     skale.wallet = custom_wallet
     skale.manager.delete_schain(name, wait_for=True)
+
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name not in schains_names
+
+
+def test_add_schain_by_foundation_custom_erector(skale):
+    skale.schains.grant_role(skale.schains.schain_creator_role(),
+                             skale.wallet.address)
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
+    custom_erector = generate_wallet(skale.web3)
+
+    sample_contract_data = get_abi(SAMPLE_CONTRACT_DATA_PATH)
+    payable_contract_address = sample_contract_data['abi']
+
+    skale.schains.add_schain_by_foundation(
+        lifetime_seconds, type_of_nodes, 0, name,
+        schain_owner=payable_contract_address, schain_erector=custom_erector.address
+    )
+    new_schain = skale.schains.get_by_name(name)
+
+    assert new_schain['erector'] != skale.wallet.address
+    assert new_schain['erector'] == custom_erector.address
+
+    send_eth_with_skale(skale, custom_erector.address, 10 ** 18)
+    skale.manager.delete_schain_by_root(name)
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
 

@@ -11,6 +11,7 @@ from skale.utils.contracts_provision.main import (
     add_test_schain_type, cleanup_nodes_schains, setup_validator,
     create_nodes, create_schain, _skip_evm_time, add_test_permissions
 )
+from skale.utils.contracts_provision.sample_contract import deploy_sample_payable_contract
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 
 
@@ -56,6 +57,8 @@ def prepare_data(cleanup_only):
             create_schain(skale)
             active_node_ids = skale.nodes.get_active_node_ids()
             print(active_node_ids)
+
+            deploy_sample_payable_contract(skale.web3)
         except Exception as err:
             cleanup_nodes_schains(skale)
             raise err
