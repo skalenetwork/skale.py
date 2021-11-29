@@ -136,7 +136,7 @@ def test_add_schain_by_foundation_custom_erector(skale):
     custom_erector = generate_wallet(skale.web3)
 
     fake_multisig_data = get_abi(FAKE_MULTISIG_DATA_PATH)
-    payable_contract_address = fake_multisig_data['abi']
+    payable_contract_address = fake_multisig_data['address']
 
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name,
