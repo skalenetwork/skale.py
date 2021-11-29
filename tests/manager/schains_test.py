@@ -3,7 +3,7 @@
 from hexbytes import HexBytes
 
 from skale.contracts.manager.schains import FIELDS, SchainStructure
-from skale.utils.contracts_provision.sample_contract import SAMPLE_CONTRACT_DATA_PATH
+from skale.utils.contracts_provision.fake_multisig_contract import FAKE_MULTISIG_DATA_PATH
 from skale.transactions.tools import send_eth_with_skale
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
@@ -135,8 +135,8 @@ def test_add_schain_by_foundation_custom_erector(skale):
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     custom_erector = generate_wallet(skale.web3)
 
-    sample_contract_data = get_abi(SAMPLE_CONTRACT_DATA_PATH)
-    payable_contract_address = sample_contract_data['abi']
+    fake_multisig_data = get_abi(FAKE_MULTISIG_DATA_PATH)
+    payable_contract_address = fake_multisig_data['abi']
 
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name,

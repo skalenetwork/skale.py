@@ -28,7 +28,7 @@ from skale.transactions.tools import sign_and_send
 # Usage note: to change this contract update the code, compile it and put the new bytecode and
 # new ABI below
 
-SAMPLE_CONTRACT = """
+FAKE_MULTISIG_CONTRACT = """
 pragma solidity ^0.8.0;
 
 contract FakeMultiSigWallet {
@@ -47,9 +47,9 @@ contract FakeMultiSigWallet {
 }
 """
 
-SAMPLE_CONTRACT_BYTECODE = '608060405234801561001057600080fd5b5060bc8061001f6000396000f3fe608060405260043610601f5760003560e01c80632e64cec114602a576025565b36602557005b600080fd5b348015603557600080fd5b50603c603e565b005b3373ffffffffffffffffffffffffffffffffffffffff166108fc479081150290604051600060405180830381858888f193505050501580156083573d6000803e3d6000fd5b5056fea26469706673582212205da5b248ec5ba69f49e730c2861325b8ad733be642688b5377ec25fc6da7e4fc64736f6c63430008070033'  # noqa
+FAKE_MULTISIG_BYTECODE = '608060405234801561001057600080fd5b5060bc8061001f6000396000f3fe608060405260043610601f5760003560e01c80632e64cec114602a576025565b36602557005b600080fd5b348015603557600080fd5b50603c603e565b005b3373ffffffffffffffffffffffffffffffffffffffff166108fc479081150290604051600060405180830381858888f193505050501580156083573d6000803e3d6000fd5b5056fea26469706673582212205da5b248ec5ba69f49e730c2861325b8ad733be642688b5377ec25fc6da7e4fc64736f6c63430008070033'  # noqa
 
-SAMPLE_CONTRACT_ABI = [
+FAKE_MULTISIG_ABI = [
     {
         "inputs": [],
         "stateMutability": "nonpayable",
@@ -69,21 +69,21 @@ SAMPLE_CONTRACT_ABI = [
 ]
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
-SAMPLE_CONTRACT_DATA_PATH = os.path.join(DIR_PATH, os.pardir, os.pardir, os.pardir, 'tests',
-                                         'sample_contract.json')
+FAKE_MULTISIG_DATA_DEFAULT_PATH = os.path.join(DIR_PATH, 'fake_multisig_data.json')
+FAKE_MULTISIG_DATA_PATH = os.getenv('FAKE_MULTISIG_DATA_PATH') or FAKE_MULTISIG_DATA_DEFAULT_PATH
 
 
-def deploy_sample_payable_contract(web3, wallet):
+def deploy_fake_multisig_contract(web3, wallet):
     print('Going to deploy simple payable contract')
-    SampleContract = web3.eth.contract(abi=SAMPLE_CONTRACT_ABI, bytecode=SAMPLE_CONTRACT_BYTECODE)
-    constructor = SampleContract.constructor()
+    FakeMultisigContract = web3.eth.contract(abi=FAKE_MULTISIG_ABI, bytecode=FAKE_MULTISIG_BYTECODE)
+    constructor = FakeMultisigContract.constructor()
     tx_hash = sign_and_send(web3, constructor, 100000, wallet)
     receipt = wait_for_receipt_by_blocks(web3, tx_hash)
     print(f'Sample contract successfully deployed: {receipt.contractAddress}')
     content = {
         'address': receipt.contractAddress,
-        'abi': SAMPLE_CONTRACT_ABI
+        'abi': FAKE_MULTISIG_ABI
     }
-    with open(SAMPLE_CONTRACT_DATA_PATH, 'w') as outfile:
+    with open(FAKE_MULTISIG_DATA_PATH, 'w') as outfile:
         json.dump(content, outfile, indent=4)
-    print(f'Sample contract data successfully saved to {SAMPLE_CONTRACT_DATA_PATH}')
+    print(f'Sample contract data successfully saved to {FAKE_MULTISIG_DATA_PATH}')

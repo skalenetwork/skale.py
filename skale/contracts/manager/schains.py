@@ -35,7 +35,7 @@ FIELDS = [
 
 
 @dataclass
-class SchainStructure():
+class SchainStructure:
     name: str
     mainnet_owner: str
     index_in_owner_list: int
