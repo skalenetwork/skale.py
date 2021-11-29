@@ -19,6 +19,8 @@
 """ Schains.sol functions """
 
 import functools
+from dataclasses import dataclass
+
 from Crypto.Hash import keccak
 
 from skale.contracts.base_contract import BaseContract, transaction_method
@@ -28,8 +30,24 @@ from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'mainnetOwner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
-    'deposit', 'index', 'generation', 'chainId'
+    'deposit', 'index', 'generation', 'erector', 'chainId'
 ]
+
+
+@dataclass
+class SchainStructure:
+    name: str
+    mainnet_owner: str
+    index_in_owner_list: int
+    part_of_node: int
+    lifetime: int
+    start_date: int
+    start_block: int
+    deposit: int
+    index: int
+    generation: int
+    erector: str
+    chain_id: int
 
 
 class SChains(BaseContract):
@@ -49,11 +67,13 @@ class SChains(BaseContract):
         return self.skale.node_rotation
 
     @format_fields(FIELDS)
-    def get(self, id_):
+    def get(self, id_, obj=False):
         res = self.schains_internal.get_raw(id_)
         hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
         hash_str = "0x" + hash_obj.hexdigest()[:13]
         res.append(hash_str)
+        if obj:  # TODO: temporary solution for backwards compatibility
+            return SchainStructure(*res)
         return res
 
     @format_fields(FIELDS)
@@ -111,12 +131,22 @@ class SChains(BaseContract):
                                                       lifetime).call()
 
     @transaction_method
-    def add_schain_by_foundation(self, lifetime: int, type_of_nodes: int,
-                                 nonce: int, name: str, schain_owner=None) -> TxRes:
+    def add_schain_by_foundation(
+            self,
+            lifetime: int,
+            type_of_nodes: int,
+            nonce: int,
+            name: str,
+            schain_owner=None,
+            schain_erector=None
+    ) -> TxRes:
         if schain_owner is None:
             schain_owner = self.skale.wallet.address
+        if schain_erector is None:
+            schain_erector = self.skale.wallet.address
+
         return self.contract.functions.addSchainByFoundation(
-            lifetime, type_of_nodes, nonce, name, schain_owner
+            lifetime, type_of_nodes, nonce, name, schain_owner, schain_erector
         )
 
     @transaction_method

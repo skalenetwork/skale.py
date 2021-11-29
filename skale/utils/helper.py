@@ -56,6 +56,9 @@ def format_fields(fields, flist=False):
             if result is None:
                 return None
 
+            if not isinstance(result, list) and not isinstance(result, tuple):
+                return result
+
             if flist:
                 formatted_list = []
                 for item in result:
