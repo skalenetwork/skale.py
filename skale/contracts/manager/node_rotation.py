@@ -19,9 +19,18 @@
 """ NodeRotation.sol functions """
 
 import functools
+from dataclasses import dataclass
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+
+
+@dataclass
+class Rotation:
+    node_index: int
+    new_node_index: int
+    freeze_until: int
+    rotation_counter: int
 
 
 class NodeRotation(BaseContract):
@@ -32,7 +41,13 @@ class NodeRotation(BaseContract):
     def schains(self):
         return self.skale.schains
 
+    def get_rotation_obj(self, schain_name):
+        schain_id = self.schains.name_to_id(schain_name)
+        rotation_data = self.contract.functions.getRotation(schain_id).call()
+        return Rotation(*rotation_data)
+
     def get_rotation(self, schain_name):
+        print('WARNING: Deprecated, will be removed in v6')
         schain_id = self.schains.name_to_id(schain_name)
         rotation_data = self.contract.functions.getRotation(schain_id).call()
         return {

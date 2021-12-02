@@ -32,7 +32,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='5.5',
+    version='5.6',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
