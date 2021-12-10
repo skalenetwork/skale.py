@@ -23,8 +23,8 @@ from typing import Dict
 
 from hexbytes import HexBytes
 from eth_account.datastructures import SignedTransaction
-from eth_account._utils.transactions import encode_transaction
-from eth_account._utils.transactions import \
+from eth_account._utils.legacy_transactions import encode_transaction
+from eth_account._utils.legacy_transactions import \
     serializable_unsigned_transaction_from_dict as tx_from_dict
 
 from eth_utils.crypto import keccak
