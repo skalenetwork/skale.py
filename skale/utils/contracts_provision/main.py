@@ -130,9 +130,16 @@ def cleanup_nodes_schains(skale):
         schain_data = skale.schains.get(schain_id)
         schain_name = schain_data.get('name', None)
         if schain_name is not None:
-            skale.manager.delete_schain(schain_name, wait_for=True)
+            skale.manager.delete_schain_by_root(schain_name, wait_for=True)
     for node_id in skale.nodes.get_active_node_ids():
         skale.manager.node_exit(node_id, wait_for=True)
+
+
+def create_clean_schain(skale):
+    cleanup_nodes_schains(skale)
+    create_nodes(skale)
+    add_test2_schain_type(skale)
+    return create_schain(skale, random_name=True)
 
 
 def validator_exist(skale):

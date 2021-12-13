@@ -4,6 +4,7 @@ from hexbytes import HexBytes
 
 from skale.contracts.manager.schains import FIELDS, SchainStructure
 from skale.utils.contracts_provision.fake_multisig_contract import FAKE_MULTISIG_DATA_PATH
+from skale.utils.contracts_provision.main import create_clean_schain
 from skale.transactions.tools import send_eth_with_skale
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
@@ -41,6 +42,7 @@ def test_get_schains_for_owner(skale, empty_account):
 
 
 def test_get_schains_for_node(skale):
+    create_clean_schain(skale)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     schains_for_node = skale.schains.get_schains_for_node(node_id)
     schain_ids_for_node = skale.schains_internal.get_schain_ids_for_node(node_id)
