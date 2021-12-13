@@ -30,7 +30,7 @@ from skale.utils.helper import format_fields
 
 FIELDS = [
     'name', 'mainnetOwner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
-    'deposit', 'index', 'generation', 'erector', 'chainId'
+    'deposit', 'index', 'generation', 'originator', 'chainId'
 ]
 
 
@@ -46,7 +46,7 @@ class SchainStructure:
     deposit: int
     index: int
     generation: int
-    erector: str
+    originator: str
     chain_id: int
 
 
@@ -138,15 +138,15 @@ class SChains(BaseContract):
             nonce: int,
             name: str,
             schain_owner=None,
-            schain_erector=None
+            schain_originator=None
     ) -> TxRes:
         if schain_owner is None:
             schain_owner = self.skale.wallet.address
-        if schain_erector is None:
-            schain_erector = self.skale.wallet.address
+        if schain_originator is None:
+            schain_originator = self.skale.wallet.address
 
         return self.contract.functions.addSchainByFoundation(
-            lifetime, type_of_nodes, nonce, name, schain_owner, schain_erector
+            lifetime, type_of_nodes, nonce, name, schain_owner, schain_originator
         )
 
     @transaction_method

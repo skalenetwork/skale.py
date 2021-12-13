@@ -129,25 +129,25 @@ def test_add_schain_by_foundation_custom_owner(skale):
     assert name not in schains_names
 
 
-def test_add_schain_by_foundation_custom_erector(skale):
+def test_add_schain_by_foundation_custom_originator(skale):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
-    custom_erector = generate_wallet(skale.web3)
+    custom_originator = generate_wallet(skale.web3)
 
     fake_multisig_data = get_abi(FAKE_MULTISIG_DATA_PATH)
     payable_contract_address = fake_multisig_data['address']
 
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name,
-        schain_owner=payable_contract_address, schain_erector=custom_erector.address
+        schain_owner=payable_contract_address, schain_originator=custom_originator.address
     )
     new_schain = skale.schains.get_by_name(name)
 
-    assert new_schain['erector'] != skale.wallet.address
-    assert new_schain['erector'] == custom_erector.address
+    assert new_schain['originator'] != skale.wallet.address
+    assert new_schain['originator'] == custom_originator.address
 
-    send_eth_with_skale(skale, custom_erector.address, 10 ** 18)
+    send_eth_with_skale(skale, custom_originator.address, 10 ** 18)
     skale.manager.delete_schain_by_root(name)
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
