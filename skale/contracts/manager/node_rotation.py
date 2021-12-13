@@ -23,6 +23,10 @@ from dataclasses import dataclass
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from web3.exceptions import ContractLogicError
+
+
+NO_PREVIOUS_NODE_EXCEPTION_TEXT = 'No previous node'
 
 
 @dataclass
@@ -85,3 +89,12 @@ class NodeRotation(BaseContract):
 
     def debugger_role(self):
         return self.contract.functions.DEBUGGER_ROLE().call()
+
+    def get_previous_node(self, schain_name: str, node_id: int) -> int:
+        schain_id = self.schains.name_to_id(schain_name)
+        try:
+            return self.contract.functions.getPreviousNode(schain_id, node_id).call()
+        except ContractLogicError as e:
+            if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
+                return None
+            raise e
