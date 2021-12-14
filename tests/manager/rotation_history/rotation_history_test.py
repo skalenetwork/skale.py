@@ -1,5 +1,6 @@
 """ SKALE node rotation test """
 
+import json
 import logging
 
 from skale.utils.contracts_provision.main import (
@@ -78,6 +79,8 @@ def test_rotation_history(skale):
     )
     assert previous_node_id == exiting_node_id
 
-    # previous_nodes = skale.node_rotation.get_previous_nodes(name)
-    # print(previous_nodes)
+    node_groups = skale.node_rotation.get_previous_nodes(name)
+    print(json.dumps(node_groups, indent=4))
+    print(name)
+
     # assert False

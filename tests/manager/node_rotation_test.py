@@ -17,8 +17,8 @@ def test_get_rotation(skale):
 
 def test_get_rotation_obj(skale):
     assert skale.node_rotation.get_rotation_obj(DEFAULT_SCHAIN_NAME) == Rotation(
-        node_index=0,
-        new_node_index=0,
+        node_id=0,
+        new_node_id=0,
         freeze_until=0,
         rotation_counter=0
     )
@@ -34,11 +34,11 @@ def test_get_leaving_history(skale):
         assert isinstance(history, list)
         assert history == [
             {
-                'id': DEFAULT_SCHAIN_ID,
+                'schain_id': DEFAULT_SCHAIN_ID,
                 'finished_rotation': 1000
             },
             {
-                'id': DEFAULT_SCHAIN_ID,
+                'schain_id': DEFAULT_SCHAIN_ID,
                 'finished_rotation': 2000
             }
         ]
