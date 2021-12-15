@@ -27,16 +27,18 @@ RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_k
 
 def get_previous_schain_groups(skale, schain_name: str) -> dict:
     """
-    Returns all previous node groups with public keys and finish timestamps
+    Returns all previous node groups with public keys and finish timestamps.
+    In case of no rotations returns the current state.
     """
     node_groups = {}
 
     group_id = skale.schains.name_to_group_id(schain_name)
     previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_id)
+    current_public_key = skale.key_storage.get_common_public_key(group_id)
 
     rotation = skale.node_rotation.get_rotation_obj(schain_name)
 
-    _add_current_schain_state(skale, node_groups, rotation, schain_name)
+    _add_current_schain_state(skale, node_groups, rotation, schain_name, current_public_key)
     if rotation.rotation_counter == 0:
         return node_groups
 
@@ -53,7 +55,8 @@ def _add_current_schain_state(
     skale: Skale,
     node_groups: dict,
     rotation: Rotation,
-    schain_name: str
+    schain_name: str,
+    current_public_key: list
 ) -> dict:
     """
     Internal function, composes the initial info about the current sChain state and adds it to the
@@ -68,7 +71,7 @@ def _add_current_schain_state(
     node_groups[rotation.rotation_counter] = {
         'nodes': current_nodes,
         'finish_ts': None,
-        'bls_public_key': 22222222222  # todo <- current bls key!
+        'bls_public_key': _compose_bls_public_key_info(current_public_key)
     }
 
 
