@@ -20,7 +20,6 @@
 
 import functools
 from dataclasses import dataclass
-from collections import namedtuple
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
@@ -36,9 +35,6 @@ class Rotation:
     new_node_id: int
     freeze_until: int
     rotation_counter: int
-
-
-RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
 
 
 class NodeRotation(BaseContract):
@@ -108,97 +104,3 @@ class NodeRotation(BaseContract):
             if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
                 return None
             raise e
-
-    def _compose_bls_public_key_info(self, bls_public_key: str):  # TODO: move!
-        return {
-            'blsPublicKey0': str(bls_public_key[0][0]),
-            'blsPublicKey1': str(bls_public_key[0][1]),
-            'blsPublicKey2': str(bls_public_key[1][0]),
-            'blsPublicKey3': str(bls_public_key[1][1])
-        }
-
-    def get_previous_nodes(self, schain_name: str) -> list:
-        """
-        Returns all previous node groups with public keys and finish timestamps
-        """
-        node_groups = {}
-        current_nodes = {}
-
-        group_id = self.skale.schains.name_to_group_id(schain_name)
-        previous_public_keys = self.skale.key_storage.get_all_previous_public_keys(group_id)
-
-        rotation = self.get_rotation_obj(schain_name)
-
-        # get current state
-
-        ids = self.skale.schains_internal.get_node_ids_for_schain(schain_name)
-        for (index, node_id) in enumerate(ids):
-            public_key = self.skale.nodes.get_node_public_key(node_id)
-            current_nodes[node_id] = RotationNodeData(index, node_id, public_key)
-
-        node_groups[rotation.rotation_counter] = {
-            'nodes': current_nodes,
-            'finish_ts': None,
-            'bls_public_key': 22222222222  # todo <- current bls key!
-        }
-
-        if rotation.rotation_counter == 0:
-            return node_groups
-
-        # handle last rotation manually
-
-        latest_rotation_nodes = current_nodes.copy()
-        public_key = self.skale.nodes.get_node_public_key(rotation.node_id)
-
-        latest_rotation_nodes[rotation.node_id] = RotationNodeData(
-            current_nodes[rotation.new_node_id].index,
-            rotation.node_id,
-            public_key
-        )
-        del latest_rotation_nodes[rotation.new_node_id]
-        node_groups[rotation.rotation_counter - 1] = {
-            'nodes': latest_rotation_nodes,
-            'finish_ts': rotation.freeze_until,
-            'bls_public_key': self._compose_bls_public_key_info(previous_public_keys[rotation.rotation_counter - 1]) # noqa
-        }
-
-        if rotation.rotation_counter == 1:
-            return node_groups
-
-        # handle other rotations in loop
-
-        previous_nodes = {}
-
-        for rotation_id in range(rotation.rotation_counter - 2, -1, -1):
-            nodes = node_groups[rotation_id + 1]['nodes'].copy()
-
-            for node_id in nodes:
-                if node_id not in previous_nodes:
-                    previous_node = self.get_previous_node(schain_name, node_id)
-                    if previous_node:
-                        finish_ts = self.get_schain_finish_ts(previous_node, schain_name)
-                        previous_nodes[node_id] = {
-                            'finish_ts': finish_ts,
-                            'previous_node_id': previous_node
-                        }
-
-            latest_exited_node_id = max(previous_nodes, key=previous_nodes.get('finish_ts'))
-            previous_node_id = previous_nodes[latest_exited_node_id]['previous_node_id']
-            public_key = self.skale.nodes.get_node_public_key(previous_node_id)
-
-            nodes[previous_node_id] = RotationNodeData(
-                nodes[latest_exited_node_id].index,
-                previous_node_id,
-                public_key
-            )
-            del nodes[latest_exited_node_id]
-
-            node_groups[rotation_id] = {
-                'nodes': nodes,
-                'finish_ts': previous_nodes[latest_exited_node_id]['finish_ts'],
-                'bls_public_key': self._compose_bls_public_key_info(previous_public_keys[rotation_id]) # noqa
-            }
-
-            del previous_nodes[latest_exited_node_id]
-
-        return node_groups

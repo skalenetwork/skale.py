@@ -7,9 +7,8 @@ from skale.utils.contracts_provision.main import (
     add_test4_schain_type, cleanup_nodes_schains, create_schain
 )
 from skale.utils.contracts_provision import DEFAULT_SCHAIN_NAME
-# from skale.schain_config.generator import get_nodes_for_schain
-
-from tests.manager.rotation_history.utils import set_up_nodes, do_dkg, rotate_node
+from skale.schain_config.rotation_history import get_previous_schain_groups
+from tests.rotation_history.utils import set_up_nodes, do_dkg, rotate_node
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +78,7 @@ def test_rotation_history(skale):
     )
     assert previous_node_id == exiting_node_id
 
-    node_groups = skale.node_rotation.get_previous_nodes(name)
+    node_groups = get_previous_schain_groups(skale, name)
     print(json.dumps(node_groups, indent=4))
     print(name)
 
