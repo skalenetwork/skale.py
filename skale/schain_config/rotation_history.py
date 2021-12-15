@@ -17,10 +17,13 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import logging
 from collections import namedtuple
+
 from skale import Skale
 from skale.contracts.manager.node_rotation import Rotation
 
+logger = logging.getLogger(__name__)
 
 RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
 
@@ -30,6 +33,7 @@ def get_previous_schain_groups(skale, schain_name: str) -> dict:
     Returns all previous node groups with public keys and finish timestamps.
     In case of no rotations returns the current state.
     """
+    logger.info(f'Collecting rotation history for {schain_name}...')
     node_groups = {}
 
     group_id = skale.schains.name_to_group_id(schain_name)
@@ -37,6 +41,8 @@ def get_previous_schain_groups(skale, schain_name: str) -> dict:
     current_public_key = skale.key_storage.get_common_public_key(group_id)
 
     rotation = skale.node_rotation.get_rotation_obj(schain_name)
+
+    logger.info(f'Rotation data for {schain_name}: {rotation}')
 
     _add_current_schain_state(skale, node_groups, rotation, schain_name, current_public_key)
     if rotation.rotation_counter == 0:
@@ -128,7 +134,7 @@ def _add_previous_schain_rotations_state(
                         'previous_node_id': previous_node
                     }
 
-        latest_exited_node_id = max(previous_nodes, key=previous_nodes.get('finish_ts'))
+        latest_exited_node_id = max(previous_nodes.items(), key=lambda x: x[1]['finish_ts'])[0]
         previous_node_id = previous_nodes[latest_exited_node_id]['previous_node_id']
         public_key = skale.nodes.get_node_public_key(previous_node_id)
 
