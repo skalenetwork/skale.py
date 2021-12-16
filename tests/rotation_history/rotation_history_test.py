@@ -90,12 +90,12 @@ def test_rotation_history(skale):
     node_groups = get_previous_schain_groups(skale, name)
 
     assert len(node_groups) == 6
-    assert set(node_groups[5]['nodes'].keys()) == set(group_ids_0)
-    assert set(node_groups[4]['nodes'].keys()) == set(group_ids_1)
-    assert set(node_groups[3]['nodes'].keys()) == set(group_ids_2)
-    assert set(node_groups[2]['nodes'].keys()) == set(group_ids_3)
-    assert set(node_groups[1]['nodes'].keys()) == set(group_ids_4)
-    assert set(node_groups[0]['nodes'].keys()) == set(group_ids_5)
+    assert set(node_groups[0]['nodes'].keys()) == set(group_ids_0)
+    assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
+    assert set(node_groups[2]['nodes'].keys()) == set(group_ids_2)
+    assert set(node_groups[3]['nodes'].keys()) == set(group_ids_3)
+    assert set(node_groups[4]['nodes'].keys()) == set(group_ids_4)
+    assert set(node_groups[5]['nodes'].keys()) == set(group_ids_5)
 
 
 def test_rotation_history_no_rotations(skale):
