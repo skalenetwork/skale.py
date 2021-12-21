@@ -153,18 +153,7 @@ def test_rotation_history_failed_dkg(skale):
     failed_node_index = 2
     fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index)
 
-    group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
-
-    print('-------------------- -------------------------')
-    print(name)
-    print(group_ids_0)
-    print(group_ids_1)
-    print(group_ids_2)
-
-    name = 'E0522FA2'
-    group_ids_0 = [3, 4, 6, 5]
-    group_ids_1 = [3, 7, 6, 5]
-    group_ids_2 = [3, 7, 6, 8]
+    # group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
 
     node_groups = get_previous_schain_groups(skale, name)
 
