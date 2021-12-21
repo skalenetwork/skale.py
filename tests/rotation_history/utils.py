@@ -105,14 +105,17 @@ def init_skale_from_wallet(wallet) -> Skale:
     return Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
 
 
-def send_broadcasts(nodes, skale_instances, group_index):
+def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None):
     for i, node in enumerate(nodes):
-        skale_instances[i].dkg.broadcast(
-            group_index,
-            node['node_id'],
-            TEST_DKG_DATA['test_verification_vectors'][i],
-            TEST_DKG_DATA['test_encrypted_secret_key_contributions'][i]
-        )
+        if i != skip_node_index:
+            skale_instances[i].dkg.broadcast(
+                group_index,
+                node['node_id'],
+                TEST_DKG_DATA['test_verification_vectors'][i],
+                TEST_DKG_DATA['test_encrypted_secret_key_contributions'][i]
+            )
+        else:
+            print(f'Skipping broadcast from node {node["node_id"]}')
 
 
 def send_alrights(nodes, skale_instances, group_index):
@@ -123,17 +126,36 @@ def send_alrights(nodes, skale_instances, group_index):
         )
 
 
-def rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index):
+def send_complaint(nodes, skale_instances, group_index, failed_node_index):
+    for i, skale_instance in enumerate(skale_instances):
+        if i != failed_node_index:
+            failed_node_id = nodes[failed_node_index]['node_id']
+            skale_instance.dkg.complaint(group_index, nodes[i]['node_id'], failed_node_id)
+
+
+def rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=True):
     new_nodes, new_skale_instances = set_up_nodes(skale, 1)
     skale_instances[exiting_node_index].manager.node_exit(nodes[exiting_node_index]['node_id'])
     nodes[exiting_node_index] = new_nodes[0]
     skale_instances[exiting_node_index] = new_skale_instances[0]
-    do_dkg(nodes, skale_instances, group_index)
-
+    if do_dkg:
+        run_dkg(nodes, skale_instances, group_index)
     return nodes, skale_instances
 
 
-def do_dkg(nodes, skale_instances, group_index):
+def fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index):
+    new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+
+    send_broadcasts(nodes, skale_instances, group_index, failed_node_index)
+    _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
+    send_complaint(nodes, skale_instances, group_index, failed_node_index)
+
+    nodes[failed_node_index] = new_nodes[0]
+    skale_instances[failed_node_index] = new_skale_instances[0]
+    run_dkg(nodes, skale_instances, group_index)
+
+
+def run_dkg(nodes, skale_instances, group_index):
     send_broadcasts(nodes, skale_instances, group_index)
     send_alrights(nodes, skale_instances, group_index)
     _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)

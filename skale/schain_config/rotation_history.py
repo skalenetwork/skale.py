@@ -48,7 +48,7 @@ def get_previous_schain_groups(skale, schain_name: str) -> dict:
     if rotation.rotation_counter == 0:
         return node_groups
 
-    _add_last_schain_rotation_state(skale, node_groups, rotation, previous_public_keys)
+    _add_last_schain_rotation_state(skale, node_groups, rotation, schain_name, previous_public_keys)
     if rotation.rotation_counter == 1:
         return node_groups
 
@@ -85,6 +85,7 @@ def _add_last_schain_rotation_state(
     skale: Skale,
     node_groups: dict,
     rotation: Rotation,
+    schain_name: str,
     previous_public_keys: list
 ) -> dict:
     """
@@ -101,7 +102,12 @@ def _add_last_schain_rotation_state(
     )
     del latest_rotation_nodes[rotation.new_node_id]
 
-    raw_bls_keys = previous_public_keys[rotation.rotation_counter - 1]
+    # raw_bls_keys = previous_public_keys[rotation.rotation_counter - 1]
+
+    if skale.schains_internal.check_exception(schain_name, rotation.node_id):
+        raw_bls_keys = previous_public_keys[-1]
+        del previous_public_keys[-1]
+
     node_groups[rotation.rotation_counter - 1] = {
         'nodes': latest_rotation_nodes,
         'finish_ts': rotation.freeze_until,
@@ -145,7 +151,11 @@ def _add_previous_schain_rotations_state(
         )
         del nodes[latest_exited_node_id]
 
-        raw_bls_keys = previous_public_keys[rotation_id]
+        if skale.schains_internal.check_exception(schain_name, previous_node_id):
+            raw_bls_keys = previous_public_keys[-1]
+            del previous_public_keys[-1]
+
+        # raw_bls_keys = previous_public_keys[rotation_id]
         node_groups[rotation_id] = {
             'nodes': nodes,
             'finish_ts': previous_nodes[latest_exited_node_id]['finish_ts'],
