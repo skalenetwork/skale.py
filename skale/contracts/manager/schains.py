@@ -155,7 +155,3 @@ class SChains(BaseContract):
 
     def schain_creator_role(self):
         return self.contract.functions.SCHAIN_CREATOR_ROLE().call()
-
-    def check_exception(self, schain_name: str, node_id: int) -> bool:
-        id_ = self.name_to_id(schain_name)
-        return self.contract.functions.checkException(id_, node_id).call()

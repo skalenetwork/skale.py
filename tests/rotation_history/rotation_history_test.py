@@ -153,15 +153,38 @@ def test_rotation_history_failed_dkg(skale):
     failed_node_index = 2
     fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index)
 
-    # group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
+    group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
+
+    exiting_node_index = 1
+    exiting_node_id = nodes[exiting_node_index]['node_id']
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+
+    previous_node_id = skale.node_rotation.get_previous_node(
+        name,
+        nodes[exiting_node_index]['node_id']
+    )
+    assert previous_node_id == exiting_node_id
+
+    group_ids_3 = skale.schains_internal.get_node_ids_for_schain(name)
 
     node_groups = get_previous_schain_groups(skale, name)
 
-    print(node_groups)
-
-    # assert False
-
-    assert len(node_groups) == 3
+    assert len(node_groups) == 4
     assert set(node_groups[0]['nodes'].keys()) == set(group_ids_0)
     assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
-    assert set(node_groups[2]['nodes'].keys()) == set(group_ids_1)
+    assert set(node_groups[2]['nodes'].keys()) == set(group_ids_2)
+    assert set(node_groups[3]['nodes'].keys()) == set(group_ids_3)
+
+    assert node_groups[0]['finish_ts']
+    assert node_groups[0]['bls_public_key']
+
+    # no keys and finish_ts because it's the group that failed DKG
+    assert not node_groups[1]['finish_ts']
+    assert not node_groups[1]['bls_public_key']
+
+    assert node_groups[2]['finish_ts']
+    assert node_groups[2]['bls_public_key']
+
+    # no finish_ts because it's the current group
+    assert not node_groups[3]['finish_ts']
+    assert node_groups[3]['bls_public_key']

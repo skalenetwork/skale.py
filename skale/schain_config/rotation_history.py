@@ -41,6 +41,7 @@ def get_previous_schain_groups(skale, schain_name: str) -> dict:
     current_public_key = skale.key_storage.get_common_public_key(group_id)
 
     rotation = skale.node_rotation.get_rotation_obj(schain_name)
+    rotation_delay = skale.constants_holder.get_rotation_delay()
 
     logger.info(f'Rotation data for {schain_name}: {rotation}')
 
@@ -48,12 +49,8 @@ def get_previous_schain_groups(skale, schain_name: str) -> dict:
     if rotation.rotation_counter == 0:
         return node_groups
 
-    _add_last_schain_rotation_state(skale, node_groups, rotation, schain_name, previous_public_keys)
-    if rotation.rotation_counter == 1:
-        return node_groups
-
     _add_previous_schain_rotations_state(
-        skale, node_groups, rotation, schain_name, previous_public_keys)
+        skale, node_groups, rotation, schain_name, previous_public_keys, rotation_delay)
     return node_groups
 
 
@@ -81,46 +78,13 @@ def _add_current_schain_state(
     }
 
 
-def _add_last_schain_rotation_state(
-    skale: Skale,
-    node_groups: dict,
-    rotation: Rotation,
-    schain_name: str,
-    previous_public_keys: list
-) -> dict:
-    """
-    Internal function, handles the latest rotation in the sChain and adds it to the
-    node_groups dictionary
-    """
-    latest_rotation_nodes = node_groups[rotation.rotation_counter]['nodes'].copy()
-    public_key = skale.nodes.get_node_public_key(rotation.node_id)
-
-    latest_rotation_nodes[rotation.node_id] = RotationNodeData(
-        node_groups[rotation.rotation_counter]['nodes'][rotation.new_node_id].index,
-        rotation.node_id,
-        public_key
-    )
-    del latest_rotation_nodes[rotation.new_node_id]
-
-    # raw_bls_keys = previous_public_keys[rotation.rotation_counter - 1]
-
-    if skale.schains_internal.check_exception(schain_name, rotation.node_id):
-        raw_bls_keys = previous_public_keys[-1]
-        del previous_public_keys[-1]
-
-    node_groups[rotation.rotation_counter - 1] = {
-        'nodes': latest_rotation_nodes,
-        'finish_ts': rotation.freeze_until,
-        'bls_public_key': _compose_bls_public_key_info(raw_bls_keys)
-    }
-
-
 def _add_previous_schain_rotations_state(
     skale: Skale,
     node_groups: dict,
     rotation: Rotation,
     schain_name: str,
-    previous_public_keys: list
+    previous_public_keys: list,
+    rotation_delay: int
 ) -> dict:
     """
     Internal function, handles rotations from (rotation_counter - 2) to 0 and adds them to the
@@ -128,13 +92,18 @@ def _add_previous_schain_rotations_state(
     """
     previous_nodes = {}
 
-    for rotation_id in range(rotation.rotation_counter - 2, -1, -1):
+    for rotation_id in range(rotation.rotation_counter - 1, -1, -1):
         nodes = node_groups[rotation_id + 1]['nodes'].copy()
         for node_id in nodes:
             if node_id not in previous_nodes:
                 previous_node = skale.node_rotation.get_previous_node(schain_name, node_id)
                 if previous_node:
                     finish_ts = skale.node_rotation.get_schain_finish_ts(previous_node, schain_name)
+                    exception = skale.schains_internal.check_exception(schain_name, previous_node)
+                    if exception:
+                        logger.info(f'Node {previous_node} in exceptions array for {schain_name}, \
+adding {rotation_delay} to {finish_ts}.')
+                        finish_ts += rotation_delay
                     previous_nodes[node_id] = {
                         'finish_ts': finish_ts,
                         'previous_node_id': previous_node
@@ -151,18 +120,35 @@ def _add_previous_schain_rotations_state(
         )
         del nodes[latest_exited_node_id]
 
-        if skale.schains_internal.check_exception(schain_name, previous_node_id):
-            raw_bls_keys = previous_public_keys[-1]
-            del previous_public_keys[-1]
+        is_node_in_exceptions = skale.schains_internal.check_exception(
+            schain_name,
+            previous_node_id
+        )
 
-        # raw_bls_keys = previous_public_keys[rotation_id]
+        if not is_node_in_exceptions:
+            bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
+            node_finish_ts = previous_nodes[latest_exited_node_id]['finish_ts']
+        else:
+            bls_public_key, node_finish_ts = None, None
+
         node_groups[rotation_id] = {
             'nodes': nodes,
-            'finish_ts': previous_nodes[latest_exited_node_id]['finish_ts'],
-            'bls_public_key': _compose_bls_public_key_info(raw_bls_keys)
+            'finish_ts': node_finish_ts,
+            'bls_public_key': bls_public_key
         }
 
         del previous_nodes[latest_exited_node_id]
+
+
+def _pop_previous_bls_public_key(previous_public_keys):
+    """
+    Returns BLS public key for the group and removes it from the list, returns None if node
+    with provided node_id was kicked out of the chain because of failed DKG.
+    """
+    raw_bls_keys = previous_public_keys[-1]
+    bls_keys = _compose_bls_public_key_info(raw_bls_keys)
+    del previous_public_keys[-1]
+    return bls_keys
 
 
 def _compose_bls_public_key_info(bls_public_key: str) -> dict:
