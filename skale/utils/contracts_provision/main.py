@@ -108,10 +108,17 @@ def add_all_permissions(skale, address):
         skale.slashing_table.grant_role(penalty_setter_role, address)
 
 
-def add_test_schain_type(skale) -> TxRes:
+def add_test2_schain_type(skale) -> TxRes:
     part_of_node = 1
     number_of_nodes = 2
+    return skale.schains_internal.add_schain_type(
+        part_of_node, number_of_nodes
+    )
 
+
+def add_test4_schain_type(skale) -> TxRes:
+    part_of_node = 1
+    number_of_nodes = 4
     return skale.schains_internal.add_schain_type(
         part_of_node, number_of_nodes
     )
@@ -123,9 +130,16 @@ def cleanup_nodes_schains(skale):
         schain_data = skale.schains.get(schain_id)
         schain_name = schain_data.get('name', None)
         if schain_name is not None:
-            skale.manager.delete_schain(schain_name, wait_for=True)
+            skale.manager.delete_schain_by_root(schain_name, wait_for=True)
     for node_id in skale.nodes.get_active_node_ids():
         skale.manager.node_exit(node_id, wait_for=True)
+
+
+def create_clean_schain(skale):
+    cleanup_nodes_schains(skale)
+    create_nodes(skale)
+    add_test2_schain_type(skale)
+    return create_schain(skale, random_name=True)
 
 
 def validator_exist(skale):
@@ -241,18 +255,23 @@ def create_nodes(skale, names=()):
         )
 
 
-def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME):
+def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME, schain_type=None, random_name=False):
     print('Creating schain')
     # create 1 s-chain
-    type_of_nodes, lifetime_seconds, _ = generate_random_schain_data(skale)
-    _ = skale.schains.get_schain_price(
-        type_of_nodes, lifetime_seconds
-    )
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
+
+    if random_name:
+        schain_name = name
+
+    if not schain_type:
+        schain_type = type_of_nodes
+
     skale.schains.add_schain_by_foundation(
         lifetime_seconds,
-        type_of_nodes,
+        schain_type,
         0,
         schain_name,
         wait_for=True,
         value=TEST_SRW_FUND_VALUE
     )
+    return schain_name

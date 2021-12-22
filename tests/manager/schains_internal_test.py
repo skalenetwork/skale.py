@@ -1,9 +1,9 @@
 """ SKALE chain internal test """
 
+from skale.utils.contracts_provision.main import create_clean_schain
 from skale.contracts.manager.schains import FIELDS
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
-                             EMPTY_SCHAIN_ARR, DEFAULT_SCHAIN_NAME,
-                             MIN_NODES_IN_SCHAIN)
+                             EMPTY_SCHAIN_ARR, MIN_NODES_IN_SCHAIN)
 
 
 def test_get_raw(skale):
@@ -38,13 +38,15 @@ def test_get_schain_id_by_index_for_owner(skale):
 
 
 def test_get_node_ids_for_schain(skale):
-    schain_node_ids = skale.schains_internal.get_node_ids_for_schain(DEFAULT_SCHAIN_NAME)
+    schain_name = create_clean_schain(skale)
+    schain_node_ids = skale.schains_internal.get_node_ids_for_schain(schain_name)
 
     assert isinstance(schain_node_ids, list)
     assert len(schain_node_ids) >= MIN_NODES_IN_SCHAIN
 
 
 def test_get_schain_ids_for_node(skale):
+    create_clean_schain(skale)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     schain_ids_for_node = skale.schains_internal.get_schain_ids_for_node(node_id)
 
@@ -53,10 +55,12 @@ def test_get_schain_ids_for_node(skale):
 
 
 def test_is_schain_exist(skale):
-    assert skale.schains_internal.is_schain_exist(DEFAULT_SCHAIN_NAME)
+    schain_name = create_clean_schain(skale)
+    assert skale.schains_internal.is_schain_exist(schain_name)
 
 
 def test_get_active_schain_ids(skale):
+    create_clean_schain(skale)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     active_schains = skale.schains_internal.get_active_schain_ids_for_node(node_id)
 
