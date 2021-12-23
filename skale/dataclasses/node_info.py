@@ -34,12 +34,7 @@ class NodeInfo():
             'httpsRpcPort': self.base_port + SkaledPorts.HTTPS_JSON.value,
             'wsRpcPort': self.base_port + SkaledPorts.WS_JSON.value,
             'wssRpcPort': self.base_port + SkaledPorts.WSS_JSON.value,
-            'infoHttpRpcPort': self.base_port + SkaledPorts.INFO_HTTP_JSON.value,
-
-            'pgHttpRpcPort': self.base_port + SkaledPorts.PG_HTTP_RPC_JSON.value,
-            'pgHttpsRpcPort': self.base_port + SkaledPorts.PG_HTTPS_RPC_JSON.value,
-            'infoPgHttpRpcPort': self.base_port + SkaledPorts.PG_INFO_HTTP_RPC_JSON.value,
-            'infoPgHttpsRpcPort': self.base_port + SkaledPorts.PG_INFO_HTTPS_RPC_JSON.value
+            'infoHttpRpcPort': self.base_port + SkaledPorts.INFO_HTTP_JSON.value
         }
 
     def to_dict(self):
