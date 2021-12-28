@@ -1,7 +1,6 @@
 """ SKALE node rotation test """
 
 import logging
-import pytest
 
 from skale.utils.contracts_provision.main import (
     add_test4_schain_type, cleanup_nodes_schains, create_schain, add_test2_schain_type
@@ -135,7 +134,6 @@ def test_rotation_history_single_rotation(skale):
     assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
 
 
-@pytest.mark.skip('test breaks skale-manager#734, temporary disabled')
 def test_rotation_history_failed_dkg(skale):
     cleanup_nodes_schains(skale)
     nodes, skale_instances = set_up_nodes(skale, 4)
