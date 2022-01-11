@@ -99,13 +99,16 @@ class RedisWalletAdapter(BaseWallet):
         multiplier: int = config.DEFAULT_GAS_MULTIPLIER
     ) -> Tuple[bytes, bytes]:
         tx_id = cls._make_raw_id()
-        record = json.dumps({
+        params = {
             'status': 'PROPOSED',
             'score': score,
             'multiplier': multiplier,
             'tx_hash': None,
             **tx
-        }).encode('utf-8')
+        }
+        # Ensure gas will be restimated in TM
+        params['gas'] = None
+        record = json.dumps(params).encode('utf-8')
         return tx_id, record
 
     @classmethod
