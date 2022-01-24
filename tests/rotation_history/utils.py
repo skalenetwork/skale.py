@@ -135,6 +135,7 @@ def send_complaint(nodes, skale_instances, group_index, failed_node_index):
 
 def rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=True):
     new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+    skale_instances[exiting_node_index].nodes.init_exit(nodes[exiting_node_index]['node_id'])
     skale_instances[exiting_node_index].manager.node_exit(nodes[exiting_node_index]['node_id'])
     nodes[exiting_node_index] = new_nodes[0]
     skale_instances[exiting_node_index] = new_skale_instances[0]

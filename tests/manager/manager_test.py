@@ -221,6 +221,7 @@ def test_empty_node_exit(skale):
     ip, public_ip, port, name = generate_random_node_data()
     skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
     node_idx = skale.nodes.node_name_to_index(name)
+    skale.nodes.init_exit(node_idx, wait_for=True)
     tx_res = skale.manager.node_exit(node_idx, wait_for=True)
     assert tx_res.receipt['status'] == 1
     assert skale.nodes.get_node_status(node_idx) == 2

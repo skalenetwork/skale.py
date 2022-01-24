@@ -132,6 +132,7 @@ def cleanup_nodes_schains(skale):
         if schain_name is not None:
             skale.manager.delete_schain_by_root(schain_name, wait_for=True)
     for node_id in skale.nodes.get_active_node_ids():
+        skale.nodes.init_exit(node_id, wait_for=True)
         skale.manager.node_exit(node_id, wait_for=True)
 
 
@@ -255,7 +256,13 @@ def create_nodes(skale, names=()):
         )
 
 
-def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME, schain_type=None, random_name=False):
+def create_schain(
+    skale,
+    schain_name=DEFAULT_SCHAIN_NAME,
+    schain_type=None,
+    random_name=False,
+    schain_options=None
+):
     print('Creating schain')
     # create 1 s-chain
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
@@ -271,6 +278,7 @@ def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME, schain_type=None, rand
         schain_type,
         0,
         schain_name,
+        options=schain_options,
         wait_for=True,
         value=TEST_SRW_FUND_VALUE
     )
