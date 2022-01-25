@@ -134,7 +134,7 @@ def test_add_schain_by_foundation_custom_owner(skale):
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     custom_wallet = generate_wallet(skale.web3)
     skale.schains.add_schain_by_foundation(
-        lifetime_seconds, type_of_nodes, 0, name, custom_wallet.address, wait_for=True
+        lifetime_seconds, type_of_nodes, 0, name, schain_owner=custom_wallet.address, wait_for=True
     )
 
     new_schain = skale.schains.get_by_name(name)
@@ -209,7 +209,8 @@ def test_raw_get_options(skale):
         threshold_encryption=False
     )
     name = create_schain(skale, random_name=True, schain_options=schain_options)
-    raw_options = skale.schains._SChains__raw_get_options(name)
+    id_ = skale.schains.name_to_id(name)
+    raw_options = skale.schains._SChains__raw_get_options(id_)
     assert raw_options == [('multitr', b'\x01'), ('encrypt', b'\x00')]
 
 

@@ -28,7 +28,7 @@ class SchainOptions:
     def to_tuples(self) -> list:
         return [
             ('multitr', bool_to_bytes(self.multitransaction_mode)),
-            ('encrypt', bool_to_bytes(self.threshold_encryption)),
+            ('encrypt', bool_to_bytes(self.threshold_encryption))
         ]
 
 

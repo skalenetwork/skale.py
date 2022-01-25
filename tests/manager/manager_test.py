@@ -122,10 +122,18 @@ def test_create_delete_schain(skale):
     schains_ids = skale.schains_internal.get_all_schains_ids()
 
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes,
-                                                  lifetime_seconds)
-    tx_res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
-                                         price_in_wei, name, wait_for=True)
+    price_in_wei = skale.schains.get_schain_price(
+        type_of_nodes,
+        lifetime_seconds
+    )
+    tx_res = skale.manager.create_schain(
+        lifetime_seconds,
+        type_of_nodes,
+        price_in_wei,
+        name,
+        wait_for=True
+    )
+
     assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
