@@ -122,10 +122,18 @@ def test_create_delete_schain(skale):
     schains_ids = skale.schains_internal.get_all_schains_ids()
 
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes,
-                                                  lifetime_seconds)
-    tx_res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
-                                         price_in_wei, name, wait_for=True)
+    price_in_wei = skale.schains.get_schain_price(
+        type_of_nodes,
+        lifetime_seconds
+    )
+    tx_res = skale.manager.create_schain(
+        lifetime_seconds,
+        type_of_nodes,
+        price_in_wei,
+        name,
+        wait_for=True
+    )
+
     assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
@@ -221,6 +229,7 @@ def test_empty_node_exit(skale):
     ip, public_ip, port, name = generate_random_node_data()
     skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
     node_idx = skale.nodes.node_name_to_index(name)
+    skale.nodes.init_exit(node_idx, wait_for=True)
     tx_res = skale.manager.node_exit(node_idx, wait_for=True)
     assert tx_res.receipt['status'] == 1
     assert skale.nodes.get_node_status(node_idx) == 2

@@ -163,3 +163,7 @@ class Nodes(BaseContract):
 
     def compliance_role(self):
         return self.contract.functions.COMPLIANCE_ROLE().call()
+
+    @transaction_method
+    def init_exit(self, node_id: int) -> TxRes:
+        return self.contract.functions.initExit(node_id)
