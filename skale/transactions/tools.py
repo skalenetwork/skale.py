@@ -86,7 +86,15 @@ block gas limit, going to use block_gas_limit ({block_gas_limit}) for this trans
     return normalized_estimated_gas
 
 
-def build_tx_dict(method, gas_limit, gas_price=None, nonce=None, value=0):
+def build_tx_dict(
+    method,
+    gas_limit,
+    gas_price=None,
+    max_priority_fee_per_gas=None,
+    max_fee_per_gas=None,
+    nonce=None,
+    value=0
+):
     tx_dict_fields = {
         'gas': gas_limit,
         'nonce': nonce,
@@ -94,13 +102,18 @@ def build_tx_dict(method, gas_limit, gas_price=None, nonce=None, value=0):
     }
     if gas_price is not None:
         tx_dict_fields.update({'gasPrice': gas_price})
+    if max_priority_fee_per_gas is not None:
+        tx_dict_fields.update({
+            'max_priority_fee_per_gas': max_priority_fee_per_gas,
+            'max_fee_per_gas': max_fee_per_gas
+        })
 
     return method.buildTransaction(tx_dict_fields)
 
 
 def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     nonce = get_eth_nonce(web3, wallet.address)
-    tx_dict = build_tx_dict(method, gas_amount, nonce)
+    tx_dict = build_tx_dict(method, gas=gas_amount, nonce=nonce)
     signed_tx = wallet.sign(tx_dict)
     return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
@@ -110,6 +123,8 @@ def post_transaction(
     method,
     gas_limit,
     gas_price=None,
+    max_fee_per_gas=None,
+    max_priority_fee_per_gas=None,
     nonce=None,
     value=0,
     multiplier: int = None,
@@ -121,9 +136,19 @@ def post_transaction(
         f'wallet: {wallet.__class__.__name__}, '
         f'gasLimit: {gas_limit}, '
         f'gasPrice: {gas_price}, '
+        f'maxFeePerGas: {max_fee_per_gas}, '
+        f'maxPriorityFeePerGas: {max_priority_fee_per_gas}, '
         f'value: {value}'
     )
-    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce, value)
+    tx_dict = build_tx_dict(
+        method=method,
+        gas=gas_limit,
+        gas_price=gas_price,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        max_fee_per_gas=max_fee_per_gas,
+        nonce=nonce,
+        value=value
+    )
     tx_hash = wallet.sign_and_send(
         tx_dict,
         multiplier=multiplier,

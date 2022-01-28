@@ -59,6 +59,8 @@ def transaction_method(transaction):
         gas_limit=None,
         gas_price=None,
         nonce=None,
+        max_fee_per_gas=None,
+        max_priority_fee_per_gas=None,
         value=0,
         dry_run_only=False,
         skip_dry_run=False,
