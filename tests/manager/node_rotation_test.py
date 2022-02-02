@@ -10,7 +10,7 @@ def test_get_rotation(skale):
     assert skale.node_rotation.get_rotation(DEFAULT_SCHAIN_NAME) == {
         'leaving_node': 0,
         'new_node': 0,
-        'finish_ts': 0,
+        'freeze_until': 0,
         'rotation_id': 0
     }
 
