@@ -38,9 +38,87 @@ def _skip_evm_time(web3, seconds) -> int:
     return res['result']
 
 
-def add_test_schain_type(skale) -> TxRes:
+def add_test_permissions(skale):
+    add_all_permissions(skale, skale.wallet.address)
+
+
+def add_all_permissions(skale, address):
+    default_admin_role = skale.manager.default_admin_role()
+    if not skale.manager.has_role(default_admin_role, address):
+        skale.manager.grant_role(default_admin_role, address)
+
+    schain_creator_role = skale.schains.schain_creator_role()
+    if not skale.schains.has_role(schain_creator_role, address):
+        skale.schains.grant_role(schain_creator_role, address)
+
+    schain_removal_role = skale.manager.schain_removal_role()
+    if not skale.manager.has_role(schain_removal_role, address):
+        skale.manager.grant_role(schain_removal_role, address)
+
+    bounty_reduction_manager_role = skale.bounty_v2.bounty_reduction_manager_role()
+    if not skale.bounty_v2.has_role(bounty_reduction_manager_role, address):
+        skale.bounty_v2.grant_role(bounty_reduction_manager_role, address)
+
+    locker_manager_role = skale.token_state.locker_manager_role()
+    if not skale.token_state.has_role(locker_manager_role, address):
+        skale.token_state.grant_role(locker_manager_role, address)
+
+    schain_type_manager_role = skale.schains_internal.schain_type_manager_role()
+    if not skale.schains_internal.has_role(schain_type_manager_role, address):
+        skale.schains_internal.grant_role(schain_type_manager_role, address)
+
+    validator_manager_role = skale.validator_service.validator_manager_role()
+    if not skale.validator_service.has_role(validator_manager_role, address):
+        skale.validator_service.grant_role(validator_manager_role, address)
+
+    node_manager_role = skale.nodes.node_manager_role()
+    if not skale.nodes.has_role(node_manager_role, address):
+        skale.nodes.grant_role(node_manager_role, address)
+
+    compliance_role = skale.nodes.compliance_role()
+    if not skale.nodes.has_role(compliance_role, address):
+        skale.nodes.grant_role(compliance_role, address)
+
+    constants_holder_role = skale.constants_holder.constants_holder_role()
+    if not skale.constants_holder.has_role(constants_holder_role, address):
+        skale.constants_holder.grant_role(constants_holder_role, address)
+
+    debugger_role = skale.node_rotation.debugger_role()
+    if not skale.node_rotation.has_role(debugger_role, address):
+        skale.node_rotation.grant_role(debugger_role, address)
+
+    debugger_schains_role = skale.schains_internal.debugger_role()
+    if not skale.schains_internal.has_role(debugger_schains_role, address):
+        skale.schains_internal.grant_role(debugger_schains_role, address)
+
+    generation_manager_role = skale.schains_internal.generation_manager_role()
+    if not skale.schains_internal.has_role(generation_manager_role, address):
+        skale.schains_internal.grant_role(generation_manager_role, address)
+
+    forgiver_role = skale.punisher.forgiver_role()
+    if not skale.punisher.has_role(forgiver_role, address):
+        skale.punisher.grant_role(forgiver_role, address)
+
+    delegation_period_setter_role = skale.delegation_period_manager.delegation_period_setter_role()
+    if not skale.delegation_period_manager.has_role(delegation_period_setter_role, address):
+        skale.delegation_period_manager.grant_role(delegation_period_setter_role, address)
+
+    penalty_setter_role = skale.slashing_table.penalty_setter_role()
+    if not skale.slashing_table.has_role(penalty_setter_role, address):
+        skale.slashing_table.grant_role(penalty_setter_role, address)
+
+
+def add_test2_schain_type(skale) -> TxRes:
     part_of_node = 1
     number_of_nodes = 2
+    return skale.schains_internal.add_schain_type(
+        part_of_node, number_of_nodes
+    )
+
+
+def add_test4_schain_type(skale) -> TxRes:
+    part_of_node = 1
+    number_of_nodes = 4
     return skale.schains_internal.add_schain_type(
         part_of_node, number_of_nodes
     )
@@ -52,9 +130,17 @@ def cleanup_nodes_schains(skale):
         schain_data = skale.schains.get(schain_id)
         schain_name = schain_data.get('name', None)
         if schain_name is not None:
-            skale.manager.delete_schain(schain_name, wait_for=True)
+            skale.manager.delete_schain_by_root(schain_name, wait_for=True)
     for node_id in skale.nodes.get_active_node_ids():
+        skale.nodes.init_exit(node_id, wait_for=True)
         skale.manager.node_exit(node_id, wait_for=True)
+
+
+def create_clean_schain(skale):
+    cleanup_nodes_schains(skale)
+    create_nodes(skale)
+    add_test2_schain_type(skale)
+    return create_schain(skale, random_name=True)
 
 
 def validator_exist(skale):
@@ -62,11 +148,13 @@ def validator_exist(skale):
 
 
 def add_delegation_period(skale):
-    skale.delegation_period_manager.set_delegation_period(
-        months_count=D_DELEGATION_PERIOD,
-        stake_multiplier=D_STAKE_MULTIPLIER,
-        wait_for=True
-    )
+    is_added = skale.delegation_period_manager.is_delegation_period_allowed(D_DELEGATION_PERIOD)
+    if not is_added:
+        skale.delegation_period_manager.set_delegation_period(
+            months_count=D_DELEGATION_PERIOD,
+            stake_multiplier=D_STAKE_MULTIPLIER,
+            wait_for=True
+        )
 
 
 def setup_validator(skale):
@@ -168,20 +256,30 @@ def create_nodes(skale, names=()):
         )
 
 
-def create_schain(skale, schain_name=DEFAULT_SCHAIN_NAME):
+def create_schain(
+    skale,
+    schain_name=DEFAULT_SCHAIN_NAME,
+    schain_type=None,
+    random_name=False,
+    schain_options=None
+):
     print('Creating schain')
     # create 1 s-chain
-    type_of_nodes, lifetime_seconds, _ = generate_random_schain_data(skale)
-    _ = skale.schains.get_schain_price(
-        type_of_nodes, lifetime_seconds
-    )
-    skale.schains.grant_role(skale.schains.schain_creator_role(),
-                             skale.wallet.address)
+    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
+
+    if random_name:
+        schain_name = name
+
+    if not schain_type:
+        schain_type = type_of_nodes
+
     skale.schains.add_schain_by_foundation(
         lifetime_seconds,
-        type_of_nodes,
+        schain_type,
         0,
         schain_name,
+        options=schain_options,
         wait_for=True,
         value=TEST_SRW_FUND_VALUE
     )
+    return schain_name

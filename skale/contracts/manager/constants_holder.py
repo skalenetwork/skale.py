@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 
 
 class ConstantsHolder(BaseContract):
@@ -80,4 +81,18 @@ class ConstantsHolder(BaseContract):
         return self.contract.functions.rotationDelay().call()
 
     def get_dkg_timeout(self) -> int:
-        return self.contract.functions.complaintTimelimit().call()
+        return self.contract.functions.complaintTimeLimit().call()
+
+    @transaction_method
+    def set_complaint_timelimit(self, complaint_timelimit: int):
+        return self.contract.functions.setComplaintTimeLimit(complaint_timelimit)
+
+    @transaction_method
+    def grant_role(self, role: bytes, address: str) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
+
+    def constants_holder_role(self) -> bytes:
+        return self.contract.functions.CONSTANTS_HOLDER_MANAGER_ROLE().call()
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()

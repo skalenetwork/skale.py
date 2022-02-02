@@ -56,6 +56,9 @@ def format_fields(fields, flist=False):
             if result is None:
                 return None
 
+            if not isinstance(result, list) and not isinstance(result, tuple):
+                return result
+
             if flist:
                 formatted_list = []
                 for item in result:
@@ -75,11 +78,11 @@ def format_fields(fields, flist=False):
     return real_decorator
 
 
-def ip_from_bytes(bytes):
-    return socket.inet_ntoa(bytes)
+def ip_from_bytes(packed: bytes) -> str:
+    return socket.inet_ntoa(packed)
 
 
-def ip_to_bytes(ip):  # pragma: no cover
+def ip_to_bytes(ip: str) -> bytes:  # pragma: no cover
     return socket.inet_aton(ip)
 
 
@@ -177,6 +180,11 @@ def get_contracts_info(contracts_data):
     for contract_info in contracts_data:
         contracts_info[contract_info.name] = contract_info
     return contracts_info
+
+
+def to_camel_case(snake_str):
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
 
 
 def is_test_env():

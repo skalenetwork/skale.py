@@ -1,5 +1,6 @@
 """ SKALE config test """
 
+import mock
 import pytest
 from web3.auto import w3
 
@@ -30,3 +31,12 @@ def skale_allocator(web3):
 @pytest.fixture
 def empty_account():
     return w3.eth.account.create()
+
+
+@pytest.fixture
+def failed_skale(skale):
+    tmp_wait = skale.wallet.wait
+    skale.wallet.sign_and_send = mock.Mock()
+    skale.wallet.wait = mock.Mock(return_value={'status': 0})
+    yield skale
+    skale.wallet.wait = tmp_wait

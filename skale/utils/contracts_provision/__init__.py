@@ -24,7 +24,7 @@ from skale.contracts.allocator.allocator import TimeUnit
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 
-DEFAULT_SCHAIN_NAME = 'test_schain'
+DEFAULT_SCHAIN_NAME = 'test_schain_1'
 
 DEFAULT_DOMAIN_NAME = 'skale.test'
 
@@ -44,7 +44,7 @@ FIRST_DELEGATION_MONTH = 1
 
 # allocator test constants
 
-TEST_VESTING_SLIFF = 6
+TEST_VESTING_CLIFF = 6
 TEST_TOTAL_VESTING_DURATION = 36
 TEST_VESTING_INTERVAL_TIME_UNIT = TimeUnit.MONTH
 TEST_VESTING_INTERVAL = 6

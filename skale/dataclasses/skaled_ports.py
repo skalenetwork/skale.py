@@ -27,7 +27,7 @@ class SkaledPorts(Enum):
     HTTP_JSON = 3
     BINARY_CONSENSUS = 4
     ZMQ_BROADCAST = 5
-    MTA = 6
+    IMA_MONITORING = 6
     WSS_JSON = 7
     HTTPS_JSON = 8
     INFO_HTTP_JSON = 9

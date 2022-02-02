@@ -22,17 +22,13 @@ import time
 from functools import partial, wraps
 
 import skale.config as config
-from skale.transactions.result import (
-    DryRunFailedError,
-    InsufficientBalanceError,
-    TransactionFailedError, TxRes
-)
-from skale.utils.constants import GAS_LIMIT_COEFFICIENT
-from skale.utils.exceptions import RPCWalletError
+from skale.transactions.exceptions import TransactionError
+from skale.transactions.result import TxRes
+from skale.wallets.redis_wallet import RedisAdapterError
 from skale.utils.web3_utils import (
     check_receipt,
     get_eth_nonce,
-    wait_for_receipt_by_blocks,
+    wait_for_confirmation_blocks
 )
 
 from web3._utils.transactions import get_block_gas_limit
@@ -76,8 +72,13 @@ def estimate_gas(web3, method, opts):
     except AttributeError:
         block_gas_limit = get_block_gas_limit(web3)
 
-    estimated_gas = method.estimateGas(opts)
-    normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
+    estimated_gas = method.estimateGas(
+        opts,
+        block_identifier='latest'
+    )
+    normalized_estimated_gas = int(
+        estimated_gas * config.DEFAULT_GAS_MULTIPLIER
+    )
     if normalized_estimated_gas > block_gas_limit:
         logger.warning(f'Estimate gas for {method.fn_name} - {normalized_estimated_gas} exceeds \
 block gas limit, going to use block_gas_limit ({block_gas_limit}) for this transaction')
@@ -104,7 +105,16 @@ def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
 
-def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None, value=0) -> str:
+def post_transaction(
+    wallet,
+    method,
+    gas_limit,
+    gas_price=None,
+    nonce=None,
+    value=0,
+    multiplier: int = None,
+    priority: int = None
+) -> str:
     logger.info(
         f'Tx: {method.fn_name}, '
         f'sender: {wallet.address}, '
@@ -114,14 +124,21 @@ def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None, valu
         f'value: {value}'
     )
     tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce, value)
-    tx_hash = wallet.sign_and_send(tx_dict)
+    tx_hash = wallet.sign_and_send(
+        tx_dict,
+        multiplier=multiplier,
+        priority=priority
+    )
     return tx_hash
 
 
-def send_eth_with_skale(skale, address: str, amount_wei: int, *,
-                        gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
-                        gas_price: int = None,
-                        nonce: int = None, wait_for=True):
+def send_eth_with_skale(
+    skale, address: str, amount_wei: int, *,
+    gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
+    gas_price: int = None,
+    nonce: int = None, wait_for=True,
+    confirmation_blocks=0
+):
     gas_limit = gas_limit or DEFAULT_ETH_SEND_GAS_LIMIT
     gas_price = gas_price or skale.web3.eth.gasPrice
     tx = {
@@ -132,14 +149,19 @@ def send_eth_with_skale(skale, address: str, amount_wei: int, *,
         'nonce': nonce
     }
     logger.info(f'Sending {amount_wei} WEI to {address}')
-    tx_hash = skale.wallet.sign_and_send(tx)
-    logger.info(f'Waiting for receipt for {tx_hash}')
-
+    tx = skale.wallet.sign_and_send(tx)
+    logger.info(f'Waiting for receipt for {tx}')
     if wait_for:
-        receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
+        receipt = skale.wallet.wait(tx)
         check_receipt(receipt)
         return receipt
-    return tx_hash
+
+    if confirmation_blocks:
+        wait_for_confirmation_blocks(
+            skale.web3,
+            confirmation_blocks
+        )
+    return tx
 
 
 def send_eth(web3, account, amount, wallet, gas_price=None):
@@ -189,15 +211,12 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         try:
             tx_res = transaction(*args, **kwargs)
             tx_res.raise_for_status()
-        except (TransactionFailedError, DryRunFailedError, RPCWalletError) as err:
+        except (RedisAdapterError, TransactionError) as err:
             logger.error(f'Tx attempt {attempt}/{max_retries} failed',
                          exc_info=err)
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
             exp_timeout *= 2
-        except InsufficientBalanceError as err:
-            logger.error('Sender balance is too low', exc_info=err)
-            raise err
         else:
             success = True
         attempt += 1

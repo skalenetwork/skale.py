@@ -122,10 +122,18 @@ def test_create_delete_schain(skale):
     schains_ids = skale.schains_internal.get_all_schains_ids()
 
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
-    price_in_wei = skale.schains.get_schain_price(type_of_nodes,
-                                                  lifetime_seconds)
-    tx_res = skale.manager.create_schain(lifetime_seconds, type_of_nodes,
-                                         price_in_wei, name, wait_for=True)
+    price_in_wei = skale.schains.get_schain_price(
+        type_of_nodes,
+        lifetime_seconds
+    )
+    tx_res = skale.manager.create_schain(
+        lifetime_seconds,
+        type_of_nodes,
+        price_in_wei,
+        name,
+        wait_for=True
+    )
+
     assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
@@ -139,6 +147,25 @@ def test_create_delete_schain(skale):
     assert name in schains_names
 
     tx_res = skale.manager.delete_schain(name, wait_for=True)
+    assert tx_res.receipt['status'] == 1
+
+    schains_ids_number_after = skale.schains_internal.get_schains_number()
+    assert schains_ids_number_after == len(schains_ids)
+    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+
+    schains_names = [
+        skale.schains.get(sid)['name']
+        for sid in schains_ids_after
+    ]
+    assert name not in schains_names
+
+
+def test_delete_schain_by_root(skale):
+    schains_ids = skale.schains_internal.get_all_schains_ids()
+    name = ''.join(random.choice('abcde') for _ in range(4))
+    skale.manager.create_default_schain(name)
+
+    tx_res = skale.manager.delete_schain_by_root(name, wait_for=True)
     assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
@@ -182,25 +209,27 @@ def test_create_delete_default_schain(skale):
     assert name not in schains_names
 
 
-def test_create_node_status_0(skale):
+def test_create_node_status_0(failed_skale):
+    skale = failed_skale
     ip, public_ip, port, name = generate_random_node_data()
-    with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
-        send_tx_mock.return_value = b'hexstring'
-        with mock.patch(
-            'skale.contracts.base_contract.wait_for_receipt_by_blocks',
-            return_value={'status': 0}
-        ):
-            tx_res = skale.manager.create_node(ip, port, name, domain_name=DEFAULT_DOMAIN_NAME,
-                                               wait_for=True, raise_for_status=False)
-            assert tx_res.receipt['status'] == 0
-            with pytest.raises(TransactionFailedError):
-                tx_res.raise_for_status()
+    tx_res = skale.manager.create_node(
+        ip,
+        port,
+        name,
+        domain_name=DEFAULT_DOMAIN_NAME,
+        wait_for=True,
+        raise_for_status=False
+    )
+    assert tx_res.receipt['status'] == 0
+    with pytest.raises(TransactionFailedError):
+        tx_res.raise_for_status()
 
 
 def test_empty_node_exit(skale):
     ip, public_ip, port, name = generate_random_node_data()
     skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
     node_idx = skale.nodes.node_name_to_index(name)
+    skale.nodes.init_exit(node_idx, wait_for=True)
     tx_res = skale.manager.node_exit(node_idx, wait_for=True)
     assert tx_res.receipt['status'] == 1
     assert skale.nodes.get_node_status(node_idx) == 2
