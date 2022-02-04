@@ -82,7 +82,7 @@ class NodeRotation(BaseContract):
         finish_ts = next(
             (schain[1] for schain in raw_history if '0x' + schain[0].hex() == schain_id), None)
         if not finish_ts:
-            return finish_ts
+            return None
         exception = self.skale.schains_internal.check_exception(schain_name, node_id)
         if exception:
             rotation_delay = self.skale.constants_holder.get_rotation_delay()
