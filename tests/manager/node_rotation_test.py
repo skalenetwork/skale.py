@@ -17,7 +17,7 @@ def test_get_rotation(skale):
 
 def test_get_rotation_obj(skale):
     assert skale.node_rotation.get_rotation_obj(DEFAULT_SCHAIN_NAME) == Rotation(
-        node_id=0,
+        leaving_node_id=0,
         new_node_id=0,
         freeze_until=0,
         rotation_counter=0

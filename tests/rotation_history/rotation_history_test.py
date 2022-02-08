@@ -210,7 +210,7 @@ def test_get_new_nodes_list(skale):
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
     assert len(new_nodes) == 3
-    assert all(x in test_new_node_ids for x in new_nodes)
+    assert all(x in new_nodes for x in test_new_node_ids)
 
     exiting_node_index = 3
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
