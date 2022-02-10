@@ -99,11 +99,6 @@ def _add_previous_schain_rotations_state(
                 previous_node = skale.node_rotation.get_previous_node(schain_name, node_id)
                 if previous_node is not None:
                     finish_ts = skale.node_rotation.get_schain_finish_ts(previous_node, schain_name)
-                    exception = skale.schains_internal.check_exception(schain_name, previous_node)
-                    if exception:
-                        logger.info(f'Node {previous_node} in exceptions array for {schain_name}, \
-adding {rotation_delay} to {finish_ts}.')
-                        finish_ts += rotation_delay
                     previous_nodes[node_id] = {
                         'finish_ts': finish_ts,
                         'previous_node_id': previous_node
