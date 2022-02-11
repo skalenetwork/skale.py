@@ -91,9 +91,20 @@ adding {rotation_delay} to {finish_ts}.')
             finish_ts += rotation_delay
         return finish_ts
 
-    def is_rotation_in_progress(self, schain_name):
+    def is_rotation_in_progress(self, schain_name) -> bool:
         schain_id = self.schains.name_to_id(schain_name)
         return self.contract.functions.isRotationInProgress(schain_id).call()
+
+    def is_new_node_found(self, schain_name) -> bool:
+        schain_id = self.schains.name_to_id(schain_name)
+        return self.contract.functions.isNewNodeFound(schain_id).call()
+
+    def is_rotation_active(self, schain_name) -> bool:
+        """
+        The public function that tells whether rotation is in the active phase - the new group is
+        already generated
+        """
+        return self.is_rotation_in_progress(schain_name) and self.is_new_node_found(schain_name)
 
     def wait_for_new_node(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
