@@ -35,7 +35,7 @@ NO_PREVIOUS_NODE_EXCEPTION_TEXT = 'No previous node'
 
 @dataclass
 class Rotation:
-    node_id: int
+    leaving_node_id: int
     new_node_id: int
     freeze_until: int
     rotation_counter: int
@@ -49,7 +49,7 @@ class NodeRotation(BaseContract):
     def schains(self):
         return self.skale.schains
 
-    def get_rotation_obj(self, schain_name):
+    def get_rotation_obj(self, schain_name) -> Rotation:
         schain_id = self.schains.name_to_id(schain_name)
         rotation_data = self.contract.functions.getRotation(schain_id).call()
         return Rotation(*rotation_data)

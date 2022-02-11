@@ -125,6 +125,14 @@ def add_test4_schain_type(skale) -> TxRes:
 
 
 def cleanup_nodes_schains(skale):
+    try:
+        _cleanup_nodes_schains(skale)
+    except Exception as e:
+        print(f'Cleanup failed: {e}')
+        _cleanup_nodes_schains(skale)
+
+
+def _cleanup_nodes_schains(skale):
     print('Cleanup nodes and schains')
     for schain_id in skale.schains_internal.get_all_schains_ids():
         schain_data = skale.schains.get(schain_id)
