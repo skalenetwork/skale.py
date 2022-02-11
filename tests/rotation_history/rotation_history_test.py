@@ -203,10 +203,18 @@ def test_get_new_nodes_list(skale):
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False)
 
     failed_node_index = 2
+    second_failed_node_index = 3
     test_new_node_ids = fail_dkg(
-        skale, nodes, skale_instances, group_index, failed_node_index, second_dkg=True)
+        skale=skale,
+        nodes=nodes,
+        skale_instances=skale_instances,
+        group_index=group_index,
+        failed_node_index=failed_node_index,
+        second_failed_node_index=second_failed_node_index
+    )
 
-    node_groups = get_previous_schain_groups(skale, name)
+    rotation = skale.node_rotation.get_rotation_obj(name)
+    node_groups = get_previous_schain_groups(skale, name, rotation.leaving_node_id)
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
     assert len(new_nodes) == 3
@@ -215,7 +223,8 @@ def test_get_new_nodes_list(skale):
     exiting_node_index = 3
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
-    node_groups = get_previous_schain_groups(skale, name)
+    rotation = skale.node_rotation.get_rotation_obj(name)
+    node_groups = get_previous_schain_groups(skale, name, rotation.leaving_node_id)
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
     assert len(new_nodes) == 1

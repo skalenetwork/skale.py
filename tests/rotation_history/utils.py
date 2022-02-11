@@ -150,42 +150,38 @@ def fail_dkg(
     skale_instances,
     group_index,
     failed_node_index,
-    second_dkg=False
+    second_failed_node_index=None
 ) -> list:
-    new_node_ids = []
-
     logger.info('Failing first DKG...')
+    new_node_ids = []
     new_nodes, new_skale_instances = set_up_nodes(skale, 1)
-
     new_node_ids.append(new_nodes[0]['node_id'])
 
     send_broadcasts(nodes, skale_instances, group_index, failed_node_index)
     _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
     send_complaint(nodes, skale_instances, group_index, failed_node_index)
 
-    if second_dkg:
-        nodes[failed_node_index] = new_nodes[0]
-        skale_instances[failed_node_index] = new_skale_instances[0]
-        new_nodes, new_skale_instances = set_up_nodes(skale, 1)
-
-        new_node_ids.append(new_nodes[0]['node_id'])
-
-        logger.info('Failing second DKG...')
-
-        send_broadcasts(nodes, skale_instances, group_index, failed_node_index)
-        _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
-        send_complaint(nodes, skale_instances, group_index, failed_node_index)
-
-        logger.info('Second DKG failed...')
-
-    logger.info('Runing successful DKG...')
     nodes[failed_node_index] = new_nodes[0]
     skale_instances[failed_node_index] = new_skale_instances[0]
+
+    if second_failed_node_index:
+        logger.info('Failing second DKG...')
+        new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+        new_node_ids.append(new_nodes[0]['node_id'])
+
+        send_broadcasts(nodes, skale_instances, group_index, second_failed_node_index)
+        _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
+        send_complaint(nodes, skale_instances, group_index, second_failed_node_index)
+
+        nodes[second_failed_node_index] = new_nodes[0]
+        skale_instances[second_failed_node_index] = new_skale_instances[0]
+
     run_dkg(nodes, skale_instances, group_index)
     return new_node_ids
 
 
 def run_dkg(nodes, skale_instances, group_index):
+    logger.info('Running DKG procedure...')
     send_broadcasts(nodes, skale_instances, group_index)
     send_alrights(nodes, skale_instances, group_index)
     _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)

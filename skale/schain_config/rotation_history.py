@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
 
 
-def get_previous_schain_groups(skale, schain_name: str) -> dict:
+def get_previous_schain_groups(skale, schain_name: str, leaving_node_id=None) -> dict:
     """
     Returns all previous node groups with public keys and finish timestamps.
     In case of no rotations returns the current state.
@@ -49,7 +49,7 @@ def get_previous_schain_groups(skale, schain_name: str) -> dict:
         return node_groups
 
     _add_previous_schain_rotations_state(
-        skale, node_groups, rotation, schain_name, previous_public_keys)
+        skale, node_groups, rotation, schain_name, previous_public_keys, leaving_node_id)
     return node_groups
 
 
@@ -84,6 +84,7 @@ def _add_previous_schain_rotations_state(
     rotation: Rotation,
     schain_name: str,
     previous_public_keys: list,
+    leaving_node_id=None
 ) -> dict:
     """
     Internal function, handles rotations from (rotation_counter - 2) to 0 and adds them to the
@@ -139,6 +140,10 @@ def _add_previous_schain_rotations_state(
 
         del previous_nodes[latest_exited_node_id]
 
+        if leaving_node_id and previous_node_id == leaving_node_id:
+            logger.info(f'Finishing rotation history parsing: {leaving_node_id} found')
+            break
+
 
 def _pop_previous_bls_public_key(previous_public_keys):
     """
@@ -164,12 +169,16 @@ def get_new_nodes_list(skale: Skale, name: str, node_groups) -> list:
     """Returns list of new nodes in for the latest rotation"""
     logger.info(f'Getting new nodes list for chain {name}')
     rotation = skale.node_rotation.get_rotation_obj(name)
+    current_group_ids = node_groups[rotation.rotation_counter]['nodes'].keys()
     new_nodes = []
     for index in node_groups:
         past_rotation = node_groups[index]['rotation']
         if not past_rotation:
             continue
-        new_nodes.append(past_rotation['new_node_id'])
+        if past_rotation['new_node_id'] in current_group_ids:
+            new_nodes.append(past_rotation['new_node_id'])
+        else:
+            logger.info(f'{past_rotation["new_node_id"]} NOT IN {current_group_ids}')
         if rotation.leaving_node_id == past_rotation['leaving_node_id']:
             break
     logger.info(f'New nodes list for chain {name}: {new_nodes}')
