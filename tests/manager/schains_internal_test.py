@@ -22,6 +22,7 @@ def test_get_schains_number(skale):
 
 
 def test_get_schain_list_size(skale, empty_account):
+    create_clean_schain(skale)
     list_size = skale.schains_internal.get_schain_list_size(skale.wallet.address)
     empty_list_size = skale.schains_internal.get_schain_list_size(empty_account.address)
 
@@ -30,6 +31,7 @@ def test_get_schain_list_size(skale, empty_account):
 
 
 def test_get_schain_id_by_index_for_owner(skale):
+    create_clean_schain(skale)
     schain_id = skale.schains_internal.get_schain_id_by_index_for_owner(
         skale.wallet.address, 0
     )
