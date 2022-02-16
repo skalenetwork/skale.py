@@ -28,7 +28,12 @@ logger = logging.getLogger(__name__)
 RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
 
 
-def get_previous_schain_groups(skale, schain_name: str, leaving_node_id=None) -> dict:
+def get_previous_schain_groups(
+    skale: Skale,
+    schain_name: str,
+    leaving_node_id=None,
+    include_keys=True
+) -> dict:
     """
     Returns all previous node groups with public keys and finish timestamps.
     In case of no rotations returns the current state.
@@ -37,8 +42,13 @@ def get_previous_schain_groups(skale, schain_name: str, leaving_node_id=None) ->
     node_groups = {}
 
     group_id = skale.schains.name_to_group_id(schain_name)
-    previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_id)
-    current_public_key = skale.key_storage.get_common_public_key(group_id)
+
+    previous_public_keys = None
+    current_public_key = None
+
+    if include_keys:
+        previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_id)
+        current_public_key = skale.key_storage.get_common_public_key(group_id)
 
     rotation = skale.node_rotation.get_rotation_obj(schain_name)
 
@@ -49,7 +59,14 @@ def get_previous_schain_groups(skale, schain_name: str, leaving_node_id=None) ->
         return node_groups
 
     _add_previous_schain_rotations_state(
-        skale, node_groups, rotation, schain_name, previous_public_keys, leaving_node_id)
+        skale=skale,
+        node_groups=node_groups,
+        rotation=rotation,
+        schain_name=schain_name,
+        previous_public_keys=previous_public_keys,
+        leaving_node_id=leaving_node_id
+    )
+
     return node_groups
 
 
@@ -120,7 +137,7 @@ def _add_previous_schain_rotations_state(
             previous_node_id
         )
 
-        if not is_node_in_exceptions:
+        if not is_node_in_exceptions and previous_public_keys:
             bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
             node_finish_ts = previous_nodes[latest_exited_node_id]['finish_ts']
         else:
@@ -157,12 +174,13 @@ def _pop_previous_bls_public_key(previous_public_keys):
 
 
 def _compose_bls_public_key_info(bls_public_key: str) -> dict:
-    return {
-        'blsPublicKey0': str(bls_public_key[0][0]),
-        'blsPublicKey1': str(bls_public_key[0][1]),
-        'blsPublicKey2': str(bls_public_key[1][0]),
-        'blsPublicKey3': str(bls_public_key[1][1])
-    }
+    if bls_public_key:
+        return {
+            'blsPublicKey0': str(bls_public_key[0][0]),
+            'blsPublicKey1': str(bls_public_key[0][1]),
+            'blsPublicKey2': str(bls_public_key[1][0]),
+            'blsPublicKey3': str(bls_public_key[1][1])
+        }
 
 
 def get_new_nodes_list(skale: Skale, name: str, node_groups) -> list:
