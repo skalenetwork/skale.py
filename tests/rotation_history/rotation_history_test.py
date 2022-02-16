@@ -214,7 +214,12 @@ def test_get_new_nodes_list(skale):
     )
 
     rotation = skale.node_rotation.get_rotation_obj(name)
-    node_groups = get_previous_schain_groups(skale, name, rotation.leaving_node_id)
+    node_groups = get_previous_schain_groups(
+        skale=skale,
+        schain_name=name,
+        leaving_node_id=rotation.leaving_node_id,
+        include_keys=False
+    )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
     assert len(new_nodes) == 3
@@ -224,7 +229,12 @@ def test_get_new_nodes_list(skale):
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
     rotation = skale.node_rotation.get_rotation_obj(name)
-    node_groups = get_previous_schain_groups(skale, name, rotation.leaving_node_id)
+    node_groups = get_previous_schain_groups(
+        skale=skale,
+        schain_name=name,
+        leaving_node_id=rotation.leaving_node_id,
+        include_keys=False
+    )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
     assert len(new_nodes) == 1
