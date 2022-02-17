@@ -180,8 +180,9 @@ def fail_dkg(
     return new_node_ids
 
 
-def run_dkg(nodes, skale_instances, group_index):
+def run_dkg(nodes, skale_instances, group_index, skip_time=True):
     logger.info('Running DKG procedure...')
     send_broadcasts(nodes, skale_instances, group_index)
     send_alrights(nodes, skale_instances, group_index)
-    _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)
+    if skip_time:
+        _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)
