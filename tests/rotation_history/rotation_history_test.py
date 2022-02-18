@@ -1,5 +1,6 @@
 """ SKALE node rotation test """
 
+import json
 import logging
 
 from skale.utils.contracts_provision.main import (
@@ -16,86 +17,90 @@ def test_get_previous_node_no_node(skale):
     assert skale.node_rotation.get_previous_node(DEFAULT_SCHAIN_NAME, 0) is None
 
 
-def test_rotation_history(skale):
-    cleanup_nodes_schains(skale)
-    nodes, skale_instances = set_up_nodes(skale, 4)
-    add_test4_schain_type(skale)
-    name = create_schain(skale, random_name=True)
-    group_index = skale.web3.sha3(text=name)
+def test_rotation_history1(skale):
+    # cleanup_nodes_schains(skale)
+    # nodes, skale_instances = set_up_nodes(skale, 4)
+    # add_test4_schain_type(skale)
+    # name = create_schain(skale, random_name=True)
+    # group_index = skale.web3.sha3(text=name)
 
-    run_dkg(nodes, skale_instances, group_index)
+    # run_dkg(nodes, skale_instances, group_index)
 
-    group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
+    # group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
-    exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    # exiting_node_index = 1
+    # exiting_node_id = nodes[exiting_node_index]['node_id']
+    # rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
-    previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
-    )
-    assert previous_node_id == exiting_node_id
+    # previous_node_id = skale.node_rotation.get_previous_node(
+    #     name,
+    #     nodes[exiting_node_index]['node_id']
+    # )
+    # assert previous_node_id == exiting_node_id
 
-    group_ids_1 = skale.schains_internal.get_node_ids_for_schain(name)
+    # group_ids_1 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
-    exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    # exiting_node_index = 1
+    # exiting_node_id = nodes[exiting_node_index]['node_id']
+    # rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
-    previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
-    )
-    assert previous_node_id == exiting_node_id
+    # previous_node_id = skale.node_rotation.get_previous_node(
+    #     name,
+    #     nodes[exiting_node_index]['node_id']
+    # )
+    # assert previous_node_id == exiting_node_id
 
-    group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
+    # group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 2
-    exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    # exiting_node_index = 2
+    # exiting_node_id = nodes[exiting_node_index]['node_id']
+    # rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
-    previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
-    )
-    assert previous_node_id == exiting_node_id
+    # previous_node_id = skale.node_rotation.get_previous_node(
+    #     name,
+    #     nodes[exiting_node_index]['node_id']
+    # )
+    # assert previous_node_id == exiting_node_id
 
-    group_ids_3 = skale.schains_internal.get_node_ids_for_schain(name)
+    # group_ids_3 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 3
-    exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    # exiting_node_index = 3
+    # exiting_node_id = nodes[exiting_node_index]['node_id']
+    # rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
-    previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
-    )
-    assert previous_node_id == exiting_node_id
+    # previous_node_id = skale.node_rotation.get_previous_node(
+    #     name,
+    #     nodes[exiting_node_index]['node_id']
+    # )
+    # assert previous_node_id == exiting_node_id
 
-    group_ids_4 = skale.schains_internal.get_node_ids_for_schain(name)
+    # group_ids_4 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
-    exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    # exiting_node_index = 1
+    # exiting_node_id = nodes[exiting_node_index]['node_id']
+    # rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
-    previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
-    )
-    assert previous_node_id == exiting_node_id
+    # previous_node_id = skale.node_rotation.get_previous_node(
+    #     name,
+    #     nodes[exiting_node_index]['node_id']
+    # )
+    # assert previous_node_id == exiting_node_id
 
-    group_ids_5 = skale.schains_internal.get_node_ids_for_schain(name)
+    # group_ids_5 = skale.schains_internal.get_node_ids_for_schain(name)
 
+    name = 'echoing-seginus'
     node_groups = get_previous_schain_groups(skale, name)
 
-    assert len(node_groups) == 6
-    assert set(node_groups[0]['nodes'].keys()) == set(group_ids_0)
-    assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
-    assert set(node_groups[2]['nodes'].keys()) == set(group_ids_2)
-    assert set(node_groups[3]['nodes'].keys()) == set(group_ids_3)
-    assert set(node_groups[4]['nodes'].keys()) == set(group_ids_4)
-    assert set(node_groups[5]['nodes'].keys()) == set(group_ids_5)
+    print(json.dumps(node_groups, indent=4))
+    assert False
+
+    # assert len(node_groups) == 6
+    # assert set(node_groups[0]['nodes'].keys()) == set(group_ids_0)
+    # assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
+    # assert set(node_groups[2]['nodes'].keys()) == set(group_ids_2)
+    # assert set(node_groups[3]['nodes'].keys()) == set(group_ids_3)
+    # assert set(node_groups[4]['nodes'].keys()) == set(group_ids_4)
+    # assert set(node_groups[5]['nodes'].keys()) == set(group_ids_5)
 
 
 def test_rotation_history_no_rotations(skale):
