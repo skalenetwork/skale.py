@@ -45,7 +45,7 @@ setup(
         "pyyaml==5.4",
         "sgx.py==0.8dev3",
         "eth-account==0.5.6",
-        "redis==3.5.3"
+        "redis==4.1.4"
     ],
 
     python_requires='>=3.7,<4',
