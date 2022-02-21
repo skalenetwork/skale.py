@@ -88,8 +88,12 @@ def transaction_method(transaction):
                                           self.skale.wallet.address)
         gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or \
             self.skale.gas_price
-        balance_check_result = check_balance_and_gas(balance, gas_price,
-                                                     gas_limit, value)
+        balance_check_result = check_balance_and_gas(
+            balance,
+            gas_price,
+            gas_limit,
+            value
+        )
         rich_enough = is_success(balance_check_result)
 
         # Send transaction
@@ -98,8 +102,16 @@ def transaction_method(transaction):
 
         if rich_enough and should_send_transaction:
             tx = post_transaction(
-                self.skale.wallet, method, gas_limit,
-                gas_price, nonce, value, multiplier, priority
+                wallet=self.skale.wallet,
+                method=method,
+                gas_limit=gas_limit,
+                gas_price=gas_price,
+                max_fee_per_gas=max_fee_per_gas,
+                max_priority_fee_per_gas=max_priority_fee_per_gas,
+                nonce=nonce,
+                value=value,
+                multiplier=multiplier,
+                priority=priority
             )
             if wait_for:
                 receipt = self.skale.wallet.wait(tx)

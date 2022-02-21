@@ -100,20 +100,22 @@ def build_tx_dict(
         'nonce': nonce,
         'value': value
     }
-    if gas_price is not None:
-        tx_dict_fields.update({'gasPrice': gas_price})
     if max_priority_fee_per_gas is not None:
         tx_dict_fields.update({
-            'max_priority_fee_per_gas': max_priority_fee_per_gas,
-            'max_fee_per_gas': max_fee_per_gas
+            'maxPriorityFeePerGas': max_priority_fee_per_gas,
+            'maxFeePerGas': max_fee_per_gas
         })
+        tx_dict_fields.update({'type': 2})
+    elif gas_price is not None:
+        tx_dict_fields.update({'gasPrice': gas_price})
+        tx_dict_fields.update({'type': 1})
 
     return method.buildTransaction(tx_dict_fields)
 
 
 def sign_and_send(web3, method, gas_amount, wallet) -> hash:
     nonce = get_eth_nonce(web3, wallet.address)
-    tx_dict = build_tx_dict(method, gas=gas_amount, nonce=nonce)
+    tx_dict = build_tx_dict(method, gas_limit=gas_amount, nonce=nonce)
     signed_tx = wallet.sign(tx_dict)
     return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
@@ -142,7 +144,7 @@ def post_transaction(
     )
     tx_dict = build_tx_dict(
         method=method,
-        gas=gas_limit,
+        gas_limit=gas_limit,
         gas_price=gas_price,
         max_priority_fee_per_gas=max_priority_fee_per_gas,
         max_fee_per_gas=max_fee_per_gas,
