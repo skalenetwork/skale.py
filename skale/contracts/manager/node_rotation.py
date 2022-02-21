@@ -104,7 +104,21 @@ adding {rotation_delay} to {finish_ts}.')
         The public function that tells whether rotation is in the active phase - the new group is
         already generated
         """
-        return self.is_rotation_in_progress(schain_name) and self.is_new_node_found(schain_name)
+        finish_ts_reached = self.is_finish_ts_reached(schain_name)
+        return self.is_rotation_in_progress(schain_name) and not finish_ts_reached
+
+    def is_finish_ts_reached(self, schain_name) -> bool:
+        rotation = self.skale.node_rotation.get_rotation_obj(schain_name)
+        schain_finish_ts = self.get_schain_finish_ts(rotation.leaving_node_id, schain_name)
+
+        if not schain_finish_ts:
+            schain_finish_ts = 0
+
+        latest_block = self.skale.web3.eth.getBlock('latest')
+        current_ts = latest_block['timestamp']
+
+        logger.info(f'current_ts: {current_ts}, schain_finish_ts: {schain_finish_ts}')
+        return current_ts > schain_finish_ts
 
     def wait_for_new_node(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
