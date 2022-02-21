@@ -110,10 +110,15 @@ adding {rotation_delay} to {finish_ts}.')
     def is_finish_ts_reached(self, schain_name) -> bool:
         rotation = self.skale.node_rotation.get_rotation_obj(schain_name)
         schain_finish_ts = self.get_schain_finish_ts(rotation.leaving_node_id, schain_name)
-        print(schain_finish_ts)
-        # todo: get current ts
-        # todo: compare ts of schain finish and current
-        return True
+
+        if not schain_finish_ts:
+            schain_finish_ts = 0
+
+        latest_block = self.skale.web3.eth.getBlock('latest')
+        current_ts = latest_block['timestamp']
+
+        logger.info(f'current_ts: {current_ts}, schain_finish_ts: {schain_finish_ts}')
+        return current_ts > schain_finish_ts
 
     def wait_for_new_node(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)
