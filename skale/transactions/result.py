@@ -19,29 +19,11 @@
 
 from skale.transactions.exceptions import (
     DryRunFailedError,
-    InsufficientBalanceError,
     RevertError,
     TransactionFailedError
 )
 
 SUCCESS_STATUS = 1
-
-
-def check_balance(balance: int, gas_price: int, gas_limit: int, value: int) -> dict:
-    tx_cost = gas_price * gas_limit + value
-    if balance < tx_cost:
-        status = 0
-        msg = f'Transaction requires {tx_cost}. Wallet has {balance} wei'
-    else:
-        status = 1
-        msg = 'ok'
-    return {'status': status, 'msg': msg}
-
-
-def check_balance_and_gas(balance, gas_price, gas_limit, value):
-    if gas_limit:
-        return check_balance(balance, gas_price, gas_limit, value)
-    return {'status': 0, 'msg': 'Gas limit is empty'}
 
 
 def is_success(result: dict) -> bool:
@@ -57,10 +39,8 @@ def is_revert_error(result: dict) -> bool:
 
 
 class TxRes:
-    def __init__(self, dry_run_result=None, balance_check_result=None,
-                 tx_hash=None, receipt=None):
+    def __init__(self, dry_run_result=None, tx_hash=None, receipt=None):
         self.dry_run_result = dry_run_result
-        self.balance_check_result = balance_check_result
         self.tx_hash = tx_hash
         self.receipt = receipt
 
@@ -79,9 +59,6 @@ class TxRes:
     def dry_run_failed(self) -> bool:
         return not is_success_or_not_performed(self.dry_run_result)
 
-    def balance_check_failed(self) -> bool:
-        return not is_success_or_not_performed(self.balance_check_result)
-
     def tx_failed(self) -> bool:
         return not is_success_or_not_performed(self.receipt)
 
@@ -91,11 +68,6 @@ class TxRes:
                 raise RevertError(self.dry_run_result['error'])
             raise DryRunFailedError(f'Dry run check failed. '
                                     f'See result {self.dry_run_result}')
-        if self.balance_check_failed():
-            raise InsufficientBalanceError(
-                'Balance check failed. ',
-                f'See result {self.balance_check_result}'
-            )
         if self.tx_failed():
             raise TransactionFailedError(f'Transaction failed. '
                                          f'See receipt {self.receipt}')

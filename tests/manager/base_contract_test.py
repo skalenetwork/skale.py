@@ -4,7 +4,6 @@ import os
 import mock
 import pytest
 import skale.config as config
-from skale.transactions.result import InsufficientBalanceError
 from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.utils import generate_random_schain_data
@@ -75,13 +74,6 @@ def test_skip_dry_run(skale):
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
-
-    with mock.patch(
-        'skale.contracts.base_contract.config.DEFAULT_GAS_LIMIT', None
-    ):
-        with pytest.raises(InsufficientBalanceError) as err:
-            skale.token.transfer(address_to, amount, skip_dry_run=True)
-            assert err == 'Gas limit is empty'
 
     tx_res = skale.token.transfer(address_to, amount,
                                   skip_dry_run=True, gas_limit=TEST_GAS_LIMIT)
@@ -157,7 +149,7 @@ def test_tx_res_wait_for_true(skale):
 def test_tx_res_with_insufficient_funds(skale):
     account = generate_account(skale.web3)
     token_amount = 10
-    with pytest.raises(InsufficientBalanceError):
+    with pytest.raises(ValueError):
         skale.token.transfer(account['address'], token_amount)
 
 
