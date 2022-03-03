@@ -32,6 +32,7 @@ from skale.transactions.result import (
 from skale.transactions.tools import make_dry_run_call, post_transaction
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
+    get_eth_nonce,
     MAX_WAITING_TIME,
     wait_for_confirmation_blocks
 )
@@ -74,6 +75,8 @@ def transaction_method(transaction):
     ):
         method = transaction(self, *args, **kwargs)
         dry_run_result, tx, receipt = None, None, None
+
+        nonce = get_eth_nonce(self.skale.web3, self.skale.wallet.address)
 
         # Make dry_run and estimate gas limit
         estimated_gas_limit = None

@@ -60,9 +60,9 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
         ) as post_transaction_mock:
             skale.token.transfer(address_to, amount, wait_for=False)
             dry_run_mock.assert_not_called()
-            assert post_transaction_mock.call_args[0][2] == \
+            assert post_transaction_mock.call_args.kwargs['gas_limit'] == \
                 CUSTOM_DEFAULT_GAS_LIMIT
-            assert post_transaction_mock.call_args[0][3] == \
+            assert post_transaction_mock.call_args.kwargs['gas_price'] == \
                 CUSTOM_DEFAULT_GAS_PRICE_WEI
 
 
@@ -144,13 +144,17 @@ def test_tx_res_wait_for_true(skale):
     tx_res.raise_for_status()
 
 
-@mock.patch('skale.contracts.base_contract.account_eth_balance_wei',
-            new=mock.Mock(return_value=0))
 def test_tx_res_with_insufficient_funds(skale):
     account = generate_account(skale.web3)
-    token_amount = 10
+    token_amount = 9
+    huge_gas_price = 10 ** 22
+    print(skale.token.get_balance(skale.wallet.address))
     with pytest.raises(ValueError):
-        skale.token.transfer(account['address'], token_amount)
+        skale.token.transfer(
+            account['address'],
+            token_amount,
+            gas_price=huge_gas_price
+        )
 
 
 def test_confirmation_blocks(skale):
@@ -173,8 +177,7 @@ def test_block_limit_estimate_gas(skale):
         assert res < max_gas
 
 
-# TODO: Add balance assertion
-def test_value_option(skale):
+def test_value_option(skale, nodes):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
@@ -182,5 +185,4 @@ def test_value_option(skale):
     skale.schains.add_schain_by_foundation(
         lifetime_seconds, type_of_nodes, 0, name, wait_for=True, value=value_wei
     )
-    # assert skale.web3.eth.getBalance(skale.wallets.address) == value_wei
     skale.manager.delete_schain(name, wait_for=True)

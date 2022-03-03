@@ -124,16 +124,25 @@ def add_test4_schain_type(skale) -> TxRes:
     )
 
 
-def cleanup_nodes_schains(skale):
-    print('Cleanup nodes and schains')
+def cleanup_nodes(skale, ids=()):
+    ids = ids or skale.nodes.get_active_node_ids()
+    for node_id in ids:
+        skale.nodes.init_exit(node_id, wait_for=True)
+        skale.manager.node_exit(node_id, wait_for=True)
+
+
+def cleanup_schains(skale):
     for schain_id in skale.schains_internal.get_all_schains_ids():
         schain_data = skale.schains.get(schain_id)
         schain_name = schain_data.get('name', None)
         if schain_name is not None:
             skale.manager.delete_schain_by_root(schain_name, wait_for=True)
-    for node_id in skale.nodes.get_active_node_ids():
-        skale.nodes.init_exit(node_id, wait_for=True)
-        skale.manager.node_exit(node_id, wait_for=True)
+
+
+def cleanup_nodes_schains(skale):
+    print('Cleanup nodes and schains')
+    cleanup_schains(skale)
+    cleanup_nodes(skale)
 
 
 def create_clean_schain(skale):
@@ -159,14 +168,20 @@ def add_delegation_period(skale):
 
 def setup_validator(skale):
     """Create and activate a validator"""
+    set_test_msr(skale)
+    print('Address', skale.wallet.address)
     if not validator_exist(skale):
         create_validator(skale)
-        enable_validator(skale)
     else:
         print('Skipping default validator creation')
-    set_test_msr(skale)
-    delegate_to_validator(skale)
-    delegations = skale.delegation_controller.get_all_delegations_by_validator(D_VALIDATOR_ID)
+    validator_id = skale.validator_service.number_of_validators()
+    print(skale.validator_service.ls())
+    # enable_validator(skale, validator_id)
+    delegate_to_validator(skale, validator_id)
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        validator_id
+    )
+    print(delegations)
     accept_pending_delegation(skale, delegations[-1]['id'])
 
 
@@ -179,6 +194,20 @@ def link_address_to_validator(skale):
         wait_for=True
     )
     tx_res.raise_for_status()
+
+
+def link_nodes_to_validator(skale, validator_id, node_skale_objs=()):
+    print('Linking address to validator')
+    node_skale_objs = node_skale_objs or (skale,)
+    validator_id = validator_id or D_VALIDATOR_ID
+    for node_skale in node_skale_objs:
+        signature = node_skale.validator_service.get_link_node_signature(
+            validator_id
+        )
+        skale.validator_service.link_node_address(
+            node_address=node_skale.wallet.address,
+            signature=signature
+        )
 
 
 def skip_delegation_delay(skale, delegation_id):
@@ -213,10 +242,10 @@ def set_test_mda(skale):
     skale.validator_service.set_validator_mda(0, wait_for=True)
 
 
-def delegate_to_validator(skale):
-    print(f'Delegating tokens to validator ID: {D_VALIDATOR_ID}')
+def delegate_to_validator(skale, validator_id=D_VALIDATOR_ID):
+    print(f'Delegating tokens to validator ID: {validator_id}')
     skale.delegation_controller.delegate(
-        validator_id=D_VALIDATOR_ID,
+        validator_id=validator_id,
         amount=get_test_delegation_amount(skale),
         delegation_period=INITIAL_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
@@ -224,9 +253,9 @@ def delegate_to_validator(skale):
     )
 
 
-def enable_validator(skale):
+def enable_validator(skale, validator_id=D_VALIDATOR_ID):
     print(f'Enabling validator ID: {D_VALIDATOR_ID}')
-    skale.validator_service._enable_validator(D_VALIDATOR_ID, wait_for=True)
+    skale.validator_service._enable_validator(validator_id, wait_for=True)
 
 
 def create_validator(skale):
@@ -254,6 +283,11 @@ def create_nodes(skale, names=()):
             public_ip=public_ip,
             wait_for=True
         )
+    ids = [
+        skale.nodes.node_name_to_index(name)
+        for name in node_names
+    ]
+    return ids
 
 
 def create_schain(
