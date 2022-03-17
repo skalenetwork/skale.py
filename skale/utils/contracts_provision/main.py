@@ -17,11 +17,24 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+
+from skale.contracts.manager.nodes import NodeStatus
 from skale.transactions.result import TxRes
 from skale.utils.contracts_provision import (
-    D_VALIDATOR_ID, D_VALIDATOR_MIN_DEL, D_DELEGATION_PERIOD, D_DELEGATION_INFO,
-    D_VALIDATOR_NAME, D_VALIDATOR_DESC, D_VALIDATOR_FEE, DEFAULT_NODE_NAME, SECOND_NODE_NAME,
-    DEFAULT_SCHAIN_NAME, D_STAKE_MULTIPLIER, INITIAL_DELEGATION_PERIOD, DEFAULT_DOMAIN_NAME
+    D_VALIDATOR_ID,
+    D_VALIDATOR_MIN_DEL,
+    D_DELEGATION_PERIOD,
+    D_DELEGATION_INFO,
+    D_VALIDATOR_NAME,
+    D_VALIDATOR_DESC,
+    D_VALIDATOR_FEE,
+    DEFAULT_NODE_NAME,
+    SECOND_NODE_NAME,
+    DEFAULT_SCHAIN_NAME,
+    D_STAKE_MULTIPLIER,
+    INITIAL_DELEGATION_PERIOD,
+    DEFAULT_DOMAIN_NAME,
+    MONTH_IN_SECONDS
 )
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
@@ -125,10 +138,14 @@ def add_test4_schain_type(skale) -> TxRes:
 
 
 def cleanup_nodes(skale, ids=()):
-    ids = ids or skale.nodes.get_active_node_ids()
-    for node_id in ids:
-        skale.nodes.init_exit(node_id, wait_for=True)
-        skale.manager.node_exit(node_id, wait_for=True)
+    active_ids = filter(
+        lambda i: skale.nodes.get_node_status(i) == NodeStatus.ACTIVE,
+        ids or skale.nodes.get_active_node_ids()
+    )
+    for node_id in active_ids:
+        if skale.nodes.get(node_id):
+            skale.nodes.init_exit(node_id, wait_for=True)
+            skale.manager.node_exit(node_id, wait_for=True)
 
 
 def cleanup_schains(skale):
@@ -174,15 +191,16 @@ def setup_validator(skale):
         create_validator(skale)
     else:
         print('Skipping default validator creation')
-    validator_id = skale.validator_service.number_of_validators()
-    print(skale.validator_service.ls())
-    # enable_validator(skale, validator_id)
+    validator_id = skale.validator_service.validator_id_by_address(skale.wallet.address)
+    if not skale.validator_service.get(validator_id)['trusted']:
+        enable_validator(skale, validator_id)
     delegate_to_validator(skale, validator_id)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(
         validator_id
     )
-    print(delegations)
     accept_pending_delegation(skale, delegations[-1]['id'])
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    return validator_id
 
 
 def link_address_to_validator(skale):
@@ -231,9 +249,9 @@ def get_test_delegation_amount(skale):
     return msr * 30
 
 
-def set_test_msr(skale):
+def set_test_msr(skale, msr=D_VALIDATOR_MIN_DEL):
     skale.constants_holder._set_msr(
-        new_msr=D_VALIDATOR_MIN_DEL,
+        new_msr=msr,
         wait_for=True
     )
 

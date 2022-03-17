@@ -5,16 +5,15 @@ import pytest
 from web3.auto import w3
 
 from skale import SkaleManager
+
 from skale.utils.web3_utils import init_web3
-from skale.utils.contracts_provision import MONTH_IN_SECONDS
 from skale.utils.contracts_provision.main import (
     add_test_permissions,
     add_test2_schain_type,
     cleanup_nodes,
     create_nodes,
     link_nodes_to_validator,
-    setup_validator,
-    _skip_evm_time,
+    setup_validator
 )
 from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.fake_multisig_contract import (
@@ -33,7 +32,6 @@ NUMBER_OF_NODES = 2
 def web3():
     """ Returns a SKALE Manager instance with provider from config """
     w3 = init_web3(ENDPOINT)
-    _skip_evm_time(w3, MONTH_IN_SECONDS)
     return w3
 
 
@@ -77,8 +75,10 @@ def node_skales(skale, node_wallets):
 def nodes(skale, node_skales, validator):
     link_nodes_to_validator(skale, validator, node_skales)
     ids = create_nodes(skale)
-    yield ids
-    cleanup_nodes(skale, ids)
+    try:
+        yield ids
+    finally:
+        cleanup_nodes(skale, ids)
 
 
 @pytest.fixture
@@ -94,8 +94,11 @@ def empty_account():
 
 @pytest.fixture
 def failed_skale(skale):
-    tmp_wait = skale.wallet.wait
+    tmp_wait, tmp_sign_and_send = skale.wallet.wait, skale.wallet.sign_and_send
     skale.wallet.sign_and_send = mock.Mock()
     skale.wallet.wait = mock.Mock(return_value={'status': 0})
-    yield skale
-    skale.wallet.wait = tmp_wait
+    try:
+        yield skale
+    finally:
+        skale.wallet.sign_and_send = tmp_sign_and_send
+        skale.wallet.wait = tmp_wait

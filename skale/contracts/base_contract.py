@@ -107,6 +107,7 @@ def transaction_method(transaction):
                 multiplier=multiplier,
                 priority=priority
             )
+            print('IVD Transaction hash', tx)
             if wait_for:
                 receipt = self.skale.wallet.wait(tx)
             if confirmation_blocks:
