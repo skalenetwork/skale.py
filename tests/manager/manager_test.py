@@ -27,6 +27,7 @@ def test_get_bounty(skale):
     expected_txn = {
         'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': TEST_GAS_LIMIT, 'nonce': nonce,
+        'type': 1,
         'to': contract_address,
         'data': (
             '0xee8c4bbf00000000000000000000000000000000000000000000'
@@ -106,7 +107,7 @@ def test_delete_schain_by_root(skale, nodes):
 
 def test_create_delete_default_schain(skale, nodes):
     schains_ids = skale.schains_internal.get_all_schains_ids()
-    name = ''.join(random.choice('abcde') for _ in range(4))
+    _, _, name = generate_random_schain_data(skale)
     tx_res = skale.manager.create_default_schain(name)
     assert tx_res.receipt['status'] == 1
 
@@ -120,7 +121,7 @@ def test_create_delete_default_schain(skale, nodes):
     ]
     assert name in schains_names
 
-    tx_res = skale.manager.delete_schain(name, wait_for=True)
+    tx_res = skale.manager.delete_schain(name)
     assert tx_res.receipt['status'] == 1
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
@@ -150,22 +151,18 @@ def test_create_node_status_0(failed_skale):
         tx_res.raise_for_status()
 
 
-def test_empty_node_exit(skale):
-    ip, public_ip, port, name = generate_random_node_data()
-    skale.manager.create_node(ip, port, name, public_ip, wait_for=True)
-    node_idx = skale.nodes.node_name_to_index(name)
-    skale.nodes.init_exit(node_idx, wait_for=True)
-    tx_res = skale.manager.node_exit(node_idx, wait_for=True)
+def test_node_exit_with_no_schains(skale, nodes):
+    node_id, *_ = nodes
+    skale.nodes.init_exit(node_id, wait_for=True)
+    tx_res = skale.manager.node_exit(node_id, wait_for=True)
     assert tx_res.receipt['status'] == 1
-    assert skale.nodes.get_node_status(node_idx) == 2
+    assert skale.nodes.get_node_status(node_id) == 2
 
 
 def test_failed_node_exit(skale):
-    schains_ids = skale.schains_internal.get_all_schains_ids()
-    schain_name = skale.schains.get(schains_ids[0])['name']
-    exit_node_id = skale.schains_internal.get_node_ids_for_schain(schain_name)[0]
+    not_existed_node_id = 1
     with pytest.raises(TransactionFailedError):
-        skale.manager.node_exit(exit_node_id, skip_dry_run=True,
+        skale.manager.node_exit(not_existed_node_id, skip_dry_run=True,
                                 wait_for=True, gas_limit=TEST_GAS_LIMIT)
 
 
