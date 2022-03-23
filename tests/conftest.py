@@ -11,7 +11,9 @@ from skale.utils.contracts_provision.main import (
     add_test_permissions,
     add_test2_schain_type,
     cleanup_nodes,
+    cleanup_schains,
     create_nodes,
+    create_schain,
     link_nodes_to_validator,
     setup_validator
 )
@@ -79,6 +81,14 @@ def nodes(skale, node_skales, validator):
         yield ids
     finally:
         cleanup_nodes(skale, ids)
+
+
+@pytest.fixture
+def schain(skale, nodes):
+    try:
+        yield create_schain(skale, random_name=True)
+    finally:
+        cleanup_schains(skale)
 
 
 @pytest.fixture

@@ -52,28 +52,29 @@ def test_create_delete_schain(skale, nodes):
         type_of_nodes,
         lifetime_seconds
     )
-    tx_res = skale.manager.create_schain(
-        lifetime_seconds,
-        type_of_nodes,
-        price_in_wei,
-        name,
-        wait_for=True
-    )
 
-    assert tx_res.receipt['status'] == 1
+    try:
+        tx_res = skale.manager.create_schain(
+            lifetime_seconds,
+            type_of_nodes,
+            price_in_wei,
+            name,
+            wait_for=True
+        )
 
-    schains_ids_number_after = skale.schains_internal.get_schains_number()
-    assert schains_ids_number_after == len(schains_ids) + 1
-    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+        assert tx_res.receipt['status'] == 1
 
-    schains_names = [
-        skale.schains.get(sid)['name']
-        for sid in schains_ids_after
-    ]
-    assert name in schains_names
+        schains_ids_number_after = skale.schains_internal.get_schains_number()
+        assert schains_ids_number_after == len(schains_ids) + 1
+        schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
-    tx_res = skale.manager.delete_schain(name, wait_for=True)
-    assert tx_res.receipt['status'] == 1
+        schains_names = [
+            skale.schains.get(sid)['name']
+            for sid in schains_ids_after
+        ]
+        assert name in schains_names
+    finally:
+        skale.manager.delete_schain(name, wait_for=True)
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
     assert schains_ids_number_after == len(schains_ids)
@@ -89,10 +90,10 @@ def test_create_delete_schain(skale, nodes):
 def test_delete_schain_by_root(skale, nodes):
     schains_ids = skale.schains_internal.get_all_schains_ids()
     name = ''.join(random.choice('abcde') for _ in range(4))
-    skale.manager.create_default_schain(name)
-
-    tx_res = skale.manager.delete_schain_by_root(name, wait_for=True)
-    assert tx_res.receipt['status'] == 1
+    try:
+        skale.manager.create_default_schain(name)
+    finally:
+        skale.manager.delete_schain_by_root(name, wait_for=True)
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
     assert schains_ids_number_after == len(schains_ids)
@@ -108,21 +109,20 @@ def test_delete_schain_by_root(skale, nodes):
 def test_create_delete_default_schain(skale, nodes):
     schains_ids = skale.schains_internal.get_all_schains_ids()
     _, _, name = generate_random_schain_data(skale)
-    tx_res = skale.manager.create_default_schain(name)
-    assert tx_res.receipt['status'] == 1
+    try:
+        tx_res = skale.manager.create_default_schain(name)
 
-    schains_ids_number_after = skale.schains_internal.get_schains_number()
-    assert schains_ids_number_after == len(schains_ids) + 1
-    schains_ids_after = skale.schains_internal.get_all_schains_ids()
+        schains_ids_number_after = skale.schains_internal.get_schains_number()
+        assert schains_ids_number_after == len(schains_ids) + 1
+        schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
-    schains_names = [
-        skale.schains.get(sid)['name']
-        for sid in schains_ids_after
-    ]
-    assert name in schains_names
-
-    tx_res = skale.manager.delete_schain(name)
-    assert tx_res.receipt['status'] == 1
+        schains_names = [
+            skale.schains.get(sid)['name']
+            for sid in schains_ids_after
+        ]
+        assert name in schains_names
+    finally:
+        skale.manager.delete_schain(name)
 
     schains_ids_number_after = skale.schains_internal.get_schains_number()
     assert schains_ids_number_after == len(schains_ids)
