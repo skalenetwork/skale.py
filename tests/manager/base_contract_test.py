@@ -148,7 +148,6 @@ def test_tx_res_with_insufficient_funds(skale):
     account = generate_account(skale.web3)
     token_amount = 9
     huge_gas_price = 10 ** 22
-    print(skale.token.get_balance(skale.wallet.address))
     with pytest.raises(ValueError):
         skale.token.transfer(
             account['address'],
