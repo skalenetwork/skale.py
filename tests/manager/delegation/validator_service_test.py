@@ -5,7 +5,6 @@ import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
 from skale.transactions.result import RevertError
-from skale.utils.web3_utils import check_receipt
 from skale.utils.account_tools import send_ether
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.main import _skip_evm_time, enable_validator

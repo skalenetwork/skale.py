@@ -110,7 +110,7 @@ def test_create_delete_default_schain(skale, nodes):
     schains_ids = skale.schains_internal.get_all_schains_ids()
     _, _, name = generate_random_schain_data(skale)
     try:
-        tx_res = skale.manager.create_default_schain(name)
+        skale.manager.create_default_schain(name)
 
         schains_ids_number_after = skale.schains_internal.get_schains_number()
         assert schains_ids_number_after == len(schains_ids) + 1

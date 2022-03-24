@@ -1,9 +1,11 @@
 """ SKALE chain internal test """
 
-from skale.utils.contracts_provision.main import create_clean_schain
 from skale.contracts.manager.schains import FIELDS
-from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
-                             EMPTY_SCHAIN_ARR, MIN_NODES_IN_SCHAIN)
+from tests.constants import (
+    DEFAULT_SCHAIN_ID,
+    EMPTY_SCHAIN_ARR,
+    MIN_NODES_IN_SCHAIN
+)
 
 
 def test_get_raw(skale):

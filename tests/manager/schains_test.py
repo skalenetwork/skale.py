@@ -5,7 +5,6 @@ from hexbytes import HexBytes
 from skale.dataclasses.schain_options import SchainOptions
 from skale.contracts.manager.schains import FIELDS, SchainStructure
 from skale.utils.contracts_provision.fake_multisig_contract import FAKE_MULTISIG_DATA_PATH
-from skale.utils.contracts_provision.main import create_clean_schain
 from skale.transactions.tools import send_eth_with_skale
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)

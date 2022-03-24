@@ -14,7 +14,7 @@ from skale.contracts.manager.nodes import FIELDS, NodeStatus
 from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 
-from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME, NOT_EXISTING_ID
+from tests.constants import DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
 
 def test_get_raw_not_exist(skale):
