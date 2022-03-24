@@ -7,4 +7,4 @@ export ENV=test
 
 
 # python $PROJECT_DIR/tests/prepare_data.py
-py.test --cov=$PROJECT_DIR/ $PROJECT_DIR/tests/manager/manager_test.py --ignore $PROJECT_DIR/tests/allocator $@
+py.test --cov=$PROJECT_DIR/ $PROJECT_DIR/tests/ --ignore $PROJECT_DIR/tests/allocator --ignore $PROJECT_DIR/tests/manager/dkg_test.py $@
