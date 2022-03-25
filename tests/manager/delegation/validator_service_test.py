@@ -95,7 +95,7 @@ def test_ls(skale, validator):
     session_validator_data = skale.validator_service.get_with_id(validator)
     assert session_validator_data in validators
     trusted_validators = sorted(
-        skale.validator_service.ls(),
+        skale.validator_service.ls(trusted_only=True),
         key=lambda x: x['validator_address']
     )
     assert all(v['trusted'] for v in trusted_validators)
