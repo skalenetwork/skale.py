@@ -204,12 +204,10 @@ def send_eth(web3, account, amount, wallet, gas_price=None):
         'nonce': eth_nonce
     }
 
-    signed_txn = wallet.sign(txn)
-
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    tx = wallet.sign_and_send(txn)
     logger.info(
         f'ETH transfer {wallet.address} => {account}, {amount} wei,'
-        f'tx: {web3.toHex(tx)}'
+        f'tx: {tx}'
     )
     return tx
 
