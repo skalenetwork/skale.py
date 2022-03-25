@@ -1,7 +1,10 @@
 """ Tests for contracts/delegation/delegation_controller.py """
 
+from datetime import date
+
 import pytest
 
+from skale.utils.contracts_provision.utils import generate_random_name
 from skale.contracts.manager.delegation.delegation_controller import FIELDS
 from skale.transactions.result import RevertError
 from skale.utils.contracts_provision.main import _skip_evm_time
@@ -85,11 +88,12 @@ def test_get_all_delegations_by_validator(skale, validator):
 
 def test_accept_pending_delegation(skale, validator):
     validator_id = validator
+    info = f'{D_DELEGATION_INFO}-{generate_random_name()}'
     skale.delegation_controller.delegate(
         validator_id=validator_id,
         amount=D_DELEGATION_AMOUNT,
         delegation_period=D_DELEGATION_PERIOD,
-        info=D_DELEGATION_INFO,
+        info=info,
         wait_for=True
     )
     delegations = skale.delegation_controller.get_all_delegations_by_validator(
@@ -97,16 +101,14 @@ def test_accept_pending_delegation(skale, validator):
     )
     delegation_id = delegations[-1]['id']
     assert delegations[-1]['status'] == 'PROPOSED'
-    skale.delegation_controller.accept_pending_delegation(
-        delegation_id,
-        wait_for=True
-    )
+    assert delegations[-1]['info'] == info
+    skale.delegation_controller.accept_pending_delegation(delegation_id)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(
         validator_id=validator_id
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'ACCEPTED'
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    assert delegations[-1]['info'] == info
 
 
 def test_cancel_pending_delegation(skale, validator):
@@ -132,7 +134,6 @@ def test_cancel_pending_delegation(skale, validator):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'CANCELED'
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
 
 
 def _delegate_and_activate(skale, validator_id=D_VALIDATOR_ID):
@@ -149,7 +150,7 @@ def _delegate_and_activate(skale, validator_id=D_VALIDATOR_ID):
         delegations[-1]['id'],
         wait_for=True
     )
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * 2)
 
 
 def test_get_delegated_to_validator_now(skale, validator):
@@ -157,18 +158,25 @@ def test_get_delegated_to_validator_now(skale, validator):
     delegated_amount_before = skale.delegation_controller.get_delegated_to_validator_now(
         validator_id
     )
-    _delegate_and_activate(skale)
+    _delegate_and_activate(skale, validator_id=validator_id)
     delegated_amount_after = skale.delegation_controller.get_delegated_to_validator_now(
         validator_id
     )
     assert delegated_amount_after == delegated_amount_before + D_DELEGATION_AMOUNT
+    month = date.fromtimestamp(skale.web3.eth.getBlock('latest')['timestamp']).month
+    res = skale.delegation_controller.get_delegated_to_validator(
+        validator_id,
+        month * 100
+    )
+    assert isinstance(res, int)
 
 
-def test_get_delegated_amount(skale):
+def test_get_delegated_amount(skale, validator):
+    validator_id = validator
     delegated_amount_before = skale.delegation_controller.get_delegated_amount(
         skale.wallet.address
     )
-    _delegate_and_activate(skale)
+    _delegate_and_activate(skale, validator_id=validator_id)
     delegated_amount_after = skale.delegation_controller.get_delegated_amount(
         skale.wallet.address
     )
@@ -218,10 +226,12 @@ def test_request_undelegate(skale, validator):
     assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
 
 
+@pytest.mark.skip('IVD moved')
 def test_get_delegated_to_validator(skale, validator):
     validator_id = validator
+    skale.delegation_controller.get_delegated_to_validator_now(validator_id)
     res = skale.delegation_controller.get_delegated_to_validator(
         validator_id,
-        D_DELEGATION_PERIOD * 2
+        D_DELEGATION_PERIOD * 30
     )
     assert isinstance(res, int)
