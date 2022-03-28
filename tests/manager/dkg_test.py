@@ -207,27 +207,27 @@ def test_channel_opened(skale, schain):
     assert skale.dkg.is_channel_opened(group_index)
 
 
-def test_broadcast_possible(skale, schain):
+def test_broadcast_possible(skale, nodes, schain):
     group_index = skale.web3.sha3(text=schain)
-    node_id = 0
+    node_id, *_ = nodes
     assert skale.dkg.is_broadcast_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_alright_possible(skale, schain):
+def test_alright_possible(skale, nodes, schain):
     group_index = skale.web3.sha3(text=schain)
-    node_id = 0
+    node_id, *_ = nodes
     assert not skale.dkg.is_alright_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_pre_response_possible(skale, schain):
+def test_pre_response_possible(skale, nodes, schain):
     group_index = skale.web3.sha3(text=schain)
-    node_id = 0
+    node_id, *_ = nodes
     assert not skale.dkg.is_pre_response_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_response_possible(skale, schain):
+def test_response_possible(skale, nodes, schain):
     group_index = skale.web3.sha3(text=schain)
-    node_id = 0
+    node_id, *_ = nodes
     assert not skale.dkg.is_response_possible(group_index, node_id, skale.wallet.address)
 
 
