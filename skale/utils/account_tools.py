@@ -23,7 +23,7 @@ import logging
 from skale.transactions.tools import send_eth
 from skale.utils.constants import LONG_LINE
 from skale.wallets import LedgerWallet, Web3Wallet
-from skale.utils.web3_utils import check_receipt, wait_for_receipt_by_blocks
+from skale.utils.web3_utils import check_receipt
 
 logger = logging.getLogger(__name__)
 

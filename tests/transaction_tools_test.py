@@ -10,10 +10,7 @@ from skale import Skale
 from skale.transactions.tools import (
     run_tx_with_retry, send_eth_with_skale, estimate_gas, get_block_gas_limit
 )
-from skale.utils.account_tools import (
-    generate_account,
-    send_ether
-)
+from skale.utils.account_tools import generate_account
 from skale.utils.web3_utils import init_web3, wait_receipt
 from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallet
