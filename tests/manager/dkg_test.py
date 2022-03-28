@@ -4,7 +4,6 @@ from mock import Mock
 from hexbytes import HexBytes
 
 from skale.contracts.manager.dkg import G2Point, KeyShare
-from tests.constants import DEFAULT_SCHAIN_NAME
 
 
 def test_broadcast(skale):
@@ -21,7 +20,6 @@ def test_broadcast(skale):
             '0x7d93019b653632396661363539386437333237363866376337323662346236323132383500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000022000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000001f925c203a30ec6cad5a263db3efab7ed4c1fd74c8688167e10a5a22e15ab5018d8553df0ac54ea105a3d21845e5660bc3d4e7c82e7af1daa3baad393b15214673131310000000000000000000000000000000000000000000000000000000000'  # noqa
         )
     }
-    print(expected_txn)
     group_index = b'e629fa6598d732768f7c726b4b621285'
     node_index = 0
 
@@ -38,7 +36,6 @@ def test_broadcast(skale):
                                 secret_key_contribution,
                                 gas_limit=gas_limit,
                                 wait_for=False)
-            print(send_tx_mock.call_args)
             send_tx_mock.assert_called_with(HexBytes(exp))
 
 
@@ -200,70 +197,70 @@ def test_complaint_bad_data(skale):
             send_tx_mock.assert_called_with(HexBytes(exp))
 
 
-def test_is_last_dkg_successful(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_is_last_dkg_successful(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert not skale.dkg.is_last_dkg_successful(group_index)
 
 
-def test_channel_opened(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_channel_opened(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert skale.dkg.is_channel_opened(group_index)
 
 
-def test_broadcast_possible(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_broadcast_possible(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     node_id = 0
     assert skale.dkg.is_broadcast_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_alright_possible(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_alright_possible(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     node_id = 0
     assert not skale.dkg.is_alright_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_pre_response_possible(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_pre_response_possible(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     node_id = 0
     assert not skale.dkg.is_pre_response_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_response_possible(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_response_possible(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     node_id = 0
     assert not skale.dkg.is_response_possible(group_index, node_id, skale.wallet.address)
 
 
-def test_everyone_broadcasted(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_everyone_broadcasted(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert not skale.dkg.is_everyone_broadcasted(group_index, skale.wallet.address)
 
 
-def test_number_of_completed(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_number_of_completed(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert skale.dkg.get_number_of_completed(group_index) == 0
 
 
-def test_channel_started_time(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_channel_started_time(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert skale.dkg.get_channel_started_time(group_index) != 0
 
 
-def test_complaint_started_time(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_complaint_started_time(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert skale.dkg.get_complaint_started_time(group_index) == 0
 
 
-def test_alright_started_time(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_alright_started_time(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert skale.dkg.get_alright_started_time(group_index) == 0
 
 
-def test_complaint_data(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_complaint_data(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert skale.dkg.get_complaint_data(group_index) != [0, 0]
 
 
-def test_time_of_last_successful_dkg(skale):
-    group_index = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+def test_time_of_last_successful_dkg(skale, schain):
+    group_index = skale.web3.sha3(text=schain)
     assert skale.dkg.get_time_of_last_successful_dkg(group_index) == 0

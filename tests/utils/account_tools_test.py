@@ -1,7 +1,9 @@
 """ SKALE account tools test """
 
 import mock
+import pytest
 
+from skale.transactions.exceptions import TransactionNotMinedError
 from skale.utils.account_tools import (check_ether_balance, generate_account,
                                        generate_accounts, send_ether,
                                        send_tokens, check_skale_balance)
@@ -37,7 +39,8 @@ def test_send_ether(skale, empty_account):
 
     receiver_balance_after = check_ether_balance(skale.web3,
                                                  empty_account.address)
-    sender_balance_after = check_ether_balance(skale.web3, skale.wallet.address)
+    sender_balance_after = check_ether_balance(
+        skale.web3, skale.wallet.address)
 
     assert receiver_balance_after == ETH_TRANSFER_VALUE
     # check that sender_balance_after
@@ -46,7 +49,7 @@ def test_send_ether(skale, empty_account):
         sender_balance - ETH_TRANSFER_VALUE
 
 
-def test_send_ether_with_gas_pirce(skale, empty_account):
+def test_send_ether_with_gas_price(skale, empty_account):
     def get_signed_tx_with_custom_gas_price(gas_price):
         wei_amount = skale.web3.toWei(ETH_TRANSFER_VALUE, 'ether')
         return skale.wallet.sign({
@@ -57,41 +60,32 @@ def test_send_ether_with_gas_pirce(skale, empty_account):
             'nonce': get_eth_nonce(skale.web3, skale.wallet.address)
         })
 
-    skale.web3.eth.sendRawTransaction = mock.Mock(return_value=0)
-
-    # Send ether with small gas price
+    # Send tx with small gas price
     small_gas_price = 1
-    expected = get_signed_tx_with_custom_gas_price(
-            small_gas_price).rawTransaction
-
-    send_ether(
-        skale.web3, skale.wallet, empty_account.address,
-        ETH_TRANSFER_VALUE, gas_price=small_gas_price, wait_for=False)
-
-    assert skale.web3.eth.sendRawTransaction.call_args[0][0] == expected
-
-    default_gas_price = 100
-    with mock.patch(
-        'skale.contracts.base_contract.config.DEFAULT_GAS_PRICE_WEI',
-        default_gas_price
-    ):
-        expected = get_signed_tx_with_custom_gas_price(
-            default_gas_price).rawTransaction
+    with pytest.raises(TransactionNotMinedError):
         send_ether(
             skale.web3, skale.wallet, empty_account.address,
-            ETH_TRANSFER_VALUE, wait_for=False)
+            ETH_TRANSFER_VALUE, gas_price=small_gas_price
+        )
 
-        assert skale.web3.eth.sendRawTransaction.call_args[0][0] == \
-            expected
+    custom_default_gas_price = 101 * 10 ** 9
+    with mock.patch(
+            'skale.contracts.base_contract.config.DEFAULT_GAS_PRICE_WEI',
+            custom_default_gas_price
+    ):
+        receipt = send_ether(
+            skale.web3, skale.wallet, empty_account.address,
+            ETH_TRANSFER_VALUE, wait_for=True)
+        print(receipt)
+        assert receipt['effectiveGasPrice'] == custom_default_gas_price
 
     # Send ether with default avg gas price
     avg_gas_price = skale.web3.eth.gasPrice
-    expected = get_signed_tx_with_custom_gas_price(
-            avg_gas_price).rawTransaction
-    send_ether(
+    print(receipt)
+    receipt = send_ether(
         skale.web3, skale.wallet, empty_account.address,
-        ETH_TRANSFER_VALUE, wait_for=False)
-    assert skale.web3.eth.sendRawTransaction.call_args[0][0] == expected
+        ETH_TRANSFER_VALUE, wait_for=True)
+    assert receipt['effectiveGasPrice'] == avg_gas_price
 
 
 def test_generate_account(skale):

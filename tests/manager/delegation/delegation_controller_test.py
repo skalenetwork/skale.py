@@ -224,14 +224,3 @@ def test_request_undelegate(skale, validator):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
-
-
-@pytest.mark.skip('IVD moved')
-def test_get_delegated_to_validator(skale, validator):
-    validator_id = validator
-    skale.delegation_controller.get_delegated_to_validator_now(validator_id)
-    res = skale.delegation_controller.get_delegated_to_validator(
-        validator_id,
-        D_DELEGATION_PERIOD * 30
-    )
-    assert isinstance(res, int)
