@@ -79,12 +79,7 @@ def test_run_tx_with_retry_dry_run_failed(skale):
 
 def test_run_tx_with_retry_tx_failed(failed_skale):
     skale = failed_skale
-
     account = generate_account(skale.web3)
-    eth_amount = 5
-    # Sending ether to perform transaction
-    send_ether(skale.web3, skale.wallet, account['address'], eth_amount)
-
     token_amount = 10 * ETH_IN_WEI
     retries_number = 5
     tx_res = run_tx_with_retry(

@@ -60,7 +60,7 @@ def send_ether(web3, sender_wallet, receiver_account, amount,
     tx = send_eth(web3, receiver_account, wei_amount, sender_wallet,
                   gas_price=gas_price)
     if wait_for:
-        receipt = wait_for_receipt_by_blocks(web3, tx)
+        receipt = sender_wallet.wait(tx)
         check_receipt(receipt)
         return receipt
     else:  # pragma: no cover
