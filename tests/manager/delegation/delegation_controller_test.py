@@ -14,6 +14,24 @@ from tests.constants import (NOT_EXISTING_ID, D_DELEGATION_INFO, D_VALIDATOR_ID,
                              MONTH_IN_SECONDS)
 
 
+def _delegate_and_activate(skale, validator_id=D_VALIDATOR_ID):
+    skale.delegation_controller.delegate(
+        validator_id=validator_id,
+        amount=D_DELEGATION_AMOUNT,
+        delegation_period=D_DELEGATION_PERIOD,
+        info=D_DELEGATION_INFO,
+        wait_for=True
+    )
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(
+        validator_id
+    )
+    skale.delegation_controller.accept_pending_delegation(
+        delegations[-1]['id'],
+        wait_for=True
+    )
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+
+
 def _get_number_of_delegations(skale, validator_id=D_VALIDATOR_ID):
     return skale.delegation_controller._get_delegation_ids_len_by_validator(validator_id)
 
@@ -45,6 +63,13 @@ def test_get_delegation(skale, validator):
 def test_delegate(skale, validator):
     validator_id = validator
     num_of_delegations_before = _get_number_of_delegations(skale)
+    delegated_now_before = skale.delegation_controller.get_delegated_to_validator_now(
+        validator_id
+    )
+    delegated_amount_before = skale.delegation_controller.get_delegated_amount(
+        skale.wallet.address
+    )
+
     _delegate_and_activate(skale)
     num_of_delegations_after = _get_number_of_delegations(skale)
     assert num_of_delegations_after == num_of_delegations_before + 1
@@ -53,6 +78,25 @@ def test_delegate(skale, validator):
         validator_id=validator_id
     )
     assert delegations[-1]['info'] == D_DELEGATION_INFO
+
+    delegated_now_after = skale.delegation_controller.get_delegated_to_validator_now(
+        validator_id
+    )
+    delegated_now_after = skale.delegation_controller.get_delegated_to_validator_now(
+        validator_id
+    )
+    delegated_amount_after = skale.delegation_controller.get_delegated_amount(
+        skale.wallet.address
+    )
+    assert delegated_now_after == delegated_now_before + D_DELEGATION_AMOUNT
+    assert delegated_amount_after == delegated_amount_before + D_DELEGATION_AMOUNT
+
+    month = date.fromtimestamp(skale.web3.eth.getBlock('latest')['timestamp']).month
+    res = skale.delegation_controller.get_delegated_to_validator(
+        validator_id,
+        month * 100
+    )
+    assert isinstance(res, int)
 
 
 def test_get_delegation_ids_by_validator(skale, validator):
@@ -134,53 +178,6 @@ def test_cancel_pending_delegation(skale, validator):
     )
     assert delegations[-1]['id'] == delegation_id
     assert delegations[-1]['status'] == 'CANCELED'
-
-
-def _delegate_and_activate(skale, validator_id=D_VALIDATOR_ID):
-    skale.delegation_controller.delegate(
-        validator_id=validator_id,
-        amount=D_DELEGATION_AMOUNT,
-        delegation_period=D_DELEGATION_PERIOD,
-        info=D_DELEGATION_INFO,
-        wait_for=True
-    )
-    delegations = skale.delegation_controller.get_all_delegations_by_validator(
-        validator_id)
-    skale.delegation_controller.accept_pending_delegation(
-        delegations[-1]['id'],
-        wait_for=True
-    )
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS * 2)
-
-
-def test_get_delegated_to_validator_now(skale, validator):
-    validator_id = validator
-    delegated_amount_before = skale.delegation_controller.get_delegated_to_validator_now(
-        validator_id
-    )
-    _delegate_and_activate(skale, validator_id=validator_id)
-    delegated_amount_after = skale.delegation_controller.get_delegated_to_validator_now(
-        validator_id
-    )
-    assert delegated_amount_after == delegated_amount_before + D_DELEGATION_AMOUNT
-    month = date.fromtimestamp(skale.web3.eth.getBlock('latest')['timestamp']).month
-    res = skale.delegation_controller.get_delegated_to_validator(
-        validator_id,
-        month * 100
-    )
-    assert isinstance(res, int)
-
-
-def test_get_delegated_amount(skale, validator):
-    validator_id = validator
-    delegated_amount_before = skale.delegation_controller.get_delegated_amount(
-        skale.wallet.address
-    )
-    _delegate_and_activate(skale, validator_id=validator_id)
-    delegated_amount_after = skale.delegation_controller.get_delegated_amount(
-        skale.wallet.address
-    )
-    assert delegated_amount_after == delegated_amount_before + D_DELEGATION_AMOUNT
 
 
 def test_request_undelegate(skale, validator):
