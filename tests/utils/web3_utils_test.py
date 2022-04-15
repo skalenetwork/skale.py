@@ -71,7 +71,7 @@ def test_call_with_last_block_file(skale_block_file, last_block_file):
 
 def test_call_with_outdated_client(skale):
     # because of skipTime in preparation
-    current_ts = skale.web3.eth.getBlock('latest')['timestamp']
+    current_ts = skale.web3.eth.get_block('latest')['timestamp']
     allowed_diff = config.ALLOWED_TS_DIFF
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff)
     with freeze_time(dt):
@@ -106,7 +106,7 @@ def test_transaction_with_last_block_file(last_block_file, skale_block_file):
 
 def test_transaction_with_outdated_client(skale):
     # because of skipTime in preparation
-    current_ts = skale.web3.eth.getBlock('latest')['timestamp']
+    current_ts = skale.web3.eth.get_block('latest')['timestamp']
     allowed_diff = config.ALLOWED_TS_DIFF
 
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff)

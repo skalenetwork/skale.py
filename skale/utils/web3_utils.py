@@ -99,7 +99,7 @@ def make_client_checking_middleware(allowed_ts_diff: int,
             if method in ('eth_blockNumber', 'eth_getBlockByNumber'):
                 response = make_request(method, params)
             else:
-                latest_block = web3.eth.getBlock('latest')
+                latest_block = web3.eth.get_block('latest')
                 current_time = time.time()
 
                 ts_diff = current_time - latest_block['timestamp']
@@ -155,11 +155,11 @@ def init_web3(endpoint: str,
 
 
 def get_receipt(web3, tx):
-    return web3.eth.getTransactionReceipt(tx)
+    return web3.eth.get_transaction_receipt(tx)
 
 
 def get_eth_nonce(web3, address):
-    return web3.eth.getTransactionCount(address)
+    return web3.eth.get_transaction_count(address)
 
 
 def wait_for_receipt_by_blocks(

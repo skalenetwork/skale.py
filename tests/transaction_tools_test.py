@@ -178,3 +178,37 @@ def test_estimate_gas(skale):
 
     assert estimated_gas == block_gas_limit
     skale.wallet = main_wallet
+
+
+def test_tx_fee_options(skale):
+    account = generate_account(skale.web3)
+    address_to = account['address']
+    address_from = Web3.toChecksumAddress(skale.wallet.address)
+    address_to = Web3.toChecksumAddress(address_to)
+    balance_from_before = skale.token.get_balance(address_from)
+    balance_to_before = skale.token.get_balance(address_to)
+    token_amount = 10 * ETH_IN_WEI
+
+    max_fee = 10 ** 9
+    max_priority_fee = 10 ** 9
+    res = skale.token.transfer(
+        account['address'],
+        token_amount,
+        max_fee_per_gas=max_fee,
+        max_priority_fee_per_gas=max_priority_fee
+    )
+    r = res.receipt
+    print(skale.web3.eth.get_transaction(res.tx_hash))
+    assert r['effectiveGasPrice'] == max_fee
+
+    balance_from_after = skale.token.get_balance(address_from)
+    assert balance_from_after == balance_from_before - token_amount
+    balance_to_after = skale.token.get_balance(address_to)
+    assert balance_to_after == balance_to_before + token_amount
+
+    skale.token.transfer(
+        account['address'],
+        token_amount,
+        max_fee_per_gas=max_fee,
+        max_priority_fee_per_gas=max_fee * 2
+    )

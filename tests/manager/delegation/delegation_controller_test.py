@@ -91,7 +91,7 @@ def test_delegate(skale, validator):
     assert delegated_now_after == delegated_now_before + D_DELEGATION_AMOUNT
     assert delegated_amount_after == delegated_amount_before + D_DELEGATION_AMOUNT
 
-    month = date.fromtimestamp(skale.web3.eth.getBlock('latest')['timestamp']).month
+    month = date.fromtimestamp(skale.web3.eth.get_block('latest')['timestamp']).month
     res = skale.delegation_controller.get_delegated_to_validator(
         validator_id,
         month * 100

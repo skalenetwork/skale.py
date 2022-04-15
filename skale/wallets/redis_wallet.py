@@ -138,6 +138,7 @@ class RedisWalletAdapter(BaseWallet):
             pipe.zadd(self.pool, {raw_id: score})
             logger.info(f'Saving tx {raw_id} record: {tx_record}')
             pipe.set(raw_id, tx_record)
+            pipe.expire(raw_id, tx_record)
             pipe.execute()
             return self._to_id(raw_id)
         except Exception as err:

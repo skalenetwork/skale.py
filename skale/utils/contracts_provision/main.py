@@ -170,7 +170,9 @@ def create_clean_schain(skale):
 
 
 def validator_exist(skale):
-    return skale.validator_service.number_of_validators() > 0
+    return skale.validator_service.validator_address_exists(
+        skale.wallet.address
+    )
 
 
 def add_delegation_period(skale):

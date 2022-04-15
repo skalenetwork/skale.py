@@ -76,12 +76,10 @@ def test_send_ether_with_gas_price(skale, empty_account):
         receipt = send_ether(
             skale.web3, skale.wallet, empty_account.address,
             ETH_TRANSFER_VALUE, wait_for=True)
-        print(receipt)
         assert receipt['effectiveGasPrice'] == custom_default_gas_price
 
     # Send ether with default avg gas price
     avg_gas_price = skale.web3.eth.gasPrice
-    print(receipt)
     receipt = send_ether(
         skale.web3, skale.wallet, empty_account.address,
         ETH_TRANSFER_VALUE, wait_for=True)

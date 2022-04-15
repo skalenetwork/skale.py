@@ -268,10 +268,10 @@ def test_get_and_update_bond_amount(skale, validator):
         wait_for=True
     )
 
-    initial_bts = skale.web3.eth.getBlock("latest").timestamp
+    initial_bts = skale.web3.eth.get_block("latest").timestamp
     # Skip time
     _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
-    bts = skale.web3.eth.getBlock("latest").timestamp
+    bts = skale.web3.eth.get_block("latest").timestamp
 
     bond = skale.validator_service.get_and_update_bond_amount(
         validator_id=validator

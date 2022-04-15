@@ -151,7 +151,6 @@ def post_transaction(
         nonce=nonce,
         value=value
     )
-    print(tx_dict)
     tx_hash = wallet.sign_and_send(
         tx_dict,
         multiplier=multiplier,
