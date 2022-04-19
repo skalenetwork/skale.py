@@ -29,7 +29,7 @@ from skale.transactions.result import (
     is_success,
     is_success_or_not_performed
 )
-from skale.transactions.tools import make_dry_run_call, post_transaction
+from skale.transactions.tools import make_dry_run_call, transaction_from_method
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     get_eth_nonce,
@@ -74,7 +74,7 @@ def transaction_method(transaction):
         **kwargs
     ):
         method = transaction(self, *args, **kwargs)
-        dry_run_result, tx, receipt = None, None, None
+        dry_run_result, tx_hash, receipt = None, None, None
 
         nonce = get_eth_nonce(self.skale.web3, self.skale.wallet.address)
 
@@ -95,27 +95,29 @@ def transaction_method(transaction):
             is_success_or_not_performed(dry_run_result)
 
         if should_send_transaction:
-            tx = post_transaction(
-                wallet=self.skale.wallet,
+            tx = transaction_from_method(
                 method=method,
                 gas_limit=gas_limit,
                 gas_price=gas_price,
                 max_fee_per_gas=max_fee_per_gas,
                 max_priority_fee_per_gas=max_priority_fee_per_gas,
                 nonce=nonce,
-                value=value,
+                value=value
+            )
+            tx_hash = self.skale.wallet.sign_and_send(
+                tx,
                 multiplier=multiplier,
                 priority=priority
             )
             if wait_for:
-                receipt = self.skale.wallet.wait(tx)
+                receipt = self.skale.wallet.wait(tx_hash)
             if confirmation_blocks:
                 wait_for_confirmation_blocks(
                     self.skale.web3,
                     confirmation_blocks
                 )
 
-        tx_res = TxRes(dry_run_result, tx, receipt)
+        tx_res = TxRes(dry_run_result, tx_hash, receipt)
 
         if raise_for_status:
             tx_res.raise_for_status()

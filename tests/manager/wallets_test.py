@@ -1,4 +1,4 @@
-from skale.utils.account_tools import send_ether
+from skale.utils.account_tools import send_eth
 from skale.wallets.web3_wallet import generate_wallet
 from tests.manager.delegation.validator_service_test import _generate_new_validator
 
@@ -27,7 +27,7 @@ def test_recharge_validator_wallet(skale):
 def test_withdraw_funds_from_validator_wallet(skale):
     main_wallet = skale.wallet
     new_wallet = generate_wallet(skale.web3)
-    send_ether(skale.web3, main_wallet, new_wallet.address, ETH_AMOUNT)
+    send_eth(skale.web3, main_wallet, new_wallet.address, ETH_AMOUNT)
     _generate_new_validator(skale, wallet=new_wallet)
 
     latest_id = skale.validator_service.number_of_validators()

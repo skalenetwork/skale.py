@@ -10,7 +10,7 @@ from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 from skale import Skale
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.utils import generate_random_node_data
-from skale.utils.account_tools import send_ether
+from skale.utils.account_tools import send_eth
 
 from tests.constants import (ENDPOINT, TEST_ABI_FILEPATH)
 
@@ -39,7 +39,7 @@ def transfer_eth_to_wallets(skale, wallets):
         f'Transfering {TEST_ETH_AMOUNT} ETH to {len(wallets)} test wallets'
     )
     for wallet in wallets:
-        send_ether(skale.web3, skale.wallet, wallet.address, TEST_ETH_AMOUNT)
+        send_eth(skale.web3, skale.wallet, wallet.address, TEST_ETH_AMOUNT)
 
 
 def link_addresses_to_validator(skale, wallets):

@@ -2,16 +2,16 @@
 
 from hexbytes import HexBytes
 
-from skale.dataclasses.schain_options import SchainOptions
 from skale.contracts.manager.schains import FIELDS, SchainStructure
+from skale.dataclasses.schain_options import SchainOptions
+from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.fake_multisig_contract import FAKE_MULTISIG_DATA_PATH
-from skale.transactions.tools import send_eth_with_skale
+from skale.utils.contracts_provision.main import generate_random_schain_data, create_schain
+from skale.utils.helper import get_abi
+from skale.wallets.web3_wallet import generate_wallet
+
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
                              DEFAULT_SCHAIN_NAME, LIFETIME_SECONDS)
-
-from skale.utils.contracts_provision.main import generate_random_schain_data, create_schain
-from skale.wallets.web3_wallet import generate_wallet
-from skale.utils.helper import get_abi
 
 
 def test_get(skale):
@@ -159,7 +159,7 @@ def test_add_schain_by_foundation_custom_owner(skale, nodes):
         assert new_schain['mainnetOwner'] != skale.wallet.address
         assert new_schain['mainnetOwner'] == custom_wallet.address
 
-        send_eth_with_skale(skale, custom_wallet.address, 10 ** 18)
+        send_eth(skale.web3, skale.wallet, custom_wallet.address, 10 ** 18)
         skale.wallet = custom_wallet
     finally:
         skale.wallet = main_wallet
@@ -198,7 +198,7 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
 
         assert new_schain['originator'] != skale.wallet.address
         assert new_schain['originator'] == custom_originator.address
-        send_eth_with_skale(skale, custom_originator.address, 10 ** 18)
+        send_eth(skale.web3, skale.wallet, custom_originator.address, 10 ** 18)
 
     finally:
         if name:

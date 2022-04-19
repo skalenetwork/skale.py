@@ -34,6 +34,8 @@ from web3.middleware import (
 )
 
 import skale.config as config
+from skale.transactions.exceptions import TransactionFailedError
+from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.helper import is_test_env
 from skale.transactions.exceptions import TransactionNotMinedError
 
@@ -205,7 +207,9 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
 def check_receipt(receipt, raise_error=True):
     if receipt['status'] != 1:  # pragma: no cover
         if raise_error:
-            raise ValueError("Transaction failed, see receipt", receipt)
+            raise TransactionFailedError(
+                f'Transaction failed, see receipt {receipt}'
+            )
         else:
             return False
     return True
@@ -254,3 +258,7 @@ def wallet_to_public_key(wallet):
         return private_key_to_public(wallet['private_key'])
     else:
         return wallet['public_key']
+
+
+def default_gas_price(web3: Web3) -> int:
+    return web3.eth.gas_price * GAS_PRICE_COEFFICIENT

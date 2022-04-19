@@ -5,7 +5,7 @@ import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
 from skale.transactions.result import RevertError
-from skale.utils.account_tools import send_ether
+from skale.utils.account_tools import send_eth
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.main import _skip_evm_time, enable_validator
 
@@ -37,7 +37,7 @@ def _generate_new_validator(skale, wallet=None, enable=True):
     eth_amount = 10
     main_wallet = skale.wallet
     wallet = wallet or generate_wallet(skale.web3)
-    send_ether(skale.web3, skale.wallet, wallet.address, eth_amount)
+    send_eth(skale.web3, skale.wallet, wallet.address, eth_amount)
     skale.wallet = wallet
     validator_id = -1
     try:
@@ -315,7 +315,7 @@ def test_request_confirm_new_address(skale):
         new_wallet = generate_wallet(skale.web3)
         eth_amount = 10
         skale.wallet = main_wallet
-        send_ether(skale.web3, skale.wallet, new_wallet.address, eth_amount)
+        send_eth(skale.web3, skale.wallet, new_wallet.address, eth_amount)
         validator = skale.validator_service.get(validator_id)
         assert validator['requested_address'] == '0x0000000000000000000000000000000000000000'
 

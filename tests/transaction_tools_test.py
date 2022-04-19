@@ -8,10 +8,12 @@ from skale.transactions.exceptions import (
 )
 from skale import Skale
 from skale.transactions.tools import (
-    run_tx_with_retry, send_eth_with_skale, estimate_gas, get_block_gas_limit
+    run_tx_with_retry,
+    estimate_gas,
+    get_block_gas_limit
 )
 from skale.utils.account_tools import generate_account
-from skale.utils.web3_utils import init_web3, wait_receipt
+from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallet
 
@@ -55,14 +57,19 @@ def test_run_tx_with_retry(skale):
 
 
 def test_run_tx_with_retry_dry_run_failed(skale):
-    dry_run_call_mock = mock.Mock(return_value={'status': 0,
-                                                'error': 'Dry run failed'})
+    dry_run_call_mock = mock.Mock(
+        return_value={
+            'status': 0,
+            'error': 'Dry run failed'
+        }
+    )
     account = generate_account(skale.web3)
     token_amount = 10 * ETH_IN_WEI
     retries_number = 5
-    with mock.patch('skale.contracts.base_contract.make_dry_run_call',
-                    dry_run_call_mock):
-
+    with mock.patch(
+        'skale.contracts.base_contract.make_dry_run_call',
+        dry_run_call_mock
+    ):
         tx_res = run_tx_with_retry(
             skale.token.transfer, account['address'], token_amount,
             wait_for=True, raise_for_status=False,
@@ -112,46 +119,6 @@ def test_run_tx_with_retry_insufficient_balance(skale):
     assert sender_skale.wallet.wait.call_count == retries_number
 
 
-def test_send_eth_with_skale(skale):
-    account = generate_account(skale.web3)
-    address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
-    balance_from_before = skale.web3.eth.getBalance(address_from)
-    balance_to_before = skale.web3.eth.getBalance(address_to)
-    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
-
-    token_amount = 10 * ETH_IN_WEI
-    send_eth_with_skale(skale, address_to, token_amount, nonce=nonce)
-
-    fee_value = 10000
-    balance_from_after = skale.web3.eth.getBalance(address_from)
-    assert balance_from_after - balance_from_before + token_amount < fee_value
-    balance_to_after = skale.web3.eth.getBalance(address_to)
-    assert balance_to_after == balance_to_before + token_amount
-
-
-def test_send_eth_with_skale_without_wait_for_false(skale):
-    account = generate_account(skale.web3)
-    address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
-    balance_from_before = skale.web3.eth.getBalance(address_from)
-    balance_to_before = skale.web3.eth.getBalance(address_to)
-
-    token_amount = 10 * ETH_IN_WEI
-    tx_hash = send_eth_with_skale(skale, address_to,
-                                  token_amount, wait_for=False)
-    receipt = wait_receipt(skale.web3, tx_hash)
-    assert receipt['status'] == 1
-
-    fee_value = 10000
-    balance_from_after = skale.web3.eth.getBalance(address_from)
-    assert balance_from_after - balance_from_before + token_amount < fee_value
-    balance_to_after = skale.web3.eth.getBalance(address_to)
-    assert balance_to_after == balance_to_before + token_amount
-
-
 def test_estimate_gas(skale):
     main_wallet = skale.wallet
     skale.wallet = generate_wallet(skale.web3)
@@ -198,7 +165,6 @@ def test_tx_fee_options(skale):
         max_priority_fee_per_gas=max_priority_fee
     )
     r = res.receipt
-    print(skale.web3.eth.get_transaction(res.tx_hash))
     assert r['effectiveGasPrice'] == max_fee
 
     balance_from_after = skale.token.get_balance(address_from)

@@ -22,9 +22,8 @@ import logging
 
 from skale.wallets import BaseWallet
 from skale.utils.abi_utils import get_contract_address_by_name, get_contract_abi_by_name
-from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
-from skale.utils.web3_utils import init_web3
+from skale.utils.web3_utils import default_gas_price, init_web3
 
 from skale.utils.helper import get_abi
 from skale.contracts.contract_manager import ContractManager
@@ -59,7 +58,7 @@ class SkaleBase:
 
     @property
     def gas_price(self):
-        return self.web3.eth.gasPrice * GAS_PRICE_COEFFICIENT
+        return default_gas_price(self.web3)
 
     @property
     def wallet(self):

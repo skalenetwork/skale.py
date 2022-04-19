@@ -55,15 +55,8 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
     with mock.patch(
         'skale.contracts.base_contract.execute_dry_run'
     ) as dry_run_mock:
-        with mock.patch(
-            'skale.contracts.base_contract.post_transaction'
-        ) as post_transaction_mock:
-            skale.token.transfer(address_to, amount, wait_for=False)
-            dry_run_mock.assert_not_called()
-            assert post_transaction_mock.call_args.kwargs['gas_limit'] == \
-                CUSTOM_DEFAULT_GAS_LIMIT
-            assert post_transaction_mock.call_args.kwargs['gas_price'] == \
-                CUSTOM_DEFAULT_GAS_PRICE_WEI
+        skale.token.transfer(address_to, amount, wait_for=False)
+        dry_run_mock.assert_not_called()
 
 
 def test_skip_dry_run(skale):
@@ -75,8 +68,11 @@ def test_skip_dry_run(skale):
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
 
-    tx_res = skale.token.transfer(address_to, amount,
-                                  skip_dry_run=True, gas_limit=TEST_GAS_LIMIT)
+    tx_res = skale.token.transfer(
+        address_to, amount,
+        skip_dry_run=True,
+        gas_limit=TEST_GAS_LIMIT
+    )
     assert tx_res.tx_hash is not None, tx_res
     assert tx_res.receipt is not None
     assert tx_res.dry_run_result is None

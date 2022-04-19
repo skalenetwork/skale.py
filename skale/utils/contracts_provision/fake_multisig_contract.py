@@ -20,10 +20,11 @@
 import os
 import json
 
+from skale.transactions.tools import transaction_from_method
 from skale.utils.web3_utils import (
+    get_eth_nonce,
     wait_for_receipt_by_blocks
 )
-from skale.transactions.tools import sign_and_send
 
 # Usage note: to change this contract update the code, compile it and put the new bytecode and
 # new ABI below
@@ -72,12 +73,20 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 FAKE_MULTISIG_DATA_DEFAULT_PATH = os.path.join(DIR_PATH, 'fake_multisig_data.json')
 FAKE_MULTISIG_DATA_PATH = os.getenv('FAKE_MULTISIG_DATA_PATH') or FAKE_MULTISIG_DATA_DEFAULT_PATH
 
+FAKE_MULTISIG_CONSTRUCTOR_GAS = 1000000
+
 
 def deploy_fake_multisig_contract(web3, wallet):
     print('Going to deploy simple payable contract')
     FakeMultisigContract = web3.eth.contract(abi=FAKE_MULTISIG_ABI, bytecode=FAKE_MULTISIG_BYTECODE)
     constructor = FakeMultisigContract.constructor()
-    tx_hash = sign_and_send(web3, constructor, 100000, wallet)
+    constructor.fn_name = 'fake_multisig_constructor'
+    tx = transaction_from_method(
+        constructor,
+        nonce=get_eth_nonce(web3, wallet.address),
+        gas_limit=FAKE_MULTISIG_CONSTRUCTOR_GAS
+    )
+    tx_hash = wallet.sign_and_send(tx)
     receipt = wait_for_receipt_by_blocks(web3, tx_hash)
     print(f'Sample contract successfully deployed: {receipt.contractAddress}')
     content = {
