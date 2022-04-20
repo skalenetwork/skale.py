@@ -6,4 +6,4 @@ export ENDPOINT=${ENDPOINT:-http://localhost:8545}
 export ENV=test
 
 
-py.test --cov=$PROJECT_DIR/ $PROJECT_DIR/tests/rotation_history/rotation_history_test.py --ignore $PROJECT_DIR/tests/allocator $@
+py.test --cov=$PROJECT_DIR/ $PROJECT_DIR/tests/ --ignore $PROJECT_DIR/tests/allocator $@
