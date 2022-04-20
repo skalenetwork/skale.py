@@ -2,8 +2,10 @@
 
 import logging
 
+import pytest
+
 from skale.utils.contracts_provision.main import (
-    add_test4_schain_type, cleanup_nodes_schains, create_schain, add_test2_schain_type
+    add_test4_schain_type, cleanup_nodes_schains, create_schain
 )
 from skale.utils.contracts_provision import DEFAULT_SCHAIN_NAME
 from skale.schain_config.rotation_history import get_previous_schain_groups
@@ -16,11 +18,19 @@ def test_get_previous_node_no_node(skale):
     assert skale.node_rotation.get_previous_node(DEFAULT_SCHAIN_NAME, 0) is None
 
 
-def test_rotation_history(skale):
-    cleanup_nodes_schains(skale)
+@pytest.fixture
+def four_node_schain(skale, validator):
     nodes, skale_instances = set_up_nodes(skale, 4)
     add_test4_schain_type(skale)
-    name = create_schain(skale, random_name=True)
+    try:
+        name = create_schain(skale, random_name=True)
+        yield nodes, skale_instances, name
+    finally:
+        cleanup_nodes_schains(skale)
+
+
+def test_rotation_history(skale, four_node_schain):
+    nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.sha3(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
@@ -98,12 +108,8 @@ def test_rotation_history(skale):
     assert set(node_groups[5]['nodes'].keys()) == set(group_ids_5)
 
 
-def test_rotation_history_no_rotations(skale):
-    cleanup_nodes_schains(skale)
-    set_up_nodes(skale, 2)
-    add_test2_schain_type(skale)
-    name = create_schain(skale, random_name=True)
-
+def test_rotation_history_no_rotations(skale, four_node_schain):
+    _, _, name = four_node_schain
     node_groups = get_previous_schain_groups(skale, name)
     group_ids = skale.schains_internal.get_node_ids_for_schain(name)
 
@@ -111,11 +117,8 @@ def test_rotation_history_no_rotations(skale):
     assert set(node_groups[0]['nodes'].keys()) == set(group_ids)
 
 
-def test_rotation_history_single_rotation(skale):
-    cleanup_nodes_schains(skale)
-    nodes, skale_instances = set_up_nodes(skale, 4)
-    add_test4_schain_type(skale)
-    name = create_schain(skale, random_name=True)
+def test_rotation_history_single_rotation(skale, four_node_schain):
+    nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.sha3(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
@@ -134,11 +137,8 @@ def test_rotation_history_single_rotation(skale):
     assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
 
 
-def test_rotation_history_failed_dkg(skale):
-    cleanup_nodes_schains(skale)
-    nodes, skale_instances = set_up_nodes(skale, 4)
-    add_test4_schain_type(skale)
-    name = create_schain(skale, random_name=True)
+def test_rotation_history_failed_dkg(skale, four_node_schain):
+    nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.sha3(text=name)
 
     run_dkg(nodes, skale_instances, group_index)

@@ -107,6 +107,7 @@ def send_eth(
             confirmation_blocks
         )
     check_receipt(receipt)
+    return receipt
 
 
 def account_eth_balance_wei(web3, address):
@@ -147,7 +148,7 @@ def generate_accounts(skale,
     for _ in range(0, n_wallets):
         wallet = generate_account(skale.web3)
 
-        send_tokens(skale, skale.wallet, wallet['address'], skale_amount)
+        send_tokens(skale, wallet['address'], skale_amount)
         send_eth(skale.web3, skale.wallet, wallet['address'], eth_amount)
 
         if debug:
