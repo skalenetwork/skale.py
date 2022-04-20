@@ -141,6 +141,7 @@ def compose_eth_transfer_tx(
     base_fields = compose_base_fields(
         nonce=nonce,
         gas_limit=DEFAULT_ETH_SEND_GAS_LIMIT,
+        value=value,
         **kwargs
     )
     tx = {

@@ -37,10 +37,10 @@ def _generate_new_validator(skale, wallet=None, enable=True):
     eth_amount = 10
     main_wallet = skale.wallet
     wallet = wallet or generate_wallet(skale.web3)
-    send_eth(skale.web3, skale.wallet, wallet.address, eth_amount)
-    skale.wallet = wallet
+    send_eth(skale.web3, main_wallet, wallet.address, eth_amount)
     validator_id = -1
     try:
+        skale.wallet = wallet
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,

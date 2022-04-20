@@ -140,12 +140,18 @@ def init_web3(endpoint: str,
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
-        sync_middleware = make_client_checking_middleware(ts_diff, state_path)
-        middewares = (
-            http_retry_request_middleware,
-            sync_middleware,
-            attrdict_middleware
-        )
+        if not ts_diff == config.NO_SYNC_TS_DIFF:
+            sync_middleware = make_client_checking_middleware(ts_diff, state_path)
+            middewares = (
+                http_retry_request_middleware,
+                sync_middleware,
+                attrdict_middleware
+            )
+        else:
+            middewares = (
+                http_retry_request_middleware,
+                attrdict_middleware
+            )
 
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
