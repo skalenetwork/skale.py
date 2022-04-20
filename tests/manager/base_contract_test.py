@@ -55,7 +55,7 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
     with mock.patch(
         'skale.contracts.base_contract.execute_dry_run'
     ) as dry_run_mock:
-        skale.token.transfer(address_to, amount, wait_for=False)
+        skale.token.transfer(address_to, amount)
         dry_run_mock.assert_not_called()
 
 
