@@ -169,6 +169,20 @@ def create_clean_schain(skale):
     return create_schain(skale, random_name=True)
 
 
+def create_node(skale) -> str:
+    cleanup_nodes_schains(skale)
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(
+        ip=ip,
+        port=port,
+        name=name,
+        domain_name=DEFAULT_DOMAIN_NAME,
+        public_ip=public_ip,
+        wait_for=True
+    )
+    return name
+
+
 def validator_exist(skale):
     return skale.validator_service.validator_address_exists(
         skale.wallet.address

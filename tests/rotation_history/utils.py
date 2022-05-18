@@ -144,8 +144,18 @@ def rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, 
     return nodes, skale_instances
 
 
-def fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index):
+def fail_dkg(
+    skale,
+    nodes,
+    skale_instances,
+    group_index,
+    failed_node_index,
+    second_failed_node_index=None
+) -> list:
+    logger.info('Failing first DKG...')
+    new_node_ids = []
     new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+    new_node_ids.append(new_nodes[0]['node_id'])
 
     send_broadcasts(nodes, skale_instances, group_index, failed_node_index)
     _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
@@ -153,10 +163,26 @@ def fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index):
 
     nodes[failed_node_index] = new_nodes[0]
     skale_instances[failed_node_index] = new_skale_instances[0]
+
+    if second_failed_node_index:
+        logger.info('Failing second DKG...')
+        new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+        new_node_ids.append(new_nodes[0]['node_id'])
+
+        send_broadcasts(nodes, skale_instances, group_index, second_failed_node_index)
+        _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
+        send_complaint(nodes, skale_instances, group_index, second_failed_node_index)
+
+        nodes[second_failed_node_index] = new_nodes[0]
+        skale_instances[second_failed_node_index] = new_skale_instances[0]
+
     run_dkg(nodes, skale_instances, group_index)
+    return new_node_ids
 
 
-def run_dkg(nodes, skale_instances, group_index):
+def run_dkg(nodes, skale_instances, group_index, skip_time=True):
+    logger.info('Running DKG procedure...')
     send_broadcasts(nodes, skale_instances, group_index)
     send_alrights(nodes, skale_instances, group_index)
-    _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)
+    if skip_time:
+        _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)

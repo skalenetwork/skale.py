@@ -3,7 +3,11 @@
 import mock
 
 from skale.contracts.manager.node_rotation import Rotation
+from skale.utils.contracts_provision.main import (
+    cleanup_nodes_schains, create_schain, add_test4_schain_type
+)
 from tests.constants import DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME, DEFAULT_SCHAIN_INDEX
+from tests.rotation_history.utils import set_up_nodes, run_dkg, _skip_evm_time, TEST_ROTATION_DELAY
 
 
 def test_get_rotation(skale):
@@ -17,7 +21,7 @@ def test_get_rotation(skale):
 
 def test_get_rotation_obj(skale):
     assert skale.node_rotation.get_rotation_obj(DEFAULT_SCHAIN_NAME) == Rotation(
-        node_id=0,
+        leaving_node_id=0,
         new_node_id=0,
         freeze_until=0,
         rotation_counter=0
@@ -50,3 +54,47 @@ def test_is_rotation_in_progress(skale):
 
 def test_wait_for_new_node(skale):
     assert skale.node_rotation.wait_for_new_node(DEFAULT_SCHAIN_NAME) is False
+
+
+def test_is_rotation_active(skale):
+    cleanup_nodes_schains(skale)
+    nodes, skale_instances = set_up_nodes(skale, 4)
+    add_test4_schain_type(skale)
+    name = create_schain(skale, random_name=True)
+    group_index = skale.web3.sha3(text=name)
+
+    run_dkg(nodes, skale_instances, group_index)
+
+    exiting_node_index = 1
+    new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+
+    assert not skale.node_rotation.is_new_node_found(name)
+    assert not skale.node_rotation.is_rotation_in_progress(name)
+    assert not skale.node_rotation.is_rotation_active(name)
+
+    skale.nodes.init_exit(nodes[exiting_node_index]['node_id'])
+
+    assert not skale.node_rotation.is_new_node_found(name)
+    assert skale.node_rotation.is_rotation_in_progress(name)
+    assert not skale.node_rotation.is_rotation_active(name)
+
+    skale_instances[exiting_node_index].manager.node_exit(nodes[exiting_node_index]['node_id'])
+
+    assert skale.node_rotation.is_new_node_found(name)
+    assert skale.node_rotation.is_rotation_in_progress(name)
+    assert skale.node_rotation.is_rotation_active(name)
+
+    nodes[exiting_node_index] = new_nodes[0]
+    skale_instances[exiting_node_index] = new_skale_instances[0]
+
+    run_dkg(nodes, skale_instances, group_index, skip_time=False)
+
+    assert skale.node_rotation.is_new_node_found(name)
+    assert skale.node_rotation.is_rotation_in_progress(name)
+    assert skale.node_rotation.is_rotation_active(name)
+
+    _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)
+
+    assert skale.node_rotation.is_new_node_found(name)
+    assert not skale.node_rotation.is_rotation_in_progress(name)
+    assert not skale.node_rotation.is_rotation_active(name)
