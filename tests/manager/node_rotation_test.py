@@ -1,6 +1,7 @@
 """ SKALE node rotation test """
 
 import mock
+import pytest
 
 from skale.contracts.manager.node_rotation import Rotation
 from skale.utils.contracts_provision.main import (
@@ -56,11 +57,21 @@ def test_wait_for_new_node(skale):
     assert skale.node_rotation.wait_for_new_node(DEFAULT_SCHAIN_NAME) is False
 
 
-def test_is_rotation_active(skale):
-    cleanup_nodes_schains(skale)
+@pytest.fixture
+def four_node_schain(skale, validator):
     nodes, skale_instances = set_up_nodes(skale, 4)
     add_test4_schain_type(skale)
-    name = create_schain(skale, random_name=True)
+    try:
+        name = create_schain(skale, random_name=True)
+        yield nodes, skale_instances, name
+    finally:
+        cleanup_nodes_schains(skale)
+
+
+def test_is_rotation_active(skale, four_node_schain):
+    cleanup_nodes_schains(skale)
+    nodes, skale_instances, name = four_node_schain
+    add_test4_schain_type(skale)
     group_index = skale.web3.sha3(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
