@@ -327,7 +327,7 @@ def create_nodes(skale, names=()):
 def create_schain(
     skale,
     schain_name=DEFAULT_SCHAIN_NAME,
-    schain_type=None,
+    schain_type=1,
     random_name=False,
     schain_options=None
 ):
