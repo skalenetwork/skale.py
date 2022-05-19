@@ -126,10 +126,11 @@ def test_node_in_maintenance(skale, nodes):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     assert skale.nodes.get_node_status(node_id) == NodeStatus.ACTIVE.value
 
-    skale.nodes.set_node_in_maintenance(node_id)
-    assert skale.nodes.get_node_status(node_id) == NodeStatus.IN_MAINTENANCE.value
-
-    skale.nodes.remove_node_from_in_maintenance(node_id)
+    try:
+        skale.nodes.set_node_in_maintenance(node_id)
+        assert skale.nodes.get_node_status(node_id) == NodeStatus.IN_MAINTENANCE.value
+    finally:
+        skale.nodes.remove_node_from_in_maintenance(node_id)
     assert skale.nodes.get_node_status(node_id) == NodeStatus.ACTIVE.value
 
 

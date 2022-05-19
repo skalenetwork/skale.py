@@ -62,7 +62,11 @@ def four_node_schain(skale, validator):
     nodes, skale_instances = set_up_nodes(skale, 4)
     add_test4_schain_type(skale)
     try:
-        name = create_schain(skale, random_name=True)
+        name = create_schain(
+            skale,
+            schain_type=2,  # test4 should have 2 index
+            random_name=True
+        )
         yield nodes, skale_instances, name
     finally:
         cleanup_nodes_schains(skale)

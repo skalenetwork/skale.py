@@ -86,7 +86,11 @@ def nodes(skale, node_skales, validator):
 @pytest.fixture
 def schain(skale, nodes):
     try:
-        yield create_schain(skale, random_name=True)
+        yield create_schain(
+            skale,
+            schain_type=1,  # test2 should have 1 index
+            random_name=True
+        )
     finally:
         cleanup_schains(skale)
 
