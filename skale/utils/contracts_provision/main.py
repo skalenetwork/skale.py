@@ -165,7 +165,6 @@ def cleanup_nodes_schains(skale):
 def create_clean_schain(skale):
     cleanup_nodes_schains(skale)
     create_nodes(skale)
-    add_test2_schain_type(skale)
     return create_schain(skale, random_name=True)
 
 
