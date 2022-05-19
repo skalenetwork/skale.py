@@ -85,7 +85,8 @@ def test_add_schain_by_foundation(skale, nodes):
         skale.schains.schain_creator_role(),
         skale.wallet.address
     )
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
+    _, lifetime_seconds, name = generate_random_schain_data(skale)
+    type_of_nodes = 1  # test2 schain
     try:
         skale.schains.add_schain_by_foundation(
             lifetime_seconds, type_of_nodes, 0, name
@@ -115,7 +116,8 @@ def test_add_schain_by_foundation_with_options(skale, nodes):
         skale.schains.schain_creator_role(),
         skale.wallet.address
     )
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
+    _, lifetime_seconds, name = generate_random_schain_data(skale)
+    type_of_nodes = 1  # test2 schain
     try:
         skale.schains.add_schain_by_foundation(
             lifetime_seconds,
@@ -141,7 +143,8 @@ def test_add_schain_by_foundation_custom_owner(skale, nodes):
         skale.schains.schain_creator_role(),
         skale.wallet.address
     )
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
+    _, lifetime_seconds, name = generate_random_schain_data(skale)
+    type_of_nodes = 1  # test2 schain
     main_wallet = skale.wallet
     custom_wallet = generate_wallet(skale.web3)
     try:
@@ -177,7 +180,8 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
         skale.schains.schain_creator_role(),
         skale.wallet.address
     )
-    type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
+    _, lifetime_seconds, name = generate_random_schain_data(skale)
+    type_of_nodes = 1  # test2 schain
     custom_originator = generate_wallet(skale.web3)
 
     fake_multisig_data = get_abi(FAKE_MULTISIG_DATA_PATH)

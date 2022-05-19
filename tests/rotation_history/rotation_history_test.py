@@ -23,7 +23,11 @@ def four_node_schain(skale, validator):
     nodes, skale_instances = set_up_nodes(skale, 4)
     add_test4_schain_type(skale)
     try:
-        name = create_schain(skale, random_name=True)
+        name = create_schain(
+            skale,
+            schain_type=2,  # test4 type
+            random_name=True
+        )
         yield nodes, skale_instances, name
     finally:
         cleanup_nodes_schains(skale)
@@ -190,11 +194,8 @@ def test_rotation_history_failed_dkg(skale, four_node_schain):
     assert node_groups[3]['bls_public_key']
 
 
-def test_get_new_nodes_list(skale):
-    cleanup_nodes_schains(skale)
-    nodes, skale_instances = set_up_nodes(skale, 4)
-    add_test4_schain_type(skale)
-    name = create_schain(skale, random_name=True)
+def test_get_new_nodes_list(skale, four_node_schain):
+    nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.sha3(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
