@@ -34,7 +34,8 @@ from skale.utils.contracts_provision import (
     D_STAKE_MULTIPLIER,
     INITIAL_DELEGATION_PERIOD,
     DEFAULT_DOMAIN_NAME,
-    MONTH_IN_SECONDS
+    MONTH_IN_SECONDS,
+    NODE_EXIT_RETRIES
 )
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data, generate_random_schain_data
@@ -137,6 +138,21 @@ def add_test4_schain_type(skale) -> TxRes:
     )
 
 
+def run_node_exit(skale, node_id, retries=NODE_EXIT_RETRIES):
+    success, cnt = False, 0
+    err = None
+    while not success and cnt < NODE_EXIT_RETRIES:
+        try:
+            skale.manager.node_exit(node_id)
+        except Exception as e:
+            err = e
+            print(f'Error occured during node exit {e}')
+        else:
+            break
+    if not success:
+        raise err
+
+
 def cleanup_nodes(skale, ids=()):
     active_ids = filter(
         lambda i: skale.nodes.get_node_status(i) == NodeStatus.ACTIVE,
@@ -144,8 +160,8 @@ def cleanup_nodes(skale, ids=()):
     )
     for node_id in active_ids:
         if skale.nodes.get(node_id):
-            skale.nodes.init_exit(node_id, wait_for=True)
-            skale.manager.node_exit(node_id, wait_for=True)
+            skale.nodes.init_exit(node_id)
+            run_node_exit(skale, node_id)
 
 
 def cleanup_schains(skale):
