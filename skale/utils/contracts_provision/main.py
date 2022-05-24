@@ -148,7 +148,7 @@ def run_node_exit(skale, node_id, retries=NODE_EXIT_RETRIES):
             err = e
             print(f'Error occured during node exit {e}')
         else:
-            break
+            success = True
     if not success:
         raise err
 
