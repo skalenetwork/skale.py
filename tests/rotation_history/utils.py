@@ -186,3 +186,8 @@ def run_dkg(nodes, skale_instances, group_index, skip_time=True):
     send_alrights(nodes, skale_instances, group_index)
     if skip_time:
         _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)
+
+
+def remove_node(skale, node_id):
+    skale.nodes.init_exit(node_id)
+    skale.manager.node_exit(node_id)

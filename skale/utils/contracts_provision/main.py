@@ -18,6 +18,8 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 
+import time
+
 from skale.contracts.manager.nodes import NodeStatus
 from skale.transactions.result import TxRes
 from skale.utils.contracts_provision import (
@@ -143,10 +145,12 @@ def run_node_exit(skale, node_id, retries=NODE_EXIT_RETRIES):
     err = None
     while not success and cnt < NODE_EXIT_RETRIES:
         try:
-            skale.manager.node_exit(node_id)
+            skip_dry_run = cnt > 0
+            skale.manager.node_exit(node_id, skip_dry_run=skip_dry_run)
         except Exception as e:
             err = e
             print(f'Error occured during node exit {e}')
+            time.sleep(1)
         else:
             success = True
         cnt += 1
@@ -162,7 +166,7 @@ def cleanup_nodes(skale, ids=()):
     for node_id in active_ids:
         if skale.nodes.get(node_id):
             skale.nodes.init_exit(node_id)
-            run_node_exit(skale, node_id)
+            run_node_exit(skale, node_id, retries=1)
 
 
 def cleanup_schains(skale):

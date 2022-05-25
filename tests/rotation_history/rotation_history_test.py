@@ -9,7 +9,13 @@ from skale.utils.contracts_provision.main import (
 )
 from skale.utils.contracts_provision import DEFAULT_SCHAIN_NAME
 from skale.schain_config.rotation_history import get_previous_schain_groups, get_new_nodes_list
-from tests.rotation_history.utils import set_up_nodes, run_dkg, rotate_node, fail_dkg
+from tests.rotation_history.utils import (
+    set_up_nodes,
+    run_dkg,
+    remove_node,
+    rotate_node,
+    fail_dkg
+)
 
 logger = logging.getLogger(__name__)
 
@@ -225,6 +231,11 @@ def test_get_new_nodes_list(skale, four_node_schain):
 
     assert len(new_nodes) == 3
     assert all(x in new_nodes for x in test_new_node_ids)
+
+    # Temorary fix for "The schain does not exist" problem
+    # Bad nodes should be removed before chain is deleted
+    remove_node(skale, failed_node_index)
+    remove_node(skale, second_failed_node_index)
 
     exiting_node_index = 3
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
