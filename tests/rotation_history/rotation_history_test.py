@@ -234,8 +234,9 @@ def test_get_new_nodes_list(skale, four_node_schain):
 
     # Temorary fix for "The schain does not exist" problem
     # Bad nodes should be removed before chain is deleted
-    remove_node(skale, failed_node_index)
-    remove_node(skale, second_failed_node_index)
+    remove_node(skale, nodes[exiting_node_index]['node_id'])
+    remove_node(skale, nodes[failed_node_index]['node_id'])
+    remove_node(skale, nodes[second_failed_node_index]['node_id'])
 
     exiting_node_index = 3
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
