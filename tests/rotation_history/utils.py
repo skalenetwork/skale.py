@@ -8,9 +8,10 @@ from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 
 from skale import Skale
-from skale.wallets.web3_wallet import generate_wallet
+from skale.contracts.manager.nodes import NodeStatus
 from skale.utils.contracts_provision.utils import generate_random_node_data
 from skale.utils.account_tools import send_eth
+from skale.wallets.web3_wallet import generate_wallet
 
 from tests.constants import (ENDPOINT, TEST_ABI_FILEPATH)
 
@@ -189,5 +190,8 @@ def run_dkg(nodes, skale_instances, group_index, skip_time=True):
 
 
 def remove_node(skale, node_id):
-    skale.nodes.init_exit(node_id)
-    skale.manager.node_exit(node_id)
+    if skale.nodes.get_node_status(node_id) == NodeStatus.IN_MAINTENANCE:
+        skale.nodes.remove_from_in_maintenance(node_id)
+    if skale.nodes.get_node_status(node_id) != NodeStatus.LEFT:
+        skale.nodes.init_exit(node_id)
+        skale.manager.node_exit(node_id)
