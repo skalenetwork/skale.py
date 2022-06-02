@@ -39,7 +39,7 @@ def _catch_event(event_obj):
 
 
 def transfer_tokens_to_allocator(skale_manager, skale_allocator, amount=TEST_SKALE_AMOUNT):
-    send_tokens(skale_manager, skale_allocator.wallet, skale_allocator.allocator.address, amount)
+    send_tokens(skale_manager, skale_allocator.allocator.address, amount)
 
 
 # def transfer_tokens_to_token_launch_manager(skale, amount=TEST_SKALE_AMOUNT):
