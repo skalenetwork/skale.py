@@ -43,7 +43,7 @@ jobs:
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       MANAGER_TAG: "1.8.2-develop.44"
-      ALLOCATOR_TAG: "2.2.0-develop.4"
+      ALLOCATOR_TAG: "2.2.2-develop.0"
     steps:
     - uses: actions/checkout@v2
       with:

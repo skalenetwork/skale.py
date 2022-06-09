@@ -53,8 +53,7 @@ def add_test_plan(skale_allocator):
         vesting_interval_time_unit=TEST_VESTING_INTERVAL_TIME_UNIT,
         vesting_interval=TEST_VESTING_INTERVAL,
         can_delegate=TEST_CAN_DELEGATE,
-        is_terminatable=TEST_IS_TERMINATABLE,
-        wait_for=False
+        is_terminatable=TEST_IS_TERMINATABLE
     )
     return len(skale_allocator.allocator.get_all_plans())
 
@@ -65,6 +64,5 @@ def connect_test_beneficiary(skale_allocator, plan_id, wallet):
         plan_id=plan_id,
         start_month=TEST_START_MONTH,
         full_amount=TEST_FULL_AMOUNT,
-        lockup_amount=TEST_LOCKUP_AMOUNT,
-        wait_for=True
+        lockup_amount=TEST_LOCKUP_AMOUNT
     )
