@@ -58,10 +58,7 @@ jobs:
       run: bash ./scripts/install_python_dependencies.sh
     - name: Deploy allocator contracts
       run: |
-        bash ./helper-scripts/deploy_test_allocator.sh || true
-    - name: Show allocator log
-      run: |
-        docker logs skale-allocator
+        bash ./helper-scripts/deploy_test_allocator.sh 
     - name: Run tests
       run: |
         bash ./scripts/run_allocator_tests.sh
