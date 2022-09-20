@@ -38,7 +38,7 @@ FIELDS = [
 
 class NodeStatus(IntEnum):
     ACTIVE = 0
-    LEAVING = 0
+    LEAVING = 1
     LEFT = 2
     IN_MAINTENANCE = 3
 
