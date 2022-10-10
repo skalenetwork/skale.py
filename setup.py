@@ -9,6 +9,7 @@ extras_require = {
     'linter': [
         "flake8==3.8.3",
         "isort>=4.2.15,<5.4.3",
+        "importlib-metadata<5.0"
     ],
     'dev': [
         "bumpversion==0.6.0",
