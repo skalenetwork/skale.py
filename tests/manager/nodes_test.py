@@ -13,6 +13,7 @@ import skale.utils.helper as Helper
 from skale.contracts.manager.nodes import FIELDS, NodeStatus
 from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
+from skale.utils.contracts_provision.main import create_node
 
 from tests.constants import DEFAULT_NODE_HASH, DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
@@ -28,12 +29,14 @@ def public_key_from_private(key):
 
 
 def test_get(skale):
-    node = skale.nodes.get_by_name(DEFAULT_NODE_NAME)
-    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    name = create_node(skale)
+
+    node = skale.nodes.get_by_name(name)
+    node_id = skale.nodes.node_name_to_index(name)
     node_by_id = skale.nodes.get(node_id)
     assert list(node.keys()) == FIELDS
     assert [k for k, v in node.items() if v is None] == []
-    assert node_by_id['name'] == DEFAULT_NODE_NAME
+    assert node_by_id['name'] == name
     socket.inet_ntoa(node_by_id['ip'])
     socket.inet_ntoa(node_by_id['publicIP'])
 
@@ -104,14 +107,16 @@ def test_name_to_id(skale):
 
 
 def test_is_node_name_available(skale):
-    node = skale.nodes.get_by_name(DEFAULT_NODE_NAME)
+    name = create_node(skale)
+    node = skale.nodes.get_by_name(name)
     unused_name = 'unused_name'
     assert skale.nodes.is_node_name_available(node['name']) is False
     assert skale.nodes.is_node_name_available(unused_name) is True
 
 
 def test_is_node_ip_available(skale):
-    node = skale.nodes.get_by_name(DEFAULT_NODE_NAME)
+    name = create_node(skale)
+    node = skale.nodes.get_by_name(name)
     node_ip = Helper.ip_from_bytes(node['ip'])
 
     unused_ip = '123.123.231.123'
@@ -136,7 +141,8 @@ def test_get_node_public_key(skale):
 
 
 def test_node_in_maintenance(skale):
-    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    name = create_node(skale)
+    node_id = skale.nodes.node_name_to_index(name)
     assert skale.nodes.get_node_status(node_id) == NodeStatus.ACTIVE.value
 
     skale.nodes.set_node_in_maintenance(node_id)

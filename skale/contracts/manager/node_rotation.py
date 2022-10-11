@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ NodeRotation.sol functions """
 
+import logging
 import functools
 from dataclasses import dataclass
 
@@ -26,12 +27,15 @@ from skale.transactions.result import TxRes
 from web3.exceptions import ContractLogicError
 
 
+logger = logging.getLogger(__name__)
+
+
 NO_PREVIOUS_NODE_EXCEPTION_TEXT = 'No previous node'
 
 
 @dataclass
 class Rotation:
-    node_id: int
+    leaving_node_id: int
     new_node_id: int
     freeze_until: int
     rotation_counter: int
@@ -45,7 +49,7 @@ class NodeRotation(BaseContract):
     def schains(self):
         return self.skale.schains
 
-    def get_rotation_obj(self, schain_name):
+    def get_rotation_obj(self, schain_name) -> Rotation:
         schain_id = self.schains.name_to_id(schain_name)
         rotation_data = self.contract.functions.getRotation(schain_id).call()
         return Rotation(*rotation_data)
@@ -75,12 +79,46 @@ class NodeRotation(BaseContract):
     def get_schain_finish_ts(self, node_id: int, schain_name: str) -> int:
         raw_history = self.contract.functions.getLeavingHistory(node_id).call()
         schain_id = self.skale.schains.name_to_id(schain_name)
-        return next(
+        finish_ts = next(
             (schain[1] for schain in raw_history if '0x' + schain[0].hex() == schain_id), None)
+        if not finish_ts:
+            return None
+        exception = self.skale.schains_internal.check_exception(schain_name, node_id)
+        if exception:
+            rotation_delay = self.skale.constants_holder.get_rotation_delay()
+            logger.info(f'Node {node_id} in exceptions array for {schain_name}, \
+adding {rotation_delay} to {finish_ts}.')
+            finish_ts += rotation_delay
+        return finish_ts
 
-    def is_rotation_in_progress(self, schain_name):
+    def is_rotation_in_progress(self, schain_name) -> bool:
         schain_id = self.schains.name_to_id(schain_name)
         return self.contract.functions.isRotationInProgress(schain_id).call()
+
+    def is_new_node_found(self, schain_name) -> bool:
+        schain_id = self.schains.name_to_id(schain_name)
+        return self.contract.functions.isNewNodeFound(schain_id).call()
+
+    def is_rotation_active(self, schain_name) -> bool:
+        """
+        The public function that tells whether rotation is in the active phase - the new group is
+        already generated
+        """
+        finish_ts_reached = self.is_finish_ts_reached(schain_name)
+        return self.is_rotation_in_progress(schain_name) and not finish_ts_reached
+
+    def is_finish_ts_reached(self, schain_name) -> bool:
+        rotation = self.skale.node_rotation.get_rotation_obj(schain_name)
+        schain_finish_ts = self.get_schain_finish_ts(rotation.leaving_node_id, schain_name)
+
+        if not schain_finish_ts:
+            schain_finish_ts = 0
+
+        latest_block = self.skale.web3.eth.getBlock('latest')
+        current_ts = latest_block['timestamp']
+
+        logger.info(f'current_ts: {current_ts}, schain_finish_ts: {schain_finish_ts}')
+        return current_ts > schain_finish_ts
 
     def wait_for_new_node(self, schain_name):
         schain_id = self.schains.name_to_id(schain_name)

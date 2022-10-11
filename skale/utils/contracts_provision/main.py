@@ -125,6 +125,14 @@ def add_test4_schain_type(skale) -> TxRes:
 
 
 def cleanup_nodes_schains(skale):
+    try:
+        _cleanup_nodes_schains(skale)
+    except Exception as e:
+        print(f'Cleanup failed: {e}')
+        _cleanup_nodes_schains(skale)
+
+
+def _cleanup_nodes_schains(skale):
     print('Cleanup nodes and schains')
     for schain_id in skale.schains_internal.get_all_schains_ids():
         schain_data = skale.schains.get(schain_id)
@@ -141,6 +149,20 @@ def create_clean_schain(skale):
     create_nodes(skale)
     add_test2_schain_type(skale)
     return create_schain(skale, random_name=True)
+
+
+def create_node(skale) -> str:
+    cleanup_nodes_schains(skale)
+    ip, public_ip, port, name = generate_random_node_data()
+    skale.manager.create_node(
+        ip=ip,
+        port=port,
+        name=name,
+        domain_name=DEFAULT_DOMAIN_NAME,
+        public_ip=public_ip,
+        wait_for=True
+    )
+    return name
 
 
 def validator_exist(skale):
