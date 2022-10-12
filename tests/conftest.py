@@ -6,7 +6,7 @@ from web3.auto import w3
 
 from skale import SkaleManager
 
-from skale.utils.web3_utils import init_web3
+from skale.utils.account_tools import generate_account, send_eth
 from skale.utils.contracts_provision.main import (
     add_test_permissions,
     add_test2_schain_type,
@@ -17,10 +17,10 @@ from skale.utils.contracts_provision.main import (
     link_nodes_to_validator,
     setup_validator
 )
-from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.fake_multisig_contract import (
     deploy_fake_multisig_contract
 )
+from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
@@ -28,6 +28,7 @@ from tests.helper import init_skale, init_skale_allocator
 
 
 NUMBER_OF_NODES = 2
+ETH_AMOUNT_PER_NODE = 1
 
 
 @pytest.fixture(scope='session')
@@ -61,6 +62,12 @@ def node_wallets(skale):
         acc = generate_account(skale.web3)
         pk = acc['private_key']
         wallet = Web3Wallet(pk, skale.web3)
+        send_eth(
+            web3=skale.web3,
+            wallet=skale.wallet,
+            receiver_address=wallet.address,
+            amount=ETH_AMOUNT_PER_NODE
+        )
         wallets.append(wallet)
     return wallets
 
@@ -76,7 +83,7 @@ def node_skales(skale, node_wallets):
 @pytest.fixture
 def nodes(skale, node_skales, validator):
     link_nodes_to_validator(skale, validator, node_skales)
-    ids = create_nodes(skale)
+    ids = create_nodes(node_skales)
     try:
         yield ids
     finally:

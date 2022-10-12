@@ -177,7 +177,14 @@ def test_value_option(skale, nodes):
                              skale.wallet.address)
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     value_wei = 1000
-    skale.schains.add_schain_by_foundation(
-        lifetime_seconds, type_of_nodes, 0, name, wait_for=True, value=value_wei
-    )
-    skale.manager.delete_schain(name, wait_for=True)
+    try:
+        skale.schains.add_schain_by_foundation(
+            lifetime_seconds,
+            type_of_nodes,
+            0,
+            name,
+            wait_for=True,
+            value=value_wei
+        )
+    finally:
+        skale.manager.delete_schain(name, wait_for=True)

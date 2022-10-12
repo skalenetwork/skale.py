@@ -27,7 +27,7 @@ def public_key_from_private(key):
     return keys.PrivateKey(pr_bytes)
 
 
-def test_get(skale, nodes):
+def test_get(skale, nodes, node_wallets):
     node = skale.nodes.get_by_name(DEFAULT_NODE_NAME)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     node_by_id = skale.nodes.get(node_id)
@@ -37,7 +37,7 @@ def test_get(skale, nodes):
     socket.inet_ntoa(node_by_id['ip'])
     socket.inet_ntoa(node_by_id['publicIP'])
 
-    assert node_by_id['publicKey'] == skale.wallet.public_key
+    assert node_by_id['publicKey'] == node_wallets[0].public_key
 
     assert node_by_id['publicKey'] != b''
     assert node_by_id['start_block'] > 0
@@ -113,10 +113,10 @@ def test_node_name_to_index(skale, nodes):
     assert node_by_id_data == node_by_name_data
 
 
-def test_get_node_public_key(skale, nodes):
+def test_get_node_public_key(skale, nodes, node_wallets):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     node_public_key = skale.nodes.get_node_public_key(node_id)
-    assert node_public_key == skale.wallet.public_key
+    assert node_public_key == node_wallets[0].public_key
 
     with pytest.raises(InvalidNodeIdError):
         skale.nodes.get_node_public_key(NOT_EXISTING_ID)
