@@ -9,6 +9,7 @@ extras_require = {
     'linter': [
         "flake8==3.8.3",
         "isort>=4.2.15,<5.4.3",
+        "importlib-metadata<5.0"
     ],
     'dev': [
         "bumpversion==0.6.0",
@@ -32,7 +33,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='5.7',
+    version='5.8',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -43,7 +44,7 @@ setup(
         "web3==5.25.0",
         "asyncio==3.4.3",
         "pyyaml==5.4",
-        "sgx.py==0.8dev3",
+        "sgx.py==0.8dev4",
         "eth-account==0.5.6",
         "redis==3.5.3"
     ],
