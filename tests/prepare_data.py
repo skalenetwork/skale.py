@@ -8,7 +8,7 @@ from skale.utils.web3_utils import init_web3
 from skale.utils.helper import init_default_logger
 from skale.utils.contracts_provision import MONTH_IN_SECONDS
 from skale.utils.contracts_provision.main import (
-    add_test_schain_type, cleanup_nodes_schains, setup_validator,
+    add_test2_schain_type, cleanup_nodes_schains, setup_validator,
     create_nodes, create_schain, _skip_evm_time, add_test_permissions
 )
 from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
@@ -34,7 +34,8 @@ def prepare_data(cleanup_only):
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
     skale = SkaleManager(ENDPOINT, TEST_ABI_FILEPATH, wallet)
     add_test_permissions(skale)
-    add_test_schain_type(skale)
+    add_test2_schain_type(skale)
+    # add_test4_schain_type(skale)
     cleanup_nodes_schains(skale)
     if not cleanup_only:
         try:

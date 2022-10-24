@@ -93,3 +93,7 @@ class SChainsInternal(BaseContract):
     @transaction_method
     def new_generation(self) -> TxRes:
         return self.contract.functions.newGeneration()
+
+    def check_exception(self, schain_name: str, node_id: int) -> bool:
+        id_ = self.schains.name_to_id(schain_name)
+        return self.contract.functions.checkException(id_, node_id).call()

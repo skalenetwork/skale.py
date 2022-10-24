@@ -99,13 +99,16 @@ class RedisWalletAdapter(BaseWallet):
         multiplier: int = config.DEFAULT_GAS_MULTIPLIER
     ) -> Tuple[bytes, bytes]:
         tx_id = cls._make_raw_id()
-        record = json.dumps({
+        params = {
             'status': 'PROPOSED',
             'score': score,
             'multiplier': multiplier,
             'tx_hash': None,
             **tx
-        }).encode('utf-8')
+        }
+        # Ensure gas will be restimated in TM
+        params['gas'] = None
+        record = json.dumps(params).encode('utf-8')
         return tx_id, record
 
     @classmethod
@@ -135,6 +138,7 @@ class RedisWalletAdapter(BaseWallet):
             pipe.zadd(self.pool, {raw_id: score})
             logger.info(f'Saving tx {raw_id} record: {tx_record}')
             pipe.set(raw_id, tx_record)
+            pipe.expire(raw_id, tx_record)
             pipe.execute()
             return self._to_id(raw_id)
         except Exception as err:

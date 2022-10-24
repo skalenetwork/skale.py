@@ -2,7 +2,7 @@
 import pytest
 
 from skale.wallets.web3_wallet import generate_wallet
-from skale.utils.account_tools import send_ether
+from skale.utils.account_tools import send_eth
 
 from skale.utils.contracts_provision import D_PLAN_ID
 from skale.utils.contracts_provision.allocator import add_test_plan, connect_test_beneficiary
@@ -43,7 +43,7 @@ def test_start_vesting(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
 
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
-    send_ether(skale_allocator.web3, main_wallet, wallet.address, 0.1)
+    send_eth(skale_allocator.web3, main_wallet, wallet.address, 0.1)
 
     assert skale_allocator.allocator.is_delegation_allowed(wallet.address)
 
@@ -58,7 +58,7 @@ def test_stop_vesting(skale_allocator):
     wallet = generate_wallet(skale_allocator.web3)
 
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
-    send_ether(skale_allocator.web3, main_wallet, wallet.address, 0.1)
+    send_eth(skale_allocator.web3, main_wallet, wallet.address, 0.1)
 
     assert skale_allocator.allocator.is_delegation_allowed(wallet.address)
 
