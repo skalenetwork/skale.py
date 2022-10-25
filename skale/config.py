@@ -28,3 +28,4 @@ LAST_BLOCK_FILE = os.getenv('LAST_BLOCK_FILE')
 DEFAULT_GAS_MULTIPLIER = float(os.getenv('DEFAULT_GAS_MULTIPLIER') or 1.2)
 DEFAULT_PRIORITY = int(os.getenv('DEFAULT_PRIORITY') or 5)
 NO_SYNC_TS_DIFF = int(os.getenv('NO_SYNC_TS_DIFF') or -1)
+TXRECORD_EXPIRATION = int(os.getenv('TXRECORD_EXPIRATION') or 24 * 60 * 60)  # 1 day
