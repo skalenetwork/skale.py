@@ -45,7 +45,7 @@ setup(
         "asyncio==3.4.3",
         "pyyaml==6.0",
         "sgx.py==0.8dev7",
-        "redis==4.3.4"
+        "redis==4.4.0"
     ],
 
     python_requires='>=3.7,<4',
