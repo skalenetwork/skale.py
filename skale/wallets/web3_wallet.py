@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Dict
+from typing import Dict, Optional
 from eth_keys import keys
 from web3 import Web3
 from eth_account import messages
@@ -81,7 +81,9 @@ class Web3Wallet(BaseWallet):
         self,
         tx_dict: Dict,
         multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
-        priority: int = config.DEFAULT_PRIORITY
+        priority: int = config.DEFAULT_PRIORITY,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx_dict)
         return self._web3.eth.sendRawTransaction(

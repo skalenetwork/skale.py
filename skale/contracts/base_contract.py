@@ -20,6 +20,7 @@
 
 import logging
 from functools import wraps
+from typing import Dict, Optional
 
 from web3 import Web3
 
@@ -71,6 +72,7 @@ def transaction_method(transaction):
         multiplier=None,
         priority=None,
         confirmation_blocks=0,
+        meta: Optional[Dict] = None,
         **kwargs
     ):
         method = transaction(self, *args, **kwargs)
@@ -107,7 +109,9 @@ def transaction_method(transaction):
             tx_hash = self.skale.wallet.sign_and_send(
                 tx,
                 multiplier=multiplier,
-                priority=priority
+                priority=priority,
+                method=str(method),
+                meta=meta
             )
             if wait_for:
                 receipt = self.skale.wallet.wait(tx_hash)

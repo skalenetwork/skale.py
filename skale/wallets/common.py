@@ -40,7 +40,8 @@ class BaseWallet(ABC):
         self,
         tx_dict: Dict,
         multiplier: Optional[int] = None,
-        priority: Optional[int] = None
+        priority: Optional[int] = None,
+        method: Optional[str] = None
     ) -> str:
         pass
 
