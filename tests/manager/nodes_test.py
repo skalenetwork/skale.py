@@ -13,6 +13,7 @@ import skale.utils.helper as Helper
 from skale.contracts.manager.nodes import FIELDS, NodeStatus
 from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
+from skale.utils.contracts_provision.utils import generate_random_ip
 
 from tests.constants import DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
@@ -161,3 +162,20 @@ def test_get_node_next_reward_date(skale, nodes):
     next_reward_date = datetime.utcfromtimestamp(next_reward_date_ts)
     present = datetime.now()
     assert next_reward_date > present
+
+
+def test_change_ip(skale, nodes):
+    node_id, _ = nodes
+    old_ip = skale.nodes.get(node_id)['ip']
+
+    new_ip = Helper.ip_to_bytes(generate_random_ip())
+
+    skale.nodes.change_ip(node_id, new_ip, new_ip)
+    data = skale.nodes.get(node_id)
+    assert data['ip'] == new_ip
+    assert data['publicIP'] == new_ip
+
+    skale.nodes.change_ip(node_id, old_ip, old_ip)
+    data = skale.nodes.get(node_id)
+    assert data['ip'] == old_ip
+    assert data['publicIP'] == old_ip
