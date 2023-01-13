@@ -110,7 +110,7 @@ def transaction_method(transaction):
                 tx,
                 multiplier=multiplier,
                 priority=priority,
-                method=str(method),
+                method=method.abi.get('name'),
                 meta=meta
             )
             if wait_for:
