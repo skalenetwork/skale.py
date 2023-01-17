@@ -106,11 +106,12 @@ def transaction_method(transaction):
                 nonce=nonce,
                 value=value
             )
+            method_name = f'{self.name}.{method.abi.get("name")}'
             tx_hash = self.skale.wallet.sign_and_send(
                 tx,
                 multiplier=multiplier,
                 priority=priority,
-                method=method.abi.get('name'),
+                method=method_name,
                 meta=meta
             )
             if wait_for:
