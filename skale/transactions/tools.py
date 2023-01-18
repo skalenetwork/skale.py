@@ -20,18 +20,17 @@
 import logging
 import time
 from functools import partial, wraps
+from typing import Dict, Optional
+
+from web3 import Web3
+from web3._utils.transactions import get_block_gas_limit
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionError
 from skale.transactions.result import TxRes
+from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.redis_wallet import RedisAdapterError
-from skale.utils.web3_utils import (
-    check_receipt,
-    get_eth_nonce,
-    wait_for_confirmation_blocks
-)
 
-from web3._utils.transactions import get_block_gas_limit
 
 logger = logging.getLogger(__name__)
 
@@ -86,103 +85,70 @@ block gas limit, going to use block_gas_limit ({block_gas_limit}) for this trans
     return normalized_estimated_gas
 
 
-def build_tx_dict(method, gas_limit, gas_price=None, nonce=None, value=0):
-    tx_dict_fields = {
+def build_tx_dict(method, *args, **kwargs):
+    base_fields = compose_base_fields(*args, **kwargs)
+    return method.buildTransaction(base_fields)
+
+
+def compose_base_fields(
+    nonce: int,
+    gas_limit: int,
+    gas_price: Optional[int] = None,
+    max_fee_per_gas: Optional[int] = None,
+    max_priority_fee_per_gas: Optional[int] = None,
+    value: Optional[int] = 0,
+) -> Dict:
+    fee_fields = {
         'gas': gas_limit,
         'nonce': nonce,
         'value': value
     }
-    if gas_price is not None:
-        tx_dict_fields.update({'gasPrice': gas_price})
+    if max_priority_fee_per_gas is not None:
+        fee_fields.update({
+            'maxPriorityFeePerGas': max_priority_fee_per_gas,
+            'maxFeePerGas': max_fee_per_gas
+        })
+        fee_fields.update({'type': 2})
+    elif gas_price is not None:
+        fee_fields.update({'gasPrice': gas_price})
+        fee_fields.update({'type': 1})
+    return fee_fields
 
-    return method.buildTransaction(tx_dict_fields)
 
-
-def sign_and_send(web3, method, gas_amount, wallet) -> hash:
-    nonce = get_eth_nonce(web3, wallet.address)
-    tx_dict = build_tx_dict(method, gas_amount, nonce)
-    signed_tx = wallet.sign(tx_dict)
-    return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-
-
-def post_transaction(
-    wallet,
+def transaction_from_method(
     method,
-    gas_limit,
-    gas_price=None,
-    nonce=None,
-    value=0,
-    multiplier: int = None,
-    priority: int = None
+    *,
+    multiplier: Optional[float] = None,
+    priority: Optional[int] = None,
+    **kwargs
 ) -> str:
+    tx = build_tx_dict(method, **kwargs)
     logger.info(
         f'Tx: {method.fn_name}, '
-        f'sender: {wallet.address}, '
-        f'wallet: {wallet.__class__.__name__}, '
-        f'gasLimit: {gas_limit}, '
-        f'gasPrice: {gas_price}, '
-        f'value: {value}'
+        f'Fields: {tx}, '
     )
-    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce, value)
-    tx_hash = wallet.sign_and_send(
-        tx_dict,
-        multiplier=multiplier,
-        priority=priority
-    )
-    return tx_hash
-
-
-def send_eth_with_skale(
-    skale, address: str, amount_wei: int, *,
-    gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
-    gas_price: int = None,
-    nonce: int = None, wait_for=True,
-    confirmation_blocks=0
-):
-    gas_limit = gas_limit or DEFAULT_ETH_SEND_GAS_LIMIT
-    gas_price = gas_price or skale.web3.eth.gasPrice
-    tx = {
-        'to': address,
-        'value': amount_wei,
-        'gasPrice': gas_price,
-        'gas': gas_limit,
-        'nonce': nonce
-    }
-    logger.info(f'Sending {amount_wei} WEI to {address}')
-    tx = skale.wallet.sign_and_send(tx)
-    logger.info(f'Waiting for receipt for {tx}')
-    if wait_for:
-        receipt = skale.wallet.wait(tx)
-        check_receipt(receipt)
-        return receipt
-
-    if confirmation_blocks:
-        wait_for_confirmation_blocks(
-            skale.web3,
-            confirmation_blocks
-        )
     return tx
 
 
-def send_eth(web3, account, amount, wallet, gas_price=None):
-    eth_nonce = get_eth_nonce(web3, wallet.address)
-    logger.info(f'Transaction nonce {eth_nonce}')
-    gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or web3.eth.gasPrice
-    txn = {
-        'to': account,
-        'value': amount,
-        'gasPrice': gas_price,
-        'gas': 22000,
-        'nonce': eth_nonce
-    }
-
-    signed_txn = wallet.sign(txn)
-
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-    logger.info(
-        f'ETH transfer {wallet.address} => {account}, {amount} wei,'
-        f'tx: {web3.toHex(tx)}'
+def compose_eth_transfer_tx(
+    web3: Web3,
+    from_address: str,
+    to_address: str,
+    value: int,
+    **kwargs
+) -> Dict:
+    nonce = get_eth_nonce(web3, from_address)
+    base_fields = compose_base_fields(
+        nonce=nonce,
+        gas_limit=DEFAULT_ETH_SEND_GAS_LIMIT,
+        value=value,
+        **kwargs
     )
+    tx = {
+        'from': from_address,
+        'to': to_address,
+        **base_fields
+    }
     return tx
 
 
