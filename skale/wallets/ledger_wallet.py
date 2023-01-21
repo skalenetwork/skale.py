@@ -19,7 +19,7 @@
 
 import logging
 import struct
-from typing import Dict
+from typing import Dict, Optional
 
 from hexbytes import HexBytes
 from eth_account.datastructures import SignedTransaction
@@ -170,7 +170,9 @@ class LedgerWallet(BaseWallet):
         self,
         tx: Dict,
         multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
-        priority: int = config.DEFAULT_PRIORITY
+        priority: int = config.DEFAULT_PRIORITY,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx)
         return self._web3.eth.sendRawTransaction(

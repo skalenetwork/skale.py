@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from sgx import SgxClient
 from web3 import Web3
@@ -51,7 +51,9 @@ class SgxWallet(BaseWallet):
         self,
         tx_dict: Dict,
         multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
-        priority: int = config.DEFAULT_PRIORITY
+        priority: int = config.DEFAULT_PRIORITY,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx_dict)
         return self._web3.eth.sendRawTransaction(
