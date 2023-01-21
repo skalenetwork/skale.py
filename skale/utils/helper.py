@@ -21,12 +21,12 @@
 import ipaddress
 import json
 import logging
-import random
 import socket
 import string
 import sys
+
 from logging import Formatter, StreamHandler
-from random import randint
+from secrets import randbelow, choice
 
 from skale.config import ENV
 
@@ -100,24 +100,24 @@ def get_abi(abi_filepath=None):
 
 
 def generate_nonce():  # pragma: no cover
-    return randint(0, 65534)
+    return randbelow(65534)
 
 
 def random_string(size=6, chars=string.ascii_lowercase):  # pragma: no cover
-    return ''.join(random.choice(chars) for x in range(size))
+    return ''.join(choice(chars) for _ in range(size))
 
 
 def generate_random_ip():  # pragma: no cover
-    return '.'.join('%s' % random.randint(0, 255) for i in range(4))
+    return '.'.join('%s' % randbelow(255) for _ in range(4))
 
 
 def generate_random_name(len=8):  # pragma: no cover
     return ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=len))
+        choice(string.ascii_uppercase + string.digits) for _ in range(len))
 
 
 def generate_random_port():  # pragma: no cover
-    return random.randint(0, 60000)
+    return randbelow(60000)
 
 
 def generate_custom_config(ip, ws_port):

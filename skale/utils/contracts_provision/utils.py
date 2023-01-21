@@ -17,22 +17,22 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import random
+from secrets import randbelow, choice
 import string
 
 
 def generate_random_ip():
-    return '.'.join('%s' % random.randint(0, 255) for i in range(4))
+    return '.'.join('%s' % randbelow(255) for _ in range(4))
 
 
 def generate_random_name(len=8):
     return ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=len)
+        choice(string.ascii_uppercase + string.digits) for _ in range(len)
     )
 
 
 def generate_random_port():
-    return random.randint(0, 60000)
+    return randbelow(60000)
 
 
 def generate_random_node_data():
