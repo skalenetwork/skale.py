@@ -142,4 +142,7 @@ adding {rotation_delay} to {finish_ts}.')
         except ContractLogicError as e:
             if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
                 return None
-            raise e
+            # raise e
+            return None
+        except:
+            return None
