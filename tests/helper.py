@@ -3,7 +3,7 @@
 from contextlib import contextmanager
 from timeit import default_timer as timer
 
-from mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock
 from web3 import Web3
 
 from skale import SkaleManager, SkaleAllocator
