@@ -1,6 +1,6 @@
 """ SKALE node rotation test """
 
-import mock
+from unittest import mock
 import pytest
 
 from skale.contracts.manager.node_rotation import Rotation

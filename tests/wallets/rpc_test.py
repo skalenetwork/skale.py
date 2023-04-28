@@ -4,7 +4,7 @@
 from http import HTTPStatus
 
 import pytest
-import mock
+from unittest import mock
 
 from hexbytes import HexBytes
 from skale.wallets import RPCWallet

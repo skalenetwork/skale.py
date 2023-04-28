@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 import web3
 import pytest
 from skale.wallets import Web3Wallet
