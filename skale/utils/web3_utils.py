@@ -34,6 +34,8 @@ from web3.middleware import (
 )
 
 import skale.config as config
+from skale.transactions.exceptions import TransactionFailedError
+from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.helper import is_test_env
 from skale.transactions.exceptions import TransactionNotMinedError
 
@@ -99,7 +101,7 @@ def make_client_checking_middleware(allowed_ts_diff: int,
             if method in ('eth_blockNumber', 'eth_getBlockByNumber'):
                 response = make_request(method, params)
             else:
-                latest_block = web3.eth.getBlock('latest')
+                latest_block = web3.eth.get_block('latest')
                 current_time = time.time()
 
                 ts_diff = current_time - latest_block['timestamp']
@@ -138,12 +140,18 @@ def init_web3(endpoint: str,
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
-        sync_middleware = make_client_checking_middleware(ts_diff, state_path)
-        middewares = (
-            http_retry_request_middleware,
-            sync_middleware,
-            attrdict_middleware
-        )
+        if not ts_diff == config.NO_SYNC_TS_DIFF:
+            sync_middleware = make_client_checking_middleware(ts_diff, state_path)
+            middewares = (
+                http_retry_request_middleware,
+                sync_middleware,
+                attrdict_middleware
+            )
+        else:
+            middewares = (
+                http_retry_request_middleware,
+                attrdict_middleware
+            )
 
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
@@ -155,11 +163,11 @@ def init_web3(endpoint: str,
 
 
 def get_receipt(web3, tx):
-    return web3.eth.getTransactionReceipt(tx)
+    return web3.eth.get_transaction_receipt(tx)
 
 
 def get_eth_nonce(web3, address):
-    return web3.eth.getTransactionCount(address)
+    return web3.eth.get_transaction_count(address)
 
 
 def wait_for_receipt_by_blocks(
@@ -205,7 +213,9 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
 def check_receipt(receipt, raise_error=True):
     if receipt['status'] != 1:  # pragma: no cover
         if raise_error:
-            raise ValueError("Transaction failed, see receipt", receipt)
+            raise TransactionFailedError(
+                f'Transaction failed, see receipt {receipt}'
+            )
         else:
             return False
     return True
@@ -254,3 +264,7 @@ def wallet_to_public_key(wallet):
         return private_key_to_public(wallet['private_key'])
     else:
         return wallet['public_key']
+
+
+def default_gas_price(web3: Web3) -> int:
+    return web3.eth.gas_price * GAS_PRICE_COEFFICIENT

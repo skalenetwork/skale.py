@@ -167,3 +167,7 @@ class Nodes(BaseContract):
     @transaction_method
     def init_exit(self, node_id: int) -> TxRes:
         return self.contract.functions.initExit(node_id)
+
+    @transaction_method
+    def change_ip(self, node_id: int, ip: bytes, public_ip: bytes) -> TxRes:
+        return self.contract.functions.changeIP(node_id, ip, public_ip)

@@ -11,7 +11,7 @@ jobs:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      MANAGER_TAG: "1.9.0-develop.8"
+      MANAGER_TAG: "1.9.3-beta.0"
     steps:
     - uses: actions/checkout@v2
       with:
@@ -42,8 +42,8 @@ jobs:
         python-version: [3.7]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      MANAGER_TAG: "1.8.2-develop.44"
-      ALLOCATOR_TAG: "2.2.0-develop.4"
+      MANAGER_TAG: "1.9.0-develop.20"
+      ALLOCATOR_TAG: "2.2.2-develop.0"
     steps:
     - uses: actions/checkout@v2
       with:
@@ -58,7 +58,7 @@ jobs:
       run: bash ./scripts/install_python_dependencies.sh
     - name: Deploy allocator contracts
       run: |
-        bash ./helper-scripts/deploy_test_allocator.sh
+        bash ./helper-scripts/deploy_test_allocator.sh 
     - name: Run tests
       run: |
         bash ./scripts/run_allocator_tests.sh

@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, Optional
 
 from skale.utils.exceptions import ChainIdError
 
@@ -39,8 +39,9 @@ class BaseWallet(ABC):
     def sign_and_send(
         self,
         tx_dict: Dict,
-        multiplier: int = None,
-        priority: int = None
+        multiplier: Optional[int] = None,
+        priority: Optional[int] = None,
+        method: Optional[str] = None
     ) -> str:
         pass
 

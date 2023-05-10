@@ -186,6 +186,19 @@ class DelegationController(BaseContract):
         """
         return self.contract.functions.getAndUpdateDelegatedToValidatorNow(validator_id).call()
 
+    def get_delegated_to_validator(self, validator_id: int, month: int) -> int:
+        """Amount of delegated tokens to the validator unil month
+
+        :param validator_id: ID of the validator
+        :type validator_id: int
+        :param month: last requested month
+        :type month: int
+        :returns: Amount of delegated tokens
+        :rtype: int
+        """
+
+        return self.contract.functions.getDelegatedToValidator(validator_id, month).call()
+
     def get_delegated_amount(self, address: str) -> int:
         """Amount of delegated tokens by token holder
 

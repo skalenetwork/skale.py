@@ -1,7 +1,7 @@
 """ Tests for skale/allocator/escrow.py """
 
 from skale.wallets.web3_wallet import generate_wallet
-from skale.utils.account_tools import send_ether, check_skale_balance
+from skale.utils.account_tools import send_eth, check_skale_balance
 
 from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision import MONTH_IN_SECONDS, D_PLAN_ID
@@ -14,7 +14,7 @@ from tests.constants import (D_DELEGATION_INFO, D_VALIDATOR_ID,
 
 def _delegate_via_escrow(skale_allocator, wallet):
     main_wallet = skale_allocator.wallet
-    send_ether(skale_allocator.web3, main_wallet, wallet.address, 0.5)
+    send_eth(skale_allocator.web3, main_wallet, wallet.address, 0.5)
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
 
     skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)
@@ -34,7 +34,7 @@ def _delegate_via_escrow(skale_allocator, wallet):
 def test_delegate(skale, skale_allocator):
     main_wallet = skale_allocator.wallet
     wallet = generate_wallet(skale_allocator.web3)
-    send_ether(skale_allocator.web3, main_wallet, wallet.address, 0.1)
+    send_eth(skale_allocator.web3, main_wallet, wallet.address, 0.1)
 
     connect_test_beneficiary(skale_allocator, D_PLAN_ID, wallet)
     skale_allocator.allocator.start_vesting(wallet.address, wait_for=True)

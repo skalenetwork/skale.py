@@ -96,7 +96,9 @@ class RedisWalletAdapter(BaseWallet):
         cls,
         tx: Dict,
         score: int,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
     ) -> Tuple[bytes, bytes]:
         tx_id = cls._make_raw_id()
         params = {
@@ -104,6 +106,8 @@ class RedisWalletAdapter(BaseWallet):
             'score': score,
             'multiplier': multiplier,
             'tx_hash': None,
+            'method': method,
+            'meta': meta,
             **tx
         }
         # Ensure gas will be restimated in TM
@@ -122,22 +126,26 @@ class RedisWalletAdapter(BaseWallet):
         self,
         tx: Dict,
         multiplier: Optional[float] = None,
-        priority: Optional[int] = None
+        priority: Optional[int] = None,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
     ) -> str:
         priority = priority or config.DEFAULT_PRIORITY
         try:
-            logger.info(f'Sending {tx} to redis pool ...')
+            logger.info('Sending %s to redis pool, method: %s', tx, method)
             score = self._make_score(priority)
             raw_id, tx_record = self._make_record(
                 tx,
                 score,
-                multiplier=multiplier
+                multiplier=multiplier,
+                method=method,
+                meta=meta
             )
             pipe = self.rs.pipeline()
-            logger.info(f'Adding tx {raw_id} to the pool')
+            logger.info('Adding tx %s to the pool', raw_id)
             pipe.zadd(self.pool, {raw_id: score})
-            logger.info(f'Saving tx {raw_id} record: {tx_record}')
-            pipe.set(raw_id, tx_record)
+            logger.info('Saving tx %s record: %s', raw_id, tx_record)
+            pipe.set(raw_id, tx_record, ex=config.TXRECORD_EXPIRATION)
             pipe.execute()
             return self._to_id(raw_id)
         except Exception as err:
