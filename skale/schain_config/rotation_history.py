@@ -125,6 +125,9 @@ def _add_previous_schain_rotations_state(
         previous_node_id = previous_nodes[latest_exited_node_id]['previous_node_id']
         public_key = skale.nodes.get_node_public_key(previous_node_id)
 
+        previous_finish_ts = skale.node_rotation.get_schain_finish_ts(previous_node_id, schain_name)
+        is_dkg_successful = previous_finish_ts + 1 != previous_nodes[latest_exited_node_id]['finish_ts']
+
         nodes[previous_node_id] = RotationNodeData(
             nodes[latest_exited_node_id].index,
             previous_node_id,
@@ -132,12 +135,7 @@ def _add_previous_schain_rotations_state(
         )
         del nodes[latest_exited_node_id]
 
-        is_node_in_exceptions = skale.schains_internal.check_exception(
-            schain_name,
-            previous_node_id
-        )
-
-        if not is_node_in_exceptions and previous_public_keys:
+        if is_dkg_successful and previous_public_keys:
             bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
             node_finish_ts = previous_nodes[latest_exited_node_id]['finish_ts']
         else:
