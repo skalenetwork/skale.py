@@ -123,44 +123,43 @@ def _add_previous_schain_rotations_state(
                         'previous_node_id': previous_node
                     }
 
-        latest_exited_node_id = max(previous_nodes.items(), key=lambda x: x[1]['finish_ts'])[0]
-        previous_node_id = previous_nodes[latest_exited_node_id]['previous_node_id']
+        new_node_id = max(previous_nodes.items(), key=lambda x: x[1]['finish_ts'])[0]
+        previous_node_id = previous_nodes[new_node_id]['previous_node_id']
         public_key = skale.nodes.get_node_public_key(previous_node_id)
 
-        next_finish_ts = node_to_finish_ts[latest_exited_node_id]
-        current_finish_ts = previous_nodes[latest_exited_node_id]['finish_ts']
-        is_next_dkg_failed = latest_exited_node_id in node_to_finish_ts and \
-            current_finish_ts + 1 != next_finish_ts
+        current_finish_ts = previous_nodes[new_node_id]['finish_ts']
+        is_next_dkg_failed = new_node_id in node_to_finish_ts and \
+            current_finish_ts + 1 != node_to_finish_ts[new_node_id]
 
         nodes[previous_node_id] = RotationNodeData(
-            nodes[latest_exited_node_id].index,
+            nodes[new_node_id].index,
             previous_node_id,
             public_key
         )
-        del nodes[latest_exited_node_id]
+        del nodes[new_node_id]
 
         if not is_next_dkg_failed and previous_public_keys:
             bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
-            node_finish_ts = previous_nodes[latest_exited_node_id]['finish_ts']
+            node_finish_ts = previous_nodes[new_node_id]['finish_ts']
         else:
             bls_public_key = node_groups[rotation_id + 1]['bls_public_key']
-            node_finish_ts = previous_nodes[latest_exited_node_id]['finish_ts']
+            node_finish_ts = previous_nodes[new_node_id]['finish_ts']
             node_groups[rotation_id + 1]['finish_ts'] = None
             node_groups[rotation_id + 1]['bls_public_key'] = None
 
-        logger.info(f'Adding rotation: {previous_node_id} -> {latest_exited_node_id}')
+        logger.info(f'Adding rotation: {previous_node_id} -> {new_node_id}')
 
         node_groups[rotation_id] = {
             'rotation': {
                 'leaving_node_id': previous_node_id,
-                'new_node_id': latest_exited_node_id
+                'new_node_id': new_node_id
             },
             'nodes': nodes,
             'finish_ts': node_finish_ts,
             'bls_public_key': bls_public_key
         }
 
-        del previous_nodes[latest_exited_node_id]
+        del previous_nodes[new_node_id]
 
         if leaving_node_id and previous_node_id == leaving_node_id:
             logger.info(f'Finishing rotation history parsing: {leaving_node_id} found')
