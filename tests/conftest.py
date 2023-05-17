@@ -107,8 +107,8 @@ def skale_allocator(web3):
     '''Returns a SKALE Allocator instance with provider from config'''
     sk_allocator = init_skale_allocator(web3)
     vesting_manager_role = sk_allocator.allocator.vesting_manager_role()
-    if not skale_allocator.allocator.has_role(vesting_manager_role, sk_allocator.wallet.address):
-        skale_allocator.allocator.grant_role(vesting_manager_role, sk_allocator.wallet.address)
+    if not sk_allocator.allocator.has_role(vesting_manager_role, sk_allocator.wallet.address):
+        sk_allocator.allocator.grant_role(vesting_manager_role, sk_allocator.wallet.address)
     return sk_allocator
 
 
