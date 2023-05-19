@@ -84,12 +84,6 @@ class NodeRotation(BaseContract):
             (schain[1] for schain in raw_history if '0x' + schain[0].hex() == schain_id), None)
         if not finish_ts:
             return None
-        exception = self.skale.schains_internal.check_exception(schain_name, node_id)
-        if exception:
-            rotation_delay = self.skale.constants_holder.get_rotation_delay()
-            logger.info(f'Node {node_id} in exceptions array for {schain_name}, \
-adding {rotation_delay} to {finish_ts}.')
-            finish_ts += rotation_delay
         return finish_ts
 
     def is_rotation_in_progress(self, schain_name) -> bool:
