@@ -2,11 +2,11 @@
 
 import random
 
-import mock
+from unittest import mock
 import pytest
 import web3
 from hexbytes import HexBytes
-from mock import Mock
+from unittest.mock import Mock
 
 from skale.wallets.web3_wallet import generate_wallet
 from skale.transactions.result import TransactionFailedError

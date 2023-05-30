@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 
 from skale.utils.web3_utils import init_web3
 from skale.wallets.ledger_wallet import LedgerWallet

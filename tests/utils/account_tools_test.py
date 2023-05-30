@@ -1,6 +1,6 @@
 """ SKALE account tools test """
 
-import mock
+from unittest import mock
 import pytest
 
 from skale.transactions.exceptions import TransactionNotMinedError

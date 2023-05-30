@@ -14,7 +14,7 @@ extras_require = {
     'dev': [
         "bumpversion==0.6.0",
         "click==7.1.2",
-        "freezegun==1.0.0",
+        "freezegun==1.2.2",
         "mock==4.0.2",
         "pytest==5.4.3",
         "pytest-cov==2.8.1",
@@ -23,7 +23,7 @@ extras_require = {
         "when-changed"
     ],
     'hw-wallet': [
-        "ledgerblue==0.1.31"
+        "ledgerblue==0.1.47"
     ]
 }
 

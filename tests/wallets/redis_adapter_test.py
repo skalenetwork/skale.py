@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import mock
+from unittest import mock
 import pytest
 from freezegun import freeze_time
 
