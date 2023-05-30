@@ -28,14 +28,14 @@ from skale.wallets.common import BaseWallet, ensure_chain_id
 
 
 def private_key_to_public(pr):
-    pr_bytes = Web3.toBytes(hexstr=pr)
+    pr_bytes = Web3.to_bytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
 def public_key_to_address(pk):
     hash = Web3.keccak(hexstr=str(pk))
-    return to_checksum_address(Web3.toHex(hash[-20:]))
+    return to_checksum_address(Web3.to_hex(hash[-20:]))
 
 
 def private_key_to_address(pr):
@@ -44,7 +44,7 @@ def private_key_to_address(pr):
 
 
 def to_checksum_address(address):
-    return Web3.toChecksumAddress(address)
+    return Web3.to_checksum_address(address)
 
 
 def generate_wallet(web3):
@@ -86,7 +86,7 @@ class Web3Wallet(BaseWallet):
         meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.sendRawTransaction(
+        return self._web3.eth.send_raw_transaction(
             signed_tx.rawTransaction
         ).hex()
 

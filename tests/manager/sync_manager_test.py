@@ -1,5 +1,5 @@
 import pytest
-from web3.exceptions import SolidityError
+from web3.exceptions import ContractLogicError
 
 START_IP = '0.0.0.1'
 END_IP = '255.255.255.254'
@@ -31,10 +31,10 @@ def test_add_get_remove_ip_range(skale, sync_manager_powers, ip_range):
 
 
 def test_add_bad_ip_range(skale, sync_manager_powers):
-    with pytest.raises(SolidityError):
+    with pytest.raises(ContractLogicError):
         skale.sync_manager.add_ip_range('brange', '0.0.0.0', '1.1.1.1')
 
-    with pytest.raises(SolidityError):
+    with pytest.raises(ContractLogicError):
         skale.sync_manager.add_ip_range('brange', '2.2.2.2', '1.1.1.1')
 
     with pytest.raises(OSError):
@@ -42,15 +42,15 @@ def test_add_bad_ip_range(skale, sync_manager_powers):
 
 
 def test_remove_range_bad_params(skale, sync_manager_powers):
-    with pytest.raises(SolidityError):
+    with pytest.raises(ContractLogicError):
         skale.sync_manager.remove_ip_range('phantom')
 
 
 def test_get_range_bad_params(skale, sync_manager_powers):
     num = skale.sync_manager.get_ip_ranges_number()
-    with pytest.raises(SolidityError):
+    with pytest.raises(ContractLogicError):
         r = skale.sync_manager.get_ip_range_by_index(num)
-    with pytest.raises(SolidityError):
+    with pytest.raises(ContractLogicError):
         r = skale.sync_manager.get_ip_range_by_index(0)
     r = skale.sync_manager.get_ip_range_by_name('phantom')
     assert r.start_ip == '0.0.0.0' and r.end_ip == '0.0.0.0'

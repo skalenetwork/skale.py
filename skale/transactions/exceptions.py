@@ -1,4 +1,4 @@
-from web3.exceptions import SolidityError
+from web3.exceptions import ContractLogicError
 
 
 class TransactionError(Exception):
@@ -25,5 +25,5 @@ class TransactionFailedError(TransactionError):
     pass
 
 
-class RevertError(TransactionError, SolidityError):
+class RevertError(TransactionError, ContractLogicError):
     pass

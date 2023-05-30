@@ -38,7 +38,7 @@ def test_get_bounty(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(skale.manager.contract.functions.getBounty, 'call',
                            new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.manager.get_bounty(node_id, wait_for=False, gas_limit=TEST_GAS_LIMIT)
             send_tx_mock.assert_called_with(HexBytes(exp))

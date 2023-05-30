@@ -126,7 +126,7 @@ class Nodes(BaseContract):
     def get_node_public_key(self, node_id):
         raw_key = self.__get_node_public_key_raw(node_id)
         key_bytes = raw_key[0] + raw_key[1]
-        return self.skale.web3.toHex(key_bytes)
+        return self.skale.web3.to_hex(key_bytes)
 
     def get_validator_node_indices(self, validator_id: int) -> list:
         """Returns list of node indices to the validator

@@ -133,7 +133,7 @@ class NodeRotation(BaseContract):
         schain_id = self.schains.name_to_id(schain_name)
         try:
             return self.contract.functions.getPreviousNode(schain_id, node_id).call()
-        except ContractLogicError as e:
+        except (ContractLogicError, ValueError) as e:
             if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
                 return None
             raise e

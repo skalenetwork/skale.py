@@ -41,11 +41,11 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "web3==5.31.1",
         "asyncio==3.4.3",
         "pyyaml==6.0",
-        "sgx.py==0.8dev7",
-        "redis==4.3.4"
+        # "sgx.py==0.8dev7",
+        "redis==4.3.4",
+        "web3==6.3.0"
     ],
 
     python_requires='>=3.7,<4',

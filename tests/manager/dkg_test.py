@@ -9,7 +9,7 @@ from skale.contracts.manager.dkg import G2Point, KeyShare
 def test_broadcast(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.dkg.address
-    chain_id = skale.web3.eth.chainId
+    chain_id = skale.web3.eth.chain_id
     gas_limit = 8000000
     expected_txn = {
         'value': 0, 'gasPrice': skale.web3.eth.gasPrice * 2, 'chainId': chain_id,
@@ -30,7 +30,7 @@ def test_broadcast(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(skale.dkg.contract.functions.broadcast, 'call',
                            new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.broadcast(group_index, node_index, verification_vector,
                                 secret_key_contribution,
@@ -42,7 +42,7 @@ def test_broadcast(skale):
 def test_response(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.dkg.address
-    chain_id = skale.web3.eth.chainId
+    chain_id = skale.web3.eth.chain_id
     gas_limit = 11000000
     expected_txn = {
         'value': 0, 'gasPrice': skale.web3.eth.gasPrice * 2, 'chainId': chain_id,
@@ -66,7 +66,7 @@ def test_response(skale):
 
     with mock.patch.object(skale.dkg.contract.functions.preResponse, 'call',
                            new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.pre_response(
                 group_index=group_index,
@@ -93,7 +93,7 @@ def test_response(skale):
 
     with mock.patch.object(skale.dkg.contract.functions.response, 'call',
                            new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.response(
                 group_index=group_index,
@@ -109,7 +109,7 @@ def test_response(skale):
 def test_alright(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.dkg.address
-    chain_id = skale.web3.eth.chainId
+    chain_id = skale.web3.eth.chain_id
     gas_limit = 10000000
     expected_txn = {
         'value': 0, 'gasPrice': skale.web3.eth.gasPrice * 2, 'chainId': chain_id,
@@ -128,7 +128,7 @@ def test_alright(skale):
 
     with mock.patch.object(skale.dkg.contract.functions.alright,
                            'call', new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.alright(group_index, from_node_index,
                               wait_for=False,
@@ -139,7 +139,7 @@ def test_alright(skale):
 def test_complaint(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.dkg.address
-    chain_id = skale.web3.eth.chainId
+    chain_id = skale.web3.eth.chain_id
     gas_limit = 8000000
     expected_txn = {
         'value': 0, 'gasPrice': skale.web3.eth.gasPrice * 2, 'chainId': chain_id,
@@ -158,7 +158,7 @@ def test_complaint(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(skale.dkg.contract.functions.complaint,
                            'call', new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.complaint(group_index, from_node_index, to_node_index,
                                 wait_for=False,
@@ -169,7 +169,7 @@ def test_complaint(skale):
 def test_complaint_bad_data(skale):
     nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
     contract_address = skale.dkg.address
-    chain_id = skale.web3.eth.chainId
+    chain_id = skale.web3.eth.chain_id
     gas_limit = 8000000
     expected_txn = {
         'value': 0, 'gasPrice': skale.web3.eth.gasPrice * 2, 'chainId': chain_id,
@@ -188,7 +188,7 @@ def test_complaint_bad_data(skale):
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(skale.dkg.contract.functions.complaintBadData,
                            'call', new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.complaint(group_index, from_node_index, to_node_index,
                                 wait_for=False,

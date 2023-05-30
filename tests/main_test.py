@@ -27,7 +27,7 @@ def test_lib_init():
         assert issubclass(type(lib_contract), BaseContract)
         assert lib_contract.address is not None
         assert int(lib_contract.address, 16) != 0
-        assert web3.eth.getCode(lib_contract.address)
+        assert web3.eth.get_code(lib_contract.address)
         assert skale.web3.provider._request_kwargs == {'timeout': 20}
 
     isinstance(skale.web3.provider, HTTPProvider)

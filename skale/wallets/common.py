@@ -25,7 +25,7 @@ from skale.utils.exceptions import ChainIdError
 
 def ensure_chain_id(tx_dict, web3):
     if not tx_dict.get('chainId'):
-        tx_dict['chainId'] = web3.eth.chainId
+        tx_dict['chainId'] = web3.eth.chain_id
     if not tx_dict.get('chainId'):
         raise ChainIdError('chainId must be in tx_dict (see EIP-155)')
 

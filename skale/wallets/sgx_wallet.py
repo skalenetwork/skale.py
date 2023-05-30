@@ -56,7 +56,7 @@ class SgxWallet(BaseWallet):
         meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.sendRawTransaction(
+        return self._web3.eth.send_raw_transaction(
             signed_tx.rawTransaction
         ).hex()
 
