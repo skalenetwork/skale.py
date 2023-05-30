@@ -195,7 +195,7 @@ class ValidatorService(BaseContract):
             name, description, fee_rate, min_delegation_amount)
 
     def get_link_node_signature(self, validator_id: int) -> str:
-        unsigned_hash = Web3.soliditySha3(['uint256'], [validator_id])
+        unsigned_hash = Web3.solidity_keccak(['uint256'], [validator_id])
         signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
         return signed_hash.signature.hex()
 

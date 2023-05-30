@@ -182,8 +182,6 @@ def test_rotation_history_failed_dkg(skale, four_node_schain):
 
     node_groups = get_previous_schain_groups(skale, name)
 
-    print('IVD NODE_GROUPS', node_groups)
-
     assert False
 
     assert len(node_groups) == 4

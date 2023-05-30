@@ -160,7 +160,7 @@ class LedgerWallet(BaseWallet):
         if config.ENV == 'dev':  # fix for big chainId in ganache
             tx_dict['chainId'] = None
         if tx_dict.get('nonce') is None:
-            tx_dict['nonce'] = self._web3.eth.getTransactionCount(self.address)
+            tx_dict['nonce'] = self._web3.eth.get_transaction_count(self.address)
         tx = tx_from_dict(tx_dict)
         payload = self.make_payload(tx)
         exchange_result = self.exchange_sign_payload_by_chunks(payload)

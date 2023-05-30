@@ -44,7 +44,7 @@ def test_sgx_sign(wallet):
 def test_sgx_sign_and_send_without_nonce(wallet):
     send_tx_mock = mock.Mock()
     wallet._web3.eth.send_raw_transaction = send_tx_mock
-    wallet._web3.eth.getTransactionCount = mock.Mock(return_value=0)
+    wallet._web3.eth.get_transaction_count = mock.Mock(return_value=0)
     tx_dict = {
         'to': '0x1057dc7277a31',
         'value': 9,

@@ -91,7 +91,7 @@ class Nodes(BaseContract):
 
     def name_to_id(self, name):
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
-        return keccak_hash.hexdigest()
+        return keccak_hash.digest()
 
     def is_node_name_available(self, name):
         node_id = self.name_to_id(name)
