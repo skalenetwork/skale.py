@@ -43,7 +43,7 @@ setup(
     install_requires=[
         "asyncio==3.4.3",
         "pyyaml==6.0",
-        # "git+git://github.com/skalenetwork/sgx.py.git@add-python-3.11-support#egg=sgx.py",
+        "sgx.py==0.8dev8",
         "redis==4.3.4",
         "web3==6.3.0"
     ],
