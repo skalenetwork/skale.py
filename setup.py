@@ -16,7 +16,7 @@ extras_require = {
         "click==7.1.2",
         "freezegun==1.2.2",
         "mock==4.0.2",
-        "pytest==5.4.3",
+        "pytest==7.1.3",
         "pytest-cov==2.8.1",
         "Random-Word==1.0.4",
         "twine==3.1.1",
@@ -44,7 +44,7 @@ setup(
         "asyncio==3.4.3",
         "pyyaml==6.0",
         "sgx.py==0.9dev0",
-        "redis==4.3.4",
+        "redis==4.4.4",
         "web3==6.3.0"
     ],
 
