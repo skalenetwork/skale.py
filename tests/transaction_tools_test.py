@@ -140,7 +140,7 @@ def test_estimate_gas(skale):
     assert isinstance(estimated_gas, int)
     assert estimated_gas != block_gas_limit
 
-    with mock.patch.object(method, 'estimated_gas', return_value=10000000000):
+    with mock.patch.object(method, 'estimate_gas', return_value=10000000000):
         estimated_gas = estimate_gas(skale.web3, method, opts)
 
     assert estimated_gas == block_gas_limit
@@ -176,5 +176,5 @@ def test_tx_fee_options(skale):
         account['address'],
         token_amount,
         max_fee_per_gas=max_fee,
-        max_priority_fee_per_gas=max_fee * 2
+        max_priority_fee_per_gas=int(max_fee / 2)
     )

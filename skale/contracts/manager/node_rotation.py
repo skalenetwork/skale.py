@@ -109,7 +109,7 @@ class NodeRotation(BaseContract):
         if not schain_finish_ts:
             schain_finish_ts = 0
 
-        latest_block = self.skale.web3.eth.getBlock('latest')
+        latest_block = self.skale.web3.eth.get_block('latest')
         current_ts = latest_block['timestamp']
 
         logger.info(f'current_ts: {current_ts}, schain_finish_ts: {schain_finish_ts}')

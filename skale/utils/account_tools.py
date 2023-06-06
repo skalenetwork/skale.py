@@ -116,7 +116,7 @@ def account_eth_balance_wei(web3, address):
 
 def check_ether_balance(web3, address):
     balance_wei = account_eth_balance_wei(web3, address)
-    balance = web3.fromWei(balance_wei, 'ether')
+    balance = web3.from_wei(balance_wei, 'ether')
 
     logger.info(f'{address} balance: {balance} ETH')
     return balance
@@ -124,7 +124,7 @@ def check_ether_balance(web3, address):
 
 def check_skale_balance(skale, address):
     balance_wei = skale.token.get_balance(address)
-    balance = skale.web3.fromWei(balance_wei, 'ether')
+    balance = skale.web3.from_wei(balance_wei, 'ether')
     logger.info(f'{address} balance: {balance} SKALE')
     return balance
 
