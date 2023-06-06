@@ -21,6 +21,7 @@
 from enum import IntEnum
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.exceptions import ContractLogicError
 from skale.transactions.result import TxRes
 from skale.utils.helper import format_fields
 
@@ -157,7 +158,7 @@ class Allocator(BaseContract):
                 plan = self.get_plan(i)
                 plan['planId'] = i
                 plans.append(plan)
-            except ValueError:
+            except (ContractLogicError, ValueError):
                 break
         return plans
 

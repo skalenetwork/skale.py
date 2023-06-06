@@ -182,8 +182,6 @@ def test_rotation_history_failed_dkg(skale, four_node_schain):
 
     node_groups = get_previous_schain_groups(skale, name)
 
-    assert False
-
     assert len(node_groups) == 4
     assert set(node_groups[0]['nodes'].keys()) == set(group_ids_0)
     assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)

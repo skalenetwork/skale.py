@@ -22,7 +22,7 @@ import socket
 from enum import IntEnum
 
 from Crypto.Hash import keccak
-from web3.exceptions import BadFunctionCallOutput
+from web3.exceptions import BadFunctionCallOutput, ContractLogicError
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
@@ -47,7 +47,7 @@ class Nodes(BaseContract):
     def __get_raw(self, node_id):
         try:
             return self.contract.functions.nodes(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def __get_raw_w_pk(self, node_id):
