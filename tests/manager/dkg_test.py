@@ -1,5 +1,4 @@
 from unittest import mock
-import pytest
 import web3
 from unittest.mock import Mock
 from hexbytes import HexBytes
@@ -218,7 +217,6 @@ def test_channel_opened(skale, schain):
     assert skale.dkg.is_channel_opened(group_index)
 
 
-@pytest.mark.skip
 def test_broadcast_possible(skale, nodes, schain, node_wallets):
     group_index = skale.web3.keccak(text=schain)
     node_id, *_ = nodes
