@@ -23,12 +23,12 @@ def test_ensure_chain_id(skale):
     tx_dict = get_tx_dict()
     ensure_chain_id(tx_dict, skale.web3)
     assert isinstance(tx_dict['chainId'], int)
-    assert tx_dict['chainId'] == skale.web3.eth.chainId
+    assert tx_dict['chainId'] == skale.web3.eth.chain_id
 
 
 def test_ensure_chain_id_fail(skale):
     tx_dict = get_tx_dict()
-    with mock.patch.object(web3.eth.Eth, 'chainId', new=None):
+    with mock.patch.object(web3.eth.Eth, 'chain_id', new=None):
         with pytest.raises(ChainIdError):
             ensure_chain_id(tx_dict, skale.web3)
 

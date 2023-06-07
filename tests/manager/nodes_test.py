@@ -24,7 +24,7 @@ def test_get_raw_not_exist(skale):
 
 
 def public_key_from_private(key):
-    pr_bytes = Web3.toBytes(hexstr=key)
+    pr_bytes = Web3.to_bytes(hexstr=key)
     return keys.PrivateKey(pr_bytes)
 
 

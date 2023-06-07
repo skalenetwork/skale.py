@@ -135,7 +135,7 @@ class BaseContract:
     def __init__(self, skale, name, address, abi):
         self.skale = skale
         self.name = name
-        self.address = Web3.toChecksumAddress(address)
+        self.address = Web3.to_checksum_address(address)
         self.contract = skale.web3.eth.contract(address=self.address, abi=abi)
 
     def __getattr__(self, attr):

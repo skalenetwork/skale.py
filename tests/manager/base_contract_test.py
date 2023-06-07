@@ -19,8 +19,8 @@ CUSTOM_DEFAULT_GAS_PRICE_WEI = 1500000000
 def test_dry_run(skale):
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
@@ -62,8 +62,8 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
 def test_skip_dry_run(skale):
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
@@ -86,8 +86,8 @@ def test_wait_for_false(skale):
     ETH_IN_WEI = 10 ** 18
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
@@ -156,16 +156,16 @@ def test_confirmation_blocks(skale):
     account = generate_account(skale.web3)
     token_amount = 10
     confirmation_blocks = 0  # todo: enable mining on ganache
-    start_block = skale.web3.eth.blockNumber
+    start_block = skale.web3.eth.block_number
     skale.token.transfer(account['address'], token_amount, confirmation_blocks=confirmation_blocks)
-    assert skale.web3.eth.blockNumber >= start_block + confirmation_blocks
+    assert skale.web3.eth.block_number >= start_block + confirmation_blocks
 
 
 def test_block_limit_estimate_gas(skale):
     account = generate_account(skale.web3)
     token_amount = 10
     max_gas = 200000000
-    with mock.patch.object(skale.token.contract.functions.transfer, 'estimateGas',
+    with mock.patch.object(skale.token.contract.functions.transfer, 'estimate_gas',
                            new=mock.Mock(return_value=max_gas)):
         method = skale.token.contract.functions.transfer(account['address'], token_amount)
         res = estimate_gas(skale.web3, method, {'from': skale.wallet.address})

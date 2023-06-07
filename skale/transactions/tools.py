@@ -71,7 +71,7 @@ def estimate_gas(web3, method, opts):
     except AttributeError:
         block_gas_limit = get_block_gas_limit(web3)
 
-    estimated_gas = method.estimateGas(
+    estimated_gas = method.estimate_gas(
         opts,
         block_identifier='latest'
     )
@@ -87,7 +87,7 @@ block gas limit, going to use block_gas_limit ({block_gas_limit}) for this trans
 
 def build_tx_dict(method, *args, **kwargs):
     base_fields = compose_base_fields(*args, **kwargs)
-    return method.buildTransaction(base_fields)
+    return method.build_transaction(base_fields)
 
 
 def compose_base_fields(

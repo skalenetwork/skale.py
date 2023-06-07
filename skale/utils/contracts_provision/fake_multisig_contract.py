@@ -84,6 +84,7 @@ def deploy_fake_multisig_contract(web3, wallet):
     tx = transaction_from_method(
         constructor,
         nonce=get_eth_nonce(web3, wallet.address),
+        gas_price=3 * 10 ** 9,
         gas_limit=FAKE_MULTISIG_CONSTRUCTOR_GAS
     )
     tx_hash = wallet.sign_and_send(tx)

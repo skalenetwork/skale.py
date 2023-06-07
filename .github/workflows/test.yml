@@ -3,10 +3,10 @@ on: [push, pull_request]
 
 jobs:
   test_manager:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.11]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
@@ -36,10 +36,10 @@ jobs:
       run: |
         codecov -t $CODECOV_TOKEN
   test_allocator:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.11]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       MANAGER_TAG: "1.9.0-develop.20"

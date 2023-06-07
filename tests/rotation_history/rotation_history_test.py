@@ -41,7 +41,7 @@ def four_node_schain(skale, validator):
 
 def test_rotation_history(skale, four_node_schain):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
 
@@ -129,7 +129,7 @@ def test_rotation_history_no_rotations(skale, four_node_schain):
 
 def test_rotation_history_single_rotation(skale, four_node_schain):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
 
@@ -149,7 +149,7 @@ def test_rotation_history_single_rotation(skale, four_node_schain):
 
 def test_rotation_history_failed_dkg(skale, four_node_schain):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
 
@@ -205,7 +205,7 @@ def test_rotation_history_failed_dkg(skale, four_node_schain):
 
 def test_get_new_nodes_list(skale, four_node_schain):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
 

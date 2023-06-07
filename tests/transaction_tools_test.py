@@ -38,8 +38,8 @@ def generate_new_skale():
 def test_run_tx_with_retry(skale):
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
 
@@ -140,7 +140,7 @@ def test_estimate_gas(skale):
     assert isinstance(estimated_gas, int)
     assert estimated_gas != block_gas_limit
 
-    with mock.patch.object(method, 'estimateGas', return_value=10000000000):
+    with mock.patch.object(method, 'estimate_gas', return_value=10000000000):
         estimated_gas = estimate_gas(skale.web3, method, opts)
 
     assert estimated_gas == block_gas_limit
@@ -150,8 +150,8 @@ def test_estimate_gas(skale):
 def test_tx_fee_options(skale):
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     token_amount = 10 * ETH_IN_WEI
@@ -176,5 +176,5 @@ def test_tx_fee_options(skale):
         account['address'],
         token_amount,
         max_fee_per_gas=max_fee,
-        max_priority_fee_per_gas=max_fee * 2
+        max_priority_fee_per_gas=int(max_fee / 2)
     )

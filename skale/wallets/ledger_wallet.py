@@ -160,7 +160,7 @@ class LedgerWallet(BaseWallet):
         if config.ENV == 'dev':  # fix for big chainId in ganache
             tx_dict['chainId'] = None
         if tx_dict.get('nonce') is None:
-            tx_dict['nonce'] = self._web3.eth.getTransactionCount(self.address)
+            tx_dict['nonce'] = self._web3.eth.get_transaction_count(self.address)
         tx = tx_from_dict(tx_dict)
         payload = self.make_payload(tx)
         exchange_result = self.exchange_sign_payload_by_chunks(payload)
@@ -175,7 +175,7 @@ class LedgerWallet(BaseWallet):
         meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx)
-        return self._web3.eth.sendRawTransaction(
+        return self._web3.eth.send_raw_transaction(
             signed_tx.rawTransaction
         ).hex()
 
@@ -220,13 +220,13 @@ class LedgerWallet(BaseWallet):
 def hardware_sign_and_send(web3, method, gas_amount, wallet) -> str:
     address_from = wallet['address']
     eth_nonce = get_eth_nonce(web3, address_from)
-    tx_dict = method.buildTransaction({
+    tx_dict = method.build_transaction({
         'gas': gas_amount,
         'nonce': eth_nonce
     })
     signed_txn = wallet.sign(tx_dict)
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()
+    tx = web3.eth.send_raw_transaction(signed_txn.rawTransaction).hex()
     logger.info(
-        f'{method.__class__.__name__} - transaction_hash: {web3.toHex(tx)}'
+        f'{method.__class__.__name__} - transaction_hash: {web3.to_hex(tx)}'
     )
     return tx

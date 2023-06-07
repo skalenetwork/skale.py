@@ -2,7 +2,7 @@ from tests.constants import (DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME)
 
 
 def test_get_previous_groups_public_key(skale):
-    group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+    group_id = skale.web3.keccak(text=DEFAULT_SCHAIN_NAME)
     public_key = skale.key_storage.get_previous_public_key(group_id)
     assert isinstance(public_key, tuple)
     assert len(public_key) == 2
@@ -12,7 +12,7 @@ def test_get_previous_groups_public_key(skale):
 
 def test_get_all_previous_groups_public_keys(skale):
     # TODO: Improve test
-    group_id = skale.web3.sha3(text=DEFAULT_SCHAIN_NAME)
+    group_id = skale.web3.keccak(text=DEFAULT_SCHAIN_NAME)
     keys = skale.key_storage.get_all_previous_public_keys(group_id)
     assert keys == []
 

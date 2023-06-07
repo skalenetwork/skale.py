@@ -21,9 +21,9 @@ from tests.constants import TEST_GAS_LIMIT
 
 def test_get_bounty(skale):
     node_id = 0
-    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
+    nonce = skale.web3.eth.get_transaction_count(skale.wallet.address)
     contract_address = skale.manager.address
-    chain_id = skale.web3.eth.chainId
+    chain_id = skale.web3.eth.chain_id
     expected_txn = {
         'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': TEST_GAS_LIMIT, 'nonce': nonce,
@@ -34,11 +34,11 @@ def test_get_bounty(skale):
             '00000000000000000000'
         )
     }
-    exp = skale.web3.eth.account.signTransaction(
+    exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(skale.manager.contract.functions.getBounty, 'call',
                            new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.manager.get_bounty(node_id, wait_for=False, gas_limit=TEST_GAS_LIMIT)
             send_tx_mock.assert_called_with(HexBytes(exp))

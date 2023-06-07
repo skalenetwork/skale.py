@@ -109,7 +109,7 @@ class NodeRotation(BaseContract):
         if not schain_finish_ts:
             schain_finish_ts = 0
 
-        latest_block = self.skale.web3.eth.getBlock('latest')
+        latest_block = self.skale.web3.eth.get_block('latest')
         current_ts = latest_block['timestamp']
 
         logger.info(f'current_ts: {current_ts}, schain_finish_ts: {schain_finish_ts}')
@@ -133,7 +133,7 @@ class NodeRotation(BaseContract):
         schain_id = self.schains.name_to_id(schain_name)
         try:
             return self.contract.functions.getPreviousNode(schain_id, node_id).call()
-        except ContractLogicError as e:
+        except (ContractLogicError, ValueError) as e:
             if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
                 return None
             raise e

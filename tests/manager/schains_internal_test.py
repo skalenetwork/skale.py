@@ -14,7 +14,7 @@ def test_get_raw(skale):
 
 
 def test_get_raw_not_exist(skale):
-    not_exist_schain_id = b'unused_hash'
+    not_exist_schain_id = skale.schains.name_to_id('unused_hash')
     schain_arr = skale.schains_internal.get_raw(not_exist_schain_id)
     assert schain_arr == EMPTY_SCHAIN_ARR
 

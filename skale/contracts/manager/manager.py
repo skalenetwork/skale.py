@@ -22,7 +22,7 @@
 import logging
 import socket
 
-from eth_abi import encode_abi
+from eth_abi import encode
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils import helper
@@ -83,7 +83,7 @@ class Manager(BaseContract):
         if not options:
             options = get_default_schain_options()
 
-        tx_data = encode_abi(
+        tx_data = encode(
             ['(uint,uint8,uint16,string,address,(string,bytes)[])'],
             [(lifetime, type_of_nodes, skale_nonce, name, schain_originator, options.to_tuples())]
         )

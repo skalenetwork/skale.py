@@ -4,14 +4,21 @@ from datetime import date
 
 import pytest
 
-from skale.utils.contracts_provision.utils import generate_random_name
 from skale.contracts.manager.delegation.delegation_controller import FIELDS
+from skale.transactions.exceptions import ContractLogicError
 from skale.transactions.result import RevertError
 from skale.utils.contracts_provision.main import _skip_evm_time
+from skale.utils.contracts_provision.utils import generate_random_name
 
-from tests.constants import (NOT_EXISTING_ID, D_DELEGATION_INFO, D_VALIDATOR_ID,
-                             D_DELEGATION_AMOUNT, D_DELEGATION_PERIOD, DELEGATION_STRUCT_LEN,
-                             MONTH_IN_SECONDS)
+from tests.constants import (
+    NOT_EXISTING_ID,
+    D_DELEGATION_INFO,
+    D_VALIDATOR_ID,
+    D_DELEGATION_AMOUNT,
+    D_DELEGATION_PERIOD,
+    DELEGATION_STRUCT_LEN,
+    MONTH_IN_SECONDS
+)
 
 
 def _delegate_and_activate(skale, validator_id=D_VALIDATOR_ID):
@@ -37,7 +44,7 @@ def _get_number_of_delegations(skale, validator_id=D_VALIDATOR_ID):
 
 
 def test_get_raw_not_exist(skale):
-    with pytest.raises(ValueError):
+    with pytest.raises((ContractLogicError, ValueError)):
         skale.delegation_controller._DelegationController__raw_get_delegation(
             NOT_EXISTING_ID)
 
