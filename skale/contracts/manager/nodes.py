@@ -108,19 +108,19 @@ class Nodes(BaseContract):
     def get_node_status(self, node_id):
         try:
             return self.contract.functions.getNodeStatus(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def get_node_finish_time(self, node_id):
         try:
             return self.contract.functions.getNodeFinishTime(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def __get_node_public_key_raw(self, node_id):
         try:
             return self.contract.functions.getNodePublicKey(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def get_node_public_key(self, node_id):
