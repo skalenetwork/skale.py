@@ -9,7 +9,7 @@
 Python client library used in SKALE network components.
 
 - Python 3.7+ support
-- Compatibility with `web3.py` v5
+- Compatibility with `web3.py` v6
 
 ### Installation
 
