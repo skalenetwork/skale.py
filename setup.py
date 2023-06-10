@@ -45,7 +45,7 @@ setup(
         "pyyaml==6.0",
         "sgx.py==0.9dev0",
         "redis==4.4.4",
-        "web3==6.3.0"
+        "web3==6.4.0"
     ],
 
     python_requires='>=3.7,<4',
