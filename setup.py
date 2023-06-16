@@ -19,7 +19,7 @@ extras_require = {
         "pytest==5.4.3",
         "pytest-cov==2.8.1",
         "Random-Word==1.0.4",
-        "twine==3.1.1",
+        "twine==4.0.2",
         "when-changed"
     ],
     'hw-wallet': [
