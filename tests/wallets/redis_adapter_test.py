@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import mock
+from unittest import mock
 import pytest
 from freezegun import freeze_time
 
@@ -49,9 +49,9 @@ def test_make_record():
         'chainId': 1
     }
     score = '51623233060'
-    tx_id, r = RedisWalletAdapter._make_record(tx, score, 2)
+    tx_id, r = RedisWalletAdapter._make_record(tx, score, 2, method='createNode')
     assert tx_id.startswith(b'tx-') and len(tx_id) == 19
-    assert r == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": null, "nonce": 1, "chainId": 1}'  # noqa
+    assert r == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "meta": null, "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": null, "nonce": 1, "chainId": 1}'  # noqa
 
 
 def test_sign_and_send(rdp):

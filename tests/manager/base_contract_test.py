@@ -1,7 +1,7 @@
 import importlib
 import os
 
-import mock
+from unittest import mock
 import pytest
 import skale.config as config
 from skale.transactions.tools import estimate_gas

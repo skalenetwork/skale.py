@@ -1,7 +1,7 @@
 """ SKALE config test """
 
-import mock
 import pytest
+from unittest import mock
 from web3.auto import w3
 
 from skale import SkaleManager
