@@ -128,8 +128,8 @@ def _add_previous_schain_rotations_state(
         public_key = skale.nodes.get_node_public_key(previous_node_id)
 
         current_finish_ts = previous_nodes[new_node_id]['finish_ts']
-        is_next_dkg_failed = new_node_id in node_to_finish_ts and \
-            current_finish_ts + 1 != node_to_finish_ts[new_node_id]
+        next_dkg_is_failed = new_node_id in node_to_finish_ts and \
+            current_finish_ts + 1 == node_groups[rotation_id + 1]['finish_ts']
 
         nodes[previous_node_id] = RotationNodeData(
             nodes[new_node_id].index,
@@ -138,12 +138,10 @@ def _add_previous_schain_rotations_state(
         )
         del nodes[new_node_id]
 
-        if not is_next_dkg_failed and previous_public_keys:
+        if not next_dkg_is_failed:
             bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
-            node_finish_ts = previous_nodes[new_node_id]['finish_ts']
         else:
             bls_public_key = node_groups[rotation_id + 1]['bls_public_key']
-            node_finish_ts = previous_nodes[new_node_id]['finish_ts']
             node_groups[rotation_id + 1]['finish_ts'] = None
             node_groups[rotation_id + 1]['bls_public_key'] = None
 
@@ -155,7 +153,7 @@ def _add_previous_schain_rotations_state(
                 'new_node_id': new_node_id
             },
             'nodes': nodes,
-            'finish_ts': node_finish_ts,
+            'finish_ts': current_finish_ts,
             'bls_public_key': bls_public_key
         }
 
