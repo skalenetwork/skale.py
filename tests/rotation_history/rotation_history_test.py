@@ -210,13 +210,10 @@ def test_get_new_nodes_list(skale, four_node_schain):
     run_dkg(nodes, skale_instances, group_index)
 
     exiting_node_index = 1  # in group
-    exiting_node_g_id = nodes[exiting_node_index]['node_id']  # global id
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False)
 
     failed_node_index = 2
-    failed_node_g_id = nodes[failed_node_index]['node_id']
     second_failed_node_index = 3
-    second_failed_node_g_id = nodes[second_failed_node_index]['node_id']
     test_new_node_ids = fail_dkg(
         skale=skale,
         nodes=nodes,
@@ -237,12 +234,6 @@ def test_get_new_nodes_list(skale, four_node_schain):
 
     assert len(new_nodes) == 3
     assert all(x in new_nodes for x in test_new_node_ids)
-
-    # Temorary fix for "The schain does not exist" problem
-    # Bad nodes should be removed before chain is deleted
-    remove_node(skale, exiting_node_g_id)
-    remove_node(skale, failed_node_g_id)
-    remove_node(skale, second_failed_node_g_id)
 
     exiting_node_index = 3
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
