@@ -238,7 +238,7 @@ def test_get_new_nodes_list(skale, four_node_schain):
     assert len(new_nodes) == 3
     assert all(x in new_nodes for x in test_new_node_ids)
 
-    # Temorary fix for "The schain does not exist" problem
+    # Temporary fix for "The schain does not exist" problem
     # Bad nodes should be removed before chain is deleted
     remove_node(skale, exiting_node_g_id)
     remove_node(skale, failed_node_g_id)
