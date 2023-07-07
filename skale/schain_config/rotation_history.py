@@ -138,8 +138,10 @@ def _add_previous_schain_rotations_state(
         )
         del nodes[new_node_id]
 
-        if not next_dkg_is_failed and previous_public_keys is not None:
-            bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
+        bls_public_key = None
+        if not next_dkg_is_failed:
+            if previous_public_keys:
+                bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
         else:
             bls_public_key = node_groups[rotation_id + 1]['bls_public_key']
             node_groups[rotation_id + 1]['finish_ts'] = None
