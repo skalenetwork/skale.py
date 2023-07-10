@@ -32,7 +32,6 @@ def get_previous_schain_groups(
     skale: Skale,
     schain_name: str,
     leaving_node_id=None,
-    include_keys=True
 ) -> dict:
     """
     Returns all previous node groups with public keys and finish timestamps.
@@ -43,12 +42,8 @@ def get_previous_schain_groups(
 
     group_id = skale.schains.name_to_group_id(schain_name)
 
-    previous_public_keys = None
-    current_public_key = None
-
-    if include_keys:
-        previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_id)
-        current_public_key = skale.key_storage.get_common_public_key(group_id)
+    previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_id)
+    current_public_key = skale.key_storage.get_common_public_key(group_id)
 
     rotation = skale.node_rotation.get_rotation_obj(schain_name)
 
@@ -140,7 +135,7 @@ def _add_previous_schain_rotations_state(
 
         bls_public_key = None
         if not next_dkg_is_failed:
-            if previous_public_keys:
+            if len(previous_public_keys) > 0:
                 bls_public_key = _pop_previous_bls_public_key(previous_public_keys)
         else:
             bls_public_key = node_groups[rotation_id + 1]['bls_public_key']
