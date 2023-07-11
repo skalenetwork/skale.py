@@ -227,8 +227,7 @@ def test_get_new_nodes_list(skale, four_node_schain):
     node_groups = get_previous_schain_groups(
         skale=skale,
         schain_name=name,
-        leaving_node_id=rotation.leaving_node_id,
-        include_keys=False
+        leaving_node_id=rotation.leaving_node_id
     )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
@@ -242,8 +241,7 @@ def test_get_new_nodes_list(skale, four_node_schain):
     node_groups = get_previous_schain_groups(
         skale=skale,
         schain_name=name,
-        leaving_node_id=rotation.leaving_node_id,
-        include_keys=False
+        leaving_node_id=rotation.leaving_node_id
     )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
