@@ -103,7 +103,6 @@ def _add_previous_schain_rotations_state(
     node_groups dictionary
     """
     previous_nodes = {}
-    node_to_finish_ts = {}
 
     for rotation_id in range(rotation.rotation_counter - 1, -1, -1):
         nodes = node_groups[rotation_id + 1]['nodes'].copy()
@@ -112,7 +111,6 @@ def _add_previous_schain_rotations_state(
                 previous_node = skale.node_rotation.get_previous_node(schain_name, node_id)
                 if previous_node is not None:
                     finish_ts = skale.node_rotation.get_schain_finish_ts(previous_node, schain_name)
-                    node_to_finish_ts[previous_node] = finish_ts
                     previous_nodes[node_id] = {
                         'finish_ts': finish_ts,
                         'previous_node_id': previous_node
@@ -123,8 +121,7 @@ def _add_previous_schain_rotations_state(
         public_key = skale.nodes.get_node_public_key(previous_node_id)
 
         current_finish_ts = previous_nodes[new_node_id]['finish_ts']
-        next_dkg_is_failed = new_node_id in node_to_finish_ts and \
-            current_finish_ts + 1 == node_groups[rotation_id + 1]['finish_ts']
+        next_dkg_is_failed = current_finish_ts + 1 == node_groups[rotation_id + 1]['finish_ts']
 
         nodes[previous_node_id] = RotationNodeData(
             nodes[new_node_id].index,
