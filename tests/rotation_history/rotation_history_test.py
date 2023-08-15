@@ -148,8 +148,17 @@ def test_rotation_history_single_rotation(skale, four_node_schain):
     assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
 
 
-@pytest.mark.parametrize('final_node_index_to_exit', [1, 3])
-def test_rotation_history_failed_dkg(skale, four_node_schain, final_node_index_to_exit):
+@pytest.mark.parametrize(
+    'first_node_index_to_exit,failed_node_index,second_node_index_to_exit',
+    [(1, 2, 1), (1, 2, 3), (2, 2, 2)]
+)
+def test_rotation_history_failed_dkg(
+    skale,
+    four_node_schain,
+    first_node_index_to_exit,
+    failed_node_index,
+    second_node_index_to_exit
+):
     nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.keccak(text=name)
 
@@ -157,19 +166,17 @@ def test_rotation_history_failed_dkg(skale, four_node_schain, final_node_index_t
 
     group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
     rotate_node(skale, group_index, nodes, skale_instances,
-                exiting_node_index, do_dkg=False)
+                first_node_index_to_exit, do_dkg=False)
 
     group_ids_1 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    failed_node_index = 2
     failed_node_id = nodes[failed_node_index]['node_id']
     fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index)
 
     group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = final_node_index_to_exit
+    exiting_node_index = second_node_index_to_exit
     exiting_node_id = nodes[exiting_node_index]['node_id']
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
