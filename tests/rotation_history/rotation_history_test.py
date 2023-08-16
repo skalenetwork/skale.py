@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 def test_get_previous_node_no_node(skale):
-    assert skale.node_rotation.get_previous_node(DEFAULT_SCHAIN_NAME, 0) is None
+    assert skale.node_rotation.get_previous_node(
+        DEFAULT_SCHAIN_NAME, 0) is None
 
 
 @pytest.fixture
@@ -147,7 +148,17 @@ def test_rotation_history_single_rotation(skale, four_node_schain):
     assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
 
 
-def test_rotation_history_failed_dkg(skale, four_node_schain):
+@pytest.mark.parametrize(
+    'first_node_index_to_exit,failed_node_index,second_node_index_to_exit',
+    [(1, 2, 1), (1, 2, 3), (2, 2, 2)]
+)
+def test_rotation_history_failed_dkg(
+    skale,
+    four_node_schain,
+    first_node_index_to_exit,
+    failed_node_index,
+    second_node_index_to_exit
+):
     nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.keccak(text=name)
 
@@ -155,18 +166,17 @@ def test_rotation_history_failed_dkg(skale, four_node_schain):
 
     group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False)
+    rotate_node(skale, group_index, nodes, skale_instances,
+                first_node_index_to_exit, do_dkg=False)
 
     group_ids_1 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    failed_node_index = 2
     failed_node_id = nodes[failed_node_index]['node_id']
     fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index)
 
     group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
+    exiting_node_index = second_node_index_to_exit
     exiting_node_id = nodes[exiting_node_index]['node_id']
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
 
@@ -210,7 +220,8 @@ def test_get_new_nodes_list(skale, four_node_schain):
     run_dkg(nodes, skale_instances, group_index)
 
     exiting_node_index = 1  # in group
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False)
+    rotate_node(skale, group_index, nodes, skale_instances,
+                exiting_node_index, do_dkg=False)
 
     failed_node_index = 2
     second_failed_node_index = 3
