@@ -5,14 +5,6 @@ class TransactionError(Exception):
     pass
 
 
-class DryRunFailedError(TransactionError):
-    pass
-
-
-class InsufficientBalanceError(TransactionError):
-    pass
-
-
 class TransactionNotSentError(TransactionError):
     pass
 
@@ -21,9 +13,21 @@ class TransactionNotMinedError(TimeoutError, TransactionError):
     pass
 
 
-class TransactionFailedError(TransactionError):
+class TransactionWaitError(TimeoutError, TransactionError):
     pass
 
 
-class RevertError(TransactionError, ContractLogicError):
+class TransactionLogicError(TransactionError):
+    pass
+
+
+class DryRunFailedError(TransactionLogicError):
+    pass
+
+
+class TransactionFailedError(TransactionLogicError):
+    pass
+
+
+class RevertError(TransactionLogicError):
     pass
