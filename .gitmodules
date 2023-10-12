@@ -2,3 +2,6 @@
 	path = helper-scripts
 	url = https://github.com/skalenetwork/helper-scripts.git
 	branch = develop
+[submodule "hardhat-node"]
+	path = hardhat-node
+	url = git@github.com:skalenetwork/hardhat-node.git
