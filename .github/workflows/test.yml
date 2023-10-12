@@ -32,9 +32,9 @@ jobs:
       run: |
         docker-compose up -d 
 
-    - name: Deploy manager & ima contracts
+    - name: Deploy manager
       run: |
-        bash ./helper-scripts/deploy_test_ima.sh
+        bash ./helper-scripts/deploy_test_manager.sh
         docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
     - name: Show stats before tests
