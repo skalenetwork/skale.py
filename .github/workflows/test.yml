@@ -27,10 +27,6 @@ jobs:
     - name: Lint with flake8
       run: flake8 .
 
-    - name: Deploy manager contracts
-      run: |
-        bash ./helper-scripts/deploy_test_manager.sh
-
     - name: Launch hardhat node
       working-directory: hardhat-node
       run: |
@@ -81,6 +77,11 @@ jobs:
 
     - name: Install host dependencies
       run: bash ./scripts/install_host_dependencies.sh
+
+    - name: Launch hardhat node
+      working-directory: hardhat-node
+      run: |
+        docker-compose up -d 
 
     - name: Deploy manager contracts
       run: |
