@@ -48,7 +48,7 @@ def _skip_evm_time(web3, seconds) -> int:
     """For test purposes only, works only with ganache node"""
     res = web3.provider.make_request("evm_increaseTime", [seconds])
     web3.provider.make_request("evm_mine", [])
-    return res['result']
+    return int(res['result'])
 
 
 def add_test_permissions(skale):
