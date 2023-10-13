@@ -78,6 +78,9 @@ jobs:
     - name: Install host dependencies
       run: bash ./scripts/install_host_dependencies.sh
 
+    - name: Install python dependencies
+      run: bash ./scripts/install_python_dependencies.sh
+
     - name: Launch hardhat node
       working-directory: hardhat-node
       run: |
