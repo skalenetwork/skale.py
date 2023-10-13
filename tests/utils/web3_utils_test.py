@@ -6,6 +6,10 @@ import pytest
 from freezegun import freeze_time
 
 import skale.config as config
+from skale.utils.contracts_provision.main import (
+    set_default_mining_interval,
+    set_mining_interval
+)
 from skale.utils.web3_utils import (
     EthClientOutdatedError,
     get_last_known_block_number,
@@ -69,14 +73,24 @@ def test_call_with_last_block_file(skale_block_file, last_block_file):
     assert get_last_known_block_number(state_path) >= needed_block
 
 
-def test_call_with_outdated_client(skale):
+@pytest.fixture
+def block_in_second(skale):
+    try:
+        second_ms = 1000
+        set_mining_interval(skale.web3, second_ms)
+        yield
+    finally:
+        set_default_mining_interval(skale.web3)
+
+
+def test_call_with_outdated_client(skale, block_in_second):
     # because of skipTime in preparation
     current_ts = skale.web3.eth.get_block('latest')['timestamp']
     allowed_diff = config.ALLOWED_TS_DIFF
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff)
     with freeze_time(dt):
         skale.validator_service.ls()
-    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 7)
+    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 1)
     with freeze_time(dt):
         with pytest.raises(EthClientOutdatedError):
             skale.validator_service.ls()
@@ -104,7 +118,7 @@ def test_transaction_with_last_block_file(last_block_file, skale_block_file):
         )
 
 
-def test_transaction_with_outdated_client(skale):
+def test_transaction_with_outdated_client(skale, block_in_second):
     # because of skipTime in preparation
     current_ts = skale.web3.eth.get_block('latest')['timestamp']
     allowed_diff = config.ALLOWED_TS_DIFF

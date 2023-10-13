@@ -41,14 +41,24 @@ from skale.utils.contracts_provision.utils import (
 )
 
 
+DEFAULT_MINING_INTERVAL = 10
 TEST_SRW_FUND_VALUE = 3000000000000000000
 
 
 def _skip_evm_time(web3, seconds) -> int:
-    """For test purposes only, works only with ganache node"""
+    """For test purposes only, works only with hardhat node"""
     res = web3.provider.make_request("evm_increaseTime", [seconds])
     web3.provider.make_request("evm_mine", [])
     return int(res['result'])
+
+
+def set_mining_interval(web3, ms: int) -> int:
+    res = web3.provider.make_request("evm_setIntervalMining", [ms])
+    return int(res['result'])
+
+
+def set_default_mining_interval(web3) -> int:
+    return set_mining_interval(web3, DEFAULT_MINING_INTERVAL)
 
 
 def add_test_permissions(skale):
