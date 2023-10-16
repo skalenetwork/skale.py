@@ -6,10 +6,6 @@ import pytest
 from freezegun import freeze_time
 
 import skale.config as config
-from skale.utils.contracts_provision.main import (
-    set_default_mining_interval,
-    set_mining_interval
-)
 from skale.utils.web3_utils import (
     EthClientOutdatedError,
     get_last_known_block_number,
@@ -71,16 +67,6 @@ def test_call_with_last_block_file(skale_block_file, last_block_file):
     with pytest.raises(EthClientOutdatedError):
         skale_block_file.validator_service.ls()
     assert get_last_known_block_number(state_path) >= needed_block
-
-
-@pytest.fixture
-def block_in_second(skale):
-    try:
-        second_ms = 1000
-        set_mining_interval(skale.web3, second_ms)
-        yield
-    finally:
-        set_default_mining_interval(skale.web3)
 
 
 def test_call_with_outdated_client(skale, block_in_second):

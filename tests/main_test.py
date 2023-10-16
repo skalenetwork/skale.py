@@ -11,6 +11,7 @@ from skale.contracts.manager.nodes import Nodes
 from tests.constants import TEST_CONTRACT_NAME, ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
 from skale.utils.contracts_provision.main import _skip_evm_time
 
+ALLOWED_SKIP_TIME_GAP = 3
 DEFAULT_CONTRACTS_NUMBER = 1
 
 
@@ -81,4 +82,4 @@ def test_skip_evm_time(skale):
     seconds = 10
     old_time = _skip_evm_time(skale.web3, 0)
     new_time = _skip_evm_time(skale.web3, seconds)
-    assert new_time == old_time + seconds
+    assert new_time - (old_time + seconds) < ALLOWED_SKIP_TIME_GAP

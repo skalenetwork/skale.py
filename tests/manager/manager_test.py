@@ -159,7 +159,8 @@ def test_node_exit_with_no_schains(skale, nodes):
     assert skale.nodes.get_node_status(node_id) == 2
 
 
-def test_failed_node_exit(skale):
+def test_failed_node_exit(skale, block_in_second):
+    # block_in_second fixuture to return transaction revert in a same way as geth does
     not_existed_node_id = 1
     with pytest.raises(TransactionFailedError):
         skale.manager.node_exit(not_existed_node_id, skip_dry_run=True,
