@@ -108,7 +108,7 @@ def test_is_rotation_active(skale, four_node_schain):
     assert skale.node_rotation.is_rotation_in_progress(name)
     assert skale.node_rotation.is_rotation_active(name)
 
-    _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)
+    _skip_evm_time(skale.web3, TEST_ROTATION_DELAY)
 
     assert skale.node_rotation.is_new_node_found(name)
     assert not skale.node_rotation.is_rotation_in_progress(name)
