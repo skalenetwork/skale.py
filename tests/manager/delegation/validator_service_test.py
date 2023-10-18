@@ -393,6 +393,7 @@ def test_set_validator_description(skale):
 
 
 def test_revert_reason(skale):
+    no_validator_revert = "VM Exception while processing transaction: reverted with reason string 'Validator with such address already exists'"  # noqa
     try:
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
@@ -402,7 +403,7 @@ def test_revert_reason(skale):
             wait_for=True
         )
     except RevertError as e:
-        assert e.message == "{'code': -32603, 'message': \"Error: VM Exception while processing transaction: reverted with reason string 'Validator with such address already exists'\"}"  # noqa
+        assert no_validator_revert in e.message
 
 
 def test_get_use_whitelist(skale):

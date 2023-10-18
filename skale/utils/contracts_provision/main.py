@@ -48,7 +48,7 @@ TEST_SRW_FUND_VALUE = 3000000000000000000
 
 def _skip_evm_time(web3: Web3, seconds: int, mine: bool = True) -> int:
     """For test purposes only, works only with hardhat node"""
-    res = web3.provider.make_request('evm_increaseTime', [seconds * 1000])
+    res = web3.provider.make_request('evm_increaseTime', [seconds])
     web3.provider.make_request("evm_mine", [])
     return int(res['result'])
 

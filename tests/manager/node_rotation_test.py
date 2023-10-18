@@ -73,9 +73,7 @@ def four_node_schain(skale, validator):
 
 
 def test_is_rotation_active(skale, four_node_schain):
-    # cleanup_nodes_schains(skale)
     nodes, skale_instances, name = four_node_schain
-    # add_test4_schain_type(skale)
     group_index = skale.web3.keccak(text=name)
 
     run_dkg(nodes, skale_instances, group_index)

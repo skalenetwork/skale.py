@@ -1,3 +1,5 @@
+from web3.exceptions import ContractLogicError
+
 from skale.transactions.exceptions import RevertError
 
 import pytest
@@ -50,9 +52,9 @@ def test_remove_range_bad_params(skale, sync_manager_permissions, block_in_secon
 def test_get_range_bad_params(skale, sync_manager_permissions, block_in_second):
     num = skale.sync_manager.get_ip_ranges_number()
     # TODO: Make dry run handle revert that has empty reason properly
-    with pytest.raises(ValueError):
+    with pytest.raises(ContractLogicError):
         r = skale.sync_manager.get_ip_range_by_index(num)
-    with pytest.raises(ValueError):
+    with pytest.raises(ContractLogicError):
         r = skale.sync_manager.get_ip_range_by_index(0)
     r = skale.sync_manager.get_ip_range_by_name('phantom')
     assert r.start_ip == '0.0.0.0' and r.end_ip == '0.0.0.0'
