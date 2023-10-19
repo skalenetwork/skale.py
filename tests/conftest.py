@@ -131,7 +131,7 @@ def failed_skale(skale):
 
 
 @pytest.fixture
-def block_in_second(skale):
+def block_in_seconds(skale):
     # Mine block every three seconds without automine
     # Makes web3.py throw exception in a same way as for geth
     try:

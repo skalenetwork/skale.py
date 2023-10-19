@@ -69,13 +69,14 @@ def test_call_with_last_block_file(skale_block_file, last_block_file):
     assert get_last_known_block_number(state_path) >= needed_block
 
 
-def test_call_with_outdated_client(skale, block_in_second):
+def test_call_with_outdated_client(skale):
     # because of skipTime in preparation
     current_ts = skale.web3.eth.get_block('latest')['timestamp']
     allowed_diff = config.ALLOWED_TS_DIFF
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff)
     with freeze_time(dt):
         skale.validator_service.ls()
+    print(current_ts, allowed_diff)
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 1)
     with freeze_time(dt):
         with pytest.raises(EthClientOutdatedError):
@@ -104,7 +105,7 @@ def test_transaction_with_last_block_file(last_block_file, skale_block_file):
         )
 
 
-def test_transaction_with_outdated_client(skale, block_in_second):
+def test_transaction_with_outdated_client(skale):
     # because of skipTime in preparation
     current_ts = skale.web3.eth.get_block('latest')['timestamp']
     allowed_diff = config.ALLOWED_TS_DIFF
