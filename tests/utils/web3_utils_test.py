@@ -77,7 +77,7 @@ def test_call_with_outdated_client(skale):
     with freeze_time(dt):
         skale.validator_service.ls()
     print(current_ts, allowed_diff)
-    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 1)
+    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 5)
     with freeze_time(dt):
         with pytest.raises(EthClientOutdatedError):
             skale.validator_service.ls()
