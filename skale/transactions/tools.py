@@ -23,6 +23,7 @@ from functools import partial, wraps
 from typing import Dict, Optional
 
 from web3 import Web3
+from web3.exceptions import Web3Exception
 from web3._utils.transactions import get_block_gas_limit
 
 import skale.config as config
@@ -58,7 +59,7 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
         else:
             estimated_gas = estimate_gas(skale.web3, method, opts)
         logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
-    except Exception as err:
+    except (Web3Exception, ValueError) as err:
         logger.error('Dry run for method failed with error', exc_info=err)
         return {'status': 0, 'error': str(err)}
 

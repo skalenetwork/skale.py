@@ -17,6 +17,11 @@ from skale.utils.contracts_provision.main import (
     link_nodes_to_validator,
     setup_validator
 )
+from skale.utils.contracts_provision.main import (
+    set_automining,
+    set_default_mining_interval,
+    set_mining_interval
+)
 from skale.utils.contracts_provision.fake_multisig_contract import (
     deploy_fake_multisig_contract
 )
@@ -123,3 +128,16 @@ def failed_skale(skale):
     finally:
         skale.wallet.sign_and_send = tmp_sign_and_send
         skale.wallet.wait = tmp_wait
+
+
+@pytest.fixture
+def block_in_seconds(skale):
+    # Mine block every three seconds without automine
+    # Makes web3.py throw exception in a same way as for geth
+    try:
+        set_automining(skale.web3, False)
+        set_mining_interval(skale.web3, 3)
+        yield
+    finally:
+        set_automining(skale.web3, True)
+        set_default_mining_interval(skale.web3)
