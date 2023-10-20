@@ -73,9 +73,7 @@ def four_node_schain(skale, validator):
 
 
 def test_is_rotation_active(skale, four_node_schain):
-    # cleanup_nodes_schains(skale)
     nodes, skale_instances, name = four_node_schain
-    # add_test4_schain_type(skale)
     group_index = skale.web3.keccak(text=name)
 
     run_dkg(nodes, skale_instances, group_index)
@@ -108,7 +106,7 @@ def test_is_rotation_active(skale, four_node_schain):
     assert skale.node_rotation.is_rotation_in_progress(name)
     assert skale.node_rotation.is_rotation_active(name)
 
-    _skip_evm_time(skale_instances[0].web3, TEST_ROTATION_DELAY)
+    _skip_evm_time(skale.web3, TEST_ROTATION_DELAY)
 
     assert skale.node_rotation.is_new_node_found(name)
     assert not skale.node_rotation.is_rotation_in_progress(name)
