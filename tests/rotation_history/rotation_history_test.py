@@ -161,8 +161,10 @@ def test_rotation_history_failed_dkg(
 ):
     nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.keccak(text=name)
+    assert not skale.dkg.is_node_broadcasted(group_index, nodes[0]['node_id'])
 
     run_dkg(nodes, skale_instances, group_index)
+    assert skale.dkg.is_node_broadcasted(group_index, nodes[0]['node_id'])
 
     group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
