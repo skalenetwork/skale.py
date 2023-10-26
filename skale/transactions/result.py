@@ -37,7 +37,7 @@ def is_success_or_not_performed(result: dict) -> bool:
 
 
 def is_revert_error(result: Optional[dict]) -> bool:
-    if result:
+    if not result:
         return False
     error = result.get('error', None)
     return error == 'revert'

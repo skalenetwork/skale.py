@@ -29,5 +29,5 @@ class TransactionFailedError(TransactionLogicError):
     pass
 
 
-class RevertError(TransactionLogicError):
+class RevertError(TransactionLogicError, ContractLogicError):
     pass

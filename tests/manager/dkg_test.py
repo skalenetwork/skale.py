@@ -202,7 +202,6 @@ def test_complaint_bad_data(skale):
             send_tx_mock.return_value = b'hexstring'
             skale.dkg.complaint(group_index, from_node_index, to_node_index,
                                 wait_for=False,
-                                skip_dry_run=True,
                                 gas_limit=gas_limit)
             send_tx_mock.assert_called_with(HexBytes(exp))
 
@@ -270,7 +269,7 @@ def test_alright_started_time(skale, schain):
     assert skale.dkg.get_alright_started_time(group_index) == 0
 
 
-def test_complaint_data(skale, schain):
+def test_get_complaint_data(skale, schain):
     group_index = skale.web3.keccak(text=schain)
     assert skale.dkg.get_complaint_data(group_index) != [0, 0]
 
