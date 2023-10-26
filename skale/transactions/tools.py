@@ -23,14 +23,13 @@ from functools import partial, wraps
 from typing import Dict, Optional
 
 from web3 import Web3
-from web3.exceptions import Web3Exception
+from web3.exceptions import ContractLogicError, Web3Exception
 from web3._utils.transactions import get_block_gas_limit
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionError
 from skale.transactions.result import TxRes
 from skale.utils.web3_utils import get_eth_nonce
-from skale.wallets.redis_wallet import RedisAdapterError
 
 
 logger = logging.getLogger(__name__)
@@ -59,8 +58,10 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
         else:
             estimated_gas = estimate_gas(skale.web3, method, opts)
         logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
+    except ContractLogicError as e:
+        return {'status': 0, 'error': 'revert', 'message': e.message, 'data': e.data}
     except (Web3Exception, ValueError) as err:
-        logger.error('Dry run for method failed with error', exc_info=err)
+        logger.error('Dry run for %s failed', method, exc_info=err)
         return {'status': 0, 'error': str(err)}
 
     return {'status': 1, 'payload': estimated_gas}
@@ -178,7 +179,7 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         try:
             tx_res = transaction(*args, **kwargs)
             tx_res.raise_for_status()
-        except (RedisAdapterError, TransactionError) as err:
+        except TransactionError as err:
             logger.error(f'Tx attempt {attempt}/{max_retries} failed',
                          exc_info=err)
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
