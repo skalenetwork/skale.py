@@ -29,8 +29,10 @@ from eth_account._utils.legacy_transactions import \
 
 from eth_utils.crypto import keccak
 from rlp import encode
+from web3.exceptions import Web3Exception
 
 import skale.config as config
+from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
 from skale.utils.web3_utils import (
     get_eth_nonce,
     public_key_to_address,
@@ -162,9 +164,12 @@ class LedgerWallet(BaseWallet):
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = self._web3.eth.get_transaction_count(self.address)
         tx = tx_from_dict(tx_dict)
-        payload = self.make_payload(tx)
-        exchange_result = self.exchange_sign_payload_by_chunks(payload)
-        return LedgerWallet.parse_sign_result(tx, exchange_result)
+        try:
+            payload = self.make_payload(tx)
+            exchange_result = self.exchange_sign_payload_by_chunks(payload)
+            return LedgerWallet.parse_sign_result(tx, exchange_result)
+        except Exception as e:
+            raise TransactionNotSignedError(e)
 
     def sign_and_send(
         self,
@@ -175,9 +180,12 @@ class LedgerWallet(BaseWallet):
         meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx)
-        return self._web3.eth.send_raw_transaction(
-            signed_tx.rawTransaction
-        ).hex()
+        try:
+            return self._web3.eth.send_raw_transaction(
+                signed_tx.rawTransaction
+            ).hex()
+        except Web3Exception as e:
+            raise TransactionNotSentError(e)
 
     def sign_hash(self, unsigned_hash: str):
         raise NotImplementedError(

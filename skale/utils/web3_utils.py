@@ -71,6 +71,10 @@ class EthClientOutdatedError(Exception):
     pass
 
 
+class BlockWaitTimeoutError(Exception):
+    pass
+
+
 def get_last_known_block_number(state_path: str) -> int:
     if not os.path.isfile(state_path):
         return 0

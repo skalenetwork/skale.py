@@ -22,8 +22,10 @@ from typing import Dict, Optional
 
 from sgx import SgxClient
 from web3 import Web3
+from web3.exceptions import Web3Exception
 
 import skale.config as config
+from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
 from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
 from skale.wallets.common import BaseWallet, ensure_chain_id
 
@@ -45,7 +47,10 @@ class SgxWallet(BaseWallet):
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         ensure_chain_id(tx_dict, self._web3)
-        return self.sgx_client.sign(tx_dict, self.key_name)
+        try:
+            return self.sgx_client.sign(tx_dict, self.key_name)
+        except Exception as e:
+            raise TransactionNotSignedError(e)
 
     def sign_and_send(
         self,
@@ -56,9 +61,12 @@ class SgxWallet(BaseWallet):
         meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.send_raw_transaction(
-            signed_tx.rawTransaction
-        ).hex()
+        try:
+            return self._web3.eth.send_raw_transaction(
+                signed_tx.rawTransaction
+            ).hex()
+        except Web3Exception as e:
+            raise TransactionNotSentError(e)
 
     def sign_hash(self, unsigned_hash: str):
         if unsigned_hash.startswith('0x'):

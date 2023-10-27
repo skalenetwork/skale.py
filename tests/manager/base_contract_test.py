@@ -4,6 +4,7 @@ import os
 from unittest import mock
 import pytest
 import skale.config as config
+from skale.transactions.exceptions import TransactionNotSentError
 from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.utils import generate_random_schain_data
@@ -144,7 +145,7 @@ def test_tx_res_with_insufficient_funds(skale):
     account = generate_account(skale.web3)
     token_amount = 9
     huge_gas_price = 10 ** 22
-    with pytest.raises(ValueError):
+    with pytest.raises(TransactionNotSentError):
         skale.token.transfer(
             account['address'],
             token_amount,
