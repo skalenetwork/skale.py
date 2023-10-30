@@ -75,17 +75,17 @@ class Web3Wallet(BaseWallet):
                 tx_dict,
                 private_key=self._private_key
             )
-        except Web3Exception as e:
+        except (TypeError, ValueError, Web3Exception) as e:
             raise TransactionNotSignedError(e)
 
     def sign_hash(self, unsigned_hash: str):
-        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
         try:
+            unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
             return self._web3.eth.account.sign_message(
                 unsigned_message,
                 private_key=self._private_key
             )
-        except Web3Exception as e:
+        except (TypeError, ValueError, Web3Exception) as e:
             raise MessageNotSignedError(e)
 
     def sign_and_send(
@@ -101,7 +101,7 @@ class Web3Wallet(BaseWallet):
             return self._web3.eth.send_raw_transaction(
                 signed_tx.rawTransaction
             ).hex()
-        except Exception as e:
+        except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
     @property

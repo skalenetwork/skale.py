@@ -159,10 +159,9 @@ class LedgerWallet(BaseWallet):
 
     def sign(self, tx_dict):
         ensure_chain_id(tx_dict, self._web3)
-        if config.ENV == 'dev':  # fix for big chainId in ganache
-            tx_dict['chainId'] = None
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = self._web3.eth.get_transaction_count(self.address)
+
         tx = tx_from_dict(tx_dict)
         try:
             payload = self.make_payload(tx)
@@ -184,7 +183,7 @@ class LedgerWallet(BaseWallet):
             return self._web3.eth.send_raw_transaction(
                 signed_tx.rawTransaction
             ).hex()
-        except Web3Exception as e:
+        except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
     def sign_hash(self, unsigned_hash: str):

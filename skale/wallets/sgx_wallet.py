@@ -27,7 +27,7 @@ from web3.exceptions import Web3Exception
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
 from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
-from skale.wallets.common import BaseWallet, ensure_chain_id
+from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class SgxWallet(BaseWallet):
             return self._web3.eth.send_raw_transaction(
                 signed_tx.rawTransaction
             ).hex()
-        except Web3Exception as e:
+        except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
     def sign_hash(self, unsigned_hash: str):
@@ -77,11 +77,14 @@ class SgxWallet(BaseWallet):
         normalized_hash = header + body
         hash_to_sign = Web3.keccak(hexstr='0x' + normalized_hash.hex())
         chain_id = None
-        return self.sgx_client.sign_hash(
-            hash_to_sign,
-            self._key_name,
-            chain_id
-        )
+        try:
+            return self.sgx_client.sign_hash(
+                hash_to_sign,
+                self._key_name,
+                chain_id
+            )
+        except Exception as e:
+            raise MessageNotSignedError(e)
 
     @property
     def address(self):
