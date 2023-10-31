@@ -170,29 +170,41 @@ def retry_tx(tx=None, *, max_retries=3, timeout=-1):
 
 def run_tx_with_retry(transaction, *args, max_retries=3,
                       retry_timeout=-1,
+                      raise_for_status=True,
                       **kwargs) -> TxRes:
-    success = False
     attempt = 0
     tx_res = None
     exp_timeout = 1
-    while not success and attempt < max_retries:
+    error = None
+    while attempt < max_retries:
         try:
-            tx_res = transaction(*args, **kwargs)
+            tx_res = transaction(
+                *args,
+                raise_for_status=raise_for_status,
+                **kwargs
+            )
             tx_res.raise_for_status()
-        except TransactionError as err:
-            logger.error(f'Tx attempt {attempt}/{max_retries} failed',
-                         exc_info=err)
+        except TransactionError as e:
+            error = e
+            logger.exception('Tx attempt %d/%d failed', attempt, max_retries)
+
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
             exp_timeout *= 2
         else:
-            success = True
+            error = None
+            break
         attempt += 1
-    if success:
-        logger.info(f'Tx {transaction.__name__} completed '
-                    f'after {attempt}/{max_retries} retries')
+    if error is None:
+        logger.info(
+            'Tx %s completed after %d/%d retries',
+            transaction.__name__, attempt, max_retries
+        )
     else:
         logger.error(
-            f'Tx {transaction.__name__} failed after '
-            f'{max_retries} retries')
+            'Tx %s completed after %d retries',
+            transaction.__name__, max_retries
+        )
+        if raise_for_status:
+            raise error
     return tx_res
