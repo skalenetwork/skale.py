@@ -80,23 +80,18 @@ def transaction_method(transaction):
 
         nonce = get_eth_nonce(self.skale.web3, self.skale.wallet.address)
 
-        # Make dry_run and estimate gas limit
         estimated_gas_limit = None
-        if not skip_dry_run and not config.DISABLE_DRY_RUN:
-            dry_run_result, estimated_gas_limit = execute_dry_run(
-                self.skale, method, gas_limit, value
-            )
+        should_dry_run = not skip_dry_run and not config.DISABLE_DRY_RUN
 
-        gas_limit = gas_limit or estimated_gas_limit or \
-            config.DEFAULT_GAS_LIMIT
+        if should_dry_run:
+            dry_run_result, estimated_gas_limit = execute_dry_run(self.skale,
+                                                                  method, gas_limit, value)
 
-        gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or \
-            self.skale.gas_price
-        # Send transaction
-        should_send_transaction = not dry_run_only and \
-            is_success_or_not_performed(dry_run_result)
+        should_send = not dry_run_only and is_success_or_not_performed(dry_run_result)
+        gas_limit = gas_limit or estimated_gas_limit or config.DEFAULT_GAS_LIMIT
+        gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or self.skale.gas_price
 
-        if should_send_transaction:
+        if should_send:
             tx = transaction_from_method(
                 method=method,
                 gas_limit=gas_limit,
@@ -114,13 +109,14 @@ def transaction_method(transaction):
                 method=method_name,
                 meta=meta
             )
-            if wait_for:
-                receipt = self.skale.wallet.wait(tx_hash)
-            if confirmation_blocks:
-                wait_for_confirmation_blocks(
-                    self.skale.web3,
-                    confirmation_blocks
-                )
+
+        should_wait = tx_hash is not None and wait_for
+        if should_wait:
+            receipt = self.skale.wallet.wait(tx_hash)
+
+        should_confirm = receipt and confirmation_blocks > 0
+        if should_confirm:
+            wait_for_confirmation_blocks(self.skale.web3, confirmation_blocks)
 
         tx_res = TxRes(dry_run_result, tx_hash, receipt)
 
