@@ -4,7 +4,7 @@ import random
 import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
-from skale.transactions.result import RevertError
+from skale.transactions.result import DryRunRevertError
 from skale.utils.account_tools import send_eth
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.main import _skip_evm_time, enable_validator
@@ -208,7 +208,7 @@ def test_is_accepting_new_requests(skale, validator):
 
 
 def test_register_existing_validator(skale):
-    with pytest.raises(RevertError):
+    with pytest.raises(DryRunRevertError):
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,
@@ -319,7 +319,7 @@ def test_request_confirm_new_address(skale):
         validator = skale.validator_service.get(validator_id)
         assert validator['requested_address'] == '0x0000000000000000000000000000000000000000'
 
-        with pytest.raises(RevertError):
+        with pytest.raises(DryRunRevertError):
             skale.validator_service.request_for_new_address(
                 new_validator_address=main_wallet.address,
                 wait_for=True
@@ -402,7 +402,7 @@ def test_revert_reason(skale):
             min_delegation_amount=D_VALIDATOR_MIN_DEL,
             wait_for=True
         )
-    except RevertError as e:
+    except DryRunRevertError as e:
         assert no_validator_revert in e.message
 
 

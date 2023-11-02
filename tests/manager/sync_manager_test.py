@@ -1,6 +1,4 @@
-from web3.exceptions import ContractLogicError
-
-from skale.transactions.exceptions import RevertError
+from skale.transactions.exceptions import DryRunRevertError
 
 import pytest
 
@@ -34,10 +32,10 @@ def test_add_get_remove_ip_range(skale, sync_manager_permissions, ip_range, bloc
 
 
 def test_add_bad_ip_range(skale, sync_manager_permissions, block_in_seconds):
-    with pytest.raises(RevertError):
+    with pytest.raises(DryRunRevertError):
         skale.sync_manager.add_ip_range('brange', '0.0.0.0', '1.1.1.1')
 
-    with pytest.raises(RevertError):
+    with pytest.raises(DryRunRevertError):
         skale.sync_manager.add_ip_range('brange', '2.2.2.2', '1.1.1.1')
 
     with pytest.raises(OSError):
@@ -45,16 +43,16 @@ def test_add_bad_ip_range(skale, sync_manager_permissions, block_in_seconds):
 
 
 def test_remove_range_bad_params(skale, sync_manager_permissions, block_in_seconds):
-    with pytest.raises(RevertError):
+    with pytest.raises(DryRunRevertError):
         skale.sync_manager.remove_ip_range('phantom')
 
 
 def test_get_range_bad_params(skale, sync_manager_permissions, block_in_seconds):
     num = skale.sync_manager.get_ip_ranges_number()
     # TODO: Make dry run handle revert that has empty reason properly
-    with pytest.raises(ContractLogicError):
+    with pytest.raises(DryRunRevertError):
         r = skale.sync_manager.get_ip_range_by_index(num)
-    with pytest.raises(ContractLogicError):
+    with pytest.raises(DryRunRevertError):
         r = skale.sync_manager.get_ip_range_by_index(0)
     r = skale.sync_manager.get_ip_range_by_name('phantom')
     assert r.start_ip == '0.0.0.0' and r.end_ip == '0.0.0.0'

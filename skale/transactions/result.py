@@ -21,7 +21,8 @@ from typing import Optional
 
 from skale.transactions.exceptions import (
     DryRunFailedError,
-    RevertError,
+    DryRunRevertError,
+    TransactionRevertError,
     TransactionFailedError
 )
 
@@ -68,15 +69,17 @@ class TxRes:
         return not is_success_or_not_performed(self.receipt)
 
     def raise_for_status(self) -> None:
-        # Check if tx was sent
+        print(self.dry_run_result)
         if self.receipt is not None:
-            # Check if tx errored
             if not is_success(self.receipt):
-                raise TransactionFailedError(self.receipt['error'])
-        else:
-            # Check if revert
+                error_msg = self.receipt['error']
+                if is_revert_error(self.receipt):
+                    raise TransactionRevertError(error_msg)
+                else:
+                    raise TransactionFailedError(error_msg)
+        elif self.dry_run_result is not None and not is_success(self.dry_run_result):
+            error_msg = self.dry_run_result['message']
             if is_revert_error(self.dry_run_result):
-                raise RevertError(self.dry_run_result['message'])
-            # Check if dry run errored due to other reason
-            if not is_success(self.dry_run_result):
-                raise DryRunFailedError(self.dry_run_result['error'])
+                raise DryRunRevertError(error_msg)
+            else:
+                raise DryRunFailedError(error_msg)

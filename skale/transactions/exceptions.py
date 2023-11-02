@@ -44,14 +44,14 @@ class TransactionWaitError(TimeoutError, TransactionError):
     pass
 
 
-class TransactionLogicError(TransactionError):
+class TransactionLogicError(TransactionError, ContractLogicError):
     """
     Raised when transaction executed with error
     """
     pass
 
 
-class DryRunFailedError(TransactionError):
+class DryRunFailedError(TransactionLogicError):
     """
     Raised when error occurred during dry run call
     """
@@ -60,19 +60,19 @@ class DryRunFailedError(TransactionError):
 
 class TransactionFailedError(TransactionLogicError):
     """
-    Raised when transaction included in a block failed during execution
+    Raised when transaction included in the block failed during execution
     """
     pass
 
 
-class RevertError(TransactionLogicError, ContractLogicError):
+class TransactionRevertError(TransactionFailedError):
     """
-    Raised when transaction was included in a block and reverted during execution
+    Raised when transaction included in the block failed with revert
     """
     pass
 
 
-class RevertDryRunError(DryRunFailedError):
+class DryRunRevertError(DryRunFailedError):
     """
     Raised when transaction reverted during dry run call
     """
