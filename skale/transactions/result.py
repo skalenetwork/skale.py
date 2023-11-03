@@ -69,7 +69,6 @@ class TxRes:
         return not is_success_or_not_performed(self.receipt)
 
     def raise_for_status(self) -> None:
-        print(self.dry_run_result)
         if self.receipt is not None:
             if not is_success(self.receipt):
                 error_msg = self.receipt['error']

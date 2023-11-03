@@ -60,7 +60,8 @@ def test_run_tx_with_retry_dry_run_failed(skale):
     dry_run_call_mock = mock.Mock(
         return_value={
             'status': 0,
-            'error': 'Dry run failed'
+            'message': 'Dry run test failure',
+            'error': 'revert'
         }
     )
     account = generate_account(skale.web3)
