@@ -17,10 +17,11 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import enum
 import logging
 import time
 from functools import partial, wraps
-from typing import Dict, Optional
+from typing import Dict, NamedTuple, Optional
 
 from web3 import Web3
 from web3.exceptions import ContractLogicError, Web3Exception
@@ -38,7 +39,19 @@ logger = logging.getLogger(__name__)
 DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
-def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
+class TxStatus(int, enum.IntEnum):
+    FAILED = 0
+    SUCCESS = 1
+
+
+class TxCallResult(NamedTuple):
+    status: TxStatus
+    error: str
+    message: str
+    data: dict
+
+
+def make_dry_run_call(skale, method, gas_limit=None, value=0) -> TxCallResult:
     opts = {
         'from': skale.wallet.address,
         'value': value
@@ -49,6 +62,7 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
         f'wallet: {skale.wallet.__class__.__name__}, '
         f'value: {value}, '
     )
+    estimated_gas = 0
 
     try:
         if gas_limit:
@@ -59,12 +73,14 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
             estimated_gas = estimate_gas(skale.web3, method, opts)
         logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
     except ContractLogicError as e:
-        return {'status': 0, 'error': 'revert', 'message': e.message, 'data': e.data}
-    except (Web3Exception, ValueError) as err:
-        logger.error('Dry run for %s failed', method, exc_info=err)
-        return {'status': 0, 'error': str(err)}
+        return TxCallResult(status=TxStatus.FAILED,
+                            error='revert', message=e.message, data=e.data)
+    except (Web3Exception, ValueError) as e:
+        logger.exception('Dry run for %s failed', method)
+        return TxCallResult(status=TxStatus.FAILED, error='exception', message=str(e), data={})
 
-    return {'status': 1, 'payload': estimated_gas}
+    return TxCallResult(status=TxStatus.SUCCESS, error='',
+                        message='success', data={'gas': estimated_gas})
 
 
 def estimate_gas(web3, method, opts):

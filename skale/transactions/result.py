@@ -45,10 +45,11 @@ def is_revert_error(result: Optional[dict]) -> bool:
 
 
 class TxRes:
-    def __init__(self, dry_run_result=None, tx_hash=None, receipt=None):
+    def __init__(self, dry_run_result=None, tx_hash=None, receipt=None, revert=None):
         self.dry_run_result = dry_run_result
         self.tx_hash = tx_hash
         self.receipt = receipt
+        self.revert = revert
 
     def __str__(self) -> str:
         return (
@@ -71,14 +72,12 @@ class TxRes:
     def raise_for_status(self) -> None:
         if self.receipt is not None:
             if not is_success(self.receipt):
-                error_msg = self.receipt['error']
-                if is_revert_error(self.receipt):
-                    raise TransactionRevertError(error_msg)
+                if self.revert is not None:
+                    raise TransactionRevertError(self.revert)
                 else:
-                    raise TransactionFailedError(error_msg)
+                    raise TransactionFailedError(self.revert)
         elif self.dry_run_result is not None and not is_success(self.dry_run_result):
-            error_msg = self.dry_run_result['message']
-            if is_revert_error(self.dry_run_result):
-                raise DryRunRevertError(error_msg)
+            if self.revert is not None:
+                raise DryRunRevertError(self.revert)
             else:
-                raise DryRunFailedError(error_msg)
+                raise DryRunFailedError(self.revert)
