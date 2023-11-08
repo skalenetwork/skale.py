@@ -132,3 +132,6 @@ See `tests/README.md`
 ![GitHub](https://img.shields.io/github/license/skalenetwork/skale.py.svg)
 
 All contributions are made under the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html). See [LICENSE](LICENSE).
+
+
+<u> some text </u>
