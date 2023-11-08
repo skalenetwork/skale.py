@@ -186,7 +186,7 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
             tx_res.raise_for_status()
         except TransactionError as e:
             error = e
-            logger.exception('Tx attempt %d/%d failed', attempt, max_retries)
+            logger.exception('Tx attempt %d/%d failed', attempt + 1, max_retries)
 
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
@@ -198,7 +198,7 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
     if error is None:
         logger.info(
             'Tx %s completed after %d/%d retries',
-            transaction.__name__, attempt, max_retries
+            transaction.__name__, attempt + 1, max_retries
         )
     else:
         logger.error(

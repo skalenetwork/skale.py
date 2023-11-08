@@ -59,7 +59,7 @@ class RedisWalletWaitError(RedisWalletError, TransactionWaitError):
     pass
 
 
-class RedisWalletAdapter:
+class RedisWalletAdapter(BaseWallet):
     ID_SIZE = 16
 
     def __init__(
