@@ -32,7 +32,6 @@ def generate_new_skale():
     web3 = init_web3(ENDPOINT)
     account = generate_account(web3)
     wallet = Web3Wallet(account['private_key'], web3)
-    # wallet.sign_and_send = mock.Mock()
     wallet.wait = mock.Mock()
     return Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
 
