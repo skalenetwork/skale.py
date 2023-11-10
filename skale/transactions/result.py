@@ -17,67 +17,53 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Optional
+import enum
+from typing import NamedTuple
 
 from skale.transactions.exceptions import (
     DryRunFailedError,
     DryRunRevertError,
-    TransactionRevertError,
     TransactionFailedError
 )
 
-SUCCESS_STATUS = 1
+
+class TxStatus(int, enum.Enum):
+    FAILED = 0
+    SUCCESS = 1
 
 
-def is_success(result: dict) -> bool:
-    return result.get('status') == SUCCESS_STATUS
-
-
-def is_success_or_not_performed(result: dict) -> bool:
-    return result is None or is_success(result)
-
-
-def is_revert_error(result: Optional[dict]) -> bool:
-    if not result:
-        return False
-    error = result.get('error', None)
-    return error == 'revert'
+class TxCallResult(NamedTuple):
+    status: TxStatus
+    error: str
+    message: str
+    data: dict
 
 
 class TxRes:
-    def __init__(self, dry_run_result=None, tx_hash=None, receipt=None, revert=None):
-        self.dry_run_result = dry_run_result
+    def __init__(self, tx_call_result=None, tx_hash=None, receipt=None, revert=None):
+        self.tx_call_result = tx_call_result
         self.tx_hash = tx_hash
         self.receipt = receipt
-        self.revert = revert
+        self.attempts = 0
 
     def __str__(self) -> str:
         return (
-            f'TxRes hash: {self.tx_hash}, dry_run_result {self.dry_run_result}, '
+            f'TxRes hash: {self.tx_hash}, tx_call_result {self.tx_call_result}, '
             f'receipt {self.receipt}'
         )
 
     def __repr__(self) -> str:
         return (
-            f'TxRes hash: {self.tx_hash}, dry_run_result {self.dry_run_result}, '
+            f'TxRes hash: {self.tx_hash}, tx_call_result {self.tx_call_result}, '
             f'receipt {self.receipt}'
         )
 
-    def dry_run_failed(self) -> bool:
-        return not is_success_or_not_performed(self.dry_run_result)
-
-    def tx_failed(self) -> bool:
-        return not is_success_or_not_performed(self.receipt)
-
     def raise_for_status(self) -> None:
         if self.receipt is not None:
-            if not is_success(self.receipt):
-                if self.revert is not None:
-                    raise TransactionRevertError(self.revert)
-                else:
-                    raise TransactionFailedError(self.revert)
-        elif self.dry_run_result is not None and not is_success(self.dry_run_result):
-            if self.revert is not None:
-                raise DryRunRevertError(self.revert)
+            if self.receipt['status'] == TxStatus.FAILED:
+                raise TransactionFailedError(self.receipt)
+        elif self.tx_call_result is not None and self.tx_call_result.status == TxStatus.FAILED:
+            if self.tx_call_result.error == 'revert':
+                raise DryRunRevertError(self.tx_call_result.message)
             else:
-                raise DryRunFailedError(self.revert)
+                raise DryRunFailedError(self.tx_call_result.message)

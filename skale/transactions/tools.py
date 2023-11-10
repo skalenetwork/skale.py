@@ -17,11 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import enum
 import logging
 import time
 from functools import partial, wraps
-from typing import Dict, NamedTuple, Optional
+from typing import Dict, Optional
 
 from web3 import Web3
 from web3.exceptions import ContractLogicError, Web3Exception
@@ -29,7 +28,7 @@ from web3._utils.transactions import get_block_gas_limit
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionError
-from skale.transactions.result import TxRes
+from skale.transactions.result import TxCallResult, TxRes, TxStatus
 from skale.utils.web3_utils import get_eth_nonce
 
 
@@ -37,18 +36,6 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_ETH_SEND_GAS_LIMIT = 22000
-
-
-class TxStatus(int, enum.IntEnum):
-    FAILED = 0
-    SUCCESS = 1
-
-
-class TxCallResult(NamedTuple):
-    status: TxStatus
-    error: str
-    message: str
-    data: dict
 
 
 def make_dry_run_call(skale, method, gas_limit=None, value=0) -> TxCallResult:
@@ -202,7 +189,7 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
             tx_res.raise_for_status()
         except TransactionError as e:
             error = e
-            logger.exception('Tx attempt %d/%d failed', attempt, max_retries)
+            logger.exception('Tx attempt %d/%d failed', attempt + 1, max_retries)
 
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
@@ -214,7 +201,7 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
     if error is None:
         logger.info(
             'Tx %s completed after %d/%d retries',
-            transaction.__name__, attempt, max_retries
+            transaction.__name__, attempt + 1, max_retries
         )
     else:
         logger.error(
@@ -223,4 +210,6 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         )
         if raise_for_status:
             raise error
+    if tx_res is not None:
+        tx_res.attempts = attempt
     return tx_res
