@@ -122,7 +122,7 @@ def empty_account():
 def failed_skale(skale):
     tmp_wait, tmp_sign_and_send = skale.wallet.wait, skale.wallet.sign_and_send
     skale.wallet.sign_and_send = mock.Mock(return_value='0x000000000')
-    skale.wallet.wait = mock.Mock(return_value={'status': 0})
+    skale.wallet.wait = mock.Mock(return_value={'status': 0, 'error': 'Test error'})
     try:
         yield skale
     finally:

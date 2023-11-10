@@ -27,29 +27,35 @@ from typing import Dict, Optional, Tuple
 from redis import Redis
 
 import skale.config as config
+from skale.transactions.exceptions import (
+    TransactionError,
+    TransactionNotMinedError,
+    TransactionNotSentError,
+    TransactionWaitError
+)
 from skale.utils.web3_utils import get_receipt, MAX_WAITING_TIME
 from skale.wallets import BaseWallet
 
 logger = logging.getLogger(__name__)
 
 
-class RedisAdapterError(Exception):
+class RedisWalletError(Exception):
     pass
 
 
-class DroppedError(RedisAdapterError):
+class RedisWalletDroppedError(RedisWalletError, TransactionNotMinedError):
     pass
 
 
-class EmptyStatusError(RedisAdapterError):
+class RedisWalletEmptyStatusError(RedisWalletError, TransactionError):
     pass
 
 
-class AdapterSendError(RedisAdapterError):
+class RedisWalletNotSentError(RedisWalletError, TransactionNotSentError):
     pass
 
 
-class AdapterWaitError(RedisAdapterError):
+class RedisWalletWaitError(RedisWalletError, TransactionWaitError):
     pass
 
 
@@ -150,7 +156,7 @@ class RedisWalletAdapter(BaseWallet):
             return self._to_id(raw_id)
         except Exception as err:
             logger.exception(f'Sending {tx} with redis wallet errored')
-            raise AdapterSendError(err)
+            raise RedisWalletNotSentError(err)
 
     def get_status(self, tx_id: str) -> str:
         return self.get_record(tx_id)['status']
@@ -178,11 +184,11 @@ class RedisWalletAdapter(BaseWallet):
                     return get_receipt(self.wallet._web3, r['tx_hash'])
             except Exception as err:
                 logger.exception(f'Waiting for tx {tx_id} errored')
-                raise AdapterWaitError(err)
+                raise RedisWalletWaitError(err)
 
         if status is None:
-            raise EmptyStatusError('Tx status is None')
+            raise RedisWalletEmptyStatusError('Tx status is None')
         if status == 'DROPPED':
-            raise DroppedError('Tx was dropped after max retries')
+            raise RedisWalletDroppedError('Tx was dropped after max retries')
         else:
-            raise AdapterWaitError(f'Tx finished with status {status}')
+            raise RedisWalletWaitError(f'Tx finished with status {status}')

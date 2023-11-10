@@ -21,10 +21,15 @@ from typing import Dict, Optional
 from eth_keys import keys
 from web3 import Web3
 from eth_account import messages
+from web3.exceptions import Web3Exception
 
 import skale.config as config
+from skale.transactions.exceptions import (
+    TransactionNotSignedError,
+    TransactionNotSentError
+)
 from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
-from skale.wallets.common import BaseWallet, ensure_chain_id
+from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
 
 def private_key_to_public(pr):
@@ -65,17 +70,23 @@ class Web3Wallet(BaseWallet):
         if not tx_dict.get('nonce'):
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         ensure_chain_id(tx_dict, self._web3)
-        return self._web3.eth.account.sign_transaction(
-            tx_dict,
-            private_key=self._private_key
-        )
+        try:
+            return self._web3.eth.account.sign_transaction(
+                tx_dict,
+                private_key=self._private_key
+            )
+        except (TypeError, ValueError, Web3Exception) as e:
+            raise TransactionNotSignedError(e)
 
     def sign_hash(self, unsigned_hash: str):
-        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
-        return self._web3.eth.account.sign_message(
-            unsigned_message,
-            private_key=self._private_key
-        )
+        try:
+            unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
+            return self._web3.eth.account.sign_message(
+                unsigned_message,
+                private_key=self._private_key
+            )
+        except (TypeError, ValueError, Web3Exception) as e:
+            raise MessageNotSignedError(e)
 
     def sign_and_send(
         self,
@@ -86,9 +97,12 @@ class Web3Wallet(BaseWallet):
         meta: Optional[Dict] = None
     ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.send_raw_transaction(
-            signed_tx.rawTransaction
-        ).hex()
+        try:
+            return self._web3.eth.send_raw_transaction(
+                signed_tx.rawTransaction
+            ).hex()
+        except (ValueError, Web3Exception) as e:
+            raise TransactionNotSentError(e)
 
     @property
     def address(self):

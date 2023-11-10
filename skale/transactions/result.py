@@ -17,9 +17,12 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from typing import Optional
+
 from skale.transactions.exceptions import (
     DryRunFailedError,
-    RevertError,
+    DryRunRevertError,
+    TransactionRevertError,
     TransactionFailedError
 )
 
@@ -34,8 +37,11 @@ def is_success_or_not_performed(result: dict) -> bool:
     return result is None or is_success(result)
 
 
-def is_revert_error(result: dict) -> bool:
-    return result and result.get('error', None) and 'reverted' in result['error'].lower()
+def is_revert_error(result: Optional[dict]) -> bool:
+    if not result:
+        return False
+    error = result.get('error', None)
+    return error == 'revert'
 
 
 class TxRes:
@@ -63,11 +69,16 @@ class TxRes:
         return not is_success_or_not_performed(self.receipt)
 
     def raise_for_status(self) -> None:
-        if self.dry_run_failed():
+        if self.receipt is not None:
+            if not is_success(self.receipt):
+                error_msg = self.receipt['error']
+                if is_revert_error(self.receipt):
+                    raise TransactionRevertError(error_msg)
+                else:
+                    raise TransactionFailedError(error_msg)
+        elif self.dry_run_result is not None and not is_success(self.dry_run_result):
+            error_msg = self.dry_run_result['message']
             if is_revert_error(self.dry_run_result):
-                raise RevertError(self.dry_run_result['error'])
-            raise DryRunFailedError(f'Dry run check failed. '
-                                    f'See result {self.dry_run_result}')
-        if self.tx_failed():
-            raise TransactionFailedError(f'Transaction failed. '
-                                         f'See receipt {self.receipt}')
+                raise DryRunRevertError(error_msg)
+            else:
+                raise DryRunFailedError(error_msg)
