@@ -72,25 +72,24 @@ def test_sign_and_send(rdp):
         tx_id = rdp.sign_and_send(tx, multiplier=2, priority=5)
 
 
-def test_wait(rdp):
+def test_rdp_wait(rdp):
     tx_id = 'tx-tttttttttttttttt'
-    rdp.get_status = mock.Mock(return_value=None)
+    rdp.get_record = mock.Mock(return_value=None)
     with in_time(3):
         with pytest.raises(RedisWalletEmptyStatusError):
             rdp.wait(tx_id, timeout=2)
 
-    rdp.get_status = mock.Mock(return_value='DROPPED')
+    rdp.get_record = mock.Mock(return_value={'tx_hash': 'test', 'status': 'DROPPED'})
     with in_time(2):
         with pytest.raises(RedisWalletDroppedError):
             rdp.wait(tx_id, timeout=100)
 
-    rdp.get_status = mock.Mock(side_effect=RedisTestError('test'))
+    rdp.get_record = mock.Mock(side_effect=RedisTestError('test'))
     with in_time(2):
         with pytest.raises(RedisWalletWaitError):
             rdp.wait(tx_id, timeout=100)
 
-    rdp.get_status = mock.Mock(return_value='SUCCESS')
-    rdp.get_record = mock.Mock(return_value={'tx_hash': 'test'})
+    rdp.get_record = mock.Mock(return_value={'tx_hash': 'test', 'status': 'SUCCESS'})
     fake_receipt = {'test': 'test'}
     with mock.patch(
         'skale.wallets.redis_wallet.get_receipt',

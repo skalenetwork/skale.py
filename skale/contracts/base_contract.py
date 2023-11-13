@@ -25,12 +25,8 @@ from typing import Dict, Optional
 from web3 import Web3
 
 import skale.config as config
-from skale.transactions.result import (
-    TxRes,
-    is_success,
-    is_success_or_not_performed
-)
-from skale.transactions.tools import make_dry_run_call, transaction_from_method
+from skale.transactions.result import TxRes
+from skale.transactions.tools import make_dry_run_call, transaction_from_method, TxStatus
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     get_eth_nonce,
@@ -42,14 +38,6 @@ from skale.utils.helper import to_camel_case
 
 
 logger = logging.getLogger(__name__)
-
-
-def execute_dry_run(skale, method, custom_gas_limit, value=0) -> tuple:
-    dry_run_result = make_dry_run_call(skale, method, custom_gas_limit, value)
-    estimated_gas_limit = None
-    if is_success(dry_run_result):
-        estimated_gas_limit = dry_run_result['payload']
-    return dry_run_result, estimated_gas_limit
 
 
 def transaction_method(transaction):
@@ -76,22 +64,23 @@ def transaction_method(transaction):
         **kwargs
     ):
         method = transaction(self, *args, **kwargs)
-        dry_run_result, tx_hash, receipt = None, None, None
 
         nonce = get_eth_nonce(self.skale.web3, self.skale.wallet.address)
 
-        estimated_gas_limit = None
+        call_result, tx_hash, receipt = None, None, None
         should_dry_run = not skip_dry_run and not config.DISABLE_DRY_RUN
 
         if should_dry_run:
-            dry_run_result, estimated_gas_limit = execute_dry_run(self.skale,
-                                                                  method, gas_limit, value)
+            call_result = make_dry_run_call(self.skale, method, gas_limit, value)
+            if call_result.status == TxStatus.SUCCESS:
+                gas_limit = gas_limit or call_result.data['gas']
 
-        should_send = not dry_run_only and is_success_or_not_performed(dry_run_result)
-        gas_limit = gas_limit or estimated_gas_limit or config.DEFAULT_GAS_LIMIT
-        gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or self.skale.gas_price
+        should_send = not dry_run_only and \
+            (not should_dry_run or call_result.status == TxStatus.SUCCESS)
 
         if should_send:
+            gas_limit = gas_limit or config.DEFAULT_GAS_LIMIT
+            gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or self.skale.gas_price
             tx = transaction_from_method(
                 method=method,
                 gas_limit=gas_limit,
@@ -114,11 +103,11 @@ def transaction_method(transaction):
         if should_wait:
             receipt = self.skale.wallet.wait(tx_hash)
 
-        should_confirm = receipt and confirmation_blocks > 0
+        should_confirm = receipt is not None and confirmation_blocks > 0
         if should_confirm:
             wait_for_confirmation_blocks(self.skale.web3, confirmation_blocks)
 
-        tx_res = TxRes(dry_run_result, tx_hash, receipt)
+        tx_res = TxRes(call_result, tx_hash, receipt)
 
         if raise_for_status:
             tx_res.raise_for_status()

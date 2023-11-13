@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError
+from skale.transactions.result import TxStatus
 from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.utils import generate_random_schain_data
@@ -26,8 +27,8 @@ def test_dry_run(skale):
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
     tx_res = skale.token.transfer(address_to, amount, dry_run_only=True)
-    assert isinstance(tx_res.dry_run_result['payload'], int)
-    assert tx_res.dry_run_result['status'] == 1
+    assert isinstance(tx_res.tx_call_result.data['gas'], int)
+    assert tx_res.tx_call_result.status == TxStatus.SUCCESS
     tx_res.raise_for_status()
 
     balance_from_after = skale.token.get_balance(address_from)
@@ -54,7 +55,7 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
     address_to = account['address']
     amount = 10 * ETH_IN_WEI
     with mock.patch(
-        'skale.contracts.base_contract.execute_dry_run'
+        'skale.contracts.base_contract.make_dry_run_call'
     ) as dry_run_mock:
         skale.token.transfer(address_to, amount)
         dry_run_mock.assert_not_called()
@@ -76,7 +77,7 @@ def test_skip_dry_run(skale):
     )
     assert tx_res.tx_hash is not None, tx_res
     assert tx_res.receipt is not None
-    assert tx_res.dry_run_result is None
+    assert tx_res.tx_call_result is None
     balance_from_after = skale.token.get_balance(address_from)
     assert balance_from_after == balance_from_before - amount
     balance_to_after = skale.token.get_balance(address_to)
@@ -96,8 +97,8 @@ def test_wait_for_false(skale):
     tx_res = skale.token.transfer(address_to, amount, wait_for=False)
     assert tx_res.tx_hash is not None
     assert tx_res.receipt is None
-    assert isinstance(tx_res.dry_run_result['payload'], int)
-    assert tx_res.dry_run_result['status'] == 1
+    assert isinstance(tx_res.tx_call_result.data['gas'], int)
+    assert tx_res.tx_call_result.status == TxStatus.SUCCESS
 
     tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.tx_hash)
     tx_res.raise_for_status()
@@ -113,7 +114,7 @@ def test_tx_res_dry_run(skale):
     token_amount = 10
     tx_res = skale.token.transfer(
         account['address'], token_amount, dry_run_only=True)
-    assert tx_res.dry_run_result is not None
+    assert tx_res.tx_call_result is not None
     assert tx_res.tx_hash is None
     assert tx_res.receipt is None
     tx_res.raise_for_status()
