@@ -205,7 +205,7 @@ def run_tx_with_retry(transaction, *args, max_retries=3,
         )
     else:
         logger.error(
-            'Tx %s completed after %d retries',
+            'Tx %s failed after %d retries',
             transaction.__name__, max_retries
         )
         if raise_for_status:
