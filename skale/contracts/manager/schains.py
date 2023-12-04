@@ -180,3 +180,6 @@ class SChains(BaseContract):
     def get_options_by_name(self, name: str) -> SchainOptions:
         id_ = self.name_to_id(name)
         return self.get_options(id_)
+
+    def restart_schain_creation(self, name: str) -> TxRes:
+        return self.contract.functions.restartSchainCreation(name)
