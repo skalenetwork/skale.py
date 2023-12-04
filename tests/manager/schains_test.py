@@ -256,3 +256,8 @@ def test_get_options(skale, nodes):
     finally:
         if name:
             skale.manager.delete_schain(name)
+
+
+def test_restart_schain_creation(skale, nodes, schain):
+    name = schain
+    skale.schains.restart_schain_creation(name)
