@@ -42,7 +42,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "asyncio==3.4.3",
-        "pyyaml==6.0",
+        "pyyaml==6.0.1",
         "sgx.py==0.9dev0",
         "redis==4.4.4",
         "web3==6.3.0"
