@@ -9,7 +9,7 @@ from hexbytes import HexBytes
 from unittest.mock import Mock
 
 from skale.wallets.web3_wallet import generate_wallet
-from skale.transactions.result import TransactionFailedError
+from skale.transactions.result import DryRunRevertError, TransactionFailedError
 
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data
@@ -144,6 +144,7 @@ def test_create_node_status_0(failed_skale):
         name,
         domain_name=DEFAULT_DOMAIN_NAME,
         wait_for=True,
+        skip_dry_run=True,
         raise_for_status=False
     )
     assert tx_res.receipt['status'] == 0
@@ -159,10 +160,11 @@ def test_node_exit_with_no_schains(skale, nodes):
     assert skale.nodes.get_node_status(node_id) == 2
 
 
-def test_failed_node_exit(skale):
+def test_failed_node_exit(skale, block_in_seconds):
+    # block_in_seconds fixuture to return transaction revert in a same way as geth does
     not_existed_node_id = 1
-    with pytest.raises(TransactionFailedError):
-        skale.manager.node_exit(not_existed_node_id, skip_dry_run=True,
+    with pytest.raises(DryRunRevertError):
+        skale.manager.node_exit(not_existed_node_id,
                                 wait_for=True, gas_limit=TEST_GAS_LIMIT)
 
 

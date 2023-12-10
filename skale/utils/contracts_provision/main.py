@@ -17,6 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3 import Web3
 
 from skale.contracts.manager.nodes import NodeStatus
 from skale.transactions.result import TxRes
@@ -41,14 +42,29 @@ from skale.utils.contracts_provision.utils import (
 )
 
 
+DEFAULT_MINING_INTERVAL = 1000
 TEST_SRW_FUND_VALUE = 3000000000000000000
 
 
-def _skip_evm_time(web3, seconds) -> int:
-    """For test purposes only, works only with ganache node"""
-    res = web3.provider.make_request("evm_increaseTime", [seconds])
+def _skip_evm_time(web3: Web3, seconds: int, mine: bool = True) -> int:
+    """For test purposes only, works only with hardhat node"""
+    res = web3.provider.make_request('evm_increaseTime', [seconds])
     web3.provider.make_request("evm_mine", [])
-    return res['result']
+    return int(res['result'])
+
+
+def set_automining(web3: Web3, value: bool) -> int:
+    res = web3.provider.make_request('evm_setAutomine', [value])
+    return int(res['result'])
+
+
+def set_mining_interval(web3: Web3, ms: int) -> int:
+    res = web3.provider.make_request('evm_setIntervalMining', [ms])
+    return int(res['result'])
+
+
+def set_default_mining_interval(web3) -> int:
+    return set_mining_interval(web3, DEFAULT_MINING_INTERVAL)
 
 
 def add_test_permissions(skale):

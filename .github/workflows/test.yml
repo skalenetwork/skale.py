@@ -20,21 +20,42 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install host dependencies
-      run: bash ./scripts/install_host_dependencies.sh
+
     - name: Install python dependencies
       run: bash ./scripts/install_python_dependencies.sh
+
     - name: Lint with flake8
       run: flake8 .
-    - name: Deploy manager contracts
+
+    - name: Launch hardhat node
+      working-directory: hardhat-node
+      run: |
+        docker-compose up -d 
+
+    - name: Deploy manager
       run: |
         bash ./helper-scripts/deploy_test_manager.sh
+        docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
+
+    - name: Show stats before tests
+      if: always()
+      run: | 
+        sudo lsblk -f
+        sudo free -h
+
     - name: Run tests
       run: |
         bash ./scripts/run_manager_tests.sh
     - name: Codecov
       run: |
         codecov -t $CODECOV_TOKEN
+
+    - name: Show stats after tests
+      if: always()
+      run: | 
+        sudo lsblk -f
+        sudo free -h
+
   test_allocator:
     runs-on: ubuntu-20.04
     strategy:
@@ -48,17 +69,39 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install host dependencies
       run: bash ./scripts/install_host_dependencies.sh
+
     - name: Install python dependencies
       run: bash ./scripts/install_python_dependencies.sh
+
+    - name: Launch hardhat node
+      working-directory: hardhat-node
+      run: |
+        docker-compose up -d 
+
+    - name: Deploy manager contracts
+      run: |
+        bash ./helper-scripts/deploy_test_manager.sh
+        docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
+
     - name: Deploy allocator contracts
       run: |
         bash ./helper-scripts/deploy_test_allocator.sh
+        docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
+
     - name: Run tests
       run: |
         bash ./scripts/run_allocator_tests.sh
+
+    - name: Show stats after tests
+      if: always()
+      run: | 
+        sudo lsblk -f
+        sudo free -h

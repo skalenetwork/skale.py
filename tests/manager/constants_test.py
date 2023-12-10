@@ -3,7 +3,7 @@ import random
 
 
 from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
-from skale.transactions.result import RevertError
+from skale.transactions.result import DryRunRevertError
 
 
 def test_get_set_periods(skale):
@@ -42,7 +42,7 @@ def test_get_set_latency(skale):
 def test_get_set_launch_timestamp(skale):
     launch_ts = skale.constants_holder.get_launch_timestamp()
     assert isinstance(launch_ts, int)
-    with pytest.raises(RevertError):
+    with pytest.raises(DryRunRevertError):
         skale.constants_holder.set_launch_timestamp(launch_ts, wait_for=True)
 
 

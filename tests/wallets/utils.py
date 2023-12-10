@@ -49,3 +49,28 @@ class SgxClient:
             v=27,
             signature=HexBytes('0x6161616161613131313131')
         )
+
+
+class BadSgxClient:
+    def __init__(self, endpoint, path_to_cert=None):
+        pass
+
+    def generate_key(self):
+        return Account(
+            name='NEK:aaabbb',
+            address=ADDRESS,
+            public_key=PUBLIC_KEY
+        )
+
+    def get_account(self, key_name):
+        return Account(
+            name='NEK:aaabbb',
+            address=ADDRESS,
+            public_key=PUBLIC_KEY
+        )
+
+    def sign(self, transaction_dict, key_name):
+        raise ValueError('Test Error')
+
+    def sign_hash(self, message, key_name, chain_id):
+        raise ValueError('Test error')

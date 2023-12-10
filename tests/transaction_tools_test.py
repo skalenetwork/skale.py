@@ -8,16 +8,18 @@ from skale.transactions.exceptions import (
 )
 from skale import Skale
 from skale.transactions.tools import (
-    run_tx_with_retry,
+    get_block_gas_limit,
     estimate_gas,
-    get_block_gas_limit
+    TxCallResult,
+    TxStatus,
+    run_tx_with_retry
 )
 from skale.utils.account_tools import generate_account
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallet
 
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, TEST_GAS_LIMIT
+from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 from tests.constants import (
     D_VALIDATOR_NAME, D_VALIDATOR_DESC,
     D_VALIDATOR_FEE, D_VALIDATOR_MIN_DEL,
@@ -30,7 +32,6 @@ def generate_new_skale():
     web3 = init_web3(ENDPOINT)
     account = generate_account(web3)
     wallet = Web3Wallet(account['private_key'], web3)
-    wallet.sign_and_send = mock.Mock()
     wallet.wait = mock.Mock()
     return Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
 
@@ -58,10 +59,12 @@ def test_run_tx_with_retry(skale):
 
 def test_run_tx_with_retry_dry_run_failed(skale):
     dry_run_call_mock = mock.Mock(
-        return_value={
-            'status': 0,
-            'error': 'Dry run failed'
-        }
+        return_value=TxCallResult(
+            status=TxStatus.FAILED,
+            error='revert',
+            message='Dry run test failure',
+            data={}
+        )
     )
     account = generate_account(skale.web3)
     token_amount = 10 * ETH_IN_WEI
@@ -102,21 +105,15 @@ def test_run_tx_with_retry_tx_failed(failed_skale):
 def test_run_tx_with_retry_insufficient_balance(skale):
     sender_skale = generate_new_skale()
     token_amount = 10 * ETH_IN_WEI
-    skale.token.transfer(sender_skale.wallet.address, token_amount + 1,
-                         skip_dry_run=True,
-                         wait_for=True,
-                         gas_limit=TEST_GAS_LIMIT)
     retries_number = 5
-    sender_skale.wallet.wait = mock.Mock()
-    run_tx_with_retry(
+    tx_res = run_tx_with_retry(
         sender_skale.token.transfer,
-        skale.wallet.address, token_amount, wait_for=True,
+        skale.wallet.address, token_amount,
         raise_for_status=False,
         max_retries=retries_number,
     )
 
-    assert sender_skale.wallet.sign_and_send.call_count == retries_number
-    assert sender_skale.wallet.wait.call_count == retries_number
+    assert tx_res.attempts == retries_number
 
 
 def test_estimate_gas(skale):

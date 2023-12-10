@@ -46,7 +46,3 @@ class InvalidNodeIdError(Exception):
     def __init__(self, node_id):
         message = f'Node with ID = {node_id} doesn\'t exist!'
         super().__init__(message)
-
-
-class ChainIdError(ValueError):
-    """Raised when chainId is missing or incorrect"""

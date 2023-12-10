@@ -1,12 +1,10 @@
 """ Tests for contracts/delegation/delegation_controller.py """
 
-from datetime import date
-
 import pytest
 
 from skale.contracts.manager.delegation.delegation_controller import FIELDS
 from skale.transactions.exceptions import ContractLogicError
-from skale.transactions.result import RevertError
+from skale.transactions.result import DryRunRevertError
 from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision.utils import generate_random_name
 
@@ -36,7 +34,7 @@ def _delegate_and_activate(skale, validator_id=D_VALIDATOR_ID):
         delegations[-1]['id'],
         wait_for=True
     )
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS, mine=False)
 
 
 def _get_number_of_delegations(skale, validator_id=D_VALIDATOR_ID):
@@ -98,10 +96,10 @@ def test_delegate(skale, validator):
     assert delegated_now_after == delegated_now_before + D_DELEGATION_AMOUNT
     assert delegated_amount_after == delegated_amount_before + D_DELEGATION_AMOUNT
 
-    month = date.fromtimestamp(skale.web3.eth.get_block('latest')['timestamp']).month
+    month = skale.time_helpers_with_debug.get_current_month()
     res = skale.delegation_controller.get_delegated_to_validator(
         validator_id,
-        month * 100
+        month
     )
     assert isinstance(res, int)
 
@@ -206,7 +204,7 @@ def test_request_undelegate(skale, validator):
     )
 
     # Transaction failed if delegation period is in progress
-    with pytest.raises(RevertError):
+    with pytest.raises(DryRunRevertError):
         tx_res = skale.delegation_controller.request_undelegation(
             delegation_id,
             wait_for=True,

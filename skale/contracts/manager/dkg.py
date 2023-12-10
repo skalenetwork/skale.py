@@ -153,3 +153,6 @@ class DKG(BaseContract):
 
     def get_time_of_last_successful_dkg(self, group_index):
         return self.contract.functions.getTimeOfLastSuccessfulDKG(group_index).call()
+
+    def is_node_broadcasted(self, group_index: int, node_id: int) -> bool:
+        return self.contract.functions.isNodeBroadcasted(group_index, node_id).call()
