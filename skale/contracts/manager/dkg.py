@@ -40,10 +40,10 @@ class DKG(BaseContract):
     @retry_tx
     @transaction_method
     def broadcast(self, group_index, node_index,
-                  verification_vector, secret_key_contribution):
+                  verification_vector, secret_key_contribution, rotation_id):
         return self.contract.functions.broadcast(group_index, node_index,
                                                  verification_vector,
-                                                 secret_key_contribution)
+                                                 secret_key_contribution, rotation_id)
 
     @retry_tx
     @transaction_method
