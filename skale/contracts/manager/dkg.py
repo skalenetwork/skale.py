@@ -43,7 +43,8 @@ class DKG(BaseContract):
                   verification_vector, secret_key_contribution, rotation_id):
         return self.contract.functions.broadcast(group_index, node_index,
                                                  verification_vector,
-                                                 secret_key_contribution, rotation_id)
+                                                 secret_key_contribution,
+                                                 rotation_id)
 
     @retry_tx
     @transaction_method
