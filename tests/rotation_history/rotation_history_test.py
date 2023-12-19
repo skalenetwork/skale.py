@@ -180,7 +180,7 @@ def test_rotation_history_failed_dkg(
 
     exiting_node_index = second_node_index_to_exit
     exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=2)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=3)
 
     previous_node_id = skale.node_rotation.get_previous_node(
         name,
@@ -249,7 +249,7 @@ def test_get_new_nodes_list(skale, four_node_schain):
     assert all(x in new_nodes for x in test_new_node_ids)
 
     exiting_node_index = 3
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=2)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=4)
 
     rotation = skale.node_rotation.get_rotation_obj(name)
     node_groups = get_previous_schain_groups(
