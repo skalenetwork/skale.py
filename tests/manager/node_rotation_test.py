@@ -100,7 +100,7 @@ def test_is_rotation_active(skale, four_node_schain):
     nodes[exiting_node_index] = new_nodes[0]
     skale_instances[exiting_node_index] = new_skale_instances[0]
 
-    run_dkg(nodes, skale_instances, group_index, skip_time=False)
+    run_dkg(nodes, skale_instances, group_index, skip_time=False, rotation_id=1)
 
     assert skale.node_rotation.is_new_node_found(name)
     assert skale.node_rotation.is_rotation_in_progress(name)
