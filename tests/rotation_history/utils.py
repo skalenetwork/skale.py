@@ -181,7 +181,8 @@ def fail_dkg(
         nodes[second_failed_node_index] = new_nodes[0]
         skale_instances[second_failed_node_index] = new_skale_instances[0]
 
-    run_dkg(nodes, skale_instances, group_index, rotation_id=rotation_id + 2)
+    run_dkg(nodes, skale_instances, group_index, rotation_id=rotation_id + 1 +
+            (0 if second_failed_node_index is None else 1))
     return new_node_ids
 
 
