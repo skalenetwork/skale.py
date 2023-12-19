@@ -135,7 +135,8 @@ def send_complaint(nodes, skale_instances, group_index, failed_node_index):
             skale_instance.dkg.complaint(group_index, nodes[i]['node_id'], failed_node_id)
 
 
-def rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=True, rotation_id=0):
+def rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=True,
+                rotation_id=0):
     new_nodes, new_skale_instances = set_up_nodes(skale, 1)
     skale.nodes.init_exit(nodes[exiting_node_index]['node_id'])
     skale_instances[exiting_node_index].manager.node_exit(nodes[exiting_node_index]['node_id'])
@@ -172,7 +173,8 @@ def fail_dkg(
         new_nodes, new_skale_instances = set_up_nodes(skale, 1)
         new_node_ids.append(new_nodes[0]['node_id'])
 
-        send_broadcasts(nodes, skale_instances, group_index, second_failed_node_index, rotation_id=rotation_id + 1)
+        send_broadcasts(nodes, skale_instances, group_index, second_failed_node_index,
+                        rotation_id=rotation_id + 1)
         _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
         send_complaint(nodes, skale_instances, group_index, second_failed_node_index)
 
