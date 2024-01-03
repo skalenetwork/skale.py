@@ -136,6 +136,9 @@ class Nodes(BaseContract):
         """
         return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
 
+    def get_last_change_ip_time(self, node_id: int) -> list:
+        return self.contract.functions.getLastChangeIpTime(node_id).call()
+
     @transaction_method
     def set_node_in_maintenance(self, node_id):
         return self.contract.functions.setNodeInMaintenance(node_id)
