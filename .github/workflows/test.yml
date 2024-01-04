@@ -62,6 +62,7 @@ jobs:
       matrix:
         python-version: [3.11]
     env:
+      ENDPOINT: ${{ secrets.ENDPOINT }}
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       MANAGER_TAG: "1.9.0-develop.20"
       ALLOCATOR_TAG: "2.2.2-develop.0"
