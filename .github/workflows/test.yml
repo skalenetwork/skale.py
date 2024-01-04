@@ -30,7 +30,7 @@ jobs:
     - name: Launch hardhat node
       working-directory: hardhat-node
       run: |
-        docker-compose up -d 
+        docker-compose up -d && sleep 50
 
     - name: docker
       run: |
