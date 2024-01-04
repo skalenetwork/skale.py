@@ -32,6 +32,14 @@ jobs:
       run: |
         docker-compose up -d 
 
+    - name: docker
+      run: |
+        docker ps -a
+
+    - name: logs
+      run: |
+        docker logs hnode --tail 1000
+
     - name: Deploy manager
       run: |
         bash ./helper-scripts/deploy_test_manager.sh
@@ -85,14 +93,6 @@ jobs:
       working-directory: hardhat-node
       run: |
         docker-compose up -d 
-
-    - name: Docker ps -a
-      run: |
-        docker ps -a
-
-    - name: Docker ps -a
-      run: |
-        docker logs hnode --tail 1000
 
     - name: Deploy manager contracts
       run: |
