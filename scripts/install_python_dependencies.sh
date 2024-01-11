@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ea
 
 python -m pip install --upgrade pip
 pip install -e .

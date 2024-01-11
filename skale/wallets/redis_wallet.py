@@ -22,35 +22,51 @@ import json
 import logging
 import os
 import time
+from enum import Enum
 from typing import Dict, Optional, Tuple
 
 from redis import Redis
 
 import skale.config as config
+from skale.transactions.exceptions import (
+    TransactionError,
+    TransactionNotMinedError,
+    TransactionNotSentError,
+    TransactionWaitError
+)
 from skale.utils.web3_utils import get_receipt, MAX_WAITING_TIME
 from skale.wallets import BaseWallet
 
 logger = logging.getLogger(__name__)
 
 
-class RedisAdapterError(Exception):
+class RedisWalletError(Exception):
     pass
 
 
-class DroppedError(RedisAdapterError):
+class RedisWalletDroppedError(RedisWalletError, TransactionNotMinedError):
     pass
 
 
-class EmptyStatusError(RedisAdapterError):
+class RedisWalletEmptyStatusError(RedisWalletError, TransactionError):
     pass
 
 
-class AdapterSendError(RedisAdapterError):
+class RedisWalletNotSentError(RedisWalletError, TransactionNotSentError):
     pass
 
 
-class AdapterWaitError(RedisAdapterError):
+class RedisWalletWaitError(RedisWalletError, TransactionWaitError):
     pass
+
+
+class TxRecordStatus(str, Enum):
+    DROPPED = 'DROPPED'
+    SUCCESS = 'SUCCESS'
+    FAILED = 'FAILED'
+
+    def __str__(self) -> str:
+        return str.__str__(self)
 
 
 class RedisWalletAdapter(BaseWallet):
@@ -150,7 +166,7 @@ class RedisWalletAdapter(BaseWallet):
             return self._to_id(raw_id)
         except Exception as err:
             logger.exception(f'Sending {tx} with redis wallet errored')
-            raise AdapterSendError(err)
+            raise RedisWalletNotSentError(err)
 
     def get_status(self, tx_id: str) -> str:
         return self.get_record(tx_id)['status']
@@ -166,23 +182,28 @@ class RedisWalletAdapter(BaseWallet):
         timeout: int = MAX_WAITING_TIME
     ) -> Dict:
         start_ts = time.time()
-        status = None
-
-        while time.time() - start_ts < timeout:
+        status, result = None, None
+        while status not in [
+            TxRecordStatus.DROPPED,
+            TxRecordStatus.SUCCESS,
+            TxRecordStatus.FAILED
+        ] and time.time() - start_ts < timeout:
             try:
-                status = self.get_status(tx_id)
-                if status == 'DROPPED':
-                    break
-                if status in ('SUCCESS', 'FAILED'):
-                    r = self.get_record(tx_id)
-                    return get_receipt(self.wallet._web3, r['tx_hash'])
-            except Exception as err:
-                logger.exception(f'Waiting for tx {tx_id} errored')
-                raise AdapterWaitError(err)
+                record = self.get_record(tx_id)
+                if record is not None:
+                    status = record.get('status')
+                    if status in (TxRecordStatus.SUCCESS, TxRecordStatus.FAILED):
+                        result = get_receipt(self.wallet._web3, record['tx_hash'])
+            except Exception as e:
+                logger.exception('Waiting for tx %s errored', tx_id)
+                raise RedisWalletWaitError(e)
+
+        if result:
+            return result
 
         if status is None:
-            raise EmptyStatusError('Tx status is None')
-        if status == 'DROPPED':
-            raise DroppedError('Tx was dropped after max retries')
+            raise RedisWalletEmptyStatusError(f'Tx status is {status}')
+        elif status == TxRecordStatus.DROPPED:
+            raise RedisWalletDroppedError('Tx was dropped after max retries')
         else:
-            raise AdapterWaitError(f'Tx finished with status {status}')
+            raise RedisWalletWaitError(f'Tx finished with status {status}')

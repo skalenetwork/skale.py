@@ -57,7 +57,7 @@ def send_tokens(
         f'{receiver_address}'
     )
 
-    wei_amount = skale.web3.toWei(amount, 'ether')
+    wei_amount = skale.web3.to_wei(amount, 'ether')
     return skale.token.transfer(
         receiver_address,
         wei_amount,
@@ -83,7 +83,7 @@ def send_eth(
         f'Sending {amount} ETH from {wallet.address} => '
         f'{receiver_address}'
     )
-    wei_amount = web3.toWei(amount, 'ether')
+    wei_amount = web3.to_wei(amount, 'ether')
     gas_price = gas_price or default_gas_price(web3)
     tx = compose_eth_transfer_tx(
         web3=web3,
@@ -111,12 +111,12 @@ def send_eth(
 
 
 def account_eth_balance_wei(web3, address):
-    return web3.eth.getBalance(address)
+    return web3.eth.get_balance(address)
 
 
 def check_ether_balance(web3, address):
     balance_wei = account_eth_balance_wei(web3, address)
-    balance = web3.fromWei(balance_wei, 'ether')
+    balance = web3.from_wei(balance_wei, 'ether')
 
     logger.info(f'{address} balance: {balance} ETH')
     return balance
@@ -124,7 +124,7 @@ def check_ether_balance(web3, address):
 
 def check_skale_balance(skale, address):
     balance_wei = skale.token.get_balance(address)
-    balance = skale.web3.fromWei(balance_wei, 'ether')
+    balance = skale.web3.from_wei(balance_wei, 'ether')
     logger.info(f'{address} balance: {balance} SKALE')
     return balance
 

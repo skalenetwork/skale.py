@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 def test_get_previous_node_no_node(skale):
-    assert skale.node_rotation.get_previous_node(DEFAULT_SCHAIN_NAME, 0) is None
+    assert skale.node_rotation.get_previous_node(
+        DEFAULT_SCHAIN_NAME, 0) is None
 
 
 @pytest.fixture
@@ -41,15 +42,15 @@ def four_node_schain(skale, validator):
 
 def test_rotation_history(skale, four_node_schain):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
 
-    run_dkg(nodes, skale_instances, group_index)
+    run_dkg(nodes, skale_instances, group_index, rotation_id=0)
 
     group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
     exiting_node_index = 1
     exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=1)
 
     previous_node_id = skale.node_rotation.get_previous_node(
         name,
@@ -61,7 +62,7 @@ def test_rotation_history(skale, four_node_schain):
 
     exiting_node_index = 1
     exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=2)
 
     previous_node_id = skale.node_rotation.get_previous_node(
         name,
@@ -73,7 +74,7 @@ def test_rotation_history(skale, four_node_schain):
 
     exiting_node_index = 2
     exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=3)
 
     previous_node_id = skale.node_rotation.get_previous_node(
         name,
@@ -85,7 +86,7 @@ def test_rotation_history(skale, four_node_schain):
 
     exiting_node_index = 3
     exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=4)
 
     previous_node_id = skale.node_rotation.get_previous_node(
         name,
@@ -97,7 +98,7 @@ def test_rotation_history(skale, four_node_schain):
 
     exiting_node_index = 1
     exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=5)
 
     previous_node_id = skale.node_rotation.get_previous_node(
         name,
@@ -129,14 +130,14 @@ def test_rotation_history_no_rotations(skale, four_node_schain):
 
 def test_rotation_history_single_rotation(skale, four_node_schain):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
 
-    run_dkg(nodes, skale_instances, group_index)
+    run_dkg(nodes, skale_instances, group_index, rotation_id=0)
 
     group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
     exiting_node_index = 1
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=1)
 
     group_ids_1 = skale.schains_internal.get_node_ids_for_schain(name)
 
@@ -147,28 +148,39 @@ def test_rotation_history_single_rotation(skale, four_node_schain):
     assert set(node_groups[1]['nodes'].keys()) == set(group_ids_1)
 
 
-def test_rotation_history_failed_dkg(skale, four_node_schain):
+@pytest.mark.parametrize(
+    'first_node_index_to_exit,failed_node_index,second_node_index_to_exit',
+    [(1, 2, 1), (1, 2, 3), (2, 2, 2)]
+)
+def test_rotation_history_failed_dkg(
+    skale,
+    four_node_schain,
+    first_node_index_to_exit,
+    failed_node_index,
+    second_node_index_to_exit
+):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
+    assert not skale.dkg.is_node_broadcasted(group_index, nodes[0]['node_id'])
 
-    run_dkg(nodes, skale_instances, group_index)
+    run_dkg(nodes, skale_instances, group_index, rotation_id=0)
+    assert skale.dkg.is_node_broadcasted(group_index, nodes[0]['node_id'])
 
     group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False)
+    rotate_node(skale, group_index, nodes, skale_instances,
+                first_node_index_to_exit, do_dkg=False, rotation_id=1)
 
     group_ids_1 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    failed_node_index = 2
     failed_node_id = nodes[failed_node_index]['node_id']
-    fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index)
+    fail_dkg(skale, nodes, skale_instances, group_index, failed_node_index, rotation_id=1)
 
     group_ids_2 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    exiting_node_index = 1
+    exiting_node_index = second_node_index_to_exit
     exiting_node_id = nodes[exiting_node_index]['node_id']
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=3)
 
     previous_node_id = skale.node_rotation.get_previous_node(
         name,
@@ -205,54 +217,45 @@ def test_rotation_history_failed_dkg(skale, four_node_schain):
 
 def test_get_new_nodes_list(skale, four_node_schain):
     nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.sha3(text=name)
+    group_index = skale.web3.keccak(text=name)
 
-    run_dkg(nodes, skale_instances, group_index)
+    run_dkg(nodes, skale_instances, group_index, rotation_id=0)
 
     exiting_node_index = 1  # in group
-    exiting_node_g_id = nodes[exiting_node_index]['node_id']  # global id
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False)
+    rotate_node(skale, group_index, nodes, skale_instances,
+                exiting_node_index, do_dkg=False, rotation_id=1)
 
     failed_node_index = 2
-    failed_node_g_id = nodes[failed_node_index]['node_id']
     second_failed_node_index = 3
-    second_failed_node_g_id = nodes[second_failed_node_index]['node_id']
     test_new_node_ids = fail_dkg(
         skale=skale,
         nodes=nodes,
         skale_instances=skale_instances,
         group_index=group_index,
         failed_node_index=failed_node_index,
-        second_failed_node_index=second_failed_node_index
+        second_failed_node_index=second_failed_node_index,
+        rotation_id=1
     )
 
     rotation = skale.node_rotation.get_rotation_obj(name)
     node_groups = get_previous_schain_groups(
         skale=skale,
         schain_name=name,
-        leaving_node_id=rotation.leaving_node_id,
-        include_keys=False
+        leaving_node_id=rotation.leaving_node_id
     )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
     assert len(new_nodes) == 3
     assert all(x in new_nodes for x in test_new_node_ids)
 
-    # Temorary fix for "The schain does not exist" problem
-    # Bad nodes should be removed before chain is deleted
-    remove_node(skale, exiting_node_g_id)
-    remove_node(skale, failed_node_g_id)
-    remove_node(skale, second_failed_node_g_id)
-
     exiting_node_index = 3
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index)
+    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=4)
 
     rotation = skale.node_rotation.get_rotation_obj(name)
     node_groups = get_previous_schain_groups(
         skale=skale,
         schain_name=name,
-        leaving_node_id=rotation.leaving_node_id,
-        include_keys=False
+        leaving_node_id=rotation.leaving_node_id
     )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 

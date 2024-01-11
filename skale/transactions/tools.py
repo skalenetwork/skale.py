@@ -23,13 +23,13 @@ from functools import partial, wraps
 from typing import Dict, Optional
 
 from web3 import Web3
+from web3.exceptions import ContractLogicError, Web3Exception
 from web3._utils.transactions import get_block_gas_limit
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionError
-from skale.transactions.result import TxRes
+from skale.transactions.result import TxCallResult, TxRes, TxStatus
 from skale.utils.web3_utils import get_eth_nonce
-from skale.wallets.redis_wallet import RedisAdapterError
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
-def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
+def make_dry_run_call(skale, method, gas_limit=None, value=0) -> TxCallResult:
     opts = {
         'from': skale.wallet.address,
         'value': value
@@ -49,6 +49,7 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
         f'wallet: {skale.wallet.__class__.__name__}, '
         f'value: {value}, '
     )
+    estimated_gas = 0
 
     try:
         if gas_limit:
@@ -58,11 +59,15 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
         else:
             estimated_gas = estimate_gas(skale.web3, method, opts)
         logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
-    except Exception as err:
-        logger.error('Dry run for method failed with error', exc_info=err)
-        return {'status': 0, 'error': str(err)}
+    except ContractLogicError as e:
+        return TxCallResult(status=TxStatus.FAILED,
+                            error='revert', message=e.message, data=e.data)
+    except (Web3Exception, ValueError) as e:
+        logger.exception('Dry run for %s failed', method)
+        return TxCallResult(status=TxStatus.FAILED, error='exception', message=str(e), data={})
 
-    return {'status': 1, 'payload': estimated_gas}
+    return TxCallResult(status=TxStatus.SUCCESS, error='',
+                        message='success', data={'gas': estimated_gas})
 
 
 def estimate_gas(web3, method, opts):
@@ -71,7 +76,7 @@ def estimate_gas(web3, method, opts):
     except AttributeError:
         block_gas_limit = get_block_gas_limit(web3)
 
-    estimated_gas = method.estimateGas(
+    estimated_gas = method.estimate_gas(
         opts,
         block_identifier='latest'
     )
@@ -87,7 +92,7 @@ block gas limit, going to use block_gas_limit ({block_gas_limit}) for this trans
 
 def build_tx_dict(method, *args, **kwargs):
     base_fields = compose_base_fields(*args, **kwargs)
-    return method.buildTransaction(base_fields)
+    return method.build_transaction(base_fields)
 
 
 def compose_base_fields(
@@ -168,29 +173,43 @@ def retry_tx(tx=None, *, max_retries=3, timeout=-1):
 
 def run_tx_with_retry(transaction, *args, max_retries=3,
                       retry_timeout=-1,
+                      raise_for_status=True,
                       **kwargs) -> TxRes:
-    success = False
     attempt = 0
     tx_res = None
     exp_timeout = 1
-    while not success and attempt < max_retries:
+    error = None
+    while attempt < max_retries:
         try:
-            tx_res = transaction(*args, **kwargs)
+            tx_res = transaction(
+                *args,
+                raise_for_status=raise_for_status,
+                **kwargs
+            )
             tx_res.raise_for_status()
-        except (RedisAdapterError, TransactionError) as err:
-            logger.error(f'Tx attempt {attempt}/{max_retries} failed',
-                         exc_info=err)
+        except TransactionError as e:
+            error = e
+            logger.exception('Tx attempt %d/%d failed', attempt + 1, max_retries)
+
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
             exp_timeout *= 2
         else:
-            success = True
+            error = None
+            break
         attempt += 1
-    if success:
-        logger.info(f'Tx {transaction.__name__} completed '
-                    f'after {attempt}/{max_retries} retries')
+    if error is None:
+        logger.info(
+            'Tx %s completed after %d/%d retries',
+            transaction.__name__, attempt + 1, max_retries
+        )
     else:
         logger.error(
-            f'Tx {transaction.__name__} failed after '
-            f'{max_retries} retries')
+            'Tx %s failed after %d retries',
+            transaction.__name__, max_retries
+        )
+        if raise_for_status:
+            raise error
+    if tx_res is not None:
+        tx_res.attempts = attempt
     return tx_res

@@ -22,7 +22,7 @@ import socket
 from enum import IntEnum
 
 from Crypto.Hash import keccak
-from web3.exceptions import BadFunctionCallOutput
+from web3.exceptions import BadFunctionCallOutput, ContractLogicError
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
@@ -47,7 +47,7 @@ class Nodes(BaseContract):
     def __get_raw(self, node_id):
         try:
             return self.contract.functions.nodes(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def __get_raw_w_pk(self, node_id):
@@ -91,7 +91,7 @@ class Nodes(BaseContract):
 
     def name_to_id(self, name):
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
-        return keccak_hash.hexdigest()
+        return keccak_hash.digest()
 
     def is_node_name_available(self, name):
         node_id = self.name_to_id(name)
@@ -108,25 +108,25 @@ class Nodes(BaseContract):
     def get_node_status(self, node_id):
         try:
             return self.contract.functions.getNodeStatus(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def get_node_finish_time(self, node_id):
         try:
             return self.contract.functions.getNodeFinishTime(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def __get_node_public_key_raw(self, node_id):
         try:
             return self.contract.functions.getNodePublicKey(node_id).call()
-        except (ValueError, BadFunctionCallOutput):
+        except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
     def get_node_public_key(self, node_id):
         raw_key = self.__get_node_public_key_raw(node_id)
         key_bytes = raw_key[0] + raw_key[1]
-        return self.skale.web3.toHex(key_bytes)
+        return self.skale.web3.to_hex(key_bytes)
 
     def get_validator_node_indices(self, validator_id: int) -> list:
         """Returns list of node indices to the validator
@@ -135,6 +135,9 @@ class Nodes(BaseContract):
         :rtype: list
         """
         return self.contract.functions.getValidatorNodeIndexes(validator_id).call()
+
+    def get_last_change_ip_time(self, node_id: int) -> list:
+        return self.contract.functions.getLastChangeIpTime(node_id).call()
 
     @transaction_method
     def set_node_in_maintenance(self, node_id):

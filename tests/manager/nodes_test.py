@@ -24,7 +24,7 @@ def test_get_raw_not_exist(skale):
 
 
 def public_key_from_private(key):
-    pr_bytes = Web3.toBytes(hexstr=key)
+    pr_bytes = Web3.to_bytes(hexstr=key)
     return keys.PrivateKey(pr_bytes)
 
 
@@ -179,3 +179,12 @@ def test_change_ip(skale, nodes):
     data = skale.nodes.get(node_id)
     assert data['ip'] == old_ip
     assert data['publicIP'] == old_ip
+
+
+def test_get_last_change_ip_time(skale, nodes):
+    node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
+    new_ip = Helper.ip_to_bytes(generate_random_ip())
+    tx = skale.nodes.change_ip(node_id, new_ip, new_ip, wait_for=True, confirmation_blocks=5)
+    change_timestamp = skale.nodes.get_last_change_ip_time(node_id)
+    block = skale.web3.eth.get_block(tx.receipt.blockNumber)
+    assert change_timestamp == block.timestamp

@@ -9,7 +9,7 @@ from hexbytes import HexBytes
 from unittest.mock import Mock
 
 from skale.wallets.web3_wallet import generate_wallet
-from skale.transactions.result import TransactionFailedError
+from skale.transactions.result import DryRunRevertError, TransactionFailedError
 
 from skale.utils.contracts_provision.main import (
     generate_random_node_data, generate_random_schain_data
@@ -21,9 +21,9 @@ from tests.constants import TEST_GAS_LIMIT
 
 def test_get_bounty(skale):
     node_id = 0
-    nonce = skale.web3.eth.getTransactionCount(skale.wallet.address)
+    nonce = skale.web3.eth.get_transaction_count(skale.wallet.address)
     contract_address = skale.manager.address
-    chain_id = skale.web3.eth.chainId
+    chain_id = skale.web3.eth.chain_id
     expected_txn = {
         'value': 0, 'gasPrice': skale.gas_price, 'chainId': chain_id,
         'gas': TEST_GAS_LIMIT, 'nonce': nonce,
@@ -34,11 +34,11 @@ def test_get_bounty(skale):
             '00000000000000000000'
         )
     }
-    exp = skale.web3.eth.account.signTransaction(
+    exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key).rawTransaction
     with mock.patch.object(skale.manager.contract.functions.getBounty, 'call',
                            new=Mock(return_value=[])):
-        with mock.patch.object(web3.eth.Eth, 'sendRawTransaction') as send_tx_mock:
+        with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
             skale.manager.get_bounty(node_id, wait_for=False, gas_limit=TEST_GAS_LIMIT)
             send_tx_mock.assert_called_with(HexBytes(exp))
@@ -144,6 +144,7 @@ def test_create_node_status_0(failed_skale):
         name,
         domain_name=DEFAULT_DOMAIN_NAME,
         wait_for=True,
+        skip_dry_run=True,
         raise_for_status=False
     )
     assert tx_res.receipt['status'] == 0
@@ -159,10 +160,11 @@ def test_node_exit_with_no_schains(skale, nodes):
     assert skale.nodes.get_node_status(node_id) == 2
 
 
-def test_failed_node_exit(skale):
+def test_failed_node_exit(skale, block_in_seconds):
+    # block_in_seconds fixuture to return transaction revert in a same way as geth does
     not_existed_node_id = 1
-    with pytest.raises(TransactionFailedError):
-        skale.manager.node_exit(not_existed_node_id, skip_dry_run=True,
+    with pytest.raises(DryRunRevertError):
+        skale.manager.node_exit(not_existed_node_id,
                                 wait_for=True, gas_limit=TEST_GAS_LIMIT)
 
 

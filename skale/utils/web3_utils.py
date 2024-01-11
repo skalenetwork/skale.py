@@ -71,6 +71,10 @@ class EthClientOutdatedError(Exception):
     pass
 
 
+class BlockWaitTimeoutError(Exception):
+    pass
+
+
 def get_last_known_block_number(state_path: str) -> int:
     if not os.path.isfile(state_path):
         return 0
@@ -98,7 +102,7 @@ def make_client_checking_middleware(allowed_ts_diff: int,
                                     state_path: str = None):
     def eth_client_checking_middleware(make_request, web3):
         def middleware(method, params):
-            if method in ('eth_blockNumber', 'eth_getBlockByNumber'):
+            if method in ('eth_block_number', 'eth_getBlockByNumber'):
                 response = make_request(method, params)
             else:
                 latest_block = web3.eth.get_block('latest')
@@ -178,7 +182,7 @@ def wait_for_receipt_by_blocks(
 ):
     blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
     timeout = timeout or MAX_WAITING_TIME
-    previous_block = web3.eth.blockNumber
+    previous_block = web3.eth.block_number
     current_block = previous_block
     wait_start_time = time.time()
     while time.time() - wait_start_time < timeout and \
@@ -189,7 +193,7 @@ def wait_for_receipt_by_blocks(
             receipt = None
         if receipt is not None:
             return receipt
-        current_block = web3.eth.blockNumber
+        current_block = web3.eth.block_number
         time.sleep(3)
     raise TransactionNotMinedError(
         f'Transaction with hash: {tx} not found in {blocks_to_wait} blocks.'
@@ -227,7 +231,7 @@ def wait_for_confirmation_blocks(
     timeout=MAX_WAITING_TIME,
     request_timeout=5
 ):
-    current_block = start_block = web3.eth.blockNumber
+    current_block = start_block = web3.eth.block_number
     logger.info(
         f'Current block number is {current_block}, '
         f'waiting for {blocks_to_wait} confimration blocks to be mined'
@@ -235,19 +239,19 @@ def wait_for_confirmation_blocks(
     wait_start_time = time.time()
     while time.time() - wait_start_time < timeout and \
             current_block <= start_block + blocks_to_wait:
-        current_block = web3.eth.blockNumber
+        current_block = web3.eth.block_number
         time.sleep(request_timeout)
 
 
 def private_key_to_public(pr):
-    pr_bytes = Web3.toBytes(hexstr=pr)
+    pr_bytes = Web3.to_bytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
 def public_key_to_address(pk):
     hash = Web3.keccak(hexstr=str(pk))
-    return Web3.toHex(hash[-20:])
+    return Web3.to_hex(hash[-20:])
 
 
 def private_key_to_address(pr):
@@ -256,7 +260,7 @@ def private_key_to_address(pr):
 
 
 def to_checksum_address(address):
-    return Web3.toChecksumAddress(address)
+    return Web3.to_checksum_address(address)
 
 
 def wallet_to_public_key(wallet):
