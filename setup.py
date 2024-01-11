@@ -45,6 +45,7 @@ setup(
         "pyyaml==6.0",
         "sgx.py==0.9dev2",
         "redis==4.4.4",
+        "typing-extensions==4.9.0",
         "web3==6.13.0"
     ],
 
