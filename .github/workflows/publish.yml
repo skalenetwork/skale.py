@@ -13,7 +13,7 @@ jobs:
     if: github.event.pull_request.merged
     strategy:
       matrix:
-        python-version: [3.7]
+        python-version: [3.11]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
