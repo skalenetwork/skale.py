@@ -19,7 +19,6 @@
 """ SKALE helper utilities """
 
 import ipaddress
-import json
 import logging
 import random
 import socket

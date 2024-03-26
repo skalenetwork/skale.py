@@ -111,7 +111,7 @@ class SkaleBase:
         )
 
     def add_lib_contract(self, name: str, contract_class,
-                         contract_name: str, contract_address:str=None):
+                         contract_name: str, contract_address: str = None):
         address = contract_address or self.instance.get_contract_address(contract_name)
         logger.debug('Fetching abi for %s, address %s', name, address)
         contract_abi = self.instance.abi[contract_name]
