@@ -20,12 +20,12 @@
 import abc
 import logging
 
+from skale_contracts import skale_contracts
+
 from skale.wallets import BaseWallet
-from skale.utils.abi_utils import get_contract_address_by_name, get_contract_abi_by_name
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
 from skale.utils.web3_utils import default_gas_price, init_web3
 
-from skale.utils.helper import get_abi
 from skale.contracts.contract_manager import ContractManager
 
 
@@ -39,22 +39,29 @@ class EmptyPrivateKey(Exception):
 class SkaleBase:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, endpoint, abi_filepath,
+    def __init__(self, endpoint, alias_or_address: str,
                  wallet=None, state_path=None,
                  ts_diff=None, provider_timeout=30):
-        logger.info(f'Initing skale.py, endpoint: {endpoint}, '
-                    f'wallet: {type(wallet).__name__}')
-        self._abi_filepath = abi_filepath
+        logger.info('Initializing skale.py, endpoint: %s, wallet: %s',
+                    endpoint, type(wallet).__name__)
         self._endpoint = endpoint
         self.web3 = init_web3(endpoint,
                               state_path=state_path,
                               ts_diff=ts_diff,
                               provider_timeout=provider_timeout)
+        self.network = skale_contracts.get_network_by_provider(self.web3.provider)
+        self.project = self.network.get_project(self.project_name)
+        self.instance = self.project.get_instance(alias_or_address)
         self.__contracts = {}
         self.__contracts_info = {}
         self.set_contracts_info()
         if wallet:
             self.wallet = wallet
+
+    @property
+    @abc.abstractmethod
+    def project_name(self) -> str:
+        """Name of smart contracts project"""
 
     @property
     def gas_price(self):
@@ -82,27 +89,32 @@ class SkaleBase:
         return
 
     def init_contract_manager(self):
-        abi = get_abi(self._abi_filepath)
-        self.add_lib_contract('contract_manager', ContractManager, abi)
+        self.add_lib_contract('contract_manager', ContractManager, 'ContractManager')
 
-    def __init_contract_from_info(self, abi, contract_info):
+    def __init_contract_from_info(self, contract_info):
         if contract_info.upgradeable:
-            self.init_upgradeable_contract(contract_info, abi)
+            self.init_upgradeable_contract(contract_info)
         else:
-            self.add_lib_contract(contract_info.name, contract_info.contract_class,
-                                  abi)
+            self.add_lib_contract(
+                contract_info.name,
+                contract_info.contract_class,
+                contract_info.contract_name
+            )
 
-    def init_upgradeable_contract(self, contract_info, abi):
+    def init_upgradeable_contract(self, contract_info):
         address = self.get_contract_address(contract_info.contract_name)
-        self.add_lib_contract(contract_info.name, contract_info.contract_class,
-                              abi, address)
+        self.add_lib_contract(
+            contract_info.name,
+            contract_info.contract_class,
+            contract_info.contract_name,
+            address
+        )
 
-    def add_lib_contract(self, name, contract_class,
-                         abi, contract_address=None):
-        address = contract_address or get_contract_address_by_name(
-            abi, name)
-        logger.debug(f'Fetching abi for {name}, address {address}')
-        contract_abi = get_contract_abi_by_name(abi, name)
+    def add_lib_contract(self, name: str, contract_class,
+                         contract_name: str, contract_address:str=None):
+        address = contract_address or self.instance.get_contract_address(contract_name)
+        logger.debug('Fetching abi for %s, address %s', name, address)
+        contract_abi = self.instance.abi[contract_name]
         self.add_contract(name, contract_class(
             self, name, address, contract_abi))
 
@@ -118,10 +130,9 @@ class SkaleBase:
     def __getattr__(self, name):
         if name not in self.__contracts:
             if not self.__contracts_info.get(name):
-                logger.warning(f'{name} method/contract wasn\'t found')
+                logger.warning("%s method/contract wasn't found", name)
                 return None
-            logger.debug(f'Contract {name} wasn\'t inited, creating now')
+            logger.debug("Contract %s wasn't inited, creating now", name)
             contract_info = self.__contracts_info[name]
-            abi = get_abi(self._abi_filepath)
-            self.__init_contract_from_info(abi, contract_info)
+            self.__init_contract_from_info(contract_info)
         return self.__get_contract_by_name(name)

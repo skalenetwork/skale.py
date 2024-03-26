@@ -24,7 +24,7 @@ import skale.contracts.manager as contracts
 from skale.contracts.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_abi, get_contracts_info
+from skale.utils.helper import get_contracts_info
 
 
 logger = logging.getLogger(__name__)
@@ -86,11 +86,11 @@ def spawn_skale_manager_lib(skale):
 
 
 class SkaleManager(SkaleBase):
+    """Represents skale-manager smart contracts"""
+    @property
+    def project_name(self) -> str:
+        return 'skale-manager'
+
     def set_contracts_info(self):
         self.init_contract_manager()
-        abi = get_abi(self._abi_filepath)
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
-        if self._SkaleBase__is_debug_contracts(abi):
-            logger.info('Debug contracts found in ABI file')
-            self._SkaleBase__contracts_info.update(
-                get_contracts_info(DEBUG_CONTRACTS_INFO))

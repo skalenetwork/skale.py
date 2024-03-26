@@ -94,11 +94,6 @@ def is_valid_ipv4_address(address):
     return True
 
 
-def get_abi(abi_filepath=None):
-    with open(abi_filepath) as data_file:
-        return json.load(data_file)
-
-
 def generate_nonce():  # pragma: no cover
     return randint(0, 65534)
 
