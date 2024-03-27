@@ -1,12 +1,12 @@
 """ SKALE chain test """
 
+import json
 from hexbytes import HexBytes
 
 from skale.contracts.manager.schains import FIELDS, SchainStructure
 from skale.dataclasses.schain_options import SchainOptions
 from skale.utils.contracts_provision.fake_multisig_contract import FAKE_MULTISIG_DATA_PATH
 from skale.utils.contracts_provision.main import generate_random_schain_data, create_schain
-from skale.utils.helper import get_abi
 from skale.wallets.web3_wallet import generate_wallet
 
 from tests.constants import (DEFAULT_NODE_NAME, DEFAULT_SCHAIN_ID,
@@ -184,7 +184,7 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
     type_of_nodes = 1  # test2 schain
     custom_originator = generate_wallet(skale.web3)
 
-    fake_multisig_data = get_abi(FAKE_MULTISIG_DATA_PATH)
+    fake_multisig_data = json.load(open(FAKE_MULTISIG_DATA_PATH))
     payable_contract_address = fake_multisig_data['address']
 
     try:
