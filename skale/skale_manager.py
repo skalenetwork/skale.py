@@ -64,7 +64,7 @@ CONTRACTS_INFO = [
                  ContractTypes.API, False),
     ContractInfo('wallets', 'Wallets', contracts.Wallets,
                  ContractTypes.API, True),
-    ContractInfo('bounty_v2', 'Bounty', contracts.BountyV2,
+    ContractInfo('bounty_v2', 'BountyV2', contracts.BountyV2,
                  ContractTypes.API, True),
     ContractInfo('punisher', 'Punisher', contracts.Punisher,
                  ContractTypes.API, True),
