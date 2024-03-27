@@ -19,6 +19,7 @@
 """ SKALE helper utilities """
 
 import ipaddress
+import json
 import logging
 import random
 import socket
@@ -91,6 +92,13 @@ def is_valid_ipv4_address(address):
     except ValueError:
         return False
     return True
+
+
+def get_abi(abi_filepath: string = None):
+    if abi_filepath:
+        with open(abi_filepath, encoding='utf-8') as data_file:
+            return json.load(data_file)
+    return {}
 
 
 def generate_nonce():  # pragma: no cover
