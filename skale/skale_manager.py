@@ -60,7 +60,7 @@ CONTRACTS_INFO = [
                  ContractTypes.API, False),
     ContractInfo('distributor', 'Distributor', contracts.Distributor,
                  ContractTypes.API, False),
-    ContractInfo('slashing_table', 'Distributor', contracts.SlashingTable,
+    ContractInfo('slashing_table', 'SlashingTable', contracts.SlashingTable,
                  ContractTypes.API, False),
     ContractInfo('wallets', 'Wallets', contracts.Wallets,
                  ContractTypes.API, True),
