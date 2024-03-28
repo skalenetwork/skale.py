@@ -32,7 +32,7 @@ from skale.utils.web3_utils import default_gas_price, init_web3
 from skale.contracts.contract_manager import ContractManager
 
 if TYPE_CHECKING:
-    from eth_typing import Address
+    from eth_typing import Address, ChecksumAddress
 
 
 logger = logging.getLogger(__name__)
@@ -127,8 +127,10 @@ class SkaleBase:
     def add_contract(self, name, contract):
         self.__contracts[name] = contract
 
-    def get_contract_address(self, name):
-        return self.instance.get_contract_address(name)
+    def get_contract_address(self, name) -> ChecksumAddress:
+        return self.web3.to_checksum_address(
+            self.instance.get_contract_address(name)
+        )
 
     def __get_contract_by_name(self, name):
         return self.__contracts[name]
