@@ -17,8 +17,11 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
 import abc
 import logging
+from typing import TYPE_CHECKING
 
 from skale_contracts import skale_contracts
 
@@ -27,6 +30,9 @@ from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
 from skale.utils.web3_utils import default_gas_price, init_web3
 
 from skale.contracts.contract_manager import ContractManager
+
+if TYPE_CHECKING:
+    from eth_typing import Address
 
 
 logger = logging.getLogger(__name__)
@@ -111,7 +117,7 @@ class SkaleBase:
         )
 
     def add_lib_contract(self, name: str, contract_class,
-                         contract_name: str, contract_address: str = None):
+                         contract_name: str, contract_address: Address = None):
         address = contract_address or self.instance.get_contract_address(contract_name)
         logger.debug('Fetching abi for %s, address %s', name, address)
         contract_abi = self.instance.abi[contract_name]
@@ -122,7 +128,7 @@ class SkaleBase:
         self.__contracts[name] = contract
 
     def get_contract_address(self, name):
-        return self.contract_manager.get_contract_address(name)
+        return self.instance.get_contract_address(name)
 
     def __get_contract_by_name(self, name):
         return self.__contracts[name]
