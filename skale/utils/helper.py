@@ -105,6 +105,10 @@ def get_skale_manager_address(abi_filepath: string = None) -> str:
     return get_abi(abi_filepath)['skale_manager_address']
 
 
+def get_allocator_address(abi_filepath: string = None) -> str:
+    return get_abi(abi_filepath)['allocator_address']
+
+
 def generate_nonce():  # pragma: no cover
     return randint(0, 65534)
 

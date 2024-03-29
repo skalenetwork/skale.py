@@ -7,7 +7,7 @@ from unittest.mock import Mock, MagicMock
 from web3 import Web3
 
 from skale import SkaleManager, SkaleAllocator
-from skale.utils.helper import get_abi, get_skale_manager_address
+from skale.utils.helper import get_allocator_address, get_skale_manager_address
 from skale.wallets import Web3Wallet
 from tests.constants import (ENDPOINT, TEST_ABI_FILEPATH,
                              TEST_ALLOCATOR_ABI_FILEPATH,
@@ -42,8 +42,7 @@ def init_skale_allocator(
     test_allocator_abi_filepath: str = TEST_ALLOCATOR_ABI_FILEPATH
 ) -> SkaleAllocator:
     wallet = Web3Wallet(eth_private_key, web3)
-    allocator_address = get_abi(test_allocator_abi_filepath)['allocator_address']
-    return SkaleAllocator(ENDPOINT, allocator_address, wallet)
+    return SkaleAllocator(ENDPOINT, get_allocator_address(test_allocator_abi_filepath), wallet)
 
 
 @contextmanager
