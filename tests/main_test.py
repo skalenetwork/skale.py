@@ -39,7 +39,7 @@ def test_lib_init():
 
     isinstance(skale.web3.provider, HTTPProvider)
 
-    ws_endpoint = 'ws://localhost:8080'
+    ws_endpoint = 'ws://localhost:8545'
 
     skale = Skale(ws_endpoint, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
     assert skale.web3.provider.websocket_timeout == 30
