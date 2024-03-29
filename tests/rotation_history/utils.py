@@ -11,6 +11,7 @@ from skale import Skale
 from skale.contracts.manager.nodes import NodeStatus
 from skale.utils.contracts_provision.utils import generate_random_node_data
 from skale.utils.account_tools import send_eth
+from skale.utils.helper import get_skale_manager_address
 from skale.wallets.web3_wallet import generate_wallet
 
 from tests.constants import (ENDPOINT, TEST_ABI_FILEPATH)
@@ -103,7 +104,7 @@ def register_nodes(skale_instances):
 
 
 def init_skale_from_wallet(wallet) -> Skale:
-    return Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
+    return Skale(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
 
 
 def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None, rotation_id=0):

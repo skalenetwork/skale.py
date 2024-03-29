@@ -25,7 +25,7 @@ from skale.utils.contracts_provision.main import (
 from skale.utils.contracts_provision.fake_multisig_contract import (
     deploy_fake_multisig_contract
 )
-from skale.utils.helper import get_abi
+from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 
@@ -80,9 +80,8 @@ def node_wallets(skale):
 
 @pytest.fixture
 def node_skales(skale, node_wallets):
-    skale_manager_address = get_abi(TEST_ABI_FILEPATH)['skale_manager_address']
     return [
-        SkaleManager(ENDPOINT, skale_manager_address, wallet)
+        SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
         for wallet in node_wallets
     ]
 
