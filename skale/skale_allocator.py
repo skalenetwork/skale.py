@@ -45,6 +45,11 @@ def spawn_skale_allocator_lib(skale):
 
 
 class SkaleAllocator(SkaleBase):
+    """Represents skale-allocator smart contracts"""
+    @property
+    def project_name(self) -> str:
+        return 'skale-allocator'
+
     def set_contracts_info(self):
         self.init_contract_manager()
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
