@@ -51,5 +51,4 @@ class SkaleAllocator(SkaleBase):
         return 'skale-allocator'
 
     def set_contracts_info(self):
-        self.init_contract_manager()
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
