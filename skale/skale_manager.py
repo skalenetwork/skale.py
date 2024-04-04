@@ -70,11 +70,6 @@ CONTRACTS_INFO = [
                  ContractTypes.API, True),
     ContractInfo('sync_manager', 'SyncManager', contracts.SyncManager,
                  ContractTypes.API, False),
-]
-
-
-DEBUG_CONTRACTS_INFO = [
-
     ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug', contracts.TimeHelpersWithDebug,
                  ContractTypes.API, False)
 ]
