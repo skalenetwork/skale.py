@@ -151,7 +151,7 @@ class Allocator(BaseContract):
     def get_plan(self, plan_id: int) -> dict:
         return self.__get_plan_raw(plan_id)
 
-    def get_all_plans(self) -> dict:
+    def get_all_plans(self) -> list:
         plans = []
         for i in range(1, MAX_NUM_OF_PLANS):
             try:
