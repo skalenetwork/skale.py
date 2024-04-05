@@ -17,15 +17,39 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from __future__ import annotations
 import logging
 from collections import namedtuple
+from typing import TYPE_CHECKING, Optional, TypedDict
 
 from skale import Skale
 from skale.contracts.manager.node_rotation import Rotation
 
+if TYPE_CHECKING:
+    from skale.contracts.manager.key_storage import G2Point
+
 logger = logging.getLogger(__name__)
 
 RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
+
+
+class NodesSwap(TypedDict):
+    leaving_node_id: int
+    new_node_id: int
+
+
+class BlsPublicKey(TypedDict):
+    blsPublicKey0: str
+    blsPublicKey1: str
+    blsPublicKey2: str
+    blsPublicKey3: str
+
+
+class NodesGroup(TypedDict):
+    rotation: NodesSwap | None
+    nodes: dict[int, RotationNodeData]
+    finish_ts: int | None
+    bls_public_key: BlsPublicKey | None
 
 
 def get_previous_schain_groups(
@@ -38,7 +62,7 @@ def get_previous_schain_groups(
     In case of no rotations returns the current state.
     """
     logger.info(f'Collecting rotation history for {schain_name}...')
-    node_groups = {}
+    node_groups: dict[int, NodesGroup] = {}
 
     group_id = skale.schains.name_to_group_id(schain_name)
 
@@ -67,11 +91,11 @@ def get_previous_schain_groups(
 
 def _add_current_schain_state(
     skale: Skale,
-    node_groups: dict,
+    node_groups: dict[int, NodesGroup],
     rotation: Rotation,
     schain_name: str,
-    current_public_key: list
-) -> dict:
+    current_public_key: G2Point
+):
     """
     Internal function, composes the initial info about the current sChain state and adds it to the
     node_groups dictionary
@@ -97,7 +121,7 @@ def _add_previous_schain_rotations_state(
     schain_name: str,
     previous_public_keys: list,
     leaving_node_id=None
-) -> dict:
+):
     """
     Internal function, handles rotations from (rotation_counter - 2) to 0 and adds them to the
     node_groups dictionary
@@ -169,7 +193,7 @@ def _pop_previous_bls_public_key(previous_public_keys):
     return bls_keys
 
 
-def _compose_bls_public_key_info(bls_public_key: str) -> dict:
+def _compose_bls_public_key_info(bls_public_key: G2Point) -> Optional[BlsPublicKey]:
     if bls_public_key:
         return {
             'blsPublicKey0': str(bls_public_key[0][0]),
@@ -177,6 +201,7 @@ def _compose_bls_public_key_info(bls_public_key: str) -> dict:
             'blsPublicKey2': str(bls_public_key[1][0]),
             'blsPublicKey3': str(bls_public_key[1][1])
         }
+    return None
 
 
 def get_new_nodes_list(skale: Skale, name: str, node_groups) -> list:

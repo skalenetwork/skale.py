@@ -17,11 +17,19 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from collections import namedtuple
+from typing import NamedTuple
 from skale.contracts.base_contract import BaseContract
 
 
+Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
+class G2Point(NamedTuple):
+    x: Fp2Point
+    y: Fp2Point
+
+
 class KeyStorage(BaseContract):
-    def get_common_public_key(self, group_index):
+    def get_common_public_key(self, group_index) -> G2Point:
         return self.contract.functions.getCommonPublicKey(group_index).call()
 
     def get_previous_public_key(self, group_index):
