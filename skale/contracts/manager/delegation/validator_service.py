@@ -44,7 +44,7 @@ class ValidatorService(BaseContract):
         return self.contract.functions.validators(_id).call()
 
     @format_fields(FIELDS)
-    def get(self, _id) -> dict:
+    def get(self, _id) -> list:
         """Returns validator info.
 
         :returns: Validator info
