@@ -86,12 +86,12 @@ def send_eth(
     wei_amount = web3.to_wei(amount, 'ether')
     gas_price = gas_price or default_gas_price(web3)
     tx = compose_eth_transfer_tx(
-        web3=web3,
-        *args,
+        web3,
+        wallet.address,
+        receiver_address,
+        wei_amount,
         gas_price=gas_price,
-        from_address=wallet.address,
-        to_address=receiver_address,
-        value=wei_amount,
+        *args,
         **kwargs
     )
     tx_hash = wallet.sign_and_send(
