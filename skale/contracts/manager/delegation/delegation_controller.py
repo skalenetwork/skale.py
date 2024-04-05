@@ -33,7 +33,7 @@ class DelegationController(BaseContract):
     """Wrapper for DelegationController.sol functions"""
 
     @format_fields(FIELDS)
-    def get_delegation(self, delegation_id: int) -> dict:
+    def get_delegation(self, delegation_id: int) -> list:
         """Returns delegation structure.
 
         :returns: Info about delegation request
@@ -76,10 +76,10 @@ class DelegationController(BaseContract):
             for _id in range(delegation_ids_len)
         ]
 
-    def _get_delegation_ids_len_by_validator(self, validator_id: int) -> list:
+    def _get_delegation_ids_len_by_validator(self, validator_id: int) -> int:
         return self.contract.functions.getDelegationsByValidatorLength(validator_id).call()
 
-    def _get_delegation_ids_len_by_holder(self, address: str) -> list:
+    def _get_delegation_ids_len_by_holder(self, address: str) -> int:
         return self.contract.functions.getDelegationsByHolderLength(address).call()
 
     def _get_delegation_state_index(self, delegation_id: int) -> str:
