@@ -37,7 +37,7 @@ class DelegationController(BaseContract):
         """Returns delegation structure.
 
         :returns: Info about delegation request
-        :rtype: dict
+        :rtype: list
         """
         return self.__raw_get_delegation(delegation_id)
 

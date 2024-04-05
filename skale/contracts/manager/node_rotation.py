@@ -77,7 +77,7 @@ class NodeRotation(BaseContract):
         ]
         return history
 
-    def get_schain_finish_ts(self, node_id: int, schain_name: str) -> int:
+    def get_schain_finish_ts(self, node_id: int, schain_name: str) -> int | None:
         raw_history = self.contract.functions.getLeavingHistory(node_id).call()
         schain_id = self.skale.schains.name_to_id(schain_name)
         finish_ts = next(
@@ -129,7 +129,7 @@ class NodeRotation(BaseContract):
     def debugger_role(self):
         return self.contract.functions.DEBUGGER_ROLE().call()
 
-    def get_previous_node(self, schain_name: str, node_id: int) -> int:
+    def get_previous_node(self, schain_name: str, node_id: int) -> int | None:
         schain_id = self.schains.name_to_id(schain_name)
         try:
             return self.contract.functions.getPreviousNode(schain_id, node_id).call()
