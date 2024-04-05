@@ -23,6 +23,8 @@ from skale.contracts.base_contract import BaseContract
 
 
 Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
+
+
 class G2Point(NamedTuple):
     x: Fp2Point
     y: Fp2Point
