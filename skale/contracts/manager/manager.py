@@ -71,8 +71,8 @@ class Manager(BaseContract):
         type_of_nodes: int,
         deposit: str,
         name: str,
-        schain_originator: str = None,
-        options: SchainOptions = None
+        schain_originator: str | None = None,
+        options: SchainOptions | None = None
     ):
         logger.info(
             f'create_schain: type_of_nodes: {type_of_nodes}, name: {name}')
