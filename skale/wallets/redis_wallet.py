@@ -112,7 +112,7 @@ class RedisWalletAdapter(BaseWallet):
         cls,
         tx: Dict,
         score: int,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        multiplier: float = config.DEFAULT_GAS_MULTIPLIER,
         method: Optional[str] = None,
         meta: Optional[Dict] = None
     ) -> Tuple[bytes, bytes]:
@@ -135,7 +135,7 @@ class RedisWalletAdapter(BaseWallet):
     def _to_raw_id(cls, tx_id: str) -> bytes:
         return tx_id.encode('utf-8')
 
-    def _to_id(cls, raw_id: str) -> str:
+    def _to_id(cls, raw_id: bytes) -> str:
         return raw_id.decode('utf-8')
 
     def sign_and_send(
@@ -153,7 +153,7 @@ class RedisWalletAdapter(BaseWallet):
             raw_id, tx_record = self._make_record(
                 tx,
                 score,
-                multiplier=multiplier,
+                multiplier=multiplier or config.DEFAULT_GAS_MULTIPLIER,
                 method=method,
                 meta=meta
             )
