@@ -70,13 +70,15 @@ def transaction_method(transaction):
         call_result, tx_hash, receipt = None, None, None
         should_dry_run = not skip_dry_run and not config.DISABLE_DRY_RUN
 
+        dry_run_success = False
         if should_dry_run:
             call_result = make_dry_run_call(self.skale, method, gas_limit, value)
             if call_result.status == TxStatus.SUCCESS:
                 gas_limit = gas_limit or call_result.data['gas']
+                dry_run_success = True
 
         should_send = not dry_run_only and \
-            (not should_dry_run or call_result.status == TxStatus.SUCCESS)
+            (not should_dry_run or dry_run_success)
 
         if should_send:
             gas_limit = gas_limit or config.DEFAULT_GAS_LIMIT

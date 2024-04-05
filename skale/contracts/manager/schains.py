@@ -141,7 +141,7 @@ class SChains(BaseContract):
         type_of_nodes: int,
         nonce: int,
         name: str,
-        options: SchainOptions = None,
+        options: SchainOptions | None = None,
         schain_owner=None,
         schain_originator=None
     ) -> TxRes:
