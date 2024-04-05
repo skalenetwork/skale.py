@@ -16,7 +16,7 @@ def test_init_allocator():
         wallet,
         provider_timeout=20
     )
-    assert len(skale_allocator._SkaleBase__contracts) == 1
+    assert len(skale_allocator._SkaleBase__contracts) == 0
     assert skale_allocator.allocator
     assert skale_allocator.escrow
-    assert len(skale_allocator._SkaleBase__contracts) == 3
+    assert len(skale_allocator._SkaleBase__contracts) == 2
