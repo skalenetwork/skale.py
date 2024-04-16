@@ -23,7 +23,7 @@ import logging
 import os
 import time
 from enum import Enum
-from typing import Dict, Optional, Tuple
+from typing import Awaitable, Dict, Optional, Tuple
 
 from redis import Redis
 
@@ -36,6 +36,7 @@ from skale.transactions.exceptions import (
 )
 from skale.utils.web3_utils import get_receipt, MAX_WAITING_TIME
 from skale.wallets import BaseWallet
+from skale.wallets.web3_wallet import Web3Wallet
 
 logger = logging.getLogger(__name__)
 
@@ -76,11 +77,11 @@ class RedisWalletAdapter(BaseWallet):
         self,
         rs: Redis,
         pool: str,
-        base_wallet: BaseWallet,
+        web3_wallet: Web3Wallet,
     ) -> None:
         self.rs = rs
         self.pool = pool
-        self.wallet = base_wallet
+        self.wallet = web3_wallet
 
     def sign(self, tx: Dict) -> Dict:
         return self.wallet.sign(tx)
@@ -173,7 +174,10 @@ class RedisWalletAdapter(BaseWallet):
 
     def get_record(self, tx_id: str) -> Dict:
         rid = self._to_raw_id(tx_id)
-        return json.loads(self.rs.get(rid).decode('utf-8'))
+        response = self.rs.get(rid)
+        if isinstance(response, bytes):
+            return json.loads(response.decode('utf-8'))
+        raise ValueError('Unknown value was returned from get() call', response)
 
     def wait(
         self,
