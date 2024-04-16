@@ -173,10 +173,10 @@ class LedgerWallet(BaseWallet):
     def sign_and_send(
         self,
         tx: Dict,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
-        priority: int = config.DEFAULT_PRIORITY,
-        method: Optional[str] = None,
-        meta: Optional[Dict] = None
+        multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int | None = config.DEFAULT_PRIORITY,
+        method: str | None = None,
+        meta: Dict | None = None
     ) -> str:
         signed_tx = self.sign(tx)
         try:
