@@ -46,7 +46,7 @@ class BaseWallet(ABC):
     def sign_and_send(
         self,
         tx_dict: Dict,
-        multiplier: Optional[int] = None,
+        multiplier: Optional[float] = None,
         priority: Optional[int] = None,
         method: Optional[str] = None
     ) -> str:

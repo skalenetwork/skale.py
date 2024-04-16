@@ -91,10 +91,10 @@ class Web3Wallet(BaseWallet):
     def sign_and_send(
         self,
         tx_dict: Dict,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
-        priority: int = config.DEFAULT_PRIORITY,
-        method: Optional[str] = None,
-        meta: Optional[Dict] = None
+        multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int | None = config.DEFAULT_PRIORITY,
+        method: str | None = None,
+        meta: Dict | None = None
     ) -> str:
         signed_tx = self.sign(tx_dict)
         try:
