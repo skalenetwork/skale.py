@@ -60,8 +60,11 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> TxCallResult:
             estimated_gas = estimate_gas(skale.web3, method, opts)
         logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
     except ContractLogicError as e:
+        message = e.message or 'Contract logic error'
+        error_data = e.data or {}
+        data = {'data': error_data} if isinstance(error_data, str) else error_data
         return TxCallResult(status=TxStatus.FAILED,
-                            error='revert', message=e.message, data=e.data)
+                            error='revert', message=message, data=data)
     except (Web3Exception, ValueError) as e:
         logger.exception('Dry run for %s failed', method)
         return TxCallResult(status=TxStatus.FAILED, error='exception', message=str(e), data={})
