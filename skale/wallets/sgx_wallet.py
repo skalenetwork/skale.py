@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from typing import Dict, Optional
+from typing import Dict
 
 from sgx import SgxClient
 from web3 import Web3

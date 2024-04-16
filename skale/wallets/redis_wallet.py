@@ -23,7 +23,7 @@ import logging
 import os
 import time
 from enum import Enum
-from typing import Awaitable, Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 from redis import Redis
 

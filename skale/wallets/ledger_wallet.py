@@ -19,7 +19,7 @@
 
 import logging
 import struct
-from typing import Dict, Optional
+from typing import Dict
 
 from hexbytes import HexBytes
 from eth_account.datastructures import SignedTransaction

@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Dict, Optional
+from typing import Dict
 from eth_keys import keys
 from web3 import Web3
 from eth_account import messages

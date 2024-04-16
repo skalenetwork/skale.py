@@ -23,6 +23,7 @@ from typing import Optional
 
 from web3 import Web3
 
+from skale.skale_manager import SkaleManager
 from skale.transactions.tools import compose_eth_transfer_tx
 from skale.utils.constants import LONG_LINE
 from skale.wallets import LedgerWallet, Web3Wallet
@@ -46,12 +47,12 @@ def create_wallet(wallet_type='web3', *args, **kwargs):
 
 
 def send_tokens(
-    skale,
+    skale: SkaleManager,
     receiver_address,
     amount,
     *args,
     **kwargs
-):
+) -> None:
     logger.info(
         f'Sending {amount} SKALE tokens from {skale.wallet.address} => '
         f'{receiver_address}'
