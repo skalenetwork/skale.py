@@ -99,7 +99,7 @@ def outdated_client_file_msg(method, latest_block_number, saved_number, state_pa
 
 
 def make_client_checking_middleware(allowed_ts_diff: int,
-                                    state_path: str = None):
+                                    state_path: str | None = None):
     def eth_client_checking_middleware(make_request, web3):
         def middleware(method, params):
             if method in ('eth_block_number', 'eth_getBlockByNumber'):
@@ -139,23 +139,23 @@ def make_client_checking_middleware(allowed_ts_diff: int,
 
 def init_web3(endpoint: str,
               provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
-              middlewares: Iterable = None,
-              state_path: str = None, ts_diff: int = None):
+              middlewares: Iterable | None = None,
+              state_path: str | None = None, ts_diff: int | None = None):
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
         if not ts_diff == config.NO_SYNC_TS_DIFF:
             sync_middleware = make_client_checking_middleware(ts_diff, state_path)
-            middewares = (
+            middewares = [
                 http_retry_request_middleware,
                 sync_middleware,
                 attrdict_middleware
-            )
+            ]
         else:
-            middewares = (
+            middewares = [
                 http_retry_request_middleware,
                 attrdict_middleware
-            )
+            ]
 
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
