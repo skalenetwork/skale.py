@@ -67,5 +67,5 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def wait(self, tx: str, confirmation_blocks: int = None):
+    def wait(self, tx: str, confirmation_blocks: int | None = None):
         pass
