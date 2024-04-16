@@ -4,6 +4,7 @@ import pytest
 from web3 import HTTPProvider, WebsocketProvider
 
 from skale import Skale
+from skale.utils.helper import get_skale_manager_address
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
 from skale.contracts.base_contract import BaseContract
@@ -18,7 +19,12 @@ DEFAULT_CONTRACTS_NUMBER = 1
 def test_lib_init():
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet, provider_timeout=20)
+    skale = Skale(
+        ENDPOINT,
+        get_skale_manager_address(TEST_ABI_FILEPATH),
+        wallet,
+        provider_timeout=20
+    )
 
     lib_contracts = skale._SkaleBase__contracts
 
@@ -33,9 +39,9 @@ def test_lib_init():
 
     isinstance(skale.web3.provider, HTTPProvider)
 
-    ws_endpoint = 'ws://localhost:8080'
+    ws_endpoint = 'ws://localhost:8545'
 
-    skale = Skale(ws_endpoint, TEST_ABI_FILEPATH, wallet)
+    skale = Skale(ws_endpoint, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
     assert skale.web3.provider.websocket_timeout == 30
     assert skale.web3.provider.conn.websocket_kwargs == {
         'max_size': 5 * 1024 * 1024
@@ -44,13 +50,18 @@ def test_lib_init():
 
     file_endpoint = 'file://local_file:1001'
     with pytest.raises(Exception):
-        Skale(file_endpoint, TEST_ABI_FILEPATH, wallet)
+        Skale(file_endpoint, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
 
 
 def test_contract_init():
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet, provider_timeout=20)
+    skale = Skale(
+        ENDPOINT,
+        get_skale_manager_address(TEST_ABI_FILEPATH),
+        wallet,
+        provider_timeout=20
+    )
 
     lib_contracts = skale._SkaleBase__contracts
 

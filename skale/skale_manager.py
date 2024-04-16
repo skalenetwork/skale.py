@@ -24,7 +24,7 @@ import skale.contracts.manager as contracts
 from skale.contracts.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_abi, get_contracts_info
+from skale.utils.helper import get_contracts_info
 
 
 logger = logging.getLogger(__name__)
@@ -60,21 +60,16 @@ CONTRACTS_INFO = [
                  ContractTypes.API, False),
     ContractInfo('distributor', 'Distributor', contracts.Distributor,
                  ContractTypes.API, False),
-    ContractInfo('slashing_table', 'Distributor', contracts.SlashingTable,
+    ContractInfo('slashing_table', 'SlashingTable', contracts.SlashingTable,
                  ContractTypes.API, False),
     ContractInfo('wallets', 'Wallets', contracts.Wallets,
                  ContractTypes.API, True),
-    ContractInfo('bounty_v2', 'Bounty', contracts.BountyV2,
+    ContractInfo('bounty_v2', 'BountyV2', contracts.BountyV2,
                  ContractTypes.API, True),
     ContractInfo('punisher', 'Punisher', contracts.Punisher,
                  ContractTypes.API, True),
     ContractInfo('sync_manager', 'SyncManager', contracts.SyncManager,
                  ContractTypes.API, False),
-]
-
-
-DEBUG_CONTRACTS_INFO = [
-
     ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug', contracts.TimeHelpersWithDebug,
                  ContractTypes.API, False)
 ]
@@ -86,11 +81,11 @@ def spawn_skale_manager_lib(skale):
 
 
 class SkaleManager(SkaleBase):
+    """Represents skale-manager smart contracts"""
+    @property
+    def project_name(self) -> str:
+        return 'skale-manager'
+
     def set_contracts_info(self):
         self.init_contract_manager()
-        abi = get_abi(self._abi_filepath)
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
-        if self._SkaleBase__is_debug_contracts(abi):
-            logger.info('Debug contracts found in ABI file')
-            self._SkaleBase__contracts_info.update(
-                get_contracts_info(DEBUG_CONTRACTS_INFO))

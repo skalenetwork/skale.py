@@ -121,7 +121,10 @@ class BaseContract:
         self.skale = skale
         self.name = name
         self.address = Web3.to_checksum_address(address)
-        self.contract = skale.web3.eth.contract(address=self.address, abi=abi)
+        self.init_contract(skale, address, abi)
+
+    def init_contract(self, skale, address, abi) -> None:
+        self.contract = skale.web3.eth.contract(address=address, abi=abi)
 
     def __getattr__(self, attr):
         """Fallback for contract calls"""
