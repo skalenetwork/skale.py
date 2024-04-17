@@ -16,10 +16,12 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-
+from __future__ import annotations
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from skale.contracts.manager.schains import SchainOption
+if TYPE_CHECKING:
+    from skale.contracts.manager.schains import SchainOption
 
 
 @dataclass

@@ -18,6 +18,8 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE helper utilities """
 
+from __future__ import annotations
+
 import ipaddress
 import json
 import logging
@@ -27,11 +29,13 @@ import string
 import sys
 from logging import Formatter, StreamHandler
 from random import randint
-from typing import Any, Callable, Generator, cast
+from typing import TYPE_CHECKING, Any, Callable, Generator, cast
 
 from skale.config import ENV
 from skale.types.node import Port
-from skale.utils.contract_info import ContractInfo
+
+if TYPE_CHECKING:
+    from skale.utils.contract_info import ContractInfo
 
 
 logger = logging.getLogger(__name__)
