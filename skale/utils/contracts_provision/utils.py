@@ -35,12 +35,12 @@ def generate_random_port():
     return random.randint(0, 60000)
 
 
-def generate_random_node_data():
+def generate_random_node_data() -> tuple[str, str, int, str]:
     return generate_random_ip(), generate_random_ip(), \
         generate_random_port(), generate_random_name()
 
 
-def generate_random_schain_data(skale):
+def generate_random_schain_data(skale) -> tuple[int, int, str]:
     schain_type = skale.schains_internal.number_of_schain_types()
     lifetime_seconds = 3600  # 1 hour
     return schain_type, lifetime_seconds, generate_random_name()
