@@ -21,10 +21,11 @@
 import logging
 import os
 import time
-from typing import Iterable
+from typing import Any, Callable, Dict, Iterable
 from urllib.parse import urlparse
 
 from eth_keys import keys
+from eth_typing import BlockNumber
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
 from web3.middleware import (
@@ -32,6 +33,8 @@ from web3.middleware import (
     geth_poa_middleware,
     http_retry_request_middleware
 )
+from web3.providers.base import JSONBaseProvider
+from web3.types import RPCEndpoint, RPCResponse, Timestamp
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionFailedError
@@ -50,7 +53,11 @@ DEFAULT_HTTP_TIMEOUT = 120
 DEFAULT_BLOCKS_TO_WAIT = 50
 
 
-def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
+def get_provider(
+        endpoint: str,
+        timeout: int = DEFAULT_HTTP_TIMEOUT,
+        request_kwargs: Dict[str, Any] = {}
+) -> JSONBaseProvider:
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
         kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
@@ -87,21 +94,39 @@ def save_last_known_block_number(state_path: str, block_number: int) -> None:
         last_block_file.write(str(block_number))
 
 
-def outdated_client_time_msg(method, current_time, latest_block_timestamp, allowed_ts_diff):
+def outdated_client_time_msg(
+        method: RPCEndpoint,
+        current_time: float,
+        latest_block_timestamp: Timestamp,
+        allowed_ts_diff: int
+) -> str:
     return f'{method} failed; \
 current_time: {current_time}, latest_block_timestamp: {latest_block_timestamp}, \
 allowed_ts_diff: {allowed_ts_diff}'
 
 
-def outdated_client_file_msg(method, latest_block_number, saved_number, state_path):
+def outdated_client_file_msg(
+        method: RPCEndpoint,
+        latest_block_number: BlockNumber,
+        saved_number: int,
+        state_path: str
+) -> str:
     return f'{method} failed: latest_block_number: {latest_block_number}, \
         saved_number: {saved_number}, state_path: {state_path}'
 
 
-def make_client_checking_middleware(allowed_ts_diff: int,
-                                    state_path: str | None = None):
-    def eth_client_checking_middleware(make_request, web3):
-        def middleware(method, params):
+def make_client_checking_middleware(
+        allowed_ts_diff: int,
+        state_path: str | None = None
+) -> Callable[
+    [Callable[[RPCEndpoint, Any], RPCResponse], Web3],
+    Callable[[RPCEndpoint, Any], RPCResponse]
+]:
+    def eth_client_checking_middleware(
+            make_request: Callable[[RPCEndpoint, Any], RPCResponse],
+            web3: Web3
+    ) -> Callable[[RPCEndpoint, Any], RPCResponse]:
+        def middleware(method: RPCEndpoint, params: Any) -> RPCResponse:
             if method in ('eth_block_number', 'eth_getBlockByNumber'):
                 response = make_request(method, params)
             else:

@@ -17,4 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-SchainName = str
+from typing import NewType
+
+
+SchainName = NewType("SchainName", str)

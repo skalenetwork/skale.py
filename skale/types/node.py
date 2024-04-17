@@ -17,5 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-NodeId = int
-Port = int
+from typing import NewType
+
+
+NodeId = NewType("NodeId", int)
+Port = NewType("Port", int)

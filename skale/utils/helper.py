@@ -157,7 +157,7 @@ def generate_random_name(len: int = 8) -> str:  # pragma: no cover
 
 
 def generate_random_port() -> Port:  # pragma: no cover
-    return random.randint(0, 60000)
+    return Port(random.randint(0, 60000))
 
 
 def generate_custom_config(ip: str, ws_port: Port) -> dict[str, str | Port]:
