@@ -5,7 +5,7 @@ import click
 from skale import SkaleManager
 from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
-from skale.utils.helper import init_default_logger
+from skale.utils.helper import get_skale_manager_address, init_default_logger
 from skale.utils.contracts_provision import MONTH_IN_SECONDS
 from skale.utils.contracts_provision.main import (
     add_test2_schain_type, cleanup_nodes_schains, setup_validator,
@@ -32,7 +32,7 @@ def prepare_data(cleanup_only):
     init_default_logger()
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    skale = SkaleManager(ENDPOINT, TEST_ABI_FILEPATH, wallet)
+    skale = SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
     add_test_permissions(skale)
     add_test2_schain_type(skale)
     # add_test4_schain_type(skale)

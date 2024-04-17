@@ -15,6 +15,7 @@ from skale.transactions.tools import (
     run_tx_with_retry
 )
 from skale.utils.account_tools import generate_account
+from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallet
@@ -33,7 +34,7 @@ def generate_new_skale():
     account = generate_account(web3)
     wallet = Web3Wallet(account['private_key'], web3)
     wallet.wait = mock.Mock()
-    return Skale(ENDPOINT, TEST_ABI_FILEPATH, wallet)
+    return Skale(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
 
 
 def test_run_tx_with_retry(skale):

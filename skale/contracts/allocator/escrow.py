@@ -27,7 +27,7 @@ from skale.transactions.result import TxRes
 def beneficiary_escrow(transaction):
     @functools.wraps(transaction)
     def wrapper(self, *args, beneficiary_address, **kwargs):
-        self.contract = self.init_beneficiary_contract(beneficiary_address)
+        self.contract = self.skale.instance.get_contract('Escrow', beneficiary_address)
         return transaction(self, *args, **kwargs)
     return wrapper
 
@@ -38,10 +38,8 @@ class Escrow(BaseContract):
     def allocator(self):
         return self.skale.allocator
 
-    def init_beneficiary_contract(self, beneficiary_address: str):
-        beneficiary_escrow_address = self.allocator.get_escrow_address(beneficiary_address)
-        return Escrow(self.skale, f'escrow_{beneficiary_address}', beneficiary_escrow_address,
-                      self.contract.abi).contract
+    def init_contract(self, skale, address, abi) -> None:
+        self.contract = None
 
     @beneficiary_escrow
     @transaction_method

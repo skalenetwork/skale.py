@@ -34,13 +34,6 @@ class SChainNotFoundException(Exception):
     """Raised when requested sChain is not found"""
 
 
-class IncompatibleAbiError(Exception):
-    """Raised when required contract is not found in the ABI file"""
-    def __init__(self, key: str):
-        message = f'Required field was not found in the ABI file: {key}'
-        super().__init__(message)
-
-
 class InvalidNodeIdError(Exception):
     """Raised when wrong node id passed"""
     def __init__(self, node_id: int):

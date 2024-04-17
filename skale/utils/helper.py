@@ -94,9 +94,19 @@ def is_valid_ipv4_address(address):
     return True
 
 
-def get_abi(abi_filepath=None):
-    with open(abi_filepath) as data_file:
-        return json.load(data_file)
+def get_abi(abi_filepath: string = None):
+    if abi_filepath:
+        with open(abi_filepath, encoding='utf-8') as data_file:
+            return json.load(data_file)
+    return {}
+
+
+def get_skale_manager_address(abi_filepath: string = None) -> str:
+    return get_abi(abi_filepath)['skale_manager_address']
+
+
+def get_allocator_address(abi_filepath: string = None) -> str:
+    return get_abi(abi_filepath)['allocator_address']
 
 
 def generate_nonce():  # pragma: no cover

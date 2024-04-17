@@ -16,8 +16,11 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
+from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
+from web3.constants import ADDRESS_ZERO
 
 from skale.skale_base import SkaleBase
 import skale.contracts.allocator as contracts
@@ -25,6 +28,9 @@ from skale.contracts.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info
+
+if TYPE_CHECKING:
+    from eth_typing import ChecksumAddress
 
 
 logger = logging.getLogger(__name__)
@@ -45,6 +51,15 @@ def spawn_skale_allocator_lib(skale):
 
 
 class SkaleAllocator(SkaleBase):
+    """Represents skale-allocator smart contracts"""
+    @property
+    def project_name(self) -> str:
+        return 'skale-allocator'
+
+    def get_contract_address(self, name) -> ChecksumAddress:
+        if name == 'Escrow':
+            return ADDRESS_ZERO
+        return super().get_contract_address(name)
+
     def set_contracts_info(self):
-        self.init_contract_manager()
         self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
