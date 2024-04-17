@@ -19,6 +19,7 @@
 
 from dataclasses import dataclass
 from skale.dataclasses.skaled_ports import SkaledPorts
+from skale.types.node import NodeId, Port
 
 
 @dataclass
@@ -28,7 +29,7 @@ class NodeInfo():
     name: str
     base_port: int
 
-    def calc_ports(self):
+    def calc_ports(self) -> dict[str, Port]:
         return {
             'httpRpcPort': self.base_port + SkaledPorts.HTTP_JSON.value,
             'httpsRpcPort': self.base_port + SkaledPorts.HTTPS_JSON.value,
@@ -37,7 +38,7 @@ class NodeInfo():
             'infoHttpRpcPort': self.base_port + SkaledPorts.INFO_HTTP_JSON.value
         }
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, NodeId | str | Port]:
         return {
             'nodeID': self.node_id,
             'nodeName': self.name,
