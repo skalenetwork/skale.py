@@ -18,9 +18,25 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SchainsInternal.sol functions """
 
+from dataclasses import dataclass
 import functools
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+
+
+@dataclass
+class Schain:
+    name: str
+    owner: str
+    indexInOwnerList: int
+    partOfNode: int
+    lifetime: int
+    startDate: int
+    startBlock: int
+    deposit: int
+    index: int
+    generation: int
+    originator: str
 
 
 class SChainsInternal(BaseContract):
@@ -31,7 +47,7 @@ class SChainsInternal(BaseContract):
     def schains(self):
         return self.skale.schains
 
-    def get_raw(self, name):
+    def get_raw(self, name) -> Schain:
         return self.contract.functions.schains(name).call()
 
     def get_all_schains_ids(self):

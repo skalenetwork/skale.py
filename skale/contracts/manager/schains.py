@@ -102,7 +102,7 @@ class SChains(BaseContract):
             schains.append(schain)
         return schains
 
-    def get_schains_for_node(self, node_id):
+    def get_schains_for_node(self, node_id) -> list[SchainStructure]:
         schains = []
         schain_ids = self.schains_internal.get_schain_ids_for_node(node_id)
         for schain_id in schain_ids:
