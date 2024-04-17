@@ -18,7 +18,10 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 
-def get_nodes_for_schain(skale, name):
+from skale.skale_manager import SkaleManager
+
+
+def get_nodes_for_schain(skale: SkaleManager, name: str) -> list[int]:
     nodes = []
     ids = skale.schains_internal.get_node_ids_for_schain(name)
     for id_ in ids:
@@ -28,7 +31,7 @@ def get_nodes_for_schain(skale, name):
     return nodes
 
 
-def get_schain_nodes_with_schains(skale, schain_name) -> list:
+def get_schain_nodes_with_schains(skale: SkaleManager, schain_name: str) -> list:
     """Returns list of nodes for schain with schains for all nodes"""
     nodes = get_nodes_for_schain(skale, schain_name)
     for node in nodes:
