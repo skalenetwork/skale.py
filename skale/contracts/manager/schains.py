@@ -38,6 +38,9 @@ FIELDS = [
 ]
 
 
+SchainOption = tuple[str, bytes]
+
+
 @dataclass
 class SchainStructure:
     name: str
