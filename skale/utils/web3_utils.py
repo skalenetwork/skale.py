@@ -25,7 +25,8 @@ from typing import Any, Callable, Dict, Iterable
 from urllib.parse import urlparse
 
 from eth_keys import keys
-from eth_typing import BlockNumber
+from eth_keys.datatypes import PublicKey
+from eth_typing import Address, AnyAddress, BlockNumber, ChecksumAddress, HexStr
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
 from web3.middleware import (
@@ -34,7 +35,16 @@ from web3.middleware import (
     http_retry_request_middleware
 )
 from web3.providers.base import JSONBaseProvider
-from web3.types import RPCEndpoint, RPCResponse, Timestamp
+from web3.types import (
+    _Hash32,
+    ENS,
+    Middleware,
+    Nonce,
+    RPCEndpoint,
+    RPCResponse,
+    Timestamp,
+    TxReceipt
+)
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionFailedError
@@ -164,8 +174,8 @@ def make_client_checking_middleware(
 
 def init_web3(endpoint: str,
               provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
-              middlewares: Iterable | None = None,
-              state_path: str | None = None, ts_diff: int | None = None):
+              middlewares: Iterable[Middleware] | None = None,
+              state_path: str | None = None, ts_diff: int | None = None) -> Web3:
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
@@ -191,20 +201,20 @@ def init_web3(endpoint: str,
     return web3
 
 
-def get_receipt(web3, tx):
+def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
     return web3.eth.get_transaction_receipt(tx)
 
 
-def get_eth_nonce(web3, address):
+def get_eth_nonce(web3: Web3, address: Address | ChecksumAddress | ENS) -> Nonce:
     return web3.eth.get_transaction_count(address)
 
 
 def wait_for_receipt_by_blocks(
-    web3,
-    tx,
-    blocks_to_wait=DEFAULT_BLOCKS_TO_WAIT,
-    timeout=MAX_WAITING_TIME
-):
+    web3: Web3,
+    tx: _Hash32,
+    blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+    timeout: int = MAX_WAITING_TIME
+) -> TxReceipt:
     blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
     timeout = timeout or MAX_WAITING_TIME
     previous_block = web3.eth.block_number
@@ -221,11 +231,11 @@ def wait_for_receipt_by_blocks(
         current_block = web3.eth.block_number
         time.sleep(3)
     raise TransactionNotMinedError(
-        f'Transaction with hash: {tx} not found in {blocks_to_wait} blocks.'
+        f'Transaction with hash: {str(tx)} not found in {blocks_to_wait} blocks.'
     )
 
 
-def wait_receipt(web3, tx, retries=30, timeout=5):
+def wait_receipt(web3: Web3, tx: _Hash32, retries: int = 30, timeout: int = 5) -> TxReceipt:
     for _ in range(0, retries):
         try:
             receipt = get_receipt(web3, tx)
@@ -235,11 +245,11 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
             return receipt
         time.sleep(timeout)  # pragma: no cover
     raise TransactionNotMinedError(
-        f'Transaction with hash: {tx} not mined after {retries} retries.'
+        f'Transaction with hash: {str(tx)} not mined after {retries} retries.'
     )
 
 
-def check_receipt(receipt, raise_error=True):
+def check_receipt(receipt: TxReceipt, raise_error: bool = True) -> bool:
     if receipt['status'] != 1:  # pragma: no cover
         if raise_error:
             raise TransactionFailedError(
@@ -251,11 +261,11 @@ def check_receipt(receipt, raise_error=True):
 
 
 def wait_for_confirmation_blocks(
-    web3,
-    blocks_to_wait,
-    timeout=MAX_WAITING_TIME,
-    request_timeout=5
-):
+    web3: Web3,
+    blocks_to_wait: int,
+    timeout: int = MAX_WAITING_TIME,
+    request_timeout: int = 5
+) -> None:
     current_block = start_block = web3.eth.block_number
     logger.info(
         f'Current block number is {current_block}, '
@@ -268,31 +278,24 @@ def wait_for_confirmation_blocks(
         time.sleep(request_timeout)
 
 
-def private_key_to_public(pr):
+def private_key_to_public(pr: HexStr) -> PublicKey:
     pr_bytes = Web3.to_bytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
-def public_key_to_address(pk):
+def public_key_to_address(pk: PublicKey) -> HexStr:
     hash = Web3.keccak(hexstr=str(pk))
     return Web3.to_hex(hash[-20:])
 
 
-def private_key_to_address(pr):
+def private_key_to_address(pr: HexStr) -> HexStr:
     pk = private_key_to_public(pr)
     return public_key_to_address(pk)
 
 
-def to_checksum_address(address):
+def to_checksum_address(address: AnyAddress | str | bytes) -> ChecksumAddress:
     return Web3.to_checksum_address(address)
-
-
-def wallet_to_public_key(wallet):
-    if isinstance(wallet, dict):
-        return private_key_to_public(wallet['private_key'])
-    else:
-        return wallet['public_key']
 
 
 def default_gas_price(web3: Web3) -> int:
