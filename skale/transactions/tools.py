@@ -23,10 +23,12 @@ from functools import partial, wraps
 from typing import Dict, Optional
 
 from web3 import Web3
+from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError, Web3Exception
 from web3._utils.transactions import get_block_gas_limit
 
 import skale.config as config
+from skale.skale_base import SkaleBase
 from skale.transactions.exceptions import TransactionError
 from skale.transactions.result import TxCallResult, TxRes, TxStatus
 from skale.utils.web3_utils import get_eth_nonce
@@ -38,7 +40,12 @@ logger = logging.getLogger(__name__)
 DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
-def make_dry_run_call(skale, method, gas_limit=None, value=0) -> TxCallResult:
+def make_dry_run_call(
+        skale: SkaleBase,
+        method: ContractFunction,
+        gas_limit: int | None = None,
+        value: int = 0
+) -> TxCallResult:
     opts = {
         'from': skale.wallet.address,
         'value': value

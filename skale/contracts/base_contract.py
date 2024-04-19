@@ -20,7 +20,7 @@
 
 import logging
 from functools import wraps
-from typing import Dict, Optional
+from typing import Callable, Dict, Optional
 
 from web3 import Web3
 
@@ -40,7 +40,7 @@ from skale.utils.helper import to_camel_case
 logger = logging.getLogger(__name__)
 
 
-def transaction_method(transaction):
+def transaction_method(transaction: Callable[...]):
     @wraps(transaction)
     def wrapper(
         self,
