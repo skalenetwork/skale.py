@@ -20,10 +20,12 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from eth_account.datastructures import SignedMessage, SignedTransaction
 from web3 import Web3
-from web3.types import SignedTx, TxParams, TxReceipt
+from web3.types import _Hash32, TxParams, TxReceipt
 
 from skale.transactions.exceptions import ChainIdError
+from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT
 
 
 def ensure_chain_id(tx_dict: TxParams, web3: Web3) -> None:
@@ -42,7 +44,7 @@ class MessageNotSignedError(Exception):
 
 class BaseWallet(ABC):
     @abstractmethod
-    def sign(self, tx: TxParams) -> SignedTx:
+    def sign(self, tx_dict: TxParams) -> SignedTransaction:
         pass
 
     @abstractmethod
@@ -56,7 +58,7 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def sign_hash(self, unsigned_hash: str) -> str:
+    def sign_hash(self, unsigned_hash: str) -> SignedMessage:
         pass
 
     @property
@@ -70,5 +72,5 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def wait(self, tx: str, confirmation_blocks: int | None = None) -> TxReceipt:
+    def wait(self, tx: _Hash32, confirmation_blocks: int = DEFAULT_BLOCKS_TO_WAIT) -> TxReceipt:
         pass
