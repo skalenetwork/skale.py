@@ -48,7 +48,7 @@ class LedgerCommunicationError(Exception):
     pass
 
 
-def encode_bip32_path(path):
+def encode_bip32_path(path: str) -> bytes:
     if len(path) == 0:
         return b''
     encoded_chunks = []
