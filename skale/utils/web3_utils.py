@@ -25,7 +25,6 @@ from typing import Any, Callable, Dict, Iterable
 from urllib.parse import urlparse
 
 from eth_keys import keys
-from eth_keys.datatypes import PublicKey
 from eth_typing import Address, AnyAddress, BlockNumber, ChecksumAddress, HexStr
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
@@ -278,13 +277,14 @@ def wait_for_confirmation_blocks(
         time.sleep(request_timeout)
 
 
-def private_key_to_public(pr: HexStr) -> PublicKey:
+def private_key_to_public(pr: HexStr) -> HexStr:
     pr_bytes = Web3.to_bytes(hexstr=pr)
-    pk = keys.PrivateKey(pr_bytes)
-    return pk.public_key
+    prk = keys.PrivateKey(pr_bytes)
+    pk = prk.public_key
+    return HexStr(pk.to_hex())
 
 
-def public_key_to_address(pk: PublicKey) -> HexStr:
+def public_key_to_address(pk: HexStr) -> HexStr:
     hash = Web3.keccak(hexstr=str(pk))
     return Web3.to_hex(hash[-20:])
 
