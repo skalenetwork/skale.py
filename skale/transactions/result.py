@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import enum
-from typing import NamedTuple
+from typing import Mapping, NamedTuple
 
 from web3.types import TxReceipt
 from eth_typing import HexStr
@@ -39,7 +39,7 @@ class TxCallResult(NamedTuple):
     status: TxStatus
     error: str
     message: str
-    data: dict[str, str]
+    data: Mapping[str, str | int]
 
 
 class TxRes:
