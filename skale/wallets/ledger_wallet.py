@@ -140,7 +140,7 @@ class LedgerWallet(BaseWallet):
         sign_v = exchange_result[0]
         sign_r = int((exchange_result[1:1 + 32]).hex(), 16)
         sign_s = int((exchange_result[1 + 32: 1 + 32 + 32]).hex(), 16)
-        enctx = encode_transaction(tx, (sign_v, sign_r, sign_s))
+        enctx = cast(bytes, encode_transaction(tx, (sign_v, sign_r, sign_s)))
         transaction_hash = keccak(enctx)
 
         return SignedTransaction(
