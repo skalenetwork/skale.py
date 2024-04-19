@@ -19,16 +19,22 @@
 
 import logging
 import struct
-from typing import Dict
+from typing import Dict, Generator, cast
 
+from eth_typing import ChecksumAddress
 from hexbytes import HexBytes
 from eth_account.datastructures import SignedTransaction
-from eth_account._utils.legacy_transactions import encode_transaction
-from eth_account._utils.legacy_transactions import \
-    serializable_unsigned_transaction_from_dict as tx_from_dict
+from eth_account._utils.legacy_transactions import (
+    encode_transaction,
+    serializable_unsigned_transaction_from_dict as tx_from_dict,
+    Transaction,
+    UnsignedTransaction
+)
+from eth_account._utils.typed_transactions import TypedTransaction
 
 from eth_utils.crypto import keccak
 from rlp import encode
+from web3 import Web3
 from web3.exceptions import Web3Exception
 
 import skale.config as config
@@ -63,27 +69,27 @@ def encode_bip32_path(path: str) -> bytes:
     return b''.join(encoded_chunks)
 
 
-def derivation_path_prefix(bin32_path):
+def derivation_path_prefix(bin32_path: str) -> bytes:
     encoded_path = encode_bip32_path(bin32_path)
     encoded_path_len_bytes = (len(encoded_path) // 4).to_bytes(1, 'big')
     return encoded_path_len_bytes + encoded_path
 
 
-def chunks(sequence, size):
+def chunks(sequence: bytes, size: int) -> Generator[bytes, None, None]:
     return (sequence[pos:pos + size] for pos in range(0, len(sequence), size))
 
 
-def get_derivation_path(address_index, legacy) -> str:
+def get_derivation_path(address_index: int, legacy: bool) -> str:
     if legacy:
         return get_legacy_derivation_path(address_index)
     return get_live_derivation_path(address_index)
 
 
-def get_live_derivation_path(address_index) -> str:
+def get_live_derivation_path(address_index: int) -> str:
     return f'44\'/60\'/{address_index}\'/0/0'
 
 
-def get_legacy_derivation_path(address_index) -> str:
+def get_legacy_derivation_path(address_index: int) -> str:
     return f'44\'/60\'/0\'/{address_index}'
 
 
@@ -91,7 +97,7 @@ class LedgerWallet(BaseWallet):
     CHUNK_SIZE = 255
     CLA = b'\xe0'
 
-    def __init__(self, web3, address_index, legacy=False, debug=False):
+    def __init__(self, web3: Web3, address_index: int, legacy: bool = False, debug: bool = False):
         from ledgerblue.comm import getDongle
         from ledgerblue.commException import CommException
 
@@ -108,25 +114,29 @@ class LedgerWallet(BaseWallet):
             )
 
     @property
-    def address(self):
+    def address(self) -> ChecksumAddress:
         return self._address
 
     @property
-    def public_key(self):
+    def public_key(self) -> str:
         return self._public_key
 
     # todo: remove this method after making software wallet as class
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> str:
         items = {'address': self.address, 'public_key': self.public_key}
         return items[key]
 
-    def make_payload(self, data=''):
-        encoded_data = encode(data)
+    def make_payload(self, data: str = '') -> bytes:
+        encoded_data = cast(bytes, encode(data))
         path_prefix = derivation_path_prefix(self._bip32_path)
         return path_prefix + encoded_data
 
     @classmethod
-    def parse_sign_result(cls, tx, exchange_result):
+    def parse_sign_result(
+            cls,
+            tx: TypedTransaction | Transaction | UnsignedTransaction,
+            exchange_result: bytearray | bytes
+    ) -> SignedTransaction:
         sign_v = exchange_result[0]
         sign_r = int((exchange_result[1:1 + 32]).hex(), 16)
         sign_s = int((exchange_result[1 + 32: 1 + 32 + 32]).hex(), 16)
@@ -141,7 +151,7 @@ class LedgerWallet(BaseWallet):
             s=sign_s
         )
 
-    def exchange_sign_payload_by_chunks(self, payload):
+    def exchange_sign_payload_by_chunks(self, payload: bytes) -> bytearray:
         INS = b'\x04'
         P1_FIRST = b'\x00'
         P1_SUBSEQUENT = b'\x80'
@@ -210,7 +220,7 @@ class LedgerWallet(BaseWallet):
         ])
         return self.dongle.exchange(apdu)
 
-    def get_address_with_public_key(self):
+    def get_address_with_public_key(self) -> tuple[ChecksumAddress, str]:
         payload = self.make_payload()
         exchange_result = self.exchange_derive_payload(payload)
         return LedgerWallet.parse_derive_result(exchange_result)

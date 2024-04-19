@@ -17,21 +17,25 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from __future__ import annotations
 import logging
 import time
 from functools import partial, wraps
-from typing import Dict, Optional
+from typing import Dict, Optional, TYPE_CHECKING
 
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError, Web3Exception
 from web3._utils.transactions import get_block_gas_limit
+from web3.types import TxParams, Wei
 
 import skale.config as config
-from skale.skale_base import SkaleBase
 from skale.transactions.exceptions import TransactionError
 from skale.transactions.result import TxCallResult, TxRes, TxStatus
 from skale.utils.web3_utils import get_eth_nonce
+
+if TYPE_CHECKING:
+    from skale.skale_base import SkaleBase
 
 
 logger = logging.getLogger(__name__)
@@ -44,12 +48,12 @@ def make_dry_run_call(
         skale: SkaleBase,
         method: ContractFunction,
         gas_limit: int | None = None,
-        value: int = 0
+        value: Wei = Wei(0)
 ) -> TxCallResult:
-    opts = {
+    opts = TxParams({
         'from': skale.wallet.address,
         'value': value
-    }
+    })
     logger.info(
         f'Dry run tx: {method.fn_name}, '
         f'sender: {skale.wallet.address}, '
