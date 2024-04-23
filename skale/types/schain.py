@@ -20,4 +20,5 @@
 from typing import NewType
 
 
-SchainName = NewType("SchainName", str)
+SchainName = NewType('SchainName', str)
+SchainHash = NewType('SchainHash', bytes)

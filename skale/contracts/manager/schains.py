@@ -22,9 +22,12 @@ import functools
 from dataclasses import dataclass, asdict
 
 from Crypto.Hash import keccak
+from hexbytes import HexBytes
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.manager.schains_internal import SChainsInternal
 from skale.transactions.result import TxRes
+from skale.types.schain import SchainHash, SchainName
 from skale.utils.helper import format_fields
 from skale.dataclasses.schain_options import (
     SchainOptions, get_default_schain_options, parse_schain_options
@@ -61,12 +64,12 @@ class SchainStructure:
 class SChains(BaseContract):
     """Wrapper for some of the Schains.sol functions"""
 
-    def name_to_group_id(self, name):
+    def name_to_group_id(self, name: str) -> HexBytes:
         return self.skale.web3.keccak(text=name)
 
     @property
     @functools.lru_cache()
-    def schains_internal(self):
+    def schains_internal(self) -> SChainsInternal:
         return self.skale.schains_internal
 
     @property
@@ -120,7 +123,7 @@ class SChains(BaseContract):
             schains.append(schain)
         return schains
 
-    def name_to_id(self, name):
+    def name_to_id(self, name: SchainName) -> SchainHash:
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
         return '0x' + keccak_hash.hexdigest()
 
