@@ -19,16 +19,18 @@
 """ SKALE Contract manager class """
 
 from Crypto.Hash import keccak
+from eth_typing import ChecksumAddress
+from web3 import Web3
 
 from skale.contracts.base_contract import BaseContract
 from skale.utils.helper import add_0x_prefix
 
 
 class ContractManager(BaseContract):
-    def get_contract_address(self, name):
+    def get_contract_address(self, name: str) -> ChecksumAddress:
         contract_hash = add_0x_prefix(self.get_contract_hash_by_name(name))
-        return self.contract.functions.contracts(contract_hash).call()
+        return Web3.to_checksum_address(self.contract.functions.contracts(contract_hash).call())
 
-    def get_contract_hash_by_name(self, name):
+    def get_contract_hash_by_name(self, name: str) -> str:
         keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
         return keccak_hash.hexdigest()
