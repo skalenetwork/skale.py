@@ -17,8 +17,9 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3.contract.contract import ContractFunction
+
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 
 
 class Wallets(BaseContract):
@@ -28,13 +29,13 @@ class Wallets(BaseContract):
         :returns: SRW balance (wei)
         :rtype: int
         """
-        return self.contract.functions.getValidatorBalance(validator_id).call()
+        return int(self.contract.functions.getValidatorBalance(validator_id).call())
 
     @transaction_method
-    def recharge_validator_wallet(self, validator_id: int) -> TxRes:
+    def recharge_validator_wallet(self, validator_id: int) -> ContractFunction:
         """Pass value kwarg (in wei) to the function when calling it"""
         return self.contract.functions.rechargeValidatorWallet(validator_id)
 
     @transaction_method
-    def withdraw_funds_from_validator_wallet(self, amount: int) -> TxRes:
+    def withdraw_funds_from_validator_wallet(self, amount: int) -> ContractFunction:
         return self.contract.functions.withdrawFundsFromValidatorWallet(amount)
