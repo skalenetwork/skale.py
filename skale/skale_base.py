@@ -26,9 +26,9 @@ from typing import TYPE_CHECKING
 from skale_contracts import skale_contracts
 
 from skale.contracts.base_contract import BaseContract
-from skale.wallets import BaseWallet
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
 from skale.utils.web3_utils import default_gas_price, init_web3
+from skale.wallets import BaseWallet
 
 from skale.contracts.contract_manager import ContractManager
 
@@ -75,7 +75,7 @@ class SkaleBase:
         return default_gas_price(self.web3)
 
     @property
-    def wallet(self):
+    def wallet(self) -> BaseWallet:
         if not self._wallet:
             raise EmptyWalletError('No wallet provided')
         return self._wallet

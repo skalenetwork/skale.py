@@ -17,7 +17,26 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import NewType
+from typing import NewType, TypedDict
+
+from eth_typing import ChecksumAddress
+from web3.types import Wei
 
 
 ValidatorId = NewType('ValidatorId', int)
+
+
+class Validator(TypedDict):
+    name: str
+    validator_address: ChecksumAddress
+    requested_address: ChecksumAddress
+    description: str
+    fee_rate: int
+    registration_time: int
+    minimum_delegation_amount: Wei
+    accept_new_requests: bool
+    trusted: bool
+
+
+class ValidatorWithId(Validator):
+    id: ValidatorId

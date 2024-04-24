@@ -138,8 +138,7 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
                 method=method_name
             )
 
-        should_wait = tx_hash is not None and wait_for
-        if should_wait:
+        if tx_hash is not None and wait_for:
             receipt = self.skale.wallet.wait(tx_hash)
 
         should_confirm = receipt is not None and confirmation_blocks > 0

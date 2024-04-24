@@ -29,6 +29,7 @@ from eth_account.datastructures import SignedMessage, SignedTransaction
 from eth_typing import ChecksumAddress, Hash32, HexStr
 from hexbytes import HexBytes
 from redis import Redis
+from web3 import Web3
 from web3.types import _Hash32, TxParams, TxReceipt
 
 import skale.config as config
@@ -154,8 +155,8 @@ class RedisWalletAdapter(BaseWallet):
         raise ValueError('tx_id has unknown type', type(tx_id))
 
     @classmethod
-    def _to_id(cls, raw_id: bytes) -> str:
-        return raw_id.decode('utf-8')
+    def _to_id(cls, raw_id: bytes) -> HexStr:
+        return Web3.to_hex(raw_id)
 
     def sign_and_send(
         self,
@@ -163,7 +164,7 @@ class RedisWalletAdapter(BaseWallet):
         multiplier: Optional[float] = None,
         priority: Optional[int] = None,
         method: Optional[str] = None
-    ) -> str:
+    ) -> HexStr:
         priority = priority or config.DEFAULT_PRIORITY
         try:
             logger.info('Sending %s to redis pool, method: %s', tx, method)

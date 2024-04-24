@@ -21,7 +21,7 @@ import logging
 from typing import Tuple, cast
 
 from eth_account.datastructures import SignedMessage, SignedTransaction
-from eth_typing import ChecksumAddress
+from eth_typing import ChecksumAddress, HexStr
 from sgx import SgxClient
 from web3 import Web3
 from web3.exceptions import Web3Exception
@@ -72,12 +72,12 @@ class SgxWallet(BaseWallet):
         multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
         priority: int | None = config.DEFAULT_PRIORITY,
         method: str | None = None
-    ) -> str:
+    ) -> HexStr:
         signed_tx = self.sign(tx_dict)
         try:
-            return self._web3.eth.send_raw_transaction(
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(
                 signed_tx.rawTransaction
-            ).hex()
+            ))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 

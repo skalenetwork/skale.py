@@ -21,7 +21,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from eth_account.datastructures import SignedMessage, SignedTransaction
-from eth_typing import ChecksumAddress
+from eth_typing import ChecksumAddress, HexStr
 from web3 import Web3
 from web3.types import _Hash32, TxParams, TxReceipt
 
@@ -55,7 +55,7 @@ class BaseWallet(ABC):
         multiplier: Optional[float] = None,
         priority: Optional[int] = None,
         method: Optional[str] = None
-    ) -> str:
+    ) -> HexStr:
         pass
 
     @abstractmethod

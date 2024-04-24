@@ -103,12 +103,12 @@ class Web3Wallet(BaseWallet):
         multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
         priority: int | None = config.DEFAULT_PRIORITY,
         method: str | None = None
-    ) -> str:
+    ) -> HexStr:
         signed_tx = self.sign(tx_dict)
         try:
-            return self._web3.eth.send_raw_transaction(
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(
                 signed_tx.rawTransaction
-            ).hex()
+            ))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
