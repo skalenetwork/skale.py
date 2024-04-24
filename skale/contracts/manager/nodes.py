@@ -109,7 +109,7 @@ class Nodes(BaseContract):
             if self.get_node_status(NodeId(node_id)) == NodeStatus.ACTIVE
         ]
 
-    def get_active_node_ips(self) -> List[str]:
+    def get_active_node_ips(self) -> List[bytes]:
         nodes_number = self.get_nodes_number()
         return [
             self.get(NodeId(node_id))['ip']
