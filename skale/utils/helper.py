@@ -29,7 +29,7 @@ import string
 import sys
 from logging import Formatter, StreamHandler
 from random import randint
-from typing import TYPE_CHECKING, Any, Callable, Generator, cast
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, cast
 
 from skale.config import ENV
 from skale.types.node import Port
@@ -45,18 +45,20 @@ def decapitalize(s: str) -> str:
     return s[:1].lower() + s[1:] if s else ''
 
 
+WrapperReturnType = Dict[str, Any] | List[Dict[str, Any]] | None
+
+
 def format_fields(
         fields: list[str],
         flist: bool = False
 ) -> Callable[
-    [Callable[
-        ...,
+    [
         Callable[
             ...,
-            dict[str, Any] | list[dict[str, Any]] | Any | None
+            List[Any]
         ]
-    ]],
-    Callable[..., dict[str, Any] | list[dict[str, Any]] | Any | None]
+    ],
+    Callable[..., WrapperReturnType]
 ]:
     """
         Transform array to object with passed fields
@@ -71,16 +73,13 @@ def format_fields(
     def real_decorator(
             function: Callable[
                 ...,
-                Callable[
-                    ...,
-                    dict[str, Any] | list[dict[str, Any]] | Any | None
-                ]
+                List[Any]
             ]
-    ) -> Callable[..., dict[str, Any] | list[dict[str, Any]] | Any | None]:
+    ) -> Callable[..., WrapperReturnType]:
         def wrapper(
                 *args: Any,
                 **kwargs: Any
-        ) -> dict[str, Any] | list[dict[str, Any]] | Any | None:
+        ) -> WrapperReturnType:
             result = function(*args, **kwargs)
 
             if result is None:
