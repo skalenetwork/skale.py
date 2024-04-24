@@ -4,6 +4,7 @@ from unittest.mock import Mock
 from hexbytes import HexBytes
 
 from skale.contracts.manager.dkg import G2Point, KeyShare
+from skale.utils.helper import split_public_key
 
 SCHAIN_NAME = 'pointed-asellus-australis'
 PUBLIC_KEY = '0xfcb3765bdb954ab0672fce731583ad8a94cf05fe63c147f881f8feea18e072d4cad3ec142a65de66a1d50e4fc34a7841c5488ccb55d02cf86013208c17517d64'   # noqa
@@ -68,10 +69,10 @@ def test_response(skale):
     group_index = skale.schains.name_to_id(SCHAIN_NAME)
     share = group_index  # not an invariant, only a mock
     secret_number = 1
-    multiplied_share = G2Point(1, 2, 3, 4).tuple
-    verification_vector = [G2Point(1, 2, 3, 4).tuple for i in range(0, 3)]
-    verification_vector_mult = [G2Point(1, 2, 3, 4).tuple for i in range(0, 3)]
-    secret_key_contribution = [KeyShare(PUBLIC_KEY, share).tuple]
+    multiplied_share = G2Point((1, 2), (3, 4))
+    verification_vector = [G2Point((1, 2), (3, 4)) for i in range(0, 3)]
+    verification_vector_mult = [G2Point((1, 2), (3, 4)) for i in range(0, 3)]
+    secret_key_contribution = [KeyShare(split_public_key(PUBLIC_KEY), share)]
 
     exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key).rawTransaction

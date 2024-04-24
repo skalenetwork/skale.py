@@ -17,18 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from collections import namedtuple
-from typing import List, NamedTuple
+from typing import List
 from skale.contracts.base_contract import BaseContract
+from skale.contracts.manager.dkg import G2Point
 from skale.types.schain import SchainHash
-
-
-Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
-
-
-class G2Point(NamedTuple):
-    x: Fp2Point
-    y: Fp2Point
 
 
 class KeyStorage(BaseContract):
