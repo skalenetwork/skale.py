@@ -18,8 +18,9 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from collections import namedtuple
-from typing import NamedTuple
+from typing import List, NamedTuple
 from skale.contracts.base_contract import BaseContract
+from skale.types.schain import SchainHash
 
 
 Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
@@ -31,11 +32,15 @@ class G2Point(NamedTuple):
 
 
 class KeyStorage(BaseContract):
-    def get_common_public_key(self, group_index) -> G2Point:
-        return self.contract.functions.getCommonPublicKey(group_index).call()
+    def get_common_public_key(self, schain_hash: SchainHash) -> G2Point:
+        return G2Point(*self.contract.functions.getCommonPublicKey(schain_hash).call())
 
-    def get_previous_public_key(self, group_index):
-        return self.contract.functions.getPreviousPublicKey(group_index).call()
+    def get_previous_public_key(self, schain_hash: SchainHash) -> G2Point:
+        return G2Point(*self.contract.functions.getPreviousPublicKey(schain_hash).call())
 
-    def get_all_previous_public_keys(self, group_index):
-        return self.contract.functions.getAllPreviousPublicKeys(group_index).call()
+    def get_all_previous_public_keys(self, schain_hash: SchainHash) -> List[G2Point]:
+        return [
+            G2Point(*key)
+            for key
+            in self.contract.functions.getAllPreviousPublicKeys(schain_hash).call()
+        ]
