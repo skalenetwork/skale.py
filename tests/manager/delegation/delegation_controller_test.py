@@ -5,6 +5,7 @@ import pytest
 from skale.contracts.manager.delegation.delegation_controller import FIELDS
 from skale.transactions.exceptions import ContractLogicError
 from skale.transactions.result import DryRunRevertError
+from skale.types.delegation import DelegationStatus
 from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision.utils import generate_random_name
 
@@ -149,14 +150,14 @@ def test_accept_pending_delegation(skale, validator):
         validator_id=validator_id
     )
     delegation_id = delegations[-1]['id']
-    assert delegations[-1]['status'] == 'PROPOSED'
+    assert delegations[-1]['status'] == DelegationStatus.PROPOSED
     assert delegations[-1]['info'] == info
     skale.delegation_controller.accept_pending_delegation(delegation_id)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(
         validator_id=validator_id
     )
     assert delegations[-1]['id'] == delegation_id
-    assert delegations[-1]['status'] == 'ACCEPTED'
+    assert delegations[-1]['status'] == DelegationStatus.ACCEPTED
     assert delegations[-1]['info'] == info
 
 
@@ -173,7 +174,7 @@ def test_cancel_pending_delegation(skale, validator):
         validator_id=validator_id
     )
     delegation_id = delegations[-1]['id']
-    assert delegations[-1]['status'] == 'PROPOSED'
+    assert delegations[-1]['status'] == DelegationStatus.PROPOSED
     skale.delegation_controller.cancel_pending_delegation(
         delegation_id,
         wait_for=True
@@ -182,7 +183,7 @@ def test_cancel_pending_delegation(skale, validator):
         validator_id=validator_id
     )
     assert delegations[-1]['id'] == delegation_id
-    assert delegations[-1]['status'] == 'CANCELED'
+    assert delegations[-1]['status'] == DelegationStatus.CANCELED
 
 
 def test_request_undelegate(skale, validator):
@@ -225,4 +226,4 @@ def test_request_undelegate(skale, validator):
         validator_id=validator_id
     )
     assert delegations[-1]['id'] == delegation_id
-    assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
+    assert delegations[-1]['status'] == DelegationStatus.UNDELEGATION_REQUESTED

@@ -17,16 +17,21 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from typing import List
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.types.schain import SchainName
 
 
 class Linker(BaseContract):
     @transaction_method
     def connect_schain(
             self,
-            schain_name: str,
-            mainnet_contracts: list
-    ):
+            schain_name: SchainName,
+            mainnet_contracts: List[ChecksumAddress]
+    ) -> ContractFunction:
         return self.contract.functions.connectSchain(
             schain_name,
             mainnet_contracts
