@@ -17,6 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3.contract.contract import ContractFunction
+
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 
@@ -26,7 +28,7 @@ class DelegationPeriodManager(BaseContract):
 
     @transaction_method
     def set_delegation_period(self, months_count: int,
-                              stake_multiplier: int) -> None:
+                              stake_multiplier: int) -> ContractFunction:
         return self.contract.functions.setDelegationPeriod(
             monthsCount=months_count,
             stakeMultiplier=stake_multiplier
