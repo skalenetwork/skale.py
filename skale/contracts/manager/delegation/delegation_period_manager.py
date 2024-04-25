@@ -17,10 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 
 
 class DelegationPeriodManager(BaseContract):
@@ -35,16 +35,16 @@ class DelegationPeriodManager(BaseContract):
         )
 
     def is_delegation_period_allowed(self, months_count: int) -> bool:
-        return self.contract.functions.isDelegationPeriodAllowed(
+        return bool(self.contract.functions.isDelegationPeriodAllowed(
             monthsCount=months_count
-        ).call()
+        ).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     def delegation_period_setter_role(self) -> bytes:
-        return self.contract.functions.DELEGATION_PERIOD_SETTER_ROLE().call()
+        return bytes(self.contract.functions.DELEGATION_PERIOD_SETTER_ROLE().call())
 
-    def has_role(self, role: bytes, address: str) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.hasRole(role, address).call())
