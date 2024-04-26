@@ -26,10 +26,11 @@ from dataclasses import dataclass
 
 from eth_typing import ChecksumAddress
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
 from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError
 
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.schain import SchainHash, SchainName
 
@@ -56,7 +57,7 @@ class RotationSwap(TypedDict):
     finished_rotation: int
 
 
-class NodeRotation(BaseContract):
+class NodeRotation(SkaleManagerContract):
     """Wrapper for NodeRotation.sol functions"""
 
     @property

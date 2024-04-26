@@ -96,10 +96,6 @@ class SkaleBase:
     def set_contracts_info(self) -> None:
         pass
 
-    def init_contract_manager(self) -> None:
-        from skale.contracts.contract_manager import ContractManager
-        self.add_lib_contract('contract_manager', ContractManager, 'ContractManager')
-
     def __init_contract_from_info(self, contract_info: ContractInfo[Self]) -> None:
         if contract_info.upgradeable:
             self.init_upgradeable_contract(contract_info)

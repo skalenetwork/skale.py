@@ -86,7 +86,7 @@ class BaseContract(Generic[SkaleType]):
 def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable[..., TxRes]:
     @wraps(transaction)
     def wrapper(
-        self: BaseContract,
+        self: BaseContract[SkaleType],
         *args: Any,
         wait_for: bool = True,
         blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,

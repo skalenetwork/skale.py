@@ -19,10 +19,11 @@
 
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class Wallets(BaseContract):
+class Wallets(SkaleManagerContract):
     def get_validator_balance(self, validator_id: int) -> int:
         """Returns SRW balance by validator id (in wei).
 

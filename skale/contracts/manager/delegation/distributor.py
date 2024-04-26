@@ -25,6 +25,7 @@ from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.validator import ValidatorId
 
 
@@ -44,7 +45,7 @@ def formatter(method: Callable[..., Tuple[Wei, int]]) -> Callable[..., EarnedDat
     return wrapper
 
 
-class Distributor(BaseContract):
+class Distributor(SkaleManagerContract):
     """Wrapper for Distributor.sol functions"""
 
     @formatter

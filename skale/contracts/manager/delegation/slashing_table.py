@@ -2,10 +2,11 @@ from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class SlashingTable(BaseContract):
+class SlashingTable(SkaleManagerContract):
     """ Wrapper for SlashingTable.sol functions """
 
     @transaction_method

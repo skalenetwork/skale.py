@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, List, cast
 from web3.constants import CHECKSUM_ADDRESSS_ZERO
 
 from skale.skale_base import SkaleBase
-from skale.contracts.contract_manager import ContractManager
+from skale.contracts.manager.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info

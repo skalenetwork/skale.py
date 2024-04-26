@@ -22,10 +22,11 @@ from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class Token(BaseContract):
+class Token(SkaleManagerContract):
     @transaction_method
     def transfer(self, address: ChecksumAddress, value: Wei) -> ContractFunction:
         return self.contract.functions.send(address, value, b'')

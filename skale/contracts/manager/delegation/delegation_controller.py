@@ -23,7 +23,8 @@ from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.delegation import Delegation, DelegationId, DelegationStatus, FullDelegation
 from skale.types.validator import ValidatorId
 from skale.utils.helper import format_fields
@@ -35,7 +36,7 @@ FIELDS = [
 ]
 
 
-class DelegationController(BaseContract):
+class DelegationController(SkaleManagerContract):
     """Wrapper for DelegationController.sol functions"""
 
     @format_fields(FIELDS)

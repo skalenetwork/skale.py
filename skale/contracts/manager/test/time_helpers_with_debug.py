@@ -19,10 +19,11 @@
 
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class TimeHelpersWithDebug(BaseContract):
+class TimeHelpersWithDebug(SkaleManagerContract):
     """Wrapper for TimeHelpersWithDebug.sol functions (internal usage only)"""
 
     @transaction_method

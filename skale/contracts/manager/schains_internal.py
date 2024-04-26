@@ -24,7 +24,8 @@ import functools
 from typing import TYPE_CHECKING, List, cast
 
 from eth_typing import ChecksumAddress
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.schain import SchainHash, SchainName
 
@@ -48,7 +49,7 @@ class Schain:
     originator: str
 
 
-class SChainsInternal(BaseContract):
+class SChainsInternal(SkaleManagerContract):
     """Wrapper for some of the SchainsInternal.sol functions"""
 
     @property

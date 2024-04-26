@@ -18,12 +18,12 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import List
-from skale.contracts.base_contract import BaseContract
 from skale.contracts.manager.dkg import G2Point
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.schain import SchainHash
 
 
-class KeyStorage(BaseContract):
+class KeyStorage(SkaleManagerContract):
     def get_common_public_key(self, schain_hash: SchainHash) -> G2Point:
         return G2Point(*self.contract.functions.getCommonPublicKey(schain_hash).call())
 

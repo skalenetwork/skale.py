@@ -23,7 +23,8 @@ from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.validator import Validator, ValidatorId, ValidatorWithId
 from skale.utils.helper import format_fields
 
@@ -35,7 +36,7 @@ FIELDS = [
 ]
 
 
-class ValidatorService(BaseContract):
+class ValidatorService(SkaleManagerContract):
     """Wrapper for ValidatorService.sol functions"""
 
     def __get_raw(self, _id: ValidatorId) -> List[Any]:

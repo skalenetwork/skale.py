@@ -27,8 +27,9 @@ from eth_typing import BlockNumber, ChecksumAddress
 from web3.contract.contract import ContractFunction
 from web3.exceptions import BadFunctionCallOutput, ContractLogicError
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
 
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId, Port
 from skale.types.validator import ValidatorId
 from skale.utils.exceptions import InvalidNodeIdError
@@ -61,7 +62,7 @@ class Node(TypedDict):
     domain_name: str
 
 
-class Nodes(BaseContract):
+class Nodes(SkaleManagerContract):
     def __get_raw(self, node_id: NodeId) -> List[Any]:
         try:
             return list(self.contract.functions.nodes(node_id).call())

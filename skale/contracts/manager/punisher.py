@@ -20,10 +20,11 @@
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class Punisher(BaseContract):
+class Punisher(SkaleManagerContract):
     @transaction_method
     def grant_role(self, role: bytes, owner: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, owner)

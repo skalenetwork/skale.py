@@ -21,10 +21,11 @@ from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class TokenState(BaseContract):
+class TokenState(SkaleManagerContract):
     """Wrapper for TokenState.sol functions"""
 
     def get_and_update_locked_amount(self, holder_address: ChecksumAddress) -> Wei:
