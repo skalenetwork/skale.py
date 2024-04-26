@@ -35,6 +35,7 @@ from skale.config import ENV
 from skale.types.node import Port
 
 if TYPE_CHECKING:
+    from skale.contracts.base_contract import SkaleType
     from skale.utils.contract_info import ContractInfo
 
 
@@ -214,7 +215,9 @@ def split_public_key(public_key: str) -> list[bytes]:
     return list(map(bytes.fromhex, pk_parts))
 
 
-def get_contracts_info(contracts_data: list[ContractInfo]) -> dict[str, ContractInfo]:
+def get_contracts_info(
+        contracts_data: list[ContractInfo[SkaleType]]
+) -> dict[str, ContractInfo[SkaleType]]:
     contracts_info = {}
     for contract_info in contracts_data:
         contracts_info[contract_info.name] = contract_info
