@@ -21,11 +21,12 @@ from typing import List
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.ima_contract import ImaContract
 from skale.types.schain import SchainName
 
 
-class Linker(BaseContract):
+class Linker(ImaContract):
     @transaction_method
     def connect_schain(
             self,

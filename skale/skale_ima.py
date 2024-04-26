@@ -18,9 +18,9 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+from typing import List
 
 from skale.skale_base import SkaleBase
-import skale.contracts.ima as contracts
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info
@@ -29,10 +29,12 @@ from skale.utils.helper import get_contracts_info
 logger = logging.getLogger(__name__)
 
 
-CONTRACTS_INFO = [
-    ContractInfo('linker', 'Linker',
-                 contracts.Linker, ContractTypes.API, False)
-]
+def contracts_info() -> List[ContractInfo]:
+    import skale.contracts.ima as contracts
+    return [
+        ContractInfo('linker', 'Linker',
+                     contracts.Linker, ContractTypes.API, False)
+    ]
 
 
 def spawn_skale_ima_lib(skale_ima):
@@ -42,4 +44,4 @@ def spawn_skale_ima_lib(skale_ima):
 
 class SkaleIma(SkaleBase):
     def set_contracts_info(self):
-        self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
+        self._SkaleBase__contracts_info = get_contracts_info(contracts_info())
