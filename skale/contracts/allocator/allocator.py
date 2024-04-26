@@ -20,7 +20,8 @@
 
 from enum import IntEnum
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.allocator_contract import AllocatorContract
+from skale.contracts.base_contract import transaction_method
 from skale.transactions.exceptions import ContractLogicError
 from skale.transactions.result import TxRes
 from skale.utils.helper import format_fields
@@ -60,7 +61,7 @@ class BeneficiaryStatus(IntEnum):
     TERMINATED = 3
 
 
-class Allocator(BaseContract):
+class Allocator(AllocatorContract):
     def is_beneficiary_registered(self, beneficiary_address: str) -> bool:
         """Confirms whether the beneficiary is registered in a Plan.
 

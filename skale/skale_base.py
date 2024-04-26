@@ -25,15 +25,13 @@ from typing import TYPE_CHECKING
 
 from skale_contracts import skale_contracts
 
-from skale.contracts.base_contract import BaseContract
 from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
 from skale.utils.web3_utils import default_gas_price, init_web3
 from skale.wallets import BaseWallet
 
-from skale.contracts.contract_manager import ContractManager
-
 if TYPE_CHECKING:
     from eth_typing import Address, ChecksumAddress
+    from skale.contracts.base_contract import BaseContract
 
 
 logger = logging.getLogger(__name__)
@@ -96,6 +94,7 @@ class SkaleBase:
         return
 
     def init_contract_manager(self):
+        from skale.contracts.contract_manager import ContractManager
         self.add_lib_contract('contract_manager', ContractManager, 'ContractManager')
 
     def __init_contract_from_info(self, contract_info):
@@ -133,10 +132,7 @@ class SkaleBase:
             self.instance.get_contract_address(name)
         )
 
-    def __get_contract_by_name(self, name):
-        return self.__contracts[name]
-
-    def __getattr__(self, name) -> BaseContract:
+    def _get_contract(self, name) -> BaseContract:
         if name not in self.__contracts:
             if not self.__contracts_info.get(name):
                 logger.warning("%s method/contract wasn't found", name)
@@ -145,3 +141,9 @@ class SkaleBase:
             contract_info = self.__contracts_info[name]
             self.__init_contract_from_info(contract_info)
         return self.__get_contract_by_name(name)
+
+    def __get_contract_by_name(self, name):
+        return self.__contracts[name]
+
+    def __getattr__(self, name) -> BaseContract:
+        return self._get_contract(name)

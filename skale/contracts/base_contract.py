@@ -20,7 +20,7 @@
 from __future__ import annotations
 import logging
 from functools import wraps
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING, Generic, TypeVar
 
 from eth_typing import ChecksumAddress
 from web3 import Web3
@@ -37,19 +37,23 @@ from skale.utils.web3_utils import (
     wait_for_confirmation_blocks
 )
 
+from skale.skale_base import SkaleBase
 from skale.utils.helper import to_camel_case
 
 if TYPE_CHECKING:
-    from skale.skale_base import SkaleBase
+    pass
 
 
 logger = logging.getLogger(__name__)
 
 
-class BaseContract:
+SkaleType = TypeVar('SkaleType', bound=SkaleBase)
+
+
+class BaseContract(Generic[SkaleType]):
     def __init__(
             self,
-            skale: SkaleBase,
+            skale: SkaleType,
             name: str,
             address: ChecksumAddress | str | bytes,
             abi: ABI
