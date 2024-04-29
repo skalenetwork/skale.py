@@ -23,29 +23,16 @@ from typing import TYPE_CHECKING, List, cast
 from web3.constants import CHECKSUM_ADDRESSS_ZERO
 
 from skale.skale_base import SkaleBase
-from skale.contracts.manager.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info
 
 if TYPE_CHECKING:
     from eth_typing import ChecksumAddress
-    import skale.contracts.allocator as contracts
+    from skale.contracts.allocator.allocator import Allocator
 
 
 logger = logging.getLogger(__name__)
-
-
-def contracts_info() -> List[ContractInfo]:
-    import skale.contracts.allocator as contracts
-    return [
-        ContractInfo('contract_manager', 'ContractManager', ContractManager,
-                     ContractTypes.API, False),
-        ContractInfo('escrow', 'Escrow', contracts.Escrow,
-                     ContractTypes.API, True),
-        ContractInfo('allocator', 'Allocator', contracts.Allocator,
-                     ContractTypes.API, True)
-    ]
 
 
 def spawn_skale_allocator_lib(skale: SkaleAllocator) -> SkaleAllocator:
@@ -59,8 +46,17 @@ class SkaleAllocator(SkaleBase):
         return 'skale-allocator'
 
     @property
-    def allocator(self) -> contracts.Allocator:
-        return cast('contracts.Allocator', super()._get_contract('allocator'))
+    def allocator(self) -> Allocator:
+        return cast('Allocator', super()._get_contract('allocator'))
+
+    def contracts_info(self) -> List[ContractInfo[SkaleAllocator]]:
+        import skale.contracts.allocator as contracts
+        return [
+            ContractInfo('escrow', 'Escrow', contracts.Escrow,
+                         ContractTypes.API, True),
+            ContractInfo('allocator', 'Allocator', contracts.Allocator,
+                         ContractTypes.API, True)
+        ]
 
     def get_contract_address(self, name: str) -> ChecksumAddress:
         if name == 'Escrow':
@@ -68,4 +64,4 @@ class SkaleAllocator(SkaleBase):
         return super().get_contract_address(name)
 
     def set_contracts_info(self) -> None:
-        self._SkaleBase__contracts_info = get_contracts_info(contracts_info())
+        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
