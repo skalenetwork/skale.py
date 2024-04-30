@@ -1,5 +1,6 @@
 """ SKALE chain internal test """
 
+from dataclasses import astuple, fields
 from skale.contracts.manager.schains import FIELDS
 from tests.constants import (
     DEFAULT_SCHAIN_ID,
@@ -9,14 +10,14 @@ from tests.constants import (
 
 
 def test_get_raw(skale):
-    schain_arr = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
-    assert len(FIELDS) == len(schain_arr) + 3  # +1 for chainId + options
+    schain = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
+    assert len(FIELDS) == len(fields(schain)) + 2  # +2 for chainId + options
 
 
 def test_get_raw_not_exist(skale):
     not_exist_schain_id = skale.schains.name_to_id('unused_hash')
     schain_arr = skale.schains_internal.get_raw(not_exist_schain_id)
-    assert schain_arr == EMPTY_SCHAIN_ARR
+    assert list(astuple(schain_arr)) == EMPTY_SCHAIN_ARR
 
 
 def test_get_schains_number(skale, schain):
@@ -36,7 +37,7 @@ def test_get_schain_id_by_index_for_owner(skale, schain):
         skale.wallet.address, 0
     )
     schain = skale.schains.get(schain_id)
-    assert schain['mainnetOwner'] == skale.wallet.address
+    assert schain.mainnetOwner == skale.wallet.address
 
 
 def test_get_node_ids_for_schain(skale, schain):

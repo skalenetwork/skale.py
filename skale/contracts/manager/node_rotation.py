@@ -21,7 +21,7 @@
 from __future__ import annotations
 import logging
 import functools
-from typing import TYPE_CHECKING, List, TypedDict, cast
+from typing import TYPE_CHECKING, List, TypedDict
 from dataclasses import dataclass
 
 from eth_typing import ChecksumAddress
@@ -63,8 +63,7 @@ class NodeRotation(SkaleManagerContract):
     @property
     @functools.lru_cache()
     def schains(self) -> SChains:
-        from skale.contracts.manager.schains import SChains
-        return cast(SChains, self.skale.schains)
+        return self.skale.schains
 
     def get_rotation(self, schain_name: SchainName) -> Rotation:
         schain_id = self.schains.name_to_id(schain_name)
@@ -83,9 +82,8 @@ class NodeRotation(SkaleManagerContract):
         return history
 
     def get_schain_finish_ts(self, node_id: NodeId, schain_name: SchainName) -> int | None:
-        from skale.contracts.manager.schains import SChains
         raw_history = self.contract.functions.getLeavingHistory(node_id).call()
-        schain_id = cast(SChains, self.skale.schains).name_to_id(schain_name)
+        schain_id = self.skale.schains.name_to_id(schain_name)
         finish_ts = next(
             (schain[1] for schain in raw_history if '0x' + schain[0].hex() == schain_id), None)
         if not finish_ts:
@@ -109,7 +107,7 @@ class NodeRotation(SkaleManagerContract):
         return self.is_rotation_in_progress(schain_name) and not finish_ts_reached
 
     def is_finish_ts_reached(self, schain_name: SchainName) -> bool:
-        rotation = cast(NodeRotation, self.skale.node_rotation).get_rotation_obj(schain_name)
+        rotation = self.skale.node_rotation.get_rotation_obj(schain_name)
         schain_finish_ts = self.get_schain_finish_ts(rotation.leaving_node_id, schain_name)
 
         if not schain_finish_ts:

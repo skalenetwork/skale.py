@@ -19,12 +19,18 @@
 
 from __future__ import annotations
 import logging
-from typing import List
+from typing import List, TYPE_CHECKING, cast
 
 from skale.skale_base import SkaleBase
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info
+
+if TYPE_CHECKING:
+    from skale.contracts.manager.node_rotation import NodeRotation
+    from skale.contracts.manager.schains import SChains
+    from skale.contracts.manager.schains_internal import SChainsInternal
+    from skale.contracts.manager.token import Token
 
 
 logger = logging.getLogger(__name__)
@@ -81,6 +87,22 @@ class SkaleManager(SkaleBase):
             ContractInfo('time_helpers_with_debug', 'TimeHelpersWithDebug',
                          contracts.TimeHelpersWithDebug, ContractTypes.API, False)
         ]
+
+    @property
+    def node_rotation(self) -> NodeRotation:
+        return cast('NodeRotation', self._get_contract('node_rotation'))
+
+    @property
+    def schains(self) -> SChains:
+        return cast('SChains', self._get_contract('schains'))
+
+    @property
+    def schains_internal(self) -> SChainsInternal:
+        return cast('SChainsInternal', self._get_contract('schains_internal'))
+
+    @property
+    def token(self) -> Token:
+        return cast('Token', self._get_contract('token'))
 
     def init_contract_manager(self) -> None:
         from skale.contracts.manager.contract_manager import ContractManager

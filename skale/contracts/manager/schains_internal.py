@@ -19,34 +19,19 @@
 """ SchainsInternal.sol functions """
 
 from __future__ import annotations
-from dataclasses import dataclass
 import functools
-from typing import TYPE_CHECKING, List, cast
+from typing import TYPE_CHECKING, List
 
 from eth_typing import ChecksumAddress
+
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
-from skale.types.schain import SchainHash, SchainName
+from skale.types.schain import Schain, SchainHash, SchainName
 
 if TYPE_CHECKING:
     from web3.contract.contract import ContractFunction
     from skale.contracts.manager.schains import SChains
-
-
-@dataclass
-class Schain:
-    name: str
-    owner: str
-    indexInOwnerList: int
-    partOfNode: int
-    lifetime: int
-    startDate: int
-    startBlock: int
-    deposit: int
-    index: int
-    generation: int
-    originator: str
 
 
 class SChainsInternal(SkaleManagerContract):
@@ -55,11 +40,10 @@ class SChainsInternal(SkaleManagerContract):
     @property
     @functools.lru_cache()
     def schains(self) -> SChains:
-        from skale.contracts.manager.schains import SChains
-        return cast(SChains, self.skale.schains)
+        return self.skale.schains
 
-    def get_raw(self, name: str) -> Schain:
-        return cast(Schain, self.contract.functions.schains(name).call())
+    def get_raw(self, name: SchainHash) -> Schain:
+        return Schain(*self.contract.functions.schains(name).call())
 
     def get_all_schains_ids(self) -> List[SchainHash]:
         return [

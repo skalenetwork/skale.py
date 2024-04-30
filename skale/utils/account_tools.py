@@ -19,11 +19,14 @@
 """ Account utilities """
 
 import logging
-from typing import Optional
+from typing import Any, Optional
 
+from eth_typing import ChecksumAddress
 from web3 import Web3
+from web3.types import TxReceipt, Wei
 
 from skale.skale_manager import SkaleManager
+from skale.transactions.result import TxRes
 from skale.transactions.tools import compose_eth_transfer_tx
 from skale.utils.constants import LONG_LINE
 from skale.wallets import LedgerWallet, Web3Wallet
@@ -32,6 +35,7 @@ from skale.utils.web3_utils import (
     default_gas_price,
     wait_for_confirmation_blocks
 )
+from skale.wallets.common import BaseWallet
 
 logger = logging.getLogger(__name__)
 
@@ -48,11 +52,11 @@ def create_wallet(wallet_type='web3', *args, **kwargs):
 
 def send_tokens(
     skale: SkaleManager,
-    receiver_address,
-    amount,
-    *args,
-    **kwargs
-) -> None:
+    receiver_address: ChecksumAddress,
+    amount: Wei,
+    *args: Any,
+    **kwargs: Any
+) -> TxRes:
     logger.info(
         f'Sending {amount} SKALE tokens from {skale.wallet.address} => '
         f'{receiver_address}'
@@ -69,17 +73,17 @@ def send_tokens(
 
 def send_eth(
     web3: Web3,
-    wallet,
-    receiver_address,
-    amount,
-    *args,
+    wallet: BaseWallet,
+    receiver_address: ChecksumAddress,
+    amount: Wei,
+    *args: Any,
     gas_price: Optional[int] = None,
     wait_for: bool = True,
     confirmation_blocks: int = 0,
     multiplier: Optional[int] = None,
     priority: Optional[int] = None,
-    **kwargs
-):
+    **kwargs: Any
+) -> TxReceipt:
     logger.info(
         f'Sending {amount} ETH from {wallet.address} => '
         f'{receiver_address}'
@@ -111,11 +115,11 @@ def send_eth(
     return receipt
 
 
-def account_eth_balance_wei(web3, address):
+def account_eth_balance_wei(web3: Web3, address: ChecksumAddress) -> Wei:
     return web3.eth.get_balance(address)
 
 
-def check_ether_balance(web3, address):
+def check_ether_balance(web3: Web3, address: ChecksumAddress) -> int:
     balance_wei = account_eth_balance_wei(web3, address)
     balance = web3.from_wei(balance_wei, 'ether')
 
@@ -123,7 +127,7 @@ def check_ether_balance(web3, address):
     return balance
 
 
-def check_skale_balance(skale, address):
+def check_skale_balance(skale: SkaleManager, address: ChecksumAddress) -> int:
     balance_wei = skale.token.get_balance(address)
     balance = skale.web3.from_wei(balance_wei, 'ether')
     logger.info(f'{address} balance: {balance} SKALE')

@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from skale.contracts.manager.schains import SchainOption
+    from skale.types.schain import SchainOption
 
 
 @dataclass

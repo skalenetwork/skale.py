@@ -17,41 +17,34 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from dataclasses import dataclass
-from typing import NewType
-
-from eth_typing import ChecksumAddress
-from web3.types import Wei
-
-from skale.dataclasses.schain_options import SchainOptions
+from enum import IntEnum
+from typing import NewType, TypedDict
 
 
-SchainName = NewType('SchainName', str)
-SchainHash = NewType('SchainHash', bytes)
-SchainOption = tuple[str, bytes]
+class TimeUnit(IntEnum):
+    DAY = 0
+    MONTH = 1
+    YEAR = 2
 
 
-@dataclass
-class Schain:
-    name: SchainName
-    mainnetOwner: ChecksumAddress
-    indexInOwnerList: int
-    partOfNode: int
-    lifetime: int
-    startDate: int
-    startBlock: int
-    deposit: Wei
-    index: int
-    generation: int
-    originator: ChecksumAddress
+class BeneficiaryStatus(IntEnum):
+    UNKNOWN = 0
+    CONFIRMED = 1
+    ACTIVE = 2
+    TERMINATED = 3
 
 
-@dataclass
-class SchainStructure(Schain):
-    chainId: SchainHash
-    options: SchainOptions
+PlanId = NewType('PlanId', int)
 
 
-@dataclass
-class SchainStructureWithStatus(SchainStructure):
-    active: bool
+class Plan(TypedDict):
+    totalVestingDuration: int
+    vestingCliff: int
+    vestingIntervalTimeUnit: TimeUnit
+    vestingInterval: int
+    isDelegationAllowed: bool
+    isTerminatable: bool
+
+
+class PlanWithId(Plan):
+    planId: PlanId
