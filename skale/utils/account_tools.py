@@ -18,8 +18,10 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ Account utilities """
 
+from __future__ import annotations
+from decimal import Decimal
 import logging
-from typing import Any, Optional
+from typing import Any, Dict, List, Literal, Optional, TYPE_CHECKING, Type, TypedDict
 
 from eth_typing import ChecksumAddress
 from web3 import Web3
@@ -35,18 +37,31 @@ from skale.utils.web3_utils import (
     default_gas_price,
     wait_for_confirmation_blocks
 )
-from skale.wallets.common import BaseWallet
+
+if TYPE_CHECKING:
+    from skale.skale_base import SkaleBase
+    from skale.wallets.common import BaseWallet
+
 
 logger = logging.getLogger(__name__)
 
 
-WALLET_TYPE_TO_CLASS = {
+class AccountData(TypedDict):
+    address: ChecksumAddress
+    private_key: str
+
+
+WALLET_TYPE_TO_CLASS: Dict[str, Type[LedgerWallet] | Type[Web3Wallet]] = {
     'ledger': LedgerWallet,
     'web3': Web3Wallet
 }
 
 
-def create_wallet(wallet_type='web3', *args, **kwargs):
+def create_wallet(
+        wallet_type: Literal['web3'] | Literal['ledger'] = 'web3',
+        *args: Any,
+        **kwargs: Any
+) -> LedgerWallet | Web3Wallet:
     return WALLET_TYPE_TO_CLASS[wallet_type](*args, **kwargs)
 
 
@@ -119,7 +134,7 @@ def account_eth_balance_wei(web3: Web3, address: ChecksumAddress) -> Wei:
     return web3.eth.get_balance(address)
 
 
-def check_ether_balance(web3: Web3, address: ChecksumAddress) -> int:
+def check_ether_balance(web3: Web3, address: ChecksumAddress) -> int | Decimal:
     balance_wei = account_eth_balance_wei(web3, address)
     balance = web3.from_wei(balance_wei, 'ether')
 
@@ -127,26 +142,28 @@ def check_ether_balance(web3: Web3, address: ChecksumAddress) -> int:
     return balance
 
 
-def check_skale_balance(skale: SkaleManager, address: ChecksumAddress) -> int:
+def check_skale_balance(skale: SkaleManager, address: ChecksumAddress) -> int | Decimal:
     balance_wei = skale.token.get_balance(address)
     balance = skale.web3.from_wei(balance_wei, 'ether')
     logger.info(f'{address} balance: {balance} SKALE')
     return balance
 
 
-def generate_account(web3):
+def generate_account(web3: Web3) -> AccountData:
     account = web3.eth.account.create()
     private_key = account.key.hex()
     logger.info(f'Generated account: {account.address}')
-    return {'address': account.address, 'private_key': private_key}
+    return AccountData({'address': account.address, 'private_key': private_key})
 
 
-def generate_accounts(skale,
-                      base_wallet,
-                      n_wallets,
-                      skale_amount,
-                      eth_amount,
-                      debug=False):
+def generate_accounts(
+        skale: SkaleBase,
+        base_wallet: BaseWallet,
+        n_wallets: int,
+        skale_amount: Wei,
+        eth_amount: Wei,
+        debug: bool = False
+) -> List[AccountData]:
     n_wallets = int(n_wallets)
     results = []
 
