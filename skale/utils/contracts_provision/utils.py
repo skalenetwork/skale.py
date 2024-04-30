@@ -35,7 +35,7 @@ def generate_random_name(length: int = 8) -> str:
 
 
 def generate_random_port() -> Port:
-    return random.randint(0, 60000)
+    return Port(random.randint(0, 60000))
 
 
 def generate_random_node_data() -> tuple[str, str, int, str]:

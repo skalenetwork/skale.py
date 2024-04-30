@@ -27,7 +27,6 @@ from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.types import TxReceipt, Wei
 
-from skale.skale_manager import SkaleManager
 from skale.transactions.result import TxRes
 from skale.transactions.tools import compose_eth_transfer_tx
 from skale.utils.constants import LONG_LINE
@@ -39,7 +38,7 @@ from skale.utils.web3_utils import (
 )
 
 if TYPE_CHECKING:
-    from skale.skale_base import SkaleBase
+    from skale.skale_manager import SkaleManager
     from skale.wallets.common import BaseWallet
 
 
@@ -157,7 +156,7 @@ def generate_account(web3: Web3) -> AccountData:
 
 
 def generate_accounts(
-        skale: SkaleBase,
+        skale: SkaleManager,
         base_wallet: BaseWallet,
         n_wallets: int,
         skale_amount: Wei,
