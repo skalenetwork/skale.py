@@ -19,8 +19,7 @@
 """ Nodes.sol functions """
 
 import socket
-from enum import IntEnum
-from typing import Any, Dict, List, Tuple, TypedDict, cast
+from typing import Any, Dict, List, Tuple, cast
 
 from Crypto.Hash import keccak
 from eth_typing import BlockNumber, ChecksumAddress
@@ -30,7 +29,7 @@ from web3.exceptions import BadFunctionCallOutput, ContractLogicError
 from skale.contracts.base_contract import transaction_method
 
 from skale.contracts.skale_manager_contract import SkaleManagerContract
-from skale.types.node import NodeId, Port
+from skale.types.node import Node, NodeId, NodeStatus, Port
 from skale.types.validator import ValidatorId
 from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.helper import format_fields
@@ -39,27 +38,6 @@ FIELDS = [
     'name', 'ip', 'publicIP', 'port', 'start_block',
     'last_reward_date', 'finish_time', 'status', 'validator_id', 'publicKey', 'domain_name'
 ]
-
-
-class NodeStatus(IntEnum):
-    ACTIVE = 0
-    LEAVING = 1
-    LEFT = 2
-    IN_MAINTENANCE = 3
-
-
-class Node(TypedDict):
-    name: str
-    ip: bytes
-    publicIP: bytes
-    port: Port
-    start_block: BlockNumber
-    last_reward_date: int
-    finish_time: int
-    status: NodeStatus
-    validator_id: ValidatorId
-    publicKey: str
-    domain_name: str
 
 
 class Nodes(SkaleManagerContract):
