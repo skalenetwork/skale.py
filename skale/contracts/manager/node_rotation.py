@@ -21,8 +21,7 @@
 from __future__ import annotations
 import logging
 import functools
-from typing import TYPE_CHECKING, List, TypedDict
-from dataclasses import dataclass
+from typing import TYPE_CHECKING, List
 
 from eth_typing import ChecksumAddress
 
@@ -32,6 +31,7 @@ from web3.exceptions import ContractLogicError
 
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
+from skale.types.rotation import Rotation, RotationSwap
 from skale.types.schain import SchainHash, SchainName
 
 if TYPE_CHECKING:
@@ -42,19 +42,6 @@ logger = logging.getLogger(__name__)
 
 
 NO_PREVIOUS_NODE_EXCEPTION_TEXT = 'No previous node'
-
-
-@dataclass
-class Rotation:
-    leaving_node_id: int
-    new_node_id: int
-    freeze_until: int
-    rotation_counter: int
-
-
-class RotationSwap(TypedDict):
-    schain_id: SchainHash
-    finished_rotation: int
 
 
 class NodeRotation(SkaleManagerContract):
@@ -107,7 +94,7 @@ class NodeRotation(SkaleManagerContract):
         return self.is_rotation_in_progress(schain_name) and not finish_ts_reached
 
     def is_finish_ts_reached(self, schain_name: SchainName) -> bool:
-        rotation = self.skale.node_rotation.get_rotation_obj(schain_name)
+        rotation = self.skale.node_rotation.get_rotation(schain_name)
         schain_finish_ts = self.get_schain_finish_ts(rotation.leaving_node_id, schain_name)
 
         if not schain_finish_ts:

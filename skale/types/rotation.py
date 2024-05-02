@@ -18,22 +18,43 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from collections import namedtuple
-from typing import List, NamedTuple, NewType, Tuple
+from dataclasses import dataclass
+from typing import TypedDict
 
-from eth_typing import HexStr
-
-
-Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
-
-
-class G2Point(NamedTuple):
-    x: Fp2Point
-    y: Fp2Point
+from skale.types.node import NodeId
+from skale.types.schain import SchainHash
 
 
-VerificationVector = NewType('VerificationVector', List[G2Point])
+RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
 
 
-class KeyShare(NamedTuple):
-    publicKey: Tuple[bytes | HexStr, bytes | HexStr]
-    share: bytes | HexStr
+class NodesSwap(TypedDict):
+    leaving_node_id: NodeId
+    new_node_id: NodeId
+
+
+class BlsPublicKey(TypedDict):
+    blsPublicKey0: str
+    blsPublicKey1: str
+    blsPublicKey2: str
+    blsPublicKey3: str
+
+
+class NodesGroup(TypedDict):
+    rotation: NodesSwap | None
+    nodes: dict[NodeId, RotationNodeData]
+    finish_ts: int | None
+    bls_public_key: BlsPublicKey | None
+
+
+@dataclass
+class Rotation:
+    leaving_node_id: NodeId
+    new_node_id: NodeId
+    freeze_until: int
+    rotation_counter: int
+
+
+class RotationSwap(TypedDict):
+    schain_id: SchainHash
+    finished_rotation: int

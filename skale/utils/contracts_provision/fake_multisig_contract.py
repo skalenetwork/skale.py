@@ -82,11 +82,11 @@ def deploy_fake_multisig_contract(web3: Web3, wallet: BaseWallet) -> None:
     print('Going to deploy simple payable contract')
     FakeMultisigContract = web3.eth.contract(abi=FAKE_MULTISIG_ABI, bytecode=FAKE_MULTISIG_BYTECODE)
     constructor = FakeMultisigContract.constructor()
-    tx = constructor.build_transaction(
-        nonce=get_eth_nonce(web3, wallet.address),
-        gas_price=3 * 10 ** 9,
-        gas_limit=FAKE_MULTISIG_CONSTRUCTOR_GAS
-    )
+    tx = constructor.build_transaction({
+        'nonce': get_eth_nonce(web3, wallet.address),
+        'gasPrice': 3 * 10 ** 9,
+        'gas': FAKE_MULTISIG_CONSTRUCTOR_GAS
+    })
     tx_hash = wallet.sign_and_send(tx)
     receipt = wait_for_receipt_by_blocks(web3, tx_hash)
     print(f"Sample contract successfully deployed: {receipt['contractAddress']}")
