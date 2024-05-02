@@ -19,9 +19,10 @@
 
 
 from skale.skale_manager import SkaleManager
+from skale.types.schain import SchainName
 
 
-def get_nodes_for_schain(skale: SkaleManager, name: str) -> list[int]:
+def get_nodes_for_schain(skale: SkaleManager, name: SchainName) -> list[int]:
     nodes = []
     ids = skale.schains_internal.get_node_ids_for_schain(name)
     for id_ in ids:
