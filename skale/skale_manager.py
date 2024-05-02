@@ -27,27 +27,7 @@ from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info
 
 if TYPE_CHECKING:
-    from skale.contracts.manager import BountyV2
-    from skale.contracts.manager import ConstantsHolder
-    from skale.contracts.manager import ContractManager
-    from skale.contracts.manager import DelegationController
-    from skale.contracts.manager import DelegationPeriodManager
-    from skale.contracts.manager import Distributor
-    from skale.contracts.manager import DKG
-    from skale.contracts.manager import KeyStorage
-    from skale.contracts.manager import Manager
-    from skale.contracts.manager import NodeRotation
-    from skale.contracts.manager import Nodes
-    from skale.contracts.manager import Punisher
-    from skale.contracts.manager import SChains
-    from skale.contracts.manager import SChainsInternal
-    from skale.contracts.manager import SlashingTable
-    from skale.contracts.manager import SyncManager
-    from skale.contracts.manager import TimeHelpersWithDebug
-    from skale.contracts.manager import Token
-    from skale.contracts.manager import TokenState
-    from skale.contracts.manager import ValidatorService
-    from skale.contracts.manager import Wallets
+    import skale.contracts.manager as contracts
 
 
 logger = logging.getLogger(__name__)
@@ -107,88 +87,91 @@ class SkaleManager(SkaleBase):
         ]
 
     @property
-    def bounty_v2(self) -> BountyV2:
-        return cast('BountyV2', self._get_contract('bounty_v2'))
+    def bounty_v2(self) -> contracts.BountyV2:
+        return cast('contracts.BountyV2', self._get_contract('bounty_v2'))
 
     @property
-    def constants_holder(self) -> ConstantsHolder:
-        return cast('ConstantsHolder', self._get_contract('constants_holder'))
+    def constants_holder(self) -> contracts.ConstantsHolder:
+        return cast('contracts.ConstantsHolder', self._get_contract('constants_holder'))
 
     @property
-    def contract_manager(self) -> ContractManager:
-        return cast('ContractManager', self._get_contract('contract_manager'))
+    def contract_manager(self) -> contracts.ContractManager:
+        return cast('contracts.ContractManager', self._get_contract('contract_manager'))
 
     @property
-    def delegation_controller(self) -> DelegationController:
-        return cast('DelegationController', self._get_contract('delegation_controller'))
+    def delegation_controller(self) -> contracts.DelegationController:
+        return cast('contracts.DelegationController', self._get_contract('delegation_controller'))
 
     @property
-    def delegation_period_manager(self) -> DelegationPeriodManager:
-        return cast('DelegationPeriodManager', self._get_contract('delegation_period_manager'))
+    def delegation_period_manager(self) -> contracts.DelegationPeriodManager:
+        return cast(
+            'contracts.DelegationPeriodManager',
+            self._get_contract('delegation_period_manager')
+        )
 
     @property
-    def distributor(self) -> Distributor:
-        return cast('Distributor', self._get_contract('distributor'))
+    def distributor(self) -> contracts.Distributor:
+        return cast('contracts.Distributor', self._get_contract('distributor'))
 
     @property
-    def dkg(self) -> DKG:
-        return cast('DKG', self._get_contract('dkg'))
+    def dkg(self) -> contracts.DKG:
+        return cast('contracts.DKG', self._get_contract('dkg'))
 
     @property
-    def key_storage(self) -> KeyStorage:
-        return cast('KeyStorage', self._get_contract('key_storage'))
+    def key_storage(self) -> contracts.KeyStorage:
+        return cast('contracts.KeyStorage', self._get_contract('key_storage'))
 
     @property
-    def manager(self) -> Manager:
-        return cast('Manager', self._get_contract('manager'))
+    def manager(self) -> contracts.Manager:
+        return cast('contracts.Manager', self._get_contract('manager'))
 
     @property
-    def node_rotation(self) -> NodeRotation:
-        return cast('NodeRotation', self._get_contract('node_rotation'))
+    def node_rotation(self) -> contracts.NodeRotation:
+        return cast('contracts.NodeRotation', self._get_contract('node_rotation'))
 
     @property
-    def nodes(self) -> Nodes:
-        return cast('Nodes', self._get_contract('nodes'))
+    def nodes(self) -> contracts.Nodes:
+        return cast('contracts.Nodes', self._get_contract('nodes'))
 
     @property
-    def punisher(self) -> Punisher:
-        return cast('Punisher', self._get_contract('punisher'))
+    def punisher(self) -> contracts.Punisher:
+        return cast('contracts.Punisher', self._get_contract('punisher'))
 
     @property
-    def schains(self) -> SChains:
-        return cast('SChains', self._get_contract('schains'))
+    def schains(self) -> contracts.SChains:
+        return cast('contracts.SChains', self._get_contract('schains'))
 
     @property
-    def schains_internal(self) -> SChainsInternal:
-        return cast('SChainsInternal', self._get_contract('schains_internal'))
+    def schains_internal(self) -> contracts.SChainsInternal:
+        return cast('contracts.SChainsInternal', self._get_contract('schains_internal'))
 
     @property
-    def slashing_table(self) -> SlashingTable:
-        return cast('SlashingTable', self._get_contract('slashing_table'))
+    def slashing_table(self) -> contracts.SlashingTable:
+        return cast('contracts.SlashingTable', self._get_contract('slashing_table'))
 
     @property
-    def sync_manager(self) -> SyncManager:
-        return cast('SyncManager', self._get_contract('sync_manager'))
+    def sync_manager(self) -> contracts.SyncManager:
+        return cast('contracts.SyncManager', self._get_contract('sync_manager'))
 
     @property
-    def time_helpers_with_debug(self) -> TimeHelpersWithDebug:
-        return cast('TimeHelpersWithDebug', self._get_contract('time_helpers_with_debug'))
+    def time_helpers_with_debug(self) -> contracts.TimeHelpersWithDebug:
+        return cast('contracts.TimeHelpersWithDebug', self._get_contract('time_helpers_with_debug'))
 
     @property
-    def token(self) -> Token:
-        return cast('Token', self._get_contract('token'))
+    def token(self) -> contracts.Token:
+        return cast('contracts.Token', self._get_contract('token'))
 
     @property
-    def token_state(self) -> TokenState:
-        return cast('TokenState', self._get_contract('token_state'))
+    def token_state(self) -> contracts.TokenState:
+        return cast('contracts.TokenState', self._get_contract('token_state'))
 
     @property
-    def validator_service(self) -> ValidatorService:
-        return cast('ValidatorService', self._get_contract('validator_service'))
+    def validator_service(self) -> contracts.ValidatorService:
+        return cast('contracts.ValidatorService', self._get_contract('validator_service'))
 
     @property
-    def wallets(self) -> Wallets:
-        return cast('Wallets', self._get_contract('wallets'))
+    def wallets(self) -> contracts.Wallets:
+        return cast('contracts.Wallets', self._get_contract('wallets'))
 
     def init_contract_manager(self) -> None:
         from skale.contracts.manager.contract_manager import ContractManager

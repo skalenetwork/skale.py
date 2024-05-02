@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import cast
-from eth_keys import keys
+from eth_keys.main import lazy_key_api as keys
 from eth_keys.datatypes import PublicKey
 from web3 import Web3
 from web3.types import _Hash32, TxParams, TxReceipt

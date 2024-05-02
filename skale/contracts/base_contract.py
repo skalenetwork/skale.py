@@ -28,8 +28,8 @@ from web3.contract.contract import ContractFunction
 from web3.types import ABI, Nonce, Wei
 
 import skale.config as config
-from skale.transactions.result import TxRes
-from skale.transactions.tools import make_dry_run_call, transaction_from_method, TxStatus
+from skale.transactions.result import TxRes, TxStatus
+from skale.transactions.tools import make_dry_run_call, transaction_from_method
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     get_eth_nonce,

@@ -24,15 +24,13 @@ import time
 from typing import Any, Callable, Dict, Iterable
 from urllib.parse import urlparse
 
-from eth_keys import keys
+from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, BlockNumber, ChecksumAddress, HexStr
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
-from web3.middleware import (
-    attrdict_middleware,
-    geth_poa_middleware,
-    http_retry_request_middleware
-)
+from web3.middleware.attrdict import attrdict_middleware
+from web3.middleware.exception_retry_request import http_retry_request_middleware
+from web3.middleware.geth_poa import geth_poa_middleware
 from web3.providers.base import JSONBaseProvider
 from web3.types import (
     _Hash32,

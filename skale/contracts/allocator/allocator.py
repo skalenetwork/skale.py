@@ -23,11 +23,11 @@ from typing import Any, Dict, List
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.contract.contract import ContractFunction
+from web3.exceptions import ContractLogicError
 from web3.types import Wei
 
 from skale.contracts.allocator_contract import AllocatorContract
 from skale.contracts.base_contract import transaction_method
-from skale.transactions.exceptions import ContractLogicError
 from skale.types.allocation import BeneficiaryStatus, Plan, PlanId, PlanWithId, TimeUnit
 from skale.utils.helper import format_fields
 

@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import List
-from skale.contracts.manager.dkg import G2Point
+from skale.types.dkg import G2Point
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.schain import SchainHash
 

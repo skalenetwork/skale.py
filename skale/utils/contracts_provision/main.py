@@ -22,11 +22,10 @@ from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.types import RPCEndpoint
 
-from skale.contracts.manager.nodes import NodeStatus
 from skale.dataclasses.schain_options import SchainOptions
 from skale.skale_manager import SkaleManager
 from skale.transactions.result import TxRes
-from skale.types.node import NodeId
+from skale.types.node import NodeId, NodeStatus
 from skale.types.validator import ValidatorId
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID,

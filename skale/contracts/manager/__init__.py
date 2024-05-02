@@ -31,3 +31,27 @@ from skale.contracts.manager.wallets import Wallets
 from skale.contracts.manager.sync_manager import SyncManager
 
 from skale.contracts.manager.test.time_helpers_with_debug import TimeHelpersWithDebug
+
+__all__ = [
+    'BountyV2',
+    'ConstantsHolder',
+    'ContractManager',
+    'DelegationController',
+    'DelegationPeriodManager',
+    'Distributor',
+    'DKG',
+    'KeyStorage',
+    'Manager',
+    'NodeRotation',
+    'Nodes',
+    'Punisher',
+    'SChains',
+    'SChainsInternal',
+    'SlashingTable',
+    'SyncManager',
+    'TimeHelpersWithDebug',
+    'Token',
+    'TokenState',
+    'ValidatorService',
+    'Wallets'
+]

@@ -22,7 +22,7 @@
 import logging
 import socket
 
-from eth_abi import encode
+from eth_abi.abi import encode
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 

@@ -21,14 +21,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Dict, List, TypedDict
 
-from skale import Skale
-from skale.contracts.manager.node_rotation import Rotation
-from skale.types.rotation import BlsPublicKey, NodesGroup, RotationNodeData
-
 if TYPE_CHECKING:
-    from skale.contracts.manager.key_storage import G2Point
     from skale.skale_manager import SkaleManager
+    from skale.types.dkg import G2Point
     from skale.types.node import NodeId
+    from skale.types.rotation import BlsPublicKey, NodesGroup, Rotation, RotationNodeData
     from skale.types.schain import SchainName
 
 logger = logging.getLogger(__name__)
@@ -72,7 +69,7 @@ def get_previous_schain_groups(
 
 
 def _add_current_schain_state(
-    skale: Skale,
+    skale: SkaleManager,
     node_groups: dict[int, NodesGroup],
     rotation: Rotation,
     schain_name: SchainName,

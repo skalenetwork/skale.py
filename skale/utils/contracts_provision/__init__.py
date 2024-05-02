@@ -19,7 +19,7 @@
 
 from web3.types import Wei
 
-from skale.contracts.allocator.allocator import TimeUnit
+from skale.types.allocation import TimeUnit
 from skale.types.validator import ValidatorId
 
 # manager test constants

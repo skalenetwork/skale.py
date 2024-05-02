@@ -17,9 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.manager.schains import SchainStructure
 from skale.types.node import Port
-from skale.types.schain import SchainName
+from skale.types.schain import SchainName, SchainStructure
 from skale.utils.exceptions import SChainNotFoundException
 from skale.schain_config import PORTS_PER_SCHAIN
 
