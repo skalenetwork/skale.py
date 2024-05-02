@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List
 
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
@@ -120,7 +120,7 @@ class DelegationController(SkaleManagerContract):
         :rtype: list
         """
         return [
-            cast(DelegationController, self.skale.delegation_controller).get_delegation_full(_id)
+            self.skale.delegation_controller.get_delegation_full(_id)
             for _id in delegation_ids
         ]
 

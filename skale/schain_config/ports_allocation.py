@@ -25,12 +25,12 @@ from skale.schain_config import PORTS_PER_SCHAIN
 
 
 def calc_schain_base_port(node_base_port: Port, schain_index: int) -> Port:
-    return node_base_port + schain_index * PORTS_PER_SCHAIN
+    return Port(node_base_port + schain_index * PORTS_PER_SCHAIN)
 
 
 def get_schain_index_in_node(schain_name: SchainName, node_schains: list[SchainStructure]) -> int:
     for index, schain in enumerate(node_schains):
-        if schain_name == schain['name']:
+        if schain_name == schain.name:
             return index
     raise SChainNotFoundException(f'sChain {schain_name} is not found in the list: {node_schains}')
 
