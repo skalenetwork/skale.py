@@ -20,7 +20,7 @@
 from time import sleep
 
 from web3.contract.contract import ContractEvent
-from web3.types import LogReceipt
+from web3.types import LogReceipt, Wei
 from web3._utils.filters import LogFilter
 
 from skale.skale_allocator import SkaleAllocator
@@ -48,7 +48,7 @@ def _catch_event(event_obj: ContractEvent) -> LogReceipt:
 def transfer_tokens_to_allocator(
         skale_manager: SkaleManager,
         skale_allocator: SkaleAllocator,
-        amount: int = TEST_SKALE_AMOUNT
+        amount: Wei = TEST_SKALE_AMOUNT
 ) -> None:
     send_tokens(skale_manager, skale_allocator.allocator.address, amount)
 

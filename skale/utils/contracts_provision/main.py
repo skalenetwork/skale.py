@@ -17,6 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from typing import Tuple
+from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.types import RPCEndpoint
 
@@ -24,6 +26,8 @@ from skale.contracts.manager.nodes import NodeStatus
 from skale.dataclasses.schain_options import SchainOptions
 from skale.skale_manager import SkaleManager
 from skale.transactions.result import TxRes
+from skale.types.node import NodeId
+from skale.types.validator import ValidatorId
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID,
     D_VALIDATOR_MIN_DEL,
@@ -75,7 +79,7 @@ def add_test_permissions(skale: SkaleManager) -> None:
     add_all_permissions(skale, skale.wallet.address)
 
 
-def add_all_permissions(skale: SkaleManager, address: str) -> None:
+def add_all_permissions(skale: SkaleManager, address: ChecksumAddress) -> None:
     default_admin_role = skale.manager.default_admin_role()
     if not skale.manager.has_role(default_admin_role, address):
         skale.manager.grant_role(default_admin_role, address)
@@ -157,7 +161,7 @@ def add_test4_schain_type(skale: SkaleManager) -> TxRes:
     )
 
 
-def cleanup_nodes(skale: SkaleManager, ids: list[int] = []) -> None:
+def cleanup_nodes(skale: SkaleManager, ids: list[NodeId] = []) -> None:
     active_ids = filter(
         lambda i: skale.nodes.get_node_status(i) == NodeStatus.ACTIVE,
         ids or skale.nodes.get_active_node_ids()
@@ -249,7 +253,11 @@ def link_address_to_validator(skale: SkaleManager) -> None:
     tx_res.raise_for_status()
 
 
-def link_nodes_to_validator(skale: SkaleManager, validator_id: int, node_skale_objs=()) -> None:
+def link_nodes_to_validator(
+        skale: SkaleManager,
+        validator_id: ValidatorId,
+        node_skale_objs: Tuple[SkaleManager] | None = None
+) -> None:
     print('Linking address to validator')
     node_skale_objs = node_skale_objs or (skale,)
     validator_id = validator_id or D_VALIDATOR_ID
@@ -322,11 +330,11 @@ def create_validator(skale: SkaleManager) -> None:
     )
 
 
-def create_nodes(skales, names: tuple[str, str] | None = None) -> list[int]:
+def create_nodes(skale: SkaleManager, names: tuple[str, str] | None = None) -> list[int]:
     # create couple of nodes
     print('Creating two nodes')
     node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)
-    for skale, name in zip(skales, node_names):
+    for skale, name in zip((skale, skale), node_names):
         ip, public_ip, port, _ = generate_random_node_data()
         skale.manager.create_node(
             ip=ip,
