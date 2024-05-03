@@ -111,19 +111,21 @@ def init_skale_from_wallet(wallet) -> Skale:
 def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None, rotation_id=0):
     for i, node in enumerate(nodes):
         if i != skip_node_index:
+            verification_vector = [
+                G2Point(*[
+                    Fp2Point(*fp2_point) for fp2_point in g2_point
+                ])
+                for g2_point in TEST_DKG_DATA['test_verification_vectors'][i]
+            ]
+            secret_key_contribution = [
+                KeyShare(tuple(key_share[0]), key_share[1])
+                for key_share in TEST_DKG_DATA['test_encrypted_secret_key_contributions'][i]
+            ]
             skale_instances[i].dkg.broadcast(
                 group_index,
                 node['node_id'],
-                [
-                    G2Point(*[
-                        Fp2Point(*fp2_point) for fp2_point in g2_point
-                    ])
-                    for g2_point in TEST_DKG_DATA['test_verification_vectors'][i]
-                ],
-                [
-                    KeyShare(tuple(key_share[0]), key_share[1])
-                    for key_share in TEST_DKG_DATA['test_encrypted_secret_key_contributions'][i]
-                ],
+                verification_vector,
+                secret_key_contribution,
                 rotation_id
             )
         else:

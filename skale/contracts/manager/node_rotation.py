@@ -69,10 +69,12 @@ class NodeRotation(SkaleManagerContract):
         return history
 
     def get_schain_finish_ts(self, node_id: NodeId, schain_name: SchainName) -> int | None:
-        raw_history = self.contract.functions.getLeavingHistory(node_id).call()
+        history = self.get_leaving_history(node_id)
         schain_id = self.skale.schains.name_to_id(schain_name)
         finish_ts = next(
-            (schain[1] for schain in raw_history if '0x' + schain[0].hex() == schain_id), None)
+            (swap['finished_rotation'] for swap in history if swap['schain_id'] == schain_id),
+            None
+        )
         if not finish_ts:
             return None
         return int(finish_ts)
