@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Tuple
+from typing import List, Tuple
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.types import RPCEndpoint
@@ -187,7 +187,7 @@ def cleanup_nodes_schains(skale: SkaleManager) -> None:
 
 def create_clean_schain(skale: SkaleManager) -> str:
     cleanup_nodes_schains(skale)
-    create_nodes(skale)
+    create_nodes([skale])
     return create_schain(skale, random_name=True)
 
 
@@ -329,11 +329,11 @@ def create_validator(skale: SkaleManager) -> None:
     )
 
 
-def create_nodes(skale: SkaleManager, names: tuple[str, str] | None = None) -> list[int]:
+def create_nodes(skales: List[SkaleManager], names: List[str] | None = None) -> list[int]:
     # create couple of nodes
     print('Creating two nodes')
     node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)
-    for skale, name in zip((skale, skale), node_names):
+    for skale, name in zip(skales, node_names):
         ip, public_ip, port, _ = generate_random_node_data()
         skale.manager.create_node(
             ip=ip,
@@ -344,7 +344,7 @@ def create_nodes(skale: SkaleManager, names: tuple[str, str] | None = None) -> l
             wait_for=True
         )
     ids = [
-        skale.nodes.node_name_to_index(name)
+        skales[0].nodes.node_name_to_index(name)
         for name in node_names
     ]
     return ids
