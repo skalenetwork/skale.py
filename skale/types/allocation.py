@@ -20,6 +20,8 @@
 from enum import IntEnum
 from typing import NewType, TypedDict
 
+from web3.types import Wei
+
 
 class TimeUnit(IntEnum):
     DAY = 0
@@ -48,3 +50,12 @@ class Plan(TypedDict):
 
 class PlanWithId(Plan):
     planId: PlanId
+
+
+class BeneficiaryPlan(TypedDict):
+    status: BeneficiaryStatus
+    statusName: str
+    planId: PlanId
+    startMonth: int
+    fullAmount: Wei
+    amountAfterLockup: Wei

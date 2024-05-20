@@ -28,7 +28,14 @@ from web3.types import Wei
 
 from skale.contracts.allocator_contract import AllocatorContract
 from skale.contracts.base_contract import transaction_method
-from skale.types.allocation import BeneficiaryStatus, Plan, PlanId, PlanWithId, TimeUnit
+from skale.types.allocation import (
+    BeneficiaryStatus,
+    BeneficiaryPlan,
+    Plan,
+    PlanId,
+    PlanWithId,
+    TimeUnit
+)
 from skale.utils.helper import format_fields
 
 
@@ -134,17 +141,17 @@ class Allocator(AllocatorContract):
     def get_beneficiary_plan_params_dict(self, beneficiary_address: ChecksumAddress) -> List[Any]:
         return self.__get_beneficiary_plan_params_raw(beneficiary_address)
 
-    def get_beneficiary_plan_params(self, beneficiary_address: ChecksumAddress) -> Plan:
+    def get_beneficiary_plan_params(self, beneficiary_address: ChecksumAddress) -> BeneficiaryPlan:
         plan_params = self.get_beneficiary_plan_params_dict(beneficiary_address)
         if plan_params is None:
             raise ValueError('Plan for ', beneficiary_address, ' is missing')
         if isinstance(plan_params, list):
-            return self._to_plan({
+            return self._to_beneficiary_plan({
                 **plan_params[0],
                 'statusName': BeneficiaryStatus(plan_params[0]['status']).name
             })
         if isinstance(plan_params, dict):
-            return self._to_plan({
+            return self._to_beneficiary_plan({
                 **plan_params,
                 'statusName': BeneficiaryStatus(plan_params['status']).name
             })
@@ -198,4 +205,14 @@ class Allocator(AllocatorContract):
             'vestingInterval': int(untyped_plan['vestingInterval']),
             'isDelegationAllowed': bool(untyped_plan['isDelegationAllowed']),
             'isTerminatable': bool(untyped_plan['isTerminatable'])
+        })
+
+    def _to_beneficiary_plan(self, untyped_beneficiary_plan: Dict[str, Any]) -> BeneficiaryPlan:
+        return BeneficiaryPlan({
+            'status': BeneficiaryStatus(untyped_beneficiary_plan['status']),
+            'statusName': str(untyped_beneficiary_plan['statusName']),
+            'planId': PlanId(untyped_beneficiary_plan['planId']),
+            'startMonth': int(untyped_beneficiary_plan['startMonth']),
+            'fullAmount': Wei(untyped_beneficiary_plan['fullAmount']),
+            'amountAfterLockup': Wei(untyped_beneficiary_plan['amountAfterLockup'])
         })
