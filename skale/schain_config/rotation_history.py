@@ -20,12 +20,13 @@
 from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Dict, List, TypedDict
+from skale.types.rotation import RotationNodeData
 
 if TYPE_CHECKING:
     from skale.skale_manager import SkaleManager
     from skale.types.dkg import G2Point
     from skale.types.node import NodeId
-    from skale.types.rotation import BlsPublicKey, NodesGroup, Rotation, RotationNodeData
+    from skale.types.rotation import BlsPublicKey, NodesGroup, Rotation
     from skale.types.schain import SchainName
 
 logger = logging.getLogger(__name__)
