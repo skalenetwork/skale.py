@@ -153,7 +153,7 @@ class Allocator(AllocatorContract):
         if isinstance(plan_params, dict):
             return self._to_beneficiary_plan({
                 **plan_params,
-                'statusName': BeneficiaryStatus(plan_params['status']).name
+                'statusName': BeneficiaryStatus(plan_params.get('status', 0)).name
             })
         raise TypeError(beneficiary_address)
 

@@ -63,7 +63,7 @@ DEFAULT_BLOCKS_TO_WAIT = 50
 def get_provider(
         endpoint: str,
         timeout: int = DEFAULT_HTTP_TIMEOUT,
-        request_kwargs: Dict[str, Any] = {}
+        request_kwargs: Dict[str, Any] = {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
 ) -> JSONBaseProvider:
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':

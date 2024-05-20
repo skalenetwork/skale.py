@@ -160,7 +160,7 @@ def add_test4_schain_type(skale: SkaleManager) -> TxRes:
     )
 
 
-def cleanup_nodes(skale: SkaleManager, ids: list[NodeId] = []) -> None:
+def cleanup_nodes(skale: SkaleManager, ids: list[NodeId] | None = None) -> None:
     active_ids = filter(
         lambda i: skale.nodes.get_node_status(i) == NodeStatus.ACTIVE,
         ids or skale.nodes.get_active_node_ids()

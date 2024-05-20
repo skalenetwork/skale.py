@@ -151,9 +151,9 @@ def generate_random_ip() -> str:  # pragma: no cover
     return '.'.join('%s' % random.randint(0, 255) for i in range(4))
 
 
-def generate_random_name(len: int = 8) -> str:  # pragma: no cover
+def generate_random_name(length: int = 8) -> str:  # pragma: no cover
     return ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=len))
+        random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 def generate_random_port() -> Port:  # pragma: no cover
