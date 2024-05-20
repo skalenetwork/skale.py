@@ -69,7 +69,7 @@ def test_create_delete_schain(skale, nodes):
         schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
         schains_names = [
-            skale.schains.get(sid)['name']
+            skale.schains.get(sid).name
             for sid in schains_ids_after
         ]
         assert name in schains_names
@@ -81,7 +81,7 @@ def test_create_delete_schain(skale, nodes):
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
     schains_names = [
-        skale.schains.get(sid)['name']
+        skale.schains.get(sid).name
         for sid in schains_ids_after
     ]
     assert name not in schains_names
@@ -100,7 +100,7 @@ def test_delete_schain_by_root(skale, nodes):
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
     schains_names = [
-        skale.schains.get(sid)['name']
+        skale.schains.get(sid).name
         for sid in schains_ids_after
     ]
     assert name not in schains_names
@@ -117,7 +117,7 @@ def test_create_delete_default_schain(skale, nodes):
         schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
         schains_names = [
-            skale.schains.get(sid)['name']
+            skale.schains.get(sid).name
             for sid in schains_ids_after
         ]
         assert name in schains_names
@@ -129,7 +129,7 @@ def test_create_delete_default_schain(skale, nodes):
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
     schains_names = [
-        skale.schains.get(sid)['name']
+        skale.schains.get(sid).name
         for sid in schains_ids_after
     ]
     assert name not in schains_names
