@@ -63,7 +63,7 @@ DEFAULT_BLOCKS_TO_WAIT = 50
 def get_provider(
         endpoint: str,
         timeout: int = DEFAULT_HTTP_TIMEOUT,
-        request_kwargs: Dict[str, Any] = {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
+        request_kwargs: Dict[str, Any] | None = None
 ) -> JSONBaseProvider:
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
@@ -72,7 +72,7 @@ def get_provider(
                                  websocket_kwargs=kwargs)
 
     if scheme == 'http' or scheme == 'https':
-        kwargs = {'timeout': timeout, **request_kwargs}
+        kwargs = {'timeout': timeout, **(request_kwargs or {})}
         return HTTPProvider(endpoint, request_kwargs=kwargs)
 
     raise Exception(
