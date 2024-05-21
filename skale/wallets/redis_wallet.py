@@ -26,8 +26,7 @@ from enum import Enum
 from typing import Optional, Tuple, TypedDict
 
 from eth_account.datastructures import SignedMessage, SignedTransaction
-from eth_typing import ChecksumAddress, Hash32, HexStr
-from hexbytes import HexBytes
+from eth_typing import ChecksumAddress, HexStr
 from redis import Redis
 from web3 import Web3
 from web3.types import _Hash32, TxParams, TxReceipt
@@ -146,13 +145,9 @@ class RedisWalletAdapter(BaseWallet):
 
     @classmethod
     def _to_raw_id(cls, tx_id: _Hash32) -> bytes:
-        if type(tx_id) == HexStr:
-            return tx_id.encode('utf-8')
-        if type(tx_id) == Hash32:
-            return bytes(tx_id)
-        if type(tx_id) == HexBytes:
-            return bytes(tx_id)
-        raise ValueError('tx_id has unknown type', type(tx_id))
+        if isinstance(tx_id, str):
+            return Web3.to_bytes(hexstr=tx_id)
+        return Web3.to_bytes(tx_id)
 
     @classmethod
     def _to_id(cls, raw_id: bytes) -> HexStr:
