@@ -35,7 +35,7 @@ def _delegate_and_activate(skale, validator_id=D_VALIDATOR_ID):
         delegations[-1]['id'],
         wait_for=True
     )
-    _skip_evm_time(skale.web3, MONTH_IN_SECONDS, mine=False)
+    _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
 
 
 def _get_number_of_delegations(skale, validator_id=D_VALIDATOR_ID):
@@ -85,9 +85,6 @@ def test_delegate(skale, validator):
     )
     assert delegations[-1]['info'] == D_DELEGATION_INFO
 
-    delegated_now_after = skale.delegation_controller.get_delegated_to_validator_now(
-        validator_id
-    )
     delegated_now_after = skale.delegation_controller.get_delegated_to_validator_now(
         validator_id
     )
