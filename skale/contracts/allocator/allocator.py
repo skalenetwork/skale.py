@@ -155,7 +155,7 @@ class Allocator(AllocatorContract):
                 **plan_params,
                 'statusName': BeneficiaryStatus(plan_params.get('status', 0)).name
             })
-        raise TypeError(beneficiary_address)
+        raise TypeError(f'Internal error on getting plan params for ${beneficiary_address}')
 
     def __get_plan_raw(self, plan_id: PlanId) -> List[Any]:
         return list(self.contract.functions.getPlan(plan_id).call())
