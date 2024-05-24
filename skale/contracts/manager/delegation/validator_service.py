@@ -77,8 +77,6 @@ class ValidatorService(SkaleManagerContract):
         """
         validator = self.get(_id)
         return ValidatorWithId({'id': _id, **validator})
-        # validator['id'] = _id
-        # return validator
 
     def number_of_validators(self) -> int:
         """Returns number of registered validators.
