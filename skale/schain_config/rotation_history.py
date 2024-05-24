@@ -32,6 +32,11 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+class PreviousNodeData(TypedDict):
+        finish_ts: int
+        previous_node_id: NodeId
+
+
 def get_previous_schain_groups(
     skale: SkaleManager,
     schain_name: SchainName,
@@ -106,10 +111,6 @@ def _add_previous_schain_rotations_state(
     Internal function, handles rotations from (rotation_counter - 2) to 0 and adds them to the
     node_groups dictionary
     """
-
-    class PreviousNodeData(TypedDict):
-        finish_ts: int
-        previous_node_id: NodeId
 
     previous_nodes: Dict[NodeId, PreviousNodeData] = {}
 
