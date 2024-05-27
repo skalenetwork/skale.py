@@ -33,8 +33,8 @@ logger = logging.getLogger(__name__)
 
 
 class PreviousNodeData(TypedDict):
-        finish_ts: int
-        previous_node_id: NodeId
+    finish_ts: int
+    previous_node_id: NodeId
 
 
 def get_previous_schain_groups(
