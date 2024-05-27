@@ -17,15 +17,22 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract
+from typing import List
+from skale.types.dkg import G2Point
+from skale.contracts.skale_manager_contract import SkaleManagerContract
+from skale.types.schain import SchainHash
 
 
-class KeyStorage(BaseContract):
-    def get_common_public_key(self, group_index):
-        return self.contract.functions.getCommonPublicKey(group_index).call()
+class KeyStorage(SkaleManagerContract):
+    def get_common_public_key(self, schain_hash: SchainHash) -> G2Point:
+        return G2Point(*self.contract.functions.getCommonPublicKey(schain_hash).call())
 
-    def get_previous_public_key(self, group_index):
-        return self.contract.functions.getPreviousPublicKey(group_index).call()
+    def get_previous_public_key(self, schain_hash: SchainHash) -> G2Point:
+        return G2Point(*self.contract.functions.getPreviousPublicKey(schain_hash).call())
 
-    def get_all_previous_public_keys(self, group_index):
-        return self.contract.functions.getAllPreviousPublicKeys(group_index).call()
+    def get_all_previous_public_keys(self, schain_hash: SchainHash) -> List[G2Point]:
+        return [
+            G2Point(*key)
+            for key
+            in self.contract.functions.getAllPreviousPublicKeys(schain_hash).call()
+        ]

@@ -17,45 +17,47 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from typing import List, Tuple
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.transactions.tools import retry_tx
-from skale.utils.helper import split_public_key
+from skale.types.dkg import G2Point, KeyShare, VerificationVector
+from skale.types.node import NodeId
+from skale.types.schain import SchainHash
 
 
-class KeyShare:
-    def __init__(self, public_key: str, share: bytes):
-        self.public_key = split_public_key(public_key)
-        self.share = share
-        self.tuple = (self.public_key, self.share)
-
-
-class G2Point:
-    def __init__(self, xa, xb, ya, yb):
-        self.x = (xa, xb)
-        self.y = (ya, yb)
-        self.tuple = (self.x, self.y)
-
-
-class DKG(BaseContract):
+class DKG(SkaleManagerContract):
     @retry_tx
     @transaction_method
-    def broadcast(self, group_index, node_index,
-                  verification_vector, secret_key_contribution, rotation_id):
-        return self.contract.functions.broadcast(group_index, node_index,
-                                                 verification_vector,
-                                                 secret_key_contribution,
-                                                 rotation_id)
+    def broadcast(
+            self,
+            group_index: SchainHash,
+            node_index: NodeId,
+            verification_vector: VerificationVector,
+            secret_key_contribution: List[KeyShare],
+            rotation_id: int
+    ) -> ContractFunction:
+        return self.contract.functions.broadcast(
+            group_index,
+            node_index,
+            verification_vector,
+            secret_key_contribution,
+            rotation_id
+        )
 
     @retry_tx
     @transaction_method
     def pre_response(
         self,
-        group_index: str,
-        from_node_index: int,
-        verification_vector: list,
-        verification_vector_mult: list,
-        secret_key_contribution: list
-    ):
+        group_index: SchainHash,
+        from_node_index: NodeId,
+        verification_vector: VerificationVector,
+        verification_vector_mult: VerificationVector,
+        secret_key_contribution: List[KeyShare]
+    ) -> ContractFunction:
         return self.contract.functions.preResponse(
             group_index,
             fromNodeIndex=from_node_index,
@@ -68,11 +70,11 @@ class DKG(BaseContract):
     @transaction_method
     def response(
             self,
-            group_index: bytes,
-            from_node_index: int,
+            group_index: SchainHash,
+            from_node_index: NodeId,
             secret_number: int,
             multiplied_share: G2Point
-    ):
+    ) -> ContractFunction:
         return self.contract.functions.response(
             group_index,
             fromNodeIndex=from_node_index,
@@ -82,78 +84,118 @@ class DKG(BaseContract):
 
     @retry_tx
     @transaction_method
-    def alright(self, group_index, from_node_index):
+    def alright(self, group_index: SchainHash, from_node_index: NodeId) -> ContractFunction:
         return self.contract.functions.alright(group_index, from_node_index)
 
     @retry_tx
     @transaction_method
-    def complaint(self, group_index, from_node_index, to_node_index):
+    def complaint(
+            self,
+            group_index: SchainHash,
+            from_node_index: NodeId,
+            to_node_index: NodeId
+    ) -> ContractFunction:
         return self.contract.functions.complaint(group_index, from_node_index,
                                                  to_node_index)
 
     @retry_tx
     @transaction_method
-    def complaint_bad_data(self, group_index, from_node_index, to_node_index):
+    def complaint_bad_data(
+            self,
+            group_index: SchainHash,
+            from_node_index: NodeId,
+            to_node_index: NodeId
+    ) -> ContractFunction:
         return self.contract.functions.complaintBadData(group_index,
                                                         from_node_index,
                                                         to_node_index)
 
-    def is_last_dkg_successful(self, group_index):
-        return self.contract.functions.isLastDKGSuccessful(group_index).call()
+    def is_last_dkg_successful(self, group_index: SchainHash) -> bool:
+        return bool(self.contract.functions.isLastDKGSuccessful(group_index).call())
 
-    def is_channel_opened(self, group_index):
-        return self.contract.functions.isChannelOpened(group_index).call()
+    def is_channel_opened(self, group_index: SchainHash) -> bool:
+        return bool(self.contract.functions.isChannelOpened(group_index).call())
 
-    def is_broadcast_possible(self, group_index, node_id, address):
-        return self.contract.functions.isBroadcastPossible(group_index, node_id).call(
+    def is_broadcast_possible(
+            self,
+            group_index: SchainHash,
+            node_id: NodeId,
+            address: ChecksumAddress
+    ) -> bool:
+        return bool(self.contract.functions.isBroadcastPossible(group_index, node_id).call(
             {'from': address}
+        ))
+
+    def is_alright_possible(
+            self,
+            group_index: SchainHash,
+            node_id: NodeId,
+            address: ChecksumAddress
+    ) -> bool:
+        return bool(self.contract.functions.isAlrightPossible(group_index, node_id).call(
+            {'from': address}
+        ))
+
+    def is_complaint_possible(
+            self,
+            group_index: SchainHash,
+            node_from: NodeId,
+            node_to: NodeId,
+            address: ChecksumAddress
+    ) -> bool:
+        return bool(
+            self.contract.functions.isComplaintPossible(
+                group_index,
+                node_from,
+                node_to
+            ).call({'from': address})
         )
 
-    def is_alright_possible(self, group_index, node_id, address):
-        return self.contract.functions.isAlrightPossible(group_index, node_id).call(
+    def is_pre_response_possible(
+            self,
+            group_index: SchainHash,
+            node_id: NodeId,
+            address: ChecksumAddress
+    ) -> bool:
+        return bool(self.contract.functions.isPreResponsePossible(group_index, node_id).call(
             {'from': address}
-        )
+        ))
 
-    def is_complaint_possible(self, group_index, node_from, node_to, address):
-        return self.contract.functions.isComplaintPossible(group_index, node_from, node_to).call(
+    def is_response_possible(
+            self,
+            group_index: SchainHash,
+            node_id: NodeId,
+            address: ChecksumAddress
+    ) -> bool:
+        return bool(self.contract.functions.isResponsePossible(group_index, node_id).call(
             {'from': address}
-        )
+        ))
 
-    def is_pre_response_possible(self, group_index, node_id, address):
-        return self.contract.functions.isPreResponsePossible(group_index, node_id).call(
+    def is_all_data_received(self, group_index: SchainHash, node_from: NodeId) -> bool:
+        return bool(self.contract.functions.isAllDataReceived(group_index, node_from).call())
+
+    def is_everyone_broadcasted(self, group_index: SchainHash, address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.isEveryoneBroadcasted(group_index).call(
             {'from': address}
-        )
+        ))
 
-    def is_response_possible(self, group_index, node_id, address):
-        return self.contract.functions.isResponsePossible(group_index, node_id).call(
-            {'from': address}
-        )
+    def get_number_of_completed(self, group_index: SchainHash) -> int:
+        return int(self.contract.functions.getNumberOfCompleted(group_index).call())
 
-    def is_all_data_received(self, group_index, node_from):
-        return self.contract.functions.isAllDataReceived(group_index, node_from).call()
+    def get_channel_started_time(self, group_index: SchainHash) -> int:
+        return int(self.contract.functions.getChannelStartedTime(group_index).call())
 
-    def is_everyone_broadcasted(self, group_index, address):
-        return self.contract.functions.isEveryoneBroadcasted(group_index).call(
-            {'from': address}
-        )
+    def get_complaint_started_time(self, group_index: SchainHash) -> int:
+        return int(self.contract.functions.getComplaintStartedTime(group_index).call())
 
-    def get_number_of_completed(self, group_index):
-        return self.contract.functions.getNumberOfCompleted(group_index).call()
+    def get_alright_started_time(self, group_index: SchainHash) -> int:
+        return int(self.contract.functions.getAlrightStartedTime(group_index).call())
 
-    def get_channel_started_time(self, group_index):
-        return self.contract.functions.getChannelStartedTime(group_index).call()
+    def get_complaint_data(self, group_index: SchainHash) -> Tuple[NodeId, NodeId]:
+        return tuple(self.contract.functions.getComplaintData(group_index).call())
 
-    def get_complaint_started_time(self, group_index):
-        return self.contract.functions.getComplaintStartedTime(group_index).call()
+    def get_time_of_last_successful_dkg(self, group_index: SchainHash) -> int:
+        return int(self.contract.functions.getTimeOfLastSuccessfulDKG(group_index).call())
 
-    def get_alright_started_time(self, group_index):
-        return self.contract.functions.getAlrightStartedTime(group_index).call()
-
-    def get_complaint_data(self, group_index):
-        return self.contract.functions.getComplaintData(group_index).call()
-
-    def get_time_of_last_successful_dkg(self, group_index):
-        return self.contract.functions.getTimeOfLastSuccessfulDKG(group_index).call()
-
-    def is_node_broadcasted(self, group_index: int, node_id: int) -> bool:
-        return self.contract.functions.isNodeBroadcasted(group_index, node_id).call()
+    def is_node_broadcasted(self, group_index: SchainHash, node_id: NodeId) -> bool:
+        return bool(self.contract.functions.isNodeBroadcasted(group_index, node_id).call())

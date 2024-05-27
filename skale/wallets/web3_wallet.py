@@ -17,10 +17,14 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Dict, Optional
-from eth_keys import keys
+from typing import cast
+from eth_keys.main import lazy_key_api as keys
+from eth_keys.datatypes import PublicKey
 from web3 import Web3
+from web3.types import _Hash32, TxParams, TxReceipt
 from eth_account import messages
+from eth_account.datastructures import SignedMessage, SignedTransaction
+from eth_typing import AnyAddress, ChecksumAddress, HexStr
 from web3.exceptions import Web3Exception
 
 import skale.config as config
@@ -28,94 +32,109 @@ from skale.transactions.exceptions import (
     TransactionNotSignedError,
     TransactionNotSentError
 )
-from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
+from skale.utils.web3_utils import (
+    DEFAULT_BLOCKS_TO_WAIT,
+    MAX_WAITING_TIME,
+    get_eth_nonce,
+    wait_for_receipt_by_blocks
+)
 from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
 
-def private_key_to_public(pr):
+def private_key_to_public(pr: HexStr) -> PublicKey:
     pr_bytes = Web3.to_bytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
-def public_key_to_address(pk):
+def public_key_to_address(pk: PublicKey) -> ChecksumAddress:
     hash = Web3.keccak(hexstr=str(pk))
     return to_checksum_address(Web3.to_hex(hash[-20:]))
 
 
-def private_key_to_address(pr):
+def private_key_to_address(pr: HexStr) -> ChecksumAddress:
     pk = private_key_to_public(pr)
     return public_key_to_address(pk)
 
 
-def to_checksum_address(address):
+def to_checksum_address(address: AnyAddress | str | bytes) -> ChecksumAddress:
     return Web3.to_checksum_address(address)
 
 
-def generate_wallet(web3):
-    account = web3.eth.account.create()
-    private_key = account.key.hex()
-    return Web3Wallet(private_key, web3)
-
-
 class Web3Wallet(BaseWallet):
-    def __init__(self, private_key, web3):
+    def __init__(self, private_key: HexStr, web3: Web3):
         self._private_key = private_key
         self._public_key = private_key_to_public(self._private_key)
         self._address = public_key_to_address(self._public_key)
 
         self._web3 = web3
 
-    def sign(self, tx_dict):
+    def sign(self, tx_dict: TxParams) -> SignedTransaction:
         if not tx_dict.get('nonce'):
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         ensure_chain_id(tx_dict, self._web3)
         try:
-            return self._web3.eth.account.sign_transaction(
-                tx_dict,
-                private_key=self._private_key
+            return cast(
+                SignedTransaction,
+                self._web3.eth.account.sign_transaction(
+                    tx_dict,
+                    private_key=self._private_key
+                )
             )
         except (TypeError, ValueError, Web3Exception) as e:
             raise TransactionNotSignedError(e)
 
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> SignedMessage:
         try:
             unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
-            return self._web3.eth.account.sign_message(
-                unsigned_message,
-                private_key=self._private_key
+            return cast(
+                SignedMessage,
+                self._web3.eth.account.sign_message(
+                    unsigned_message,
+                    private_key=self._private_key
+                )
             )
         except (TypeError, ValueError, Web3Exception) as e:
             raise MessageNotSignedError(e)
 
     def sign_and_send(
         self,
-        tx_dict: Dict,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
-        priority: int = config.DEFAULT_PRIORITY,
-        method: Optional[str] = None,
-        meta: Optional[Dict] = None
-    ) -> str:
+        tx_dict: TxParams,
+        multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int | None = config.DEFAULT_PRIORITY,
+        method: str | None = None
+    ) -> HexStr:
         signed_tx = self.sign(tx_dict)
         try:
-            return self._web3.eth.send_raw_transaction(
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(
                 signed_tx.rawTransaction
-            ).hex()
+            ))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
     @property
-    def address(self):
+    def address(self) -> ChecksumAddress:
         return self._address
 
     @property
-    def public_key(self):
+    def public_key(self) -> str:
         return str(self._public_key)
 
-    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+    def wait(
+            self,
+            tx_hash: _Hash32,
+            blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+            timeout: int = MAX_WAITING_TIME
+    ) -> TxReceipt:
         return wait_for_receipt_by_blocks(
             self._web3,
             tx_hash,
             blocks_to_wait=blocks_to_wait,
             timeout=timeout
         )
+
+
+def generate_wallet(web3: Web3) -> Web3Wallet:
+    account = web3.eth.account.create()
+    private_key = account.key.hex()
+    return Web3Wallet(private_key, web3)

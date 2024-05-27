@@ -17,15 +17,17 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
+from web3.contract.contract import ContractFunction
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class TimeHelpersWithDebug(BaseContract):
+class TimeHelpersWithDebug(SkaleManagerContract):
     """Wrapper for TimeHelpersWithDebug.sol functions (internal usage only)"""
 
     @transaction_method
-    def skip_time(self, sec: int) -> TxRes:
+    def skip_time(self, sec: int) -> ContractFunction:
         """Skip time on contracts
 
         :param sec: Time to skip in seconds
@@ -41,4 +43,4 @@ class TimeHelpersWithDebug(BaseContract):
         :returns: Month index
         :rtype: int
         """
-        return self.contract.functions.getCurrentMonth().call()
+        return int(self.contract.functions.getCurrentMonth().call())

@@ -3,6 +3,7 @@ from datetime import datetime
 from unittest import mock
 import pytest
 from freezegun import freeze_time
+from web3 import Web3
 
 from skale.wallets.redis_wallet import (
     RedisWalletNotSentError,
@@ -51,7 +52,7 @@ def test_make_record():
     score = '51623233060'
     tx_id, r = RedisWalletAdapter._make_record(tx, score, 2, method='createNode')
     assert tx_id.startswith(b'tx-') and len(tx_id) == 19
-    assert r == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "meta": null, "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": null, "nonce": 1, "chainId": 1}'  # noqa
+    assert r == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": null, "nonce": 1, "chainId": 1}'  # noqa
 
 
 def test_sign_and_send(rdp):
@@ -64,8 +65,8 @@ def test_sign_and_send(rdp):
         'nonce': 1,
         'chainId': 1
     }
-    tx_id = rdp.sign_and_send(tx, multiplier=2, priority=5)
-    assert tx_id.startswith('tx-') and len(tx_id) == 19
+    tx_id = Web3.to_bytes(hexstr=rdp.sign_and_send(tx, multiplier=2, priority=5))
+    assert tx_id.startswith(b'tx-') and len(tx_id) == 19
 
     rdp.rs.pipeline = mock.Mock(side_effect=RedisTestError('rtest'))
     with pytest.raises(RedisWalletNotSentError):

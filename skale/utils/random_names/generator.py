@@ -22,21 +22,21 @@ from skale.utils.random_names.vocabulary import CONSTELLATIONS, STARS, \
     SOUND_AND_APPEARANCE_ADJECTIVES, POSITIVE_AND_TIME_ADJECTIVES
 
 
-def generate_random_node_name():
+def generate_random_node_name() -> str:
     return generate_name(CONSTELLATIONS, POSITIVE_AND_TIME_ADJECTIVES)
 
 
-def generate_random_schain_name():
+def generate_random_schain_name() -> str:
     return generate_name(STARS, SOUND_AND_APPEARANCE_ADJECTIVES)
 
 
-def generate_name(noun_dict, adjective_dict):
+def generate_name(noun_dict: list[str], adjective_dict: list[str]) -> str:
     noun = get_random_word_from_dict(noun_dict)
     adjective = get_random_word_from_dict(adjective_dict)
     return f'{adjective}-{noun}'
 
 
-def get_random_word_from_dict(vocabulary_dict):
+def get_random_word_from_dict(vocabulary_dict: list[str]) -> str:
     return random.choice(vocabulary_dict).lower().replace(" ", "-")
 
 

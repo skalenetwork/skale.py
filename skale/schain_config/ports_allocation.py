@@ -17,21 +17,27 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from skale.types.node import Port
+from skale.types.schain import SchainName, SchainStructure
 from skale.utils.exceptions import SChainNotFoundException
 from skale.schain_config import PORTS_PER_SCHAIN
 
 
-def calc_schain_base_port(node_base_port, schain_index):
-    return node_base_port + schain_index * PORTS_PER_SCHAIN
+def calc_schain_base_port(node_base_port: Port, schain_index: int) -> Port:
+    return Port(node_base_port + schain_index * PORTS_PER_SCHAIN)
 
 
-def get_schain_index_in_node(schain_name, node_schains):
+def get_schain_index_in_node(schain_name: SchainName, node_schains: list[SchainStructure]) -> int:
     for index, schain in enumerate(node_schains):
-        if schain_name == schain['name']:
+        if schain_name == schain.name:
             return index
     raise SChainNotFoundException(f'sChain {schain_name} is not found in the list: {node_schains}')
 
 
-def get_schain_base_port_on_node(schains_on_node, schain_name, node_base_port):
+def get_schain_base_port_on_node(
+        schains_on_node: list[SchainStructure],
+        schain_name: SchainName,
+        node_base_port: Port
+) -> Port:
     schain_index = get_schain_index_in_node(schain_name, schains_on_node)
     return calc_schain_base_port(node_base_port, schain_index)

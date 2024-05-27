@@ -21,16 +21,26 @@
 import logging
 import os
 import time
-from typing import Iterable
+from typing import Any, Callable, Dict, Iterable
 from urllib.parse import urlparse
 
-from eth_keys import keys
+from eth_keys.main import lazy_key_api as keys
+from eth_typing import Address, AnyAddress, BlockNumber, ChecksumAddress, HexStr
 from web3 import Web3, WebsocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
-from web3.middleware import (
-    attrdict_middleware,
-    geth_poa_middleware,
-    http_retry_request_middleware
+from web3.middleware.attrdict import attrdict_middleware
+from web3.middleware.exception_retry_request import http_retry_request_middleware
+from web3.middleware.geth_poa import geth_poa_middleware
+from web3.providers.base import JSONBaseProvider
+from web3.types import (
+    _Hash32,
+    ENS,
+    Middleware,
+    Nonce,
+    RPCEndpoint,
+    RPCResponse,
+    Timestamp,
+    TxReceipt
 )
 
 import skale.config as config
@@ -50,7 +60,11 @@ DEFAULT_HTTP_TIMEOUT = 120
 DEFAULT_BLOCKS_TO_WAIT = 50
 
 
-def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
+def get_provider(
+        endpoint: str,
+        timeout: int = DEFAULT_HTTP_TIMEOUT,
+        request_kwargs: Dict[str, Any] | None = None
+) -> JSONBaseProvider:
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
         kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
@@ -58,7 +72,7 @@ def get_provider(endpoint, timeout=DEFAULT_HTTP_TIMEOUT, request_kwargs={}):
                                  websocket_kwargs=kwargs)
 
     if scheme == 'http' or scheme == 'https':
-        kwargs = {'timeout': timeout, **request_kwargs}
+        kwargs = {'timeout': timeout, **(request_kwargs or {})}
         return HTTPProvider(endpoint, request_kwargs=kwargs)
 
     raise Exception(
@@ -87,21 +101,39 @@ def save_last_known_block_number(state_path: str, block_number: int) -> None:
         last_block_file.write(str(block_number))
 
 
-def outdated_client_time_msg(method, current_time, latest_block_timestamp, allowed_ts_diff):
+def outdated_client_time_msg(
+        method: RPCEndpoint,
+        current_time: float,
+        latest_block_timestamp: Timestamp,
+        allowed_ts_diff: int
+) -> str:
     return f'{method} failed; \
 current_time: {current_time}, latest_block_timestamp: {latest_block_timestamp}, \
 allowed_ts_diff: {allowed_ts_diff}'
 
 
-def outdated_client_file_msg(method, latest_block_number, saved_number, state_path):
+def outdated_client_file_msg(
+        method: RPCEndpoint,
+        latest_block_number: BlockNumber,
+        saved_number: int,
+        state_path: str
+) -> str:
     return f'{method} failed: latest_block_number: {latest_block_number}, \
         saved_number: {saved_number}, state_path: {state_path}'
 
 
-def make_client_checking_middleware(allowed_ts_diff: int,
-                                    state_path: str = None):
-    def eth_client_checking_middleware(make_request, web3):
-        def middleware(method, params):
+def make_client_checking_middleware(
+        allowed_ts_diff: int,
+        state_path: str | None = None
+) -> Callable[
+    [Callable[[RPCEndpoint, Any], RPCResponse], Web3],
+    Callable[[RPCEndpoint, Any], RPCResponse]
+]:
+    def eth_client_checking_middleware(
+            make_request: Callable[[RPCEndpoint, Any], RPCResponse],
+            web3: Web3
+    ) -> Callable[[RPCEndpoint, Any], RPCResponse]:
+        def middleware(method: RPCEndpoint, params: Any) -> RPCResponse:
             if method in ('eth_block_number', 'eth_getBlockByNumber'):
                 response = make_request(method, params)
             else:
@@ -139,23 +171,23 @@ def make_client_checking_middleware(allowed_ts_diff: int,
 
 def init_web3(endpoint: str,
               provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
-              middlewares: Iterable = None,
-              state_path: str = None, ts_diff: int = None):
+              middlewares: Iterable[Middleware] | None = None,
+              state_path: str | None = None, ts_diff: int | None = None) -> Web3:
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
         if not ts_diff == config.NO_SYNC_TS_DIFF:
             sync_middleware = make_client_checking_middleware(ts_diff, state_path)
-            middewares = (
+            middewares = [
                 http_retry_request_middleware,
                 sync_middleware,
                 attrdict_middleware
-            )
+            ]
         else:
-            middewares = (
+            middewares = [
                 http_retry_request_middleware,
                 attrdict_middleware
-            )
+            ]
 
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
@@ -166,20 +198,20 @@ def init_web3(endpoint: str,
     return web3
 
 
-def get_receipt(web3, tx):
+def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
     return web3.eth.get_transaction_receipt(tx)
 
 
-def get_eth_nonce(web3, address):
+def get_eth_nonce(web3: Web3, address: Address | ChecksumAddress | ENS) -> Nonce:
     return web3.eth.get_transaction_count(address)
 
 
 def wait_for_receipt_by_blocks(
-    web3,
-    tx,
-    blocks_to_wait=DEFAULT_BLOCKS_TO_WAIT,
-    timeout=MAX_WAITING_TIME
-):
+    web3: Web3,
+    tx: _Hash32,
+    blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+    timeout: int = MAX_WAITING_TIME
+) -> TxReceipt:
     blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
     timeout = timeout or MAX_WAITING_TIME
     previous_block = web3.eth.block_number
@@ -196,11 +228,11 @@ def wait_for_receipt_by_blocks(
         current_block = web3.eth.block_number
         time.sleep(3)
     raise TransactionNotMinedError(
-        f'Transaction with hash: {tx} not found in {blocks_to_wait} blocks.'
+        f'Transaction with hash: {str(tx)} not found in {blocks_to_wait} blocks.'
     )
 
 
-def wait_receipt(web3, tx, retries=30, timeout=5):
+def wait_receipt(web3: Web3, tx: _Hash32, retries: int = 30, timeout: int = 5) -> TxReceipt:
     for _ in range(0, retries):
         try:
             receipt = get_receipt(web3, tx)
@@ -210,11 +242,11 @@ def wait_receipt(web3, tx, retries=30, timeout=5):
             return receipt
         time.sleep(timeout)  # pragma: no cover
     raise TransactionNotMinedError(
-        f'Transaction with hash: {tx} not mined after {retries} retries.'
+        f'Transaction with hash: {str(tx)} not mined after {retries} retries.'
     )
 
 
-def check_receipt(receipt, raise_error=True):
+def check_receipt(receipt: TxReceipt, raise_error: bool = True) -> bool:
     if receipt['status'] != 1:  # pragma: no cover
         if raise_error:
             raise TransactionFailedError(
@@ -226,11 +258,11 @@ def check_receipt(receipt, raise_error=True):
 
 
 def wait_for_confirmation_blocks(
-    web3,
-    blocks_to_wait,
-    timeout=MAX_WAITING_TIME,
-    request_timeout=5
-):
+    web3: Web3,
+    blocks_to_wait: int,
+    timeout: int = MAX_WAITING_TIME,
+    request_timeout: int = 5
+) -> None:
     current_block = start_block = web3.eth.block_number
     logger.info(
         f'Current block number is {current_block}, '
@@ -243,31 +275,25 @@ def wait_for_confirmation_blocks(
         time.sleep(request_timeout)
 
 
-def private_key_to_public(pr):
+def private_key_to_public(pr: HexStr) -> HexStr:
     pr_bytes = Web3.to_bytes(hexstr=pr)
-    pk = keys.PrivateKey(pr_bytes)
-    return pk.public_key
+    prk = keys.PrivateKey(pr_bytes)
+    pk = prk.public_key
+    return HexStr(pk.to_hex())
 
 
-def public_key_to_address(pk):
+def public_key_to_address(pk: HexStr) -> HexStr:
     hash = Web3.keccak(hexstr=str(pk))
     return Web3.to_hex(hash[-20:])
 
 
-def private_key_to_address(pr):
+def private_key_to_address(pr: HexStr) -> HexStr:
     pk = private_key_to_public(pr)
     return public_key_to_address(pk)
 
 
-def to_checksum_address(address):
+def to_checksum_address(address: AnyAddress | str | bytes) -> ChecksumAddress:
     return Web3.to_checksum_address(address)
-
-
-def wallet_to_public_key(wallet):
-    if isinstance(wallet, dict):
-        return private_key_to_public(wallet['private_key'])
-    else:
-        return wallet['public_key']
 
 
 def default_gas_price(web3: Web3) -> int:

@@ -18,12 +18,18 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
-from typing import Dict, Optional
+from typing import Optional
+
+from eth_account.datastructures import SignedMessage, SignedTransaction
+from eth_typing import ChecksumAddress, HexStr
+from web3 import Web3
+from web3.types import _Hash32, TxParams, TxReceipt
 
 from skale.transactions.exceptions import ChainIdError
+from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT
 
 
-def ensure_chain_id(tx_dict, web3):
+def ensure_chain_id(tx_dict: TxParams, web3: Web3) -> None:
     if not tx_dict.get('chainId'):
         tx_dict['chainId'] = web3.eth.chain_id
     if not tx_dict.get('chainId'):
@@ -39,26 +45,26 @@ class MessageNotSignedError(Exception):
 
 class BaseWallet(ABC):
     @abstractmethod
-    def sign(self, tx):
+    def sign(self, tx_dict: TxParams) -> SignedTransaction:
         pass
 
     @abstractmethod
     def sign_and_send(
         self,
-        tx_dict: Dict,
-        multiplier: Optional[int] = None,
+        tx_dict: TxParams,
+        multiplier: Optional[float] = None,
         priority: Optional[int] = None,
         method: Optional[str] = None
-    ) -> str:
+    ) -> HexStr:
         pass
 
     @abstractmethod
-    def sign_hash(self, unsigned_hash: str) -> str:
+    def sign_hash(self, unsigned_hash: str) -> SignedMessage:
         pass
 
     @property
     @abstractmethod
-    def address(self) -> str:
+    def address(self) -> ChecksumAddress:
         pass
 
     @property
@@ -67,5 +73,5 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def wait(self, tx: str, confirmation_blocks: int = None):
+    def wait(self, tx: _Hash32, confirmation_blocks: int = DEFAULT_BLOCKS_TO_WAIT) -> TxReceipt:
         pass

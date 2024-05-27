@@ -17,7 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.allocator.allocator import TimeUnit
+from web3.types import Wei
+
+from skale.types.allocation import TimeUnit
+from skale.types.validator import ValidatorId
 
 # manager test constants
 
@@ -29,7 +32,7 @@ DEFAULT_SCHAIN_NAME = 'test_schain_1'
 DEFAULT_DOMAIN_NAME = 'skale.test'
 
 INITIAL_DELEGATION_PERIOD = 2
-D_VALIDATOR_ID = 1
+D_VALIDATOR_ID = ValidatorId(1)
 D_VALIDATOR_NAME = 'test'
 D_VALIDATOR_DESC = 'test'
 D_VALIDATOR_FEE = 10
@@ -60,6 +63,6 @@ TEST_LOCKUP_AMOUNT = 1000 * WEI_MULTIPLIER
 
 POLL_INTERVAL = 2
 
-TEST_SKALE_AMOUNT = 100000
+TEST_SKALE_AMOUNT = Wei(100000)
 
 D_PLAN_ID = 1

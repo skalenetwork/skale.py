@@ -18,15 +18,23 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from typing import Dict, Optional
+from typing import Tuple, cast
 
+from eth_account.datastructures import SignedMessage, SignedTransaction
+from eth_typing import ChecksumAddress, HexStr
 from sgx import SgxClient
 from web3 import Web3
 from web3.exceptions import Web3Exception
+from web3.types import _Hash32, TxParams, TxReceipt
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
-from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
+from skale.utils.web3_utils import (
+    DEFAULT_BLOCKS_TO_WAIT,
+    MAX_WAITING_TIME,
+    get_eth_nonce,
+    wait_for_receipt_by_blocks
+)
 from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
 
@@ -34,7 +42,13 @@ logger = logging.getLogger(__name__)
 
 
 class SgxWallet(BaseWallet):
-    def __init__(self, sgx_endpoint, web3, key_name=None, path_to_cert=None):
+    def __init__(
+            self,
+            sgx_endpoint: str,
+            web3: Web3,
+            key_name: str | None = None,
+            path_to_cert: str | None = None
+    ):
         self.sgx_client = SgxClient(sgx_endpoint, path_to_cert=path_to_cert)
         self._web3 = web3
         if key_name is None:
@@ -43,32 +57,31 @@ class SgxWallet(BaseWallet):
             self._key_name = key_name
             self._address, self._public_key = self._get_account(key_name)
 
-    def sign(self, tx_dict):
+    def sign(self, tx_dict: TxParams) -> SignedTransaction:
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         ensure_chain_id(tx_dict, self._web3)
         try:
-            return self.sgx_client.sign(tx_dict, self.key_name)
+            return cast(SignedTransaction, self.sgx_client.sign(tx_dict, self.key_name))
         except Exception as e:
             raise TransactionNotSignedError(e)
 
     def sign_and_send(
         self,
-        tx_dict: Dict,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
-        priority: int = config.DEFAULT_PRIORITY,
-        method: Optional[str] = None,
-        meta: Optional[Dict] = None
-    ) -> str:
+        tx_dict: TxParams,
+        multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int | None = config.DEFAULT_PRIORITY,
+        method: str | None = None
+    ) -> HexStr:
         signed_tx = self.sign(tx_dict)
         try:
-            return self._web3.eth.send_raw_transaction(
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(
                 signed_tx.rawTransaction
-            ).hex()
+            ))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> SignedMessage:
         if unsigned_hash.startswith('0x'):
             unsigned_hash = unsigned_hash[2:]
 
@@ -78,35 +91,43 @@ class SgxWallet(BaseWallet):
         hash_to_sign = Web3.keccak(hexstr='0x' + normalized_hash.hex())
         chain_id = None
         try:
-            return self.sgx_client.sign_hash(
-                hash_to_sign,
-                self._key_name,
-                chain_id
+            return cast(
+                SignedMessage,
+                self.sgx_client.sign_hash(
+                    hash_to_sign,
+                    self._key_name,
+                    chain_id
+                )
             )
         except Exception as e:
             raise MessageNotSignedError(e)
 
     @property
-    def address(self):
+    def address(self) -> ChecksumAddress:
         return self._address
 
     @property
-    def public_key(self):
+    def public_key(self) -> str:
         return self._public_key
 
     @property
-    def key_name(self):
+    def key_name(self) -> str:
         return self._key_name
 
-    def _generate(self):
+    def _generate(self) -> Tuple[str, ChecksumAddress, str]:
         key = self.sgx_client.generate_key()
-        return key.name, key.address, key.public_key
+        return key.name, Web3.to_checksum_address(key.address), key.public_key
 
-    def _get_account(self, key_name):
+    def _get_account(self, key_name: str) -> Tuple[ChecksumAddress, str]:
         account = self.sgx_client.get_account(key_name)
-        return account.address, account.public_key
+        return Web3.to_checksum_address(account.address), account.public_key
 
-    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+    def wait(
+            self,
+            tx_hash: _Hash32,
+            blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+            timeout: int = MAX_WAITING_TIME
+    ) -> TxReceipt:
         return wait_for_receipt_by_blocks(
             self._web3,
             tx_hash,

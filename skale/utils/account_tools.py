@@ -18,11 +18,16 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ Account utilities """
 
+from __future__ import annotations
+from decimal import Decimal
 import logging
-from typing import Optional
+from typing import Any, Dict, List, Literal, Optional, TYPE_CHECKING, Type, TypedDict
 
+from eth_typing import ChecksumAddress
 from web3 import Web3
+from web3.types import TxReceipt, Wei
 
+from skale.transactions.result import TxRes
 from skale.transactions.tools import compose_eth_transfer_tx
 from skale.utils.constants import LONG_LINE
 from skale.wallets import LedgerWallet, Web3Wallet
@@ -32,26 +37,40 @@ from skale.utils.web3_utils import (
     wait_for_confirmation_blocks
 )
 
+if TYPE_CHECKING:
+    from skale.skale_manager import SkaleManager
+    from skale.wallets.common import BaseWallet
+
+
 logger = logging.getLogger(__name__)
 
 
-WALLET_TYPE_TO_CLASS = {
+class AccountData(TypedDict):
+    address: ChecksumAddress
+    private_key: str
+
+
+WALLET_TYPE_TO_CLASS: Dict[str, Type[LedgerWallet] | Type[Web3Wallet]] = {
     'ledger': LedgerWallet,
     'web3': Web3Wallet
 }
 
 
-def create_wallet(wallet_type='web3', *args, **kwargs):
+def create_wallet(
+        wallet_type: Literal['web3'] | Literal['ledger'] = 'web3',
+        *args: Any,
+        **kwargs: Any
+) -> LedgerWallet | Web3Wallet:
     return WALLET_TYPE_TO_CLASS[wallet_type](*args, **kwargs)
 
 
 def send_tokens(
-    skale,
-    receiver_address,
-    amount,
-    *args,
-    **kwargs
-):
+    skale: SkaleManager,
+    receiver_address: ChecksumAddress,
+    amount: Wei,
+    *args: Any,
+    **kwargs: Any
+) -> TxRes:
     logger.info(
         f'Sending {amount} SKALE tokens from {skale.wallet.address} => '
         f'{receiver_address}'
@@ -68,17 +87,17 @@ def send_tokens(
 
 def send_eth(
     web3: Web3,
-    wallet,
-    receiver_address,
-    amount,
-    *args,
+    wallet: BaseWallet,
+    receiver_address: ChecksumAddress,
+    amount: Wei,
+    *args: Any,
     gas_price: Optional[int] = None,
     wait_for: bool = True,
     confirmation_blocks: int = 0,
     multiplier: Optional[int] = None,
     priority: Optional[int] = None,
-    **kwargs
-):
+    **kwargs: Any
+) -> TxReceipt:
     logger.info(
         f'Sending {amount} ETH from {wallet.address} => '
         f'{receiver_address}'
@@ -86,12 +105,12 @@ def send_eth(
     wei_amount = web3.to_wei(amount, 'ether')
     gas_price = gas_price or default_gas_price(web3)
     tx = compose_eth_transfer_tx(
-        web3=web3,
-        *args,
+        web3,
+        wallet.address,
+        receiver_address,
+        wei_amount,
         gas_price=gas_price,
-        from_address=wallet.address,
-        to_address=receiver_address,
-        value=wei_amount,
+        *args,
         **kwargs
     )
     tx_hash = wallet.sign_and_send(
@@ -110,11 +129,11 @@ def send_eth(
     return receipt
 
 
-def account_eth_balance_wei(web3, address):
+def account_eth_balance_wei(web3: Web3, address: ChecksumAddress) -> Wei:
     return web3.eth.get_balance(address)
 
 
-def check_ether_balance(web3, address):
+def check_ether_balance(web3: Web3, address: ChecksumAddress) -> int | Decimal:
     balance_wei = account_eth_balance_wei(web3, address)
     balance = web3.from_wei(balance_wei, 'ether')
 
@@ -122,26 +141,28 @@ def check_ether_balance(web3, address):
     return balance
 
 
-def check_skale_balance(skale, address):
+def check_skale_balance(skale: SkaleManager, address: ChecksumAddress) -> int | Decimal:
     balance_wei = skale.token.get_balance(address)
     balance = skale.web3.from_wei(balance_wei, 'ether')
     logger.info(f'{address} balance: {balance} SKALE')
     return balance
 
 
-def generate_account(web3):
+def generate_account(web3: Web3) -> AccountData:
     account = web3.eth.account.create()
     private_key = account.key.hex()
     logger.info(f'Generated account: {account.address}')
-    return {'address': account.address, 'private_key': private_key}
+    return AccountData({'address': account.address, 'private_key': private_key})
 
 
-def generate_accounts(skale,
-                      base_wallet,
-                      n_wallets,
-                      skale_amount,
-                      eth_amount,
-                      debug=False):
+def generate_accounts(
+        skale: SkaleManager,
+        base_wallet: BaseWallet,
+        n_wallets: int,
+        skale_amount: Wei,
+        eth_amount: Wei,
+        debug: bool = False
+) -> List[AccountData]:
     n_wallets = int(n_wallets)
     results = []
 

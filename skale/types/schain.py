@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2024-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -17,23 +17,41 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import List
+from dataclasses import dataclass
+from typing import NewType
+
 from eth_typing import ChecksumAddress
-from web3.contract.contract import ContractFunction
+from web3.types import Wei
 
-from skale.contracts.base_contract import transaction_method
-from skale.contracts.ima_contract import ImaContract
-from skale.types.schain import SchainName
+from skale.dataclasses.schain_options import SchainOptions
 
 
-class Linker(ImaContract):
-    @transaction_method
-    def connect_schain(
-            self,
-            schain_name: SchainName,
-            mainnet_contracts: List[ChecksumAddress]
-    ) -> ContractFunction:
-        return self.contract.functions.connectSchain(
-            schain_name,
-            mainnet_contracts
-        )
+SchainName = NewType('SchainName', str)
+SchainHash = NewType('SchainHash', bytes)
+SchainOption = tuple[str, bytes]
+
+
+@dataclass
+class Schain:
+    name: SchainName
+    mainnetOwner: ChecksumAddress
+    indexInOwnerList: int
+    partOfNode: int
+    lifetime: int
+    startDate: int
+    startBlock: int
+    deposit: Wei
+    index: int
+    generation: int
+    originator: ChecksumAddress
+
+
+@dataclass
+class SchainStructure(Schain):
+    chainId: SchainHash
+    options: SchainOptions
+
+
+@dataclass
+class SchainStructureWithStatus(SchainStructure):
+    active: bool

@@ -12,16 +12,7 @@ from tests.rotation_history.utils import set_up_nodes, run_dkg, _skip_evm_time, 
 
 
 def test_get_rotation(skale):
-    assert skale.node_rotation.get_rotation(DEFAULT_SCHAIN_NAME) == {
-        'leaving_node': 0,
-        'new_node': 0,
-        'freeze_until': 0,
-        'rotation_id': 0
-    }
-
-
-def test_get_rotation_obj(skale):
-    assert skale.node_rotation.get_rotation_obj(DEFAULT_SCHAIN_NAME) == Rotation(
+    assert skale.node_rotation.get_rotation(DEFAULT_SCHAIN_NAME) == Rotation(
         leaving_node_id=0,
         new_node_id=0,
         freeze_until=0,

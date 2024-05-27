@@ -18,15 +18,19 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ Contract info utilities """
 
-from typing import NamedTuple
+from __future__ import annotations
+from typing import Generic, NamedTuple, Type, TYPE_CHECKING
 
-from skale.contracts.base_contract import BaseContract
-from skale.utils.contract_types import ContractTypes
+from skale.contracts.base_contract import SkaleType
+
+if TYPE_CHECKING:
+    from skale.contracts.base_contract import BaseContract
+    from skale.utils.contract_types import ContractTypes
 
 
-class ContractInfo(NamedTuple):
+class ContractInfo(NamedTuple, Generic[SkaleType]):
     name: str
     contract_name: str
-    contract_class: BaseContract
+    contract_class: Type[BaseContract[SkaleType]]
     type: ContractTypes
     upgradeable: bool

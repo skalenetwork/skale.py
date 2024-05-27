@@ -18,11 +18,24 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE Allocator Core Escrow methods """
 
-from enum import IntEnum
+from typing import Any, Dict, List
 
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.exceptions import ContractLogicError
-from skale.transactions.result import TxRes
+from eth_typing import ChecksumAddress
+from web3 import Web3
+from web3.contract.contract import ContractFunction
+from web3.exceptions import ContractLogicError
+from web3.types import Wei
+
+from skale.contracts.allocator_contract import AllocatorContract
+from skale.contracts.base_contract import transaction_method
+from skale.types.allocation import (
+    BeneficiaryStatus,
+    BeneficiaryPlan,
+    Plan,
+    PlanId,
+    PlanWithId,
+    TimeUnit
+)
 from skale.utils.helper import format_fields
 
 
@@ -47,36 +60,25 @@ MAX_NUM_OF_PLANS = 9999
 MAX_NUM_OF_BENEFICIARIES = 9999
 
 
-class TimeUnit(IntEnum):
-    DAY = 0
-    MONTH = 1
-    YEAR = 2
-
-
-class BeneficiaryStatus(IntEnum):
-    UNKNOWN = 0
-    CONFIRMED = 1
-    ACTIVE = 2
-    TERMINATED = 3
-
-
-class Allocator(BaseContract):
-    def is_beneficiary_registered(self, beneficiary_address: str) -> bool:
+class Allocator(AllocatorContract):
+    def is_beneficiary_registered(self, beneficiary_address: ChecksumAddress) -> bool:
         """Confirms whether the beneficiary is registered in a Plan.
 
         :returns: Boolean value
         :rtype: bool
         """
-        return self.contract.functions.isBeneficiaryRegistered(beneficiary_address).call()
+        return bool(self.contract.functions.isBeneficiaryRegistered(beneficiary_address).call())
 
-    def is_delegation_allowed(self, beneficiary_address: str) -> bool:
-        return self.contract.functions.isDelegationAllowed(beneficiary_address).call()
+    def is_delegation_allowed(self, beneficiary_address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.isDelegationAllowed(beneficiary_address).call())
 
-    def is_vesting_active(self, beneficiary_address: str) -> bool:
-        return self.contract.functions.isVestingActive(beneficiary_address).call()
+    def is_vesting_active(self, beneficiary_address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.isVestingActive(beneficiary_address).call())
 
-    def get_escrow_address(self, beneficiary_address: str) -> str:
-        return self.contract.functions.getEscrowAddress(beneficiary_address).call()
+    def get_escrow_address(self, beneficiary_address: ChecksumAddress) -> ChecksumAddress:
+        return Web3.to_checksum_address(
+            self.contract.functions.getEscrowAddress(beneficiary_address).call()
+        )
 
     @transaction_method
     def add_plan(
@@ -87,7 +89,7 @@ class Allocator(BaseContract):
             vesting_interval: int,
             can_delegate: bool,
             is_terminatable: bool
-    ) -> TxRes:
+    ) -> ContractFunction:
         return self.contract.functions.addPlan(
             vestingCliff=vesting_cliff,
             totalVestingDuration=total_vesting_duration,
@@ -100,12 +102,12 @@ class Allocator(BaseContract):
     @transaction_method
     def connect_beneficiary_to_plan(
             self,
-            beneficiary_address: str,
+            beneficiary_address: ChecksumAddress,
             plan_id: int,
             start_month: int,
             full_amount: int,
             lockup_amount: int,
-    ) -> TxRes:
+    ) -> ContractFunction:
         return self.contract.functions.connectBeneficiaryToPlan(
             beneficiary=beneficiary_address,
             planId=plan_id,
@@ -115,61 +117,102 @@ class Allocator(BaseContract):
         )
 
     @transaction_method
-    def start_vesting(self, beneficiary_address: str) -> TxRes:
+    def start_vesting(self, beneficiary_address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.startVesting(beneficiary_address)
 
     @transaction_method
-    def stop_vesting(self, beneficiary_address: str) -> TxRes:
+    def stop_vesting(self, beneficiary_address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.stopVesting(beneficiary_address)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     def vesting_manager_role(self) -> bytes:
-        return self.contract.functions.VESTING_MANAGER_ROLE().call()
+        return bytes(self.contract.functions.VESTING_MANAGER_ROLE().call())
 
-    def has_role(self, role: bytes, address: str) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.hasRole(role, address).call())
 
-    def __get_beneficiary_plan_params_raw(self, beneficiary_address: str):
-        return self.contract.functions.getBeneficiaryPlanParams(beneficiary_address).call()
+    def __get_beneficiary_plan_params_raw(self, beneficiary_address: ChecksumAddress) -> List[Any]:
+        return list(self.contract.functions.getBeneficiaryPlanParams(beneficiary_address).call())
 
     @format_fields(BENEFICIARY_FIELDS)
-    def get_beneficiary_plan_params_dict(self, beneficiary_address: str) -> dict:
+    def get_beneficiary_plan_params_dict(self, beneficiary_address: ChecksumAddress) -> List[Any]:
         return self.__get_beneficiary_plan_params_raw(beneficiary_address)
 
-    def get_beneficiary_plan_params(self, beneficiary_address: str) -> dict:
+    def get_beneficiary_plan_params(self, beneficiary_address: ChecksumAddress) -> BeneficiaryPlan:
         plan_params = self.get_beneficiary_plan_params_dict(beneficiary_address)
-        plan_params['statusName'] = BeneficiaryStatus(plan_params['status']).name
-        return plan_params
+        if plan_params is None:
+            raise ValueError('Plan for ', beneficiary_address, ' is missing')
+        if isinstance(plan_params, list):
+            return self._to_beneficiary_plan({
+                **plan_params[0],
+                'statusName': BeneficiaryStatus(plan_params[0]['status']).name
+            })
+        if isinstance(plan_params, dict):
+            return self._to_beneficiary_plan({
+                **plan_params,
+                'statusName': BeneficiaryStatus(plan_params.get('status', 0)).name
+            })
+        raise TypeError(f'Internal error on getting plan params for ${beneficiary_address}')
 
-    def __get_plan_raw(self, plan_id: int):
-        return self.contract.functions.getPlan(plan_id).call()
+    def __get_plan_raw(self, plan_id: PlanId) -> List[Any]:
+        return list(self.contract.functions.getPlan(plan_id).call())
 
     @format_fields(PLAN_FIELDS)
-    def get_plan(self, plan_id: int) -> dict:
+    def get_untyped_plan(self, plan_id: PlanId) -> List[Any]:
         return self.__get_plan_raw(plan_id)
 
-    def get_all_plans(self) -> dict:
+    def get_plan(self, plan_id: PlanId) -> Plan:
+        untyped_plan = self.get_untyped_plan(plan_id)
+        if untyped_plan is None:
+            raise ValueError('Plan ', plan_id, ' is missing')
+        if isinstance(untyped_plan, list):
+            return self._to_plan(untyped_plan[0])
+        if isinstance(untyped_plan, dict):
+            return self._to_plan(untyped_plan)
+        raise TypeError(plan_id)
+
+    def get_all_plans(self) -> List[PlanWithId]:
         plans = []
         for i in range(1, MAX_NUM_OF_PLANS):
             try:
-                plan = self.get_plan(i)
-                plan['planId'] = i
+                plan_id = PlanId(i)
+                plan = PlanWithId({**self.get_plan(plan_id), 'planId': plan_id})
                 plans.append(plan)
             except (ContractLogicError, ValueError):
                 break
         return plans
 
-    def calculate_vested_amount(self, address: str) -> int:
-        return self.contract.functions.calculateVestedAmount(address).call()
+    def calculate_vested_amount(self, address: ChecksumAddress) -> Wei:
+        return Wei(self.contract.functions.calculateVestedAmount(address).call())
 
-    def get_finish_vesting_time(self, address: str) -> int:
-        return self.contract.functions.getFinishVestingTime(address).call()
+    def get_finish_vesting_time(self, address: ChecksumAddress) -> int:
+        return int(self.contract.functions.getFinishVestingTime(address).call())
 
-    def get_lockup_period_end_timestamp(self, address: str) -> int:
-        return self.contract.functions.getLockupPeriodEndTimestamp(address).call()
+    def get_lockup_period_end_timestamp(self, address: ChecksumAddress) -> int:
+        return int(self.contract.functions.getLockupPeriodEndTimestamp(address).call())
 
-    def get_time_of_next_vest(self, address: str) -> int:
-        return self.contract.functions.getTimeOfNextVest(address).call()
+    def get_time_of_next_vest(self, address: ChecksumAddress) -> int:
+        return int(self.contract.functions.getTimeOfNextVest(address).call())
+
+    def _to_plan(self, untyped_plan: Dict[str, Any]) -> Plan:
+        return Plan({
+            'totalVestingDuration': int(untyped_plan['totalVestingDuration']),
+            'vestingCliff': int(untyped_plan['vestingCliff']),
+            'vestingIntervalTimeUnit': TimeUnit(untyped_plan['vestingIntervalTimeUnit']),
+            'vestingInterval': int(untyped_plan['vestingInterval']),
+            'isDelegationAllowed': bool(untyped_plan['isDelegationAllowed']),
+            'isTerminatable': bool(untyped_plan['isTerminatable'])
+        })
+
+    def _to_beneficiary_plan(self, untyped_beneficiary_plan: Dict[str, Any]) -> BeneficiaryPlan:
+        return BeneficiaryPlan({
+            'status': BeneficiaryStatus(untyped_beneficiary_plan['status']),
+            'statusName': str(untyped_beneficiary_plan['statusName']),
+            'planId': PlanId(untyped_beneficiary_plan['planId']),
+            'startMonth': int(untyped_beneficiary_plan['startMonth']),
+            'fullAmount': Wei(untyped_beneficiary_plan['fullAmount']),
+            'amountAfterLockup': Wei(untyped_beneficiary_plan['amountAfterLockup'])
+        })

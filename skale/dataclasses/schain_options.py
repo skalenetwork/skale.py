@@ -16,8 +16,12 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-
+from __future__ import annotations
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from skale.types.schain import SchainOption
 
 
 @dataclass
@@ -25,14 +29,14 @@ class SchainOptions:
     multitransaction_mode: bool
     threshold_encryption: bool
 
-    def to_tuples(self) -> list:
+    def to_tuples(self) -> list[SchainOption]:
         return [
             ('multitr', bool_to_bytes(self.multitransaction_mode)),
             ('encrypt', bool_to_bytes(self.threshold_encryption))
         ]
 
 
-def parse_schain_options(raw_options: list) -> SchainOptions:
+def parse_schain_options(raw_options: list[SchainOption]) -> SchainOptions:
     """
     Parses raw sChain options from smart contracts (list of tuples).
     Returns default values if nothing is set on contracts.

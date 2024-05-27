@@ -1,12 +1,16 @@
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+from web3.types import Wei
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class SlashingTable(BaseContract):
+class SlashingTable(SkaleManagerContract):
     """ Wrapper for SlashingTable.sol functions """
 
     @transaction_method
-    def set_penalty(self, offense, penalty) -> TxRes:
+    def set_penalty(self, offense: str, penalty: Wei) -> ContractFunction:
         """ Set slashing penalty
         :param offense: reason of slashing
         :type offense: str
@@ -16,20 +20,20 @@ class SlashingTable(BaseContract):
         """
         return self.contract.functions.setPenalty(offense, penalty)
 
-    def get_penalty(self, offense) -> int:
+    def get_penalty(self, offense: str) -> Wei:
         """ Get slashing penalty value
         :param offense: reason of slashing
         :type offense: str
         :rtype: int
         """
-        return self.contract.functions.getPenalty(offense).call()
+        return Wei(self.contract.functions.getPenalty(offense).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     def penalty_setter_role(self) -> bytes:
-        return self.contract.functions.PENALTY_SETTER_ROLE().call()
+        return bytes(self.contract.functions.PENALTY_SETTER_ROLE().call())
 
-    def has_role(self, role: bytes, address: str) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.hasRole(role, address).call())

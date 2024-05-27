@@ -43,7 +43,7 @@ setup(
     install_requires=[
         "asyncio==3.4.3",
         "pyyaml==6.0",
-        "redis==4.4.4",
+        "redis==5.0.3",
         "sgx.py==0.9dev2",
         "skale-contracts==1.0.1a5",
         "typing-extensions==4.9.0",

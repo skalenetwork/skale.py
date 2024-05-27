@@ -16,10 +16,9 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE group class """
+from skale.contracts.base_contract import BaseContract
+from skale.skale_ima import SkaleIma
 
-from skale.contracts.skale_manager_contract import SkaleManagerContract
 
-
-class Groups(SkaleManagerContract):
+class ImaContract(BaseContract[SkaleIma]):
     pass

@@ -18,6 +18,8 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE helper utilities """
 
+from __future__ import annotations
+
 import ipaddress
 import json
 import logging
@@ -27,18 +29,38 @@ import string
 import sys
 from logging import Formatter, StreamHandler
 from random import randint
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, cast
 
 from skale.config import ENV
+from skale.types.node import Port
+
+if TYPE_CHECKING:
+    from skale.contracts.base_contract import SkaleType
+    from skale.utils.contract_info import ContractInfo
 
 
 logger = logging.getLogger(__name__)
 
 
-def decapitalize(s):
+def decapitalize(s: str) -> str:
     return s[:1].lower() + s[1:] if s else ''
 
 
-def format_fields(fields, flist=False):
+WrapperReturnType = Dict[str, Any] | List[Dict[str, Any]] | None
+
+
+def format_fields(
+        fields: list[str],
+        flist: bool = False
+) -> Callable[
+    [
+        Callable[
+            ...,
+            List[Any]
+        ]
+    ],
+    Callable[..., WrapperReturnType]
+]:
     """
         Transform array to object with passed fields
         Usage:
@@ -49,8 +71,16 @@ def format_fields(fields, flist=False):
         => {'field_name1': 0, 'field_name2': 'Test'}
     """
 
-    def real_decorator(function):
-        def wrapper(*args, **kwargs):
+    def real_decorator(
+            function: Callable[
+                ...,
+                List[Any]
+            ]
+    ) -> Callable[..., WrapperReturnType]:
+        def wrapper(
+                *args: Any,
+                **kwargs: Any
+        ) -> WrapperReturnType:
             result = function(*args, **kwargs)
 
             if result is None:
@@ -86,7 +116,7 @@ def ip_to_bytes(ip: str) -> bytes:  # pragma: no cover
     return socket.inet_aton(ip)
 
 
-def is_valid_ipv4_address(address):
+def is_valid_ipv4_address(address: str) -> bool:
     try:
         ipaddress.IPv4Address(address)
     except ValueError:
@@ -94,43 +124,43 @@ def is_valid_ipv4_address(address):
     return True
 
 
-def get_abi(abi_filepath: string = None):
+def get_abi(abi_filepath: str | None = None) -> dict[str, Any]:
     if abi_filepath:
         with open(abi_filepath, encoding='utf-8') as data_file:
-            return json.load(data_file)
+            return cast(dict[str, Any], json.load(data_file))
     return {}
 
 
-def get_skale_manager_address(abi_filepath: string = None) -> str:
-    return get_abi(abi_filepath)['skale_manager_address']
+def get_skale_manager_address(abi_filepath: str | None = None) -> str:
+    return cast(str, get_abi(abi_filepath)['skale_manager_address'])
 
 
-def get_allocator_address(abi_filepath: string = None) -> str:
-    return get_abi(abi_filepath)['allocator_address']
+def get_allocator_address(abi_filepath: str | None = None) -> str:
+    return cast(str, get_abi(abi_filepath)['allocator_address'])
 
 
-def generate_nonce():  # pragma: no cover
+def generate_nonce() -> int:  # pragma: no cover
     return randint(0, 65534)
 
 
-def random_string(size=6, chars=string.ascii_lowercase):  # pragma: no cover
+def random_string(size: int = 6, chars: str = string.ascii_lowercase) -> str:  # pragma: no cover
     return ''.join(random.choice(chars) for x in range(size))
 
 
-def generate_random_ip():  # pragma: no cover
+def generate_random_ip() -> str:  # pragma: no cover
     return '.'.join('%s' % random.randint(0, 255) for i in range(4))
 
 
-def generate_random_name(len=8):  # pragma: no cover
+def generate_random_name(length: int = 8) -> str:  # pragma: no cover
     return ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=len))
+        random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
-def generate_random_port():  # pragma: no cover
-    return random.randint(0, 60000)
+def generate_random_port() -> Port:  # pragma: no cover
+    return Port(random.randint(0, 60000))
 
 
-def generate_custom_config(ip, ws_port):
+def generate_custom_config(ip: str, ws_port: Port) -> dict[str, str | Port]:
     if not ip or not ws_port:
         raise ValueError(
             f'For custom init you should provide ip and ws_port: {ip}, {ws_port}'
@@ -141,17 +171,17 @@ def generate_custom_config(ip, ws_port):
     }
 
 
-def add_0x_prefix(bytes_string):  # pragma: no cover
+def add_0x_prefix(bytes_string: str) -> str:  # pragma: no cover
     return '0x' + bytes_string
 
 
-def rm_0x_prefix(bytes_string):
+def rm_0x_prefix(bytes_string: str) -> str:
     if bytes_string.startswith('0x'):
         return bytes_string[2:]
     return bytes_string
 
 
-def init_default_logger():  # pragma: no cover
+def init_default_logger() -> None:  # pragma: no cover
     handlers = []
     formatter = Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -164,7 +194,7 @@ def init_default_logger():  # pragma: no cover
     logging.basicConfig(level=logging.DEBUG, handlers=handlers)
 
 
-def chunk(in_string, num_chunks):  # pragma: no cover
+def chunk(in_string: str, num_chunks: int) -> Generator[str, None, None]:  # pragma: no cover
     chunk_size = len(in_string) // num_chunks
     if len(in_string) % num_chunks:
         chunk_size += 1
@@ -179,23 +209,25 @@ def chunk(in_string, num_chunks):  # pragma: no cover
         yield ''.join(accumulator)
 
 
-def split_public_key(public_key: str) -> list:
+def split_public_key(public_key: str) -> list[bytes]:
     public_key = rm_0x_prefix(public_key)
     pk_parts = list(chunk(public_key, 2))
     return list(map(bytes.fromhex, pk_parts))
 
 
-def get_contracts_info(contracts_data):
+def get_contracts_info(
+        contracts_data: list[ContractInfo[SkaleType]]
+) -> dict[str, ContractInfo[SkaleType]]:
     contracts_info = {}
     for contract_info in contracts_data:
         contracts_info[contract_info.name] = contract_info
     return contracts_info
 
 
-def to_camel_case(snake_str):
+def to_camel_case(snake_str: str) -> str:
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])
 
 
-def is_test_env():
+def is_test_env() -> bool:
     return "pytest" in sys.modules or ENV == 'test'

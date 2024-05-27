@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2024-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -17,14 +17,23 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from enum import Enum
+from collections import namedtuple
+from typing import List, NamedTuple, NewType, Tuple
+
+from eth_typing import HexStr
 
 
-class DelegationStatus(Enum):
-    PROPOSED = 0
-    ACCEPTED = 1
-    CANCELED = 2
-    REJECTED = 3
-    DELEGATED = 4
-    UNDELEGATION_REQUESTED = 5
-    COMPLETED = 6
+Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
+
+
+class G2Point(NamedTuple):
+    x: Fp2Point
+    y: Fp2Point
+
+
+VerificationVector = NewType('VerificationVector', List[G2Point])
+
+
+class KeyShare(NamedTuple):
+    publicKey: Tuple[bytes | HexStr, bytes | HexStr]
+    share: bytes | HexStr

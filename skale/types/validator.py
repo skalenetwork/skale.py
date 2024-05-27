@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2024-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,27 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE group class """
 
-from skale.contracts.skale_manager_contract import SkaleManagerContract
+from typing import NewType, TypedDict
+
+from eth_typing import ChecksumAddress
+from web3.types import Wei
 
 
-class Groups(SkaleManagerContract):
-    pass
+ValidatorId = NewType('ValidatorId', int)
+
+
+class Validator(TypedDict):
+    name: str
+    validator_address: ChecksumAddress
+    requested_address: ChecksumAddress
+    description: str
+    fee_rate: int
+    registration_time: int
+    minimum_delegation_amount: Wei
+    accept_new_requests: bool
+    trusted: bool
+
+
+class ValidatorWithId(Validator):
+    id: ValidatorId

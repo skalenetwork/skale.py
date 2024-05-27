@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2024-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -17,25 +17,45 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from enum import IntEnum
+from typing import NewType, TypedDict
 
-class RPCWalletError(Exception):
-    """Raised when remote wallet returned an error"""
-
-
-class InvalidWalletError(Exception):
-    """Raised when wrong wallet class passed"""
+from web3.types import Wei
 
 
-class EmptyWalletError(Exception):
-    """Raised when wrong wallet class passed"""
+class TimeUnit(IntEnum):
+    DAY = 0
+    MONTH = 1
+    YEAR = 2
 
 
-class SChainNotFoundException(Exception):
-    """Raised when requested sChain is not found"""
+class BeneficiaryStatus(IntEnum):
+    UNKNOWN = 0
+    CONFIRMED = 1
+    ACTIVE = 2
+    TERMINATED = 3
 
 
-class InvalidNodeIdError(Exception):
-    """Raised when wrong node id passed"""
-    def __init__(self, node_id: int):
-        message = f'Node with ID = {node_id} doesn\'t exist!'
-        super().__init__(message)
+PlanId = NewType('PlanId', int)
+
+
+class Plan(TypedDict):
+    totalVestingDuration: int
+    vestingCliff: int
+    vestingIntervalTimeUnit: TimeUnit
+    vestingInterval: int
+    isDelegationAllowed: bool
+    isTerminatable: bool
+
+
+class PlanWithId(Plan):
+    planId: PlanId
+
+
+class BeneficiaryPlan(TypedDict):
+    status: BeneficiaryStatus
+    statusName: str
+    planId: PlanId
+    startMonth: int
+    fullAmount: Wei
+    amountAfterLockup: Wei

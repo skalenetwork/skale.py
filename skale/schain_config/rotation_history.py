@@ -17,35 +17,44 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from __future__ import annotations
 import logging
-from collections import namedtuple
+from typing import TYPE_CHECKING, Dict, List, TypedDict
+from skale.types.rotation import RotationNodeData
 
-from skale import Skale
-from skale.contracts.manager.node_rotation import Rotation
+if TYPE_CHECKING:
+    from skale.skale_manager import SkaleManager
+    from skale.types.dkg import G2Point
+    from skale.types.node import NodeId
+    from skale.types.rotation import BlsPublicKey, NodesGroup, Rotation
+    from skale.types.schain import SchainName
 
 logger = logging.getLogger(__name__)
 
-RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
+
+class PreviousNodeData(TypedDict):
+    finish_ts: int
+    previous_node_id: NodeId
 
 
 def get_previous_schain_groups(
-    skale: Skale,
-    schain_name: str,
-    leaving_node_id=None,
-) -> dict:
+    skale: SkaleManager,
+    schain_name: SchainName,
+    leaving_node_id: NodeId | None = None,
+) -> Dict[int, NodesGroup]:
     """
     Returns all previous node groups with public keys and finish timestamps.
     In case of no rotations returns the current state.
     """
     logger.info(f'Collecting rotation history for {schain_name}...')
-    node_groups = {}
+    node_groups: dict[int, NodesGroup] = {}
 
-    group_id = skale.schains.name_to_group_id(schain_name)
+    group_id = skale.schains.name_to_id(schain_name)
 
     previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_id)
     current_public_key = skale.key_storage.get_common_public_key(group_id)
 
-    rotation = skale.node_rotation.get_rotation_obj(schain_name)
+    rotation = skale.node_rotation.get_rotation(schain_name)
 
     logger.info(f'Rotation data for {schain_name}: {rotation}')
 
@@ -66,12 +75,12 @@ def get_previous_schain_groups(
 
 
 def _add_current_schain_state(
-    skale: Skale,
-    node_groups: dict,
+    skale: SkaleManager,
+    node_groups: dict[int, NodesGroup],
     rotation: Rotation,
-    schain_name: str,
-    current_public_key: list
-) -> dict:
+    schain_name: SchainName,
+    current_public_key: G2Point
+) -> None:
     """
     Internal function, composes the initial info about the current sChain state and adds it to the
     node_groups dictionary
@@ -91,18 +100,19 @@ def _add_current_schain_state(
 
 
 def _add_previous_schain_rotations_state(
-    skale: Skale,
-    node_groups: dict,
+    skale: SkaleManager,
+    node_groups: dict[int, NodesGroup],
     rotation: Rotation,
-    schain_name: str,
-    previous_public_keys: list,
-    leaving_node_id=None
-) -> dict:
+    schain_name: SchainName,
+    previous_public_keys: list[G2Point],
+    leaving_node_id: NodeId | None = None
+) -> None:
     """
     Internal function, handles rotations from (rotation_counter - 2) to 0 and adds them to the
     node_groups dictionary
     """
-    previous_nodes = {}
+
+    previous_nodes: Dict[NodeId, PreviousNodeData] = {}
 
     for rotation_id in range(rotation.rotation_counter - 1, -1, -1):
         nodes = node_groups[rotation_id + 1]['nodes'].copy()
@@ -112,7 +122,7 @@ def _add_previous_schain_rotations_state(
                 if previous_node is not None:
                     finish_ts = skale.node_rotation.get_schain_finish_ts(previous_node, schain_name)
                     previous_nodes[node_id] = {
-                        'finish_ts': finish_ts,
+                        'finish_ts': finish_ts or 0,
                         'previous_node_id': previous_node
                     }
 
@@ -158,7 +168,7 @@ def _add_previous_schain_rotations_state(
             break
 
 
-def _pop_previous_bls_public_key(previous_public_keys):
+def _pop_previous_bls_public_key(previous_public_keys: List[G2Point]) -> BlsPublicKey | None:
     """
     Returns BLS public key for the group and removes it from the list, returns None if node
     with provided node_id was kicked out of the chain because of failed DKG.
@@ -169,7 +179,7 @@ def _pop_previous_bls_public_key(previous_public_keys):
     return bls_keys
 
 
-def _compose_bls_public_key_info(bls_public_key: str) -> dict:
+def _compose_bls_public_key_info(bls_public_key: G2Point) -> BlsPublicKey | None:
     if bls_public_key:
         return {
             'blsPublicKey0': str(bls_public_key[0][0]),
@@ -177,12 +187,17 @@ def _compose_bls_public_key_info(bls_public_key: str) -> dict:
             'blsPublicKey2': str(bls_public_key[1][0]),
             'blsPublicKey3': str(bls_public_key[1][1])
         }
+    return None
 
 
-def get_new_nodes_list(skale: Skale, name: str, node_groups) -> list:
+def get_new_nodes_list(
+        skale: SkaleManager,
+        name: SchainName,
+        node_groups: Dict[int, NodesGroup]
+) -> list[NodeId]:
     """Returns list of new nodes in for the latest rotation"""
     logger.info(f'Getting new nodes list for chain {name}')
-    rotation = skale.node_rotation.get_rotation_obj(name)
+    rotation = skale.node_rotation.get_rotation(name)
     current_group_ids = node_groups[rotation.rotation_counter]['nodes'].keys()
     new_nodes = []
     for index in node_groups:

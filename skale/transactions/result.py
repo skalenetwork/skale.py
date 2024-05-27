@@ -18,7 +18,10 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import enum
-from typing import NamedTuple
+from typing import Mapping, NamedTuple
+
+from web3.types import TxReceipt
+from eth_typing import HexStr
 
 from skale.transactions.exceptions import (
     DryRunFailedError,
@@ -36,11 +39,16 @@ class TxCallResult(NamedTuple):
     status: TxStatus
     error: str
     message: str
-    data: dict
+    data: Mapping[str, str | int]
 
 
 class TxRes:
-    def __init__(self, tx_call_result=None, tx_hash=None, receipt=None, revert=None):
+    def __init__(
+            self,
+            tx_call_result: TxCallResult | None = None,
+            tx_hash: HexStr | None = None,
+            receipt: TxReceipt | None = None
+    ):
         self.tx_call_result = tx_call_result
         self.tx_hash = tx_hash
         self.receipt = receipt
@@ -61,7 +69,10 @@ class TxRes:
     def raise_for_status(self) -> None:
         if self.receipt is not None:
             if self.receipt['status'] == TxStatus.FAILED:
-                raise TransactionFailedError(self.receipt)
+                raise TransactionFailedError(
+                    "Tx status is failed",
+                    {key: str(value) for key, value in self.receipt.items()}
+                )
         elif self.tx_call_result is not None and self.tx_call_result.status == TxStatus.FAILED:
             if self.tx_call_result.error == 'revert':
                 raise DryRunRevertError(self.tx_call_result.message)

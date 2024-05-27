@@ -19,35 +19,24 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
-from web3.constants import ADDRESS_ZERO
+from typing import TYPE_CHECKING, List, cast
+from web3.constants import CHECKSUM_ADDRESSS_ZERO
 
 from skale.skale_base import SkaleBase
-import skale.contracts.allocator as contracts
-from skale.contracts.contract_manager import ContractManager
 from skale.utils.contract_info import ContractInfo
 from skale.utils.contract_types import ContractTypes
 from skale.utils.helper import get_contracts_info
 
 if TYPE_CHECKING:
     from eth_typing import ChecksumAddress
+    from skale.contracts.allocator.allocator import Allocator
 
 
 logger = logging.getLogger(__name__)
 
 
-CONTRACTS_INFO = [
-    ContractInfo('contract_manager', 'ContractManager',
-                 ContractManager, ContractTypes.API, False),
-    ContractInfo('escrow', 'Escrow', contracts.Escrow,
-                 ContractTypes.API, True),
-    ContractInfo('allocator', 'Allocator', contracts.Allocator,
-                 ContractTypes.API, True)
-]
-
-
-def spawn_skale_allocator_lib(skale):
-    return SkaleAllocator(skale._endpoint, skale._abi_filepath, skale.wallet)
+def spawn_skale_allocator_lib(skale: SkaleAllocator) -> SkaleAllocator:
+    return SkaleAllocator(skale._endpoint, skale.instance.address, skale.wallet)
 
 
 class SkaleAllocator(SkaleBase):
@@ -56,10 +45,23 @@ class SkaleAllocator(SkaleBase):
     def project_name(self) -> str:
         return 'skale-allocator'
 
-    def get_contract_address(self, name) -> ChecksumAddress:
+    @property
+    def allocator(self) -> Allocator:
+        return cast('Allocator', super()._get_contract('allocator'))
+
+    def contracts_info(self) -> List[ContractInfo[SkaleAllocator]]:
+        import skale.contracts.allocator as contracts
+        return [
+            ContractInfo('escrow', 'Escrow', contracts.Escrow,
+                         ContractTypes.API, True),
+            ContractInfo('allocator', 'Allocator', contracts.Allocator,
+                         ContractTypes.API, True)
+        ]
+
+    def get_contract_address(self, name: str) -> ChecksumAddress:
         if name == 'Escrow':
-            return ADDRESS_ZERO
+            return CHECKSUM_ADDRESSS_ZERO
         return super().get_contract_address(name)
 
-    def set_contracts_info(self):
-        self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
+    def set_contracts_info(self) -> None:
+        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())

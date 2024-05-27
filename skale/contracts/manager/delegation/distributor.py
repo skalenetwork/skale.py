@@ -18,27 +18,42 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from functools import wraps
+from typing import Any, Callable, Tuple, TypedDict
 
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+from web3.types import Wei
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
+from skale.types.validator import ValidatorId
 
 
-def formatter(method):
+class EarnedData(TypedDict):
+    earned: Wei
+    end_month: int
+
+
+def formatter(method: Callable[..., Tuple[Wei, int]]) -> Callable[..., EarnedData]:
     @wraps(method)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self: SkaleManagerContract, *args: Any, **kwargs: Any) -> EarnedData:
         res = method(self, *args, **kwargs)
-        return {
+        return EarnedData({
             'earned': res[0],
             'end_month': res[1],
-        }
+        })
     return wrapper
 
 
-class Distributor(BaseContract):
+class Distributor(SkaleManagerContract):
     """Wrapper for Distributor.sol functions"""
 
     @formatter
-    def get_earned_bounty_amount(self, validator_id: int, address: str) -> dict:
+    def get_earned_bounty_amount(
+            self,
+            validator_id: ValidatorId,
+            address: ChecksumAddress
+    ) -> Tuple[Wei, int]:
         """Get earned bounty amount for the validator
 
         :param validator_id: ID of the validator
@@ -46,12 +61,12 @@ class Distributor(BaseContract):
         :returns: Earned bounty amount and end month
         :rtype: dict
         """
-        return self.contract.functions.getAndUpdateEarnedBountyAmount(validator_id).call({
+        return tuple(self.contract.functions.getAndUpdateEarnedBountyAmount(validator_id).call({
             'from': address
-        })
+        }))
 
     @formatter
-    def get_earned_fee_amount(self, address: str) -> dict:
+    def get_earned_fee_amount(self, address: str) -> Tuple[Wei, int]:
         """Get earned fee amount for the address
 
         :param address: Address of the validator
@@ -59,12 +74,12 @@ class Distributor(BaseContract):
         :returns: Earned bounty amount and end month
         :rtype: dict
         """
-        return self.contract.functions.getEarnedFeeAmount().call({
+        return tuple(self.contract.functions.getEarnedFeeAmount().call({
             'from': address
-        })
+        }))
 
     @transaction_method
-    def withdraw_bounty(self, validator_id: int, to: str) -> TxRes:
+    def withdraw_bounty(self, validator_id: ValidatorId, to: ChecksumAddress) -> ContractFunction:
         """Withdraw earned bounty to specified address
 
         :param validator_id: ID of the validator
@@ -77,7 +92,7 @@ class Distributor(BaseContract):
         return self.contract.functions.withdrawBounty(validator_id, to)
 
     @transaction_method
-    def withdraw_fee(self, to: str) -> TxRes:
+    def withdraw_fee(self, to: ChecksumAddress) -> ContractFunction:
         """Withdraw earned fee to specified address
 
         :param to: Address to transfer bounty

@@ -16,29 +16,9 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-
-
+from skale.contracts.base_contract import BaseContract
 from skale.skale_manager import SkaleManager
-from skale.types.node import NodeWithId, NodeWithSchains
-from skale.types.schain import SchainName
 
 
-def get_nodes_for_schain(skale: SkaleManager, name: SchainName) -> list[NodeWithId]:
-    nodes = []
-    ids = skale.schains_internal.get_node_ids_for_schain(name)
-    for id_ in ids:
-        node = skale.nodes.get(id_)
-        nodes.append(NodeWithId(id=id_, **node))
-    return nodes
-
-
-def get_schain_nodes_with_schains(
-        skale: SkaleManager,
-        schain_name: SchainName
-) -> list[NodeWithSchains]:
-    """Returns list of nodes for schain with schains for all nodes"""
-    nodes = get_nodes_for_schain(skale, schain_name)
-    return [
-        NodeWithSchains(schains=skale.schains.get_schains_for_node(node['id']), **node)
-        for node in nodes
-    ]
+class SkaleManagerContract(BaseContract[SkaleManager]):
+    pass

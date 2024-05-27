@@ -19,16 +19,23 @@
 
 from time import sleep
 
+from web3.contract.contract import ContractEvent
+from web3.types import LogReceipt, Wei
+from web3._utils.filters import LogFilter
+
+from skale.skale_allocator import SkaleAllocator
+from skale.skale_manager import SkaleManager
 from skale.utils.account_tools import send_tokens
 from skale.utils.contracts_provision import (
     TEST_SKALE_AMOUNT, TEST_VESTING_CLIFF, TEST_TOTAL_VESTING_DURATION,
     TEST_VESTING_INTERVAL_TIME_UNIT, TEST_VESTING_INTERVAL, TEST_CAN_DELEGATE,
     TEST_IS_TERMINATABLE, POLL_INTERVAL, TEST_START_MONTH, TEST_FULL_AMOUNT, TEST_LOCKUP_AMOUNT
 )
+from skale.wallets.common import BaseWallet
 
 
-def _catch_event(event_obj):
-    event_filter = event_obj.createFilter(
+def _catch_event(event_obj: ContractEvent) -> LogReceipt:
+    event_filter: LogFilter = event_obj.create_filter(
         fromBlock=0,
         toBlock='latest'
     )
@@ -38,7 +45,11 @@ def _catch_event(event_obj):
         sleep(POLL_INTERVAL)
 
 
-def transfer_tokens_to_allocator(skale_manager, skale_allocator, amount=TEST_SKALE_AMOUNT):
+def transfer_tokens_to_allocator(
+        skale_manager: SkaleManager,
+        skale_allocator: SkaleAllocator,
+        amount: Wei = TEST_SKALE_AMOUNT
+) -> None:
     send_tokens(skale_manager, skale_allocator.allocator.address, amount)
 
 
@@ -46,7 +57,7 @@ def transfer_tokens_to_allocator(skale_manager, skale_allocator, amount=TEST_SKA
 #     send_tokens(skale, skale.wallet, skale.token_launch_manager.address, amount)
 
 
-def add_test_plan(skale_allocator):
+def add_test_plan(skale_allocator: SkaleAllocator) -> int:
     skale_allocator.allocator.add_plan(
         vesting_cliff=TEST_VESTING_CLIFF,
         total_vesting_duration=TEST_TOTAL_VESTING_DURATION,
@@ -58,7 +69,11 @@ def add_test_plan(skale_allocator):
     return len(skale_allocator.allocator.get_all_plans())
 
 
-def connect_test_beneficiary(skale_allocator, plan_id, wallet):
+def connect_test_beneficiary(
+        skale_allocator: SkaleAllocator,
+        plan_id: int,
+        wallet: BaseWallet
+) -> None:
     skale_allocator.allocator.connect_beneficiary_to_plan(
         beneficiary_address=wallet.address,
         plan_id=plan_id,

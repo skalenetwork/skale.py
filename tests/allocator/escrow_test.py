@@ -1,5 +1,6 @@
 """ Tests for skale/allocator/escrow.py """
 
+from skale.types.delegation import DelegationStatus
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.account_tools import send_eth, check_skale_balance
 
@@ -87,7 +88,7 @@ def test_request_undelegate(skale, skale_allocator):
         validator_id=D_VALIDATOR_ID
     )
     assert delegations[-1]['id'] == delegation_id
-    assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
+    assert delegations[-1]['status'] == DelegationStatus.UNDELEGATION_REQUESTED
 
 
 def test_retrieve(skale, skale_allocator):
@@ -169,4 +170,4 @@ def test_cancel_pending_delegation(skale_allocator, skale):
         validator_id=D_VALIDATOR_ID
     )
     assert delegations[-1]['id'] == delegation_id
-    assert delegations[-1]['status'] == 'CANCELED'
+    assert delegations[-1]['status'] == DelegationStatus.CANCELED

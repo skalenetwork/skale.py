@@ -18,24 +18,35 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE token operations """
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+from web3.types import Wei
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
-class Token(BaseContract):
+class Token(SkaleManagerContract):
     @transaction_method
-    def transfer(self, address, value):
+    def transfer(self, address: ChecksumAddress, value: Wei) -> ContractFunction:
         return self.contract.functions.send(address, value, b'')
 
-    def get_balance(self, address):
-        return self.contract.functions.balanceOf(address).call()
+    def get_balance(self, address: ChecksumAddress) -> Wei:
+        return Wei(self.contract.functions.balanceOf(address).call())
 
     @transaction_method
-    def add_authorized(self, address, wallet):  # pragma: no cover
+    def add_authorized(self, address: ChecksumAddress) -> ContractFunction:  # pragma: no cover
         return self.contract.functions.addAuthorized(address)
 
-    def get_and_update_slashed_amount(self, address: str) -> int:
-        return self.contract.functions.getAndUpdateSlashedAmount(address).call()
+    def get_and_update_slashed_amount(self, address: ChecksumAddress) -> Wei:
+        return Wei(self.contract.functions.getAndUpdateSlashedAmount(address).call())
 
     @transaction_method
-    def mint(self, address, amount, user_data=b'', operator_data=b''):
+    def mint(
+        self,
+        address: ChecksumAddress,
+        amount: Wei,
+        user_data: bytes = b'',
+        operator_data: bytes = b''
+    ) -> ContractFunction:
         return self.contract.functions.mint(address, amount, user_data, operator_data)

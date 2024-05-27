@@ -17,16 +17,19 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """ SKALE base contract class """
-
+from __future__ import annotations
 import logging
 from functools import wraps
-from typing import Dict, Optional
+from typing import Any, Callable, TYPE_CHECKING, Generic, TypeVar
 
+from eth_typing import ChecksumAddress
 from web3 import Web3
+from web3.contract.contract import ContractFunction
+from web3.types import ABI, Nonce, Wei
 
 import skale.config as config
-from skale.transactions.result import TxRes
-from skale.transactions.tools import make_dry_run_call, transaction_from_method, TxStatus
+from skale.transactions.result import TxRes, TxStatus
+from skale.transactions.tools import make_dry_run_call, transaction_from_method
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     get_eth_nonce,
@@ -34,35 +37,74 @@ from skale.utils.web3_utils import (
     wait_for_confirmation_blocks
 )
 
+from skale.skale_base import SkaleBase
 from skale.utils.helper import to_camel_case
+
+if TYPE_CHECKING:
+    pass
 
 
 logger = logging.getLogger(__name__)
 
 
-def transaction_method(transaction):
+SkaleType = TypeVar('SkaleType', bound=SkaleBase)
+
+
+class BaseContract(Generic[SkaleType]):
+    def __init__(
+            self,
+            skale: SkaleType,
+            name: str,
+            address: ChecksumAddress | str | bytes,
+            abi: ABI
+    ):
+        self.skale = skale
+        self.name = name
+        self.address = Web3.to_checksum_address(address)
+        self.init_contract(skale, self.address, abi)
+
+    def init_contract(self, skale: SkaleBase, address: ChecksumAddress, abi: ABI) -> None:
+        self.contract = skale.web3.eth.contract(address=address, abi=abi)
+
+    def __getattr__(self, attr: str) -> Callable[..., Any]:
+        """Fallback for contract calls"""
+        logger.debug("Calling contract function: %s", attr)
+
+        def wrapper(*args: Any, **kw: Any) -> Any:
+            logger.debug('called with %r and %r' % (args, kw))
+            camel_case_fn_name = to_camel_case(attr)
+            if hasattr(self.contract.functions, camel_case_fn_name):
+                return getattr(self.contract.functions,
+                               camel_case_fn_name)(*args, **kw).call()
+            if hasattr(self.contract.functions, attr):
+                return getattr(self.contract.functions,
+                               attr)(*args, **kw).call()
+            raise AttributeError(attr)
+        return wrapper
+
+
+def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable[..., TxRes]:
     @wraps(transaction)
     def wrapper(
-        self,
-        *args,
-        wait_for=True,
-        blocks_to_wait=DEFAULT_BLOCKS_TO_WAIT,
-        timeout=MAX_WAITING_TIME,
-        gas_limit=None,
-        gas_price=None,
-        nonce=None,
-        max_fee_per_gas=None,
-        max_priority_fee_per_gas=None,
-        value=0,
-        dry_run_only=False,
-        skip_dry_run=False,
-        raise_for_status=True,
-        multiplier=None,
-        priority=None,
-        confirmation_blocks=0,
-        meta: Optional[Dict] = None,
-        **kwargs
-    ):
+        self: BaseContract[SkaleType],
+        *args: Any,
+        wait_for: bool = True,
+        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+        timeout: int = MAX_WAITING_TIME,
+        gas_limit: int | None = None,
+        gas_price: int | None = None,
+        nonce: Nonce | None = None,
+        max_fee_per_gas: int | None = None,
+        max_priority_fee_per_gas: int | None = None,
+        value: Wei = Wei(0),
+        dry_run_only: bool = False,
+        skip_dry_run: bool = False,
+        raise_for_status: bool = True,
+        multiplier: float | None = None,
+        priority: int | None = None,
+        confirmation_blocks: int = 0,
+        **kwargs: Any
+    ) -> TxRes:
         method = transaction(self, *args, **kwargs)
 
         nonce = get_eth_nonce(self.skale.web3, self.skale.wallet.address)
@@ -70,13 +112,15 @@ def transaction_method(transaction):
         call_result, tx_hash, receipt = None, None, None
         should_dry_run = not skip_dry_run and not config.DISABLE_DRY_RUN
 
+        dry_run_success = False
         if should_dry_run:
             call_result = make_dry_run_call(self.skale, method, gas_limit, value)
             if call_result.status == TxStatus.SUCCESS:
-                gas_limit = gas_limit or call_result.data['gas']
+                gas_limit = gas_limit or int(call_result.data['gas'])
+                dry_run_success = True
 
         should_send = not dry_run_only and \
-            (not should_dry_run or call_result.status == TxStatus.SUCCESS)
+            (not should_dry_run or dry_run_success)
 
         if should_send:
             gas_limit = gas_limit or config.DEFAULT_GAS_LIMIT
@@ -95,12 +139,10 @@ def transaction_method(transaction):
                 tx,
                 multiplier=multiplier,
                 priority=priority,
-                method=method_name,
-                meta=meta
+                method=method_name
             )
 
-        should_wait = tx_hash is not None and wait_for
-        if should_wait:
+        if tx_hash is not None and wait_for:
             receipt = self.skale.wallet.wait(tx_hash)
 
         should_confirm = receipt is not None and confirmation_blocks > 0
@@ -114,30 +156,3 @@ def transaction_method(transaction):
         return tx_res
 
     return wrapper
-
-
-class BaseContract:
-    def __init__(self, skale, name, address, abi):
-        self.skale = skale
-        self.name = name
-        self.address = Web3.to_checksum_address(address)
-        self.init_contract(skale, address, abi)
-
-    def init_contract(self, skale, address, abi) -> None:
-        self.contract = skale.web3.eth.contract(address=address, abi=abi)
-
-    def __getattr__(self, attr):
-        """Fallback for contract calls"""
-        logger.debug("Calling contract function: %s", attr)
-
-        def wrapper(*args, **kw):
-            logger.debug('called with %r and %r' % (args, kw))
-            camel_case_fn_name = to_camel_case(attr)
-            if hasattr(self.contract.functions, camel_case_fn_name):
-                return getattr(self.contract.functions,
-                               camel_case_fn_name)(*args, **kw).call()
-            if hasattr(self.contract.functions, attr):
-                return getattr(self.contract.functions,
-                               attr)(*args, **kw).call()
-            raise AttributeError(attr)
-        return wrapper
