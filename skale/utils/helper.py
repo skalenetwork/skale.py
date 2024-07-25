@@ -135,6 +135,10 @@ def get_skale_manager_address(abi_filepath: str | None = None) -> str:
     return cast(str, get_abi(abi_filepath)['skale_manager_address'])
 
 
+def get_skale_ima_address(abi_filepath: str | None = None) -> str:
+    return cast(str, get_abi(abi_filepath)['message_proxy_mainnet_address'])
+
+
 def get_allocator_address(abi_filepath: str | None = None) -> str:
     return cast(str, get_abi(abi_filepath)['allocator_address'])
 
