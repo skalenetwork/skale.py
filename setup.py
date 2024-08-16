@@ -44,9 +44,9 @@ setup(
         "asyncio==3.4.3",
         "pyyaml==6.0",
         "sgx.py==0.9dev2",
-        "redis==4.4.4",
+        "redis==5.0.3",
         "typing-extensions==4.9.0",
-        "web3==6.13.0"
+        "web3==6.20.2"
     ],
 
     python_requires='>=3.7,<4',

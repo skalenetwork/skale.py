@@ -34,7 +34,7 @@ from skale.dataclasses.schain_options import (
 FIELDS = [
     'name', 'mainnetOwner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
     'deposit', 'index', 'generation', 'originator', 'chainId', 'multitransactionMode',
-    'thresholdEncryption'
+    'thresholdEncryption', 'allocationType'
 ]
 
 
