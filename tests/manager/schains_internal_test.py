@@ -10,7 +10,7 @@ from tests.constants import (
 
 def test_get_raw(skale):
     schain_arr = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
-    assert len(FIELDS) == len(schain_arr) + 3  # +1 for chainId + options
+    assert len(FIELDS) == len(schain_arr) + 4  # +1 for chainId + options
 
 
 def test_get_raw_not_exist(skale):
