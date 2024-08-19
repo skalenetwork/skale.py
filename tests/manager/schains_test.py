@@ -236,7 +236,8 @@ def test_name_to_group_id(skale):
 
 def test_get_options(skale, nodes):
     schain_options = SchainOptions(
-        multitransaction_mode=True, threshold_encryption=False
+        multitransaction_mode=True, threshold_encryption=False,
+        allocation_type=AllocationType.DEFAULT
     )
     name = None
     try:
@@ -247,7 +248,7 @@ def test_get_options(skale, nodes):
         options = skale.schains.get_options_by_name(name)
         assert options == schain_options
         raw_options = skale.schains._SChains__raw_get_options(id_)
-        assert raw_options == [("multitr", b"\x01"), ("encrypt", b"\x00")]
+        assert raw_options == [("multitr", b"\x01"), ("encrypt", b"\x00"), ('alloc', b'\x00')]
 
     finally:
         if name:
