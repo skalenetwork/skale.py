@@ -19,17 +19,40 @@
 """ Schains.sol functions """
 
 import functools
+from dataclasses import dataclass, asdict
+
 from Crypto.Hash import keccak
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from skale.utils.helper import format_fields
+from skale.dataclasses.schain_options import (
+    SchainOptions, get_default_schain_options, parse_schain_options
+)
 
 
 FIELDS = [
-    'name', 'owner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
-    'deposit', 'index', 'chainId'
+    'name', 'mainnetOwner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
+    'deposit', 'index', 'generation', 'originator', 'chainId', 'multitransactionMode',
+    'thresholdEncryption'
 ]
+
+
+@dataclass
+class SchainStructure:
+    name: str
+    mainnet_owner: str
+    index_in_owner_list: int
+    part_of_node: int
+    lifetime: int
+    start_date: int
+    start_block: int
+    deposit: int
+    index: int
+    generation: int
+    originator: str
+    chain_id: int
+    options: SchainOptions
 
 
 class SChains(BaseContract):
@@ -41,29 +64,30 @@ class SChains(BaseContract):
     @property
     @functools.lru_cache()
     def schains_internal(self):
-        return self.skale.get_contract_by_name('schains_internal')
+        return self.skale.schains_internal
 
     @property
     @functools.lru_cache()
     def node_rotation(self):
-        return self.skale.get_contract_by_name('node_rotation')
+        return self.skale.node_rotation
 
     @format_fields(FIELDS)
-    def get(self, id_):
+    def get(self, id_, obj=False):
         res = self.schains_internal.get_raw(id_)
         hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
         hash_str = "0x" + hash_obj.hexdigest()[:13]
         res.append(hash_str)
+        options = self.get_options(id_)
+        if obj:  # TODO: temporary solution for backwards compatibility
+            return SchainStructure(*res, options=options)
+        else:
+            res += asdict(options).values()
         return res
 
     @format_fields(FIELDS)
-    def get_by_name(self, name):
+    def get_by_name(self, name, obj=False):
         id_ = self.name_to_id(name)
-        res = self.schains_internal.get_raw(id_)
-        hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
-        hash_str = "0x" + hash_obj.hexdigest()[:13]
-        res.append(hash_str)
-        return res
+        return self.get(id_, obj=obj)
 
     def get_schains_for_owner(self, account):
         schains = []
@@ -103,7 +127,7 @@ class SChains(BaseContract):
 
     def schain_active(self, schain):
         if schain['name'] != '' and \
-                schain['owner'] != '0x0000000000000000000000000000000000000000':
+                schain['mainnetOwner'] != '0x0000000000000000000000000000000000000000':
             return True
 
     def get_schain_price(self, index_of_type, lifetime):
@@ -111,12 +135,31 @@ class SChains(BaseContract):
                                                       lifetime).call()
 
     @transaction_method
-    def add_schain_by_foundation(self, lifetime: int, type_of_nodes: int,
-                                 nonce: int, name: str, schain_owner=None) -> TxRes:
+    def add_schain_by_foundation(
+        self,
+        lifetime: int,
+        type_of_nodes: int,
+        nonce: int,
+        name: str,
+        options: SchainOptions = None,
+        schain_owner=None,
+        schain_originator=None
+    ) -> TxRes:
         if schain_owner is None:
             schain_owner = self.skale.wallet.address
+        if schain_originator is None:
+            schain_originator = self.skale.wallet.address
+        if not options:
+            options = get_default_schain_options()
+
         return self.contract.functions.addSchainByFoundation(
-            lifetime, type_of_nodes, nonce, name, schain_owner
+            lifetime,
+            type_of_nodes,
+            nonce,
+            name,
+            schain_owner,
+            schain_originator,
+            options.to_tuples()
         )
 
     @transaction_method
@@ -125,3 +168,18 @@ class SChains(BaseContract):
 
     def schain_creator_role(self):
         return self.contract.functions.SCHAIN_CREATOR_ROLE().call()
+
+    def __raw_get_options(self, schain_id: str) -> list:
+        return self.contract.functions.getOptions(schain_id).call()
+
+    def get_options(self, schain_id: str) -> SchainOptions:
+        return parse_schain_options(
+            raw_options=self.__raw_get_options(schain_id)
+        )
+
+    def get_options_by_name(self, name: str) -> SchainOptions:
+        id_ = self.name_to_id(name)
+        return self.get_options(id_)
+
+    def restart_schain_creation(self, name: str) -> TxRes:
+        return self.contract.functions.restartSchainCreation(name)

@@ -19,19 +19,26 @@
 
 import logging
 import struct
+from typing import Dict, Optional
 
 from hexbytes import HexBytes
-from eth_account.datastructures import AttributeDict
-from eth_account._utils.transactions import encode_transaction
-from eth_account._utils.transactions import \
+from eth_account.datastructures import SignedTransaction
+from eth_account._utils.legacy_transactions import encode_transaction
+from eth_account._utils.legacy_transactions import \
     serializable_unsigned_transaction_from_dict as tx_from_dict
+
 from eth_utils.crypto import keccak
 from rlp import encode
+from web3.exceptions import Web3Exception
 
 import skale.config as config
-from skale.utils.web3_utils import get_eth_nonce, public_key_to_address, \
-                                   to_checksum_address
-
+from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
+from skale.utils.web3_utils import (
+    get_eth_nonce,
+    public_key_to_address,
+    to_checksum_address,
+    wait_for_receipt_by_blocks
+)
 from skale.wallets.common import BaseWallet, ensure_chain_id
 
 logger = logging.getLogger(__name__)
@@ -93,7 +100,8 @@ class LedgerWallet(BaseWallet):
         try:
             self.dongle = getDongle(debug)
             self._web3 = web3
-            self._address, self._public_key = self.get_address_with_public_key()
+            self._address, self._public_key = \
+                self.get_address_with_public_key()
         except (OSError, CommException):
             raise LedgerCommunicationError(
                 'Error occured during the interaction with Ledger device'
@@ -125,14 +133,13 @@ class LedgerWallet(BaseWallet):
         enctx = encode_transaction(tx, (sign_v, sign_r, sign_s))
         transaction_hash = keccak(enctx)
 
-        signed_txn = AttributeDict({
-            'rawTransaction': HexBytes(enctx),
-            'hash': HexBytes(transaction_hash),
-            'v': sign_v,
-            'r': sign_r,
-            's': sign_s,
-        })
-        return signed_txn
+        return SignedTransaction(
+            rawTransaction=HexBytes(enctx),
+            hash=HexBytes(transaction_hash),
+            v=sign_v,
+            r=sign_r,
+            s=sign_s
+        )
 
     def exchange_sign_payload_by_chunks(self, payload):
         INS = b'\x04'
@@ -152,21 +159,37 @@ class LedgerWallet(BaseWallet):
 
     def sign(self, tx_dict):
         ensure_chain_id(tx_dict, self._web3)
-        if config.ENV == 'dev':  # fix for big chainId in ganache
-            tx_dict['chainId'] = None
         if tx_dict.get('nonce') is None:
-            tx_dict['nonce'] = self._web3.eth.getTransactionCount(self.address)
-        tx = tx_from_dict(tx_dict)
-        payload = self.make_payload(tx)
-        exchange_result = self.exchange_sign_payload_by_chunks(payload)
-        return LedgerWallet.parse_sign_result(tx, exchange_result)
+            tx_dict['nonce'] = self._web3.eth.get_transaction_count(self.address)
 
-    def sign_and_send(self, tx) -> str:
+        tx = tx_from_dict(tx_dict)
+        try:
+            payload = self.make_payload(tx)
+            exchange_result = self.exchange_sign_payload_by_chunks(payload)
+            return LedgerWallet.parse_sign_result(tx, exchange_result)
+        except Exception as e:
+            raise TransactionNotSignedError(e)
+
+    def sign_and_send(
+        self,
+        tx: Dict,
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int = config.DEFAULT_PRIORITY,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
+    ) -> str:
         signed_tx = self.sign(tx)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        try:
+            return self._web3.eth.send_raw_transaction(
+                signed_tx.rawTransaction
+            ).hex()
+        except (ValueError, Web3Exception) as e:
+            raise TransactionNotSentError(e)
 
     def sign_hash(self, unsigned_hash: str):
-        raise NotImplementedError('sign_hash is not implemented for hardware wallet')
+        raise NotImplementedError(
+            'sign_hash is not implemented for hardware wallet'
+        )
 
     @classmethod
     def parse_derive_result(cls, exchange_result):
@@ -192,17 +215,25 @@ class LedgerWallet(BaseWallet):
         exchange_result = self.exchange_derive_payload(payload)
         return LedgerWallet.parse_derive_result(exchange_result)
 
+    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+        return wait_for_receipt_by_blocks(
+            self._web3,
+            tx_hash,
+            blocks_to_wait=blocks_to_wait,
+            timeout=timeout
+        )
+
 
 def hardware_sign_and_send(web3, method, gas_amount, wallet) -> str:
     address_from = wallet['address']
     eth_nonce = get_eth_nonce(web3, address_from)
-    tx_dict = method.buildTransaction({
+    tx_dict = method.build_transaction({
         'gas': gas_amount,
         'nonce': eth_nonce
     })
     signed_txn = wallet.sign(tx_dict)
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()
+    tx = web3.eth.send_raw_transaction(signed_txn.rawTransaction).hex()
     logger.info(
-        f'{method.__class__.__name__} - transaction_hash: {web3.toHex(tx)}'
+        f'{method.__class__.__name__} - transaction_hash: {web3.to_hex(tx)}'
     )
     return tx

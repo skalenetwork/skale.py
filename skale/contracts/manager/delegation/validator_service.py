@@ -195,7 +195,7 @@ class ValidatorService(BaseContract):
             name, description, fee_rate, min_delegation_amount)
 
     def get_link_node_signature(self, validator_id: int) -> str:
-        unsigned_hash = Web3.soliditySha3(['uint256'], [validator_id])
+        unsigned_hash = Web3.solidity_keccak(['uint256'], [validator_id])
         signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
         return signed_hash.signature.hex()
 
@@ -300,3 +300,13 @@ class ValidatorService(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.setValidatorDescription(new_description)
+
+    @transaction_method
+    def grant_role(self, role: bytes, address: str) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
+
+    def validator_manager_role(self) -> bytes:
+        return self.contract.functions.VALIDATOR_MANAGER_ROLE().call()
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()

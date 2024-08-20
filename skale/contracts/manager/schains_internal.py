@@ -29,7 +29,7 @@ class SChainsInternal(BaseContract):
     @property
     @functools.lru_cache()
     def schains(self):
-        return self.skale.get_contract_by_name('schains')
+        return self.skale.schains
 
     def get_raw(self, name):
         return self.contract.functions.schains(name).call()
@@ -52,7 +52,7 @@ class SChainsInternal(BaseContract):
         return self.contract.functions.getNodesInGroup(id_).call()
 
     def get_schain_ids_for_node(self, node_id):
-        return self.contract.functions.getSchainIdsForNode(node_id).call()
+        return self.contract.functions.getSchainHashesForNode(node_id).call()
 
     def is_schain_exist(self, name):
         id_ = self.schains.name_to_id(name)
@@ -70,3 +70,30 @@ class SChainsInternal(BaseContract):
     ) -> TxRes:
         return self.contract.functions.addSchainType(
             part_of_node, number_of_nodes)
+
+    def current_generation(self) -> int:
+        return self.contract.functions.currentGeneration().call()
+
+    @transaction_method
+    def grant_role(self, role: bytes, address: str) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
+
+    def schain_type_manager_role(self) -> bytes:
+        return self.contract.functions.SCHAIN_TYPE_MANAGER_ROLE().call()
+
+    def debugger_role(self):
+        return self.contract.functions.DEBUGGER_ROLE().call()
+
+    def generation_manager_role(self):
+        return self.contract.functions.GENERATION_MANAGER_ROLE().call()
+
+    @transaction_method
+    def new_generation(self) -> TxRes:
+        return self.contract.functions.newGeneration()
+
+    def check_exception(self, schain_name: str, node_id: int) -> bool:
+        id_ = self.schains.name_to_id(schain_name)
+        return self.contract.functions.checkException(id_, node_id).call()

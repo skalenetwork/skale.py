@@ -1,10 +1,11 @@
 import importlib
 import os
 
-import mock
+from unittest import mock
 import pytest
 import skale.config as config
-from skale.transactions.result import InsufficientBalanceError
+from skale.transactions.exceptions import TransactionNotSentError
+from skale.transactions.result import TxStatus
 from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.utils import generate_random_schain_data
@@ -20,14 +21,14 @@ CUSTOM_DEFAULT_GAS_PRICE_WEI = 1500000000
 def test_dry_run(skale):
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
     tx_res = skale.token.transfer(address_to, amount, dry_run_only=True)
-    assert isinstance(tx_res.dry_run_result['payload'], int)
-    assert tx_res.dry_run_result['status'] == 1
+    assert isinstance(tx_res.tx_call_result.data['gas'], int)
+    assert tx_res.tx_call_result.status == TxStatus.SUCCESS
     tx_res.raise_for_status()
 
     balance_from_after = skale.token.get_balance(address_from)
@@ -54,40 +55,29 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
     address_to = account['address']
     amount = 10 * ETH_IN_WEI
     with mock.patch(
-        'skale.contracts.base_contract.execute_dry_run'
+        'skale.contracts.base_contract.make_dry_run_call'
     ) as dry_run_mock:
-        with mock.patch(
-            'skale.contracts.base_contract.post_transaction'
-        ) as post_transaction_mock:
-            skale.token.transfer(address_to, amount, wait_for=False)
-            dry_run_mock.assert_not_called()
-            assert post_transaction_mock.call_args[0][2] == \
-                CUSTOM_DEFAULT_GAS_LIMIT
-            assert post_transaction_mock.call_args[0][3] == \
-                CUSTOM_DEFAULT_GAS_PRICE_WEI
+        skale.token.transfer(address_to, amount)
+        dry_run_mock.assert_not_called()
 
 
 def test_skip_dry_run(skale):
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
 
-    with mock.patch(
-        'skale.contracts.base_contract.config.DEFAULT_GAS_LIMIT', None
-    ):
-        with pytest.raises(InsufficientBalanceError) as err:
-            skale.token.transfer(address_to, amount, skip_dry_run=True)
-            assert err == 'Gas limit is empty'
-
-    tx_res = skale.token.transfer(address_to, amount,
-                                  skip_dry_run=True, gas_limit=TEST_GAS_LIMIT)
+    tx_res = skale.token.transfer(
+        address_to, amount,
+        skip_dry_run=True,
+        gas_limit=TEST_GAS_LIMIT
+    )
     assert tx_res.tx_hash is not None, tx_res
     assert tx_res.receipt is not None
-    assert tx_res.dry_run_result is None
+    assert tx_res.tx_call_result is None
     balance_from_after = skale.token.get_balance(address_from)
     assert balance_from_after == balance_from_before - amount
     balance_to_after = skale.token.get_balance(address_to)
@@ -98,8 +88,8 @@ def test_wait_for_false(skale):
     ETH_IN_WEI = 10 ** 18
     account = generate_account(skale.web3)
     address_to = account['address']
-    address_from = Web3.toChecksumAddress(skale.wallet.address)
-    address_to = Web3.toChecksumAddress(address_to)
+    address_from = Web3.to_checksum_address(skale.wallet.address)
+    address_to = Web3.to_checksum_address(address_to)
     balance_from_before = skale.token.get_balance(address_from)
     balance_to_before = skale.token.get_balance(address_to)
     amount = 10 * ETH_IN_WEI
@@ -107,8 +97,8 @@ def test_wait_for_false(skale):
     tx_res = skale.token.transfer(address_to, amount, wait_for=False)
     assert tx_res.tx_hash is not None
     assert tx_res.receipt is None
-    assert isinstance(tx_res.dry_run_result['payload'], int)
-    assert tx_res.dry_run_result['status'] == 1
+    assert isinstance(tx_res.tx_call_result.data['gas'], int)
+    assert tx_res.tx_call_result.status == TxStatus.SUCCESS
 
     tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.tx_hash)
     tx_res.raise_for_status()
@@ -124,7 +114,7 @@ def test_tx_res_dry_run(skale):
     token_amount = 10
     tx_res = skale.token.transfer(
         account['address'], token_amount, dry_run_only=True)
-    assert tx_res.dry_run_result is not None
+    assert tx_res.tx_call_result is not None
     assert tx_res.tx_hash is None
     assert tx_res.receipt is None
     tx_res.raise_for_status()
@@ -152,43 +142,51 @@ def test_tx_res_wait_for_true(skale):
     tx_res.raise_for_status()
 
 
-@mock.patch('skale.contracts.base_contract.account_eth_balance_wei',
-            new=mock.Mock(return_value=0))
 def test_tx_res_with_insufficient_funds(skale):
     account = generate_account(skale.web3)
-    token_amount = 10
-    with pytest.raises(InsufficientBalanceError):
-        skale.token.transfer(account['address'], token_amount)
+    token_amount = 9
+    huge_gas_price = 10 ** 22
+    with pytest.raises(TransactionNotSentError):
+        skale.token.transfer(
+            account['address'],
+            token_amount,
+            gas_price=huge_gas_price
+        )
 
 
 def test_confirmation_blocks(skale):
     account = generate_account(skale.web3)
     token_amount = 10
     confirmation_blocks = 0  # todo: enable mining on ganache
-    start_block = skale.web3.eth.blockNumber
+    start_block = skale.web3.eth.block_number
     skale.token.transfer(account['address'], token_amount, confirmation_blocks=confirmation_blocks)
-    assert skale.web3.eth.blockNumber >= start_block + confirmation_blocks
+    assert skale.web3.eth.block_number >= start_block + confirmation_blocks
 
 
 def test_block_limit_estimate_gas(skale):
     account = generate_account(skale.web3)
     token_amount = 10
     max_gas = 200000000
-    with mock.patch.object(skale.token.contract.functions.transfer, 'estimateGas',
+    with mock.patch.object(skale.token.contract.functions.transfer, 'estimate_gas',
                            new=mock.Mock(return_value=max_gas)):
         method = skale.token.contract.functions.transfer(account['address'], token_amount)
         res = estimate_gas(skale.web3, method, {'from': skale.wallet.address})
         assert res < max_gas
 
 
-# TODO: Add balance assertion
-def test_value_option(skale):
+def test_value_option(skale, nodes):
     skale.schains.grant_role(skale.schains.schain_creator_role(),
                              skale.wallet.address)
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     value_wei = 1000
-    skale.schains.add_schain_by_foundation(
-        lifetime_seconds, type_of_nodes, 0, name, wait_for=True, value=value_wei
-    )
-    # assert skale.web3.eth.getBalance(skale.wallets.address) == value_wei
-    skale.manager.delete_schain(name, wait_for=True)
+    try:
+        skale.schains.add_schain_by_foundation(
+            lifetime_seconds,
+            type_of_nodes,
+            0,
+            name,
+            wait_for=True,
+            value=value_wei
+        )
+    finally:
+        skale.manager.delete_schain(name, wait_for=True)

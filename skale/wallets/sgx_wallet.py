@@ -18,12 +18,16 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+from typing import Dict, Optional
 
 from sgx import SgxClient
 from web3 import Web3
+from web3.exceptions import Web3Exception
 
-from skale.utils.web3_utils import get_eth_nonce
-from skale.wallets.common import BaseWallet, ensure_chain_id
+import skale.config as config
+from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
+from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
+from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
 
 logger = logging.getLogger(__name__)
@@ -43,11 +47,26 @@ class SgxWallet(BaseWallet):
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         ensure_chain_id(tx_dict, self._web3)
-        return self.sgx_client.sign(tx_dict, self.key_name)
+        try:
+            return self.sgx_client.sign(tx_dict, self.key_name)
+        except Exception as e:
+            raise TransactionNotSignedError(e)
 
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(
+        self,
+        tx_dict: Dict,
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int = config.DEFAULT_PRIORITY,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
+    ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        try:
+            return self._web3.eth.send_raw_transaction(
+                signed_tx.rawTransaction
+            ).hex()
+        except (ValueError, Web3Exception) as e:
+            raise TransactionNotSentError(e)
 
     def sign_hash(self, unsigned_hash: str):
         if unsigned_hash.startswith('0x'):
@@ -58,7 +77,14 @@ class SgxWallet(BaseWallet):
         normalized_hash = header + body
         hash_to_sign = Web3.keccak(hexstr='0x' + normalized_hash.hex())
         chain_id = None
-        return self.sgx_client.sign_hash(hash_to_sign, self._key_name, chain_id)
+        try:
+            return self.sgx_client.sign_hash(
+                hash_to_sign,
+                self._key_name,
+                chain_id
+            )
+        except Exception as e:
+            raise MessageNotSignedError(e)
 
     @property
     def address(self):
@@ -79,3 +105,11 @@ class SgxWallet(BaseWallet):
     def _get_account(self, key_name):
         account = self.sgx_client.get_account(key_name)
         return account.address, account.public_key
+
+    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+        return wait_for_receipt_by_blocks(
+            self._web3,
+            tx_hash,
+            blocks_to_wait=blocks_to_wait,
+            timeout=timeout
+        )

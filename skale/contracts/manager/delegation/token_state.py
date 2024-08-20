@@ -17,7 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 
 
 class TokenState(BaseContract):
@@ -30,5 +31,14 @@ class TokenState(BaseContract):
            :returns:
            :rtype: int
         """
-
         return self.contract.functions.getAndUpdateLockedAmount(holder_address).call()
+
+    @transaction_method
+    def grant_role(self, role: bytes, owner: str) -> TxRes:
+        return self.contract.functions.grantRole(role, owner)
+
+    def has_role(self, role: bytes, address: str) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
+
+    def locker_manager_role(self):
+        return self.contract.functions.LOCKER_MANAGER_ROLE().call()

@@ -18,14 +18,23 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
-from skale.utils.exceptions import ChainIdError
+from typing import Dict, Optional
+
+from skale.transactions.exceptions import ChainIdError
 
 
 def ensure_chain_id(tx_dict, web3):
     if not tx_dict.get('chainId'):
-        tx_dict['chainId'] = web3.eth.chainId
+        tx_dict['chainId'] = web3.eth.chain_id
     if not tx_dict.get('chainId'):
         raise ChainIdError('chainId must be in tx_dict (see EIP-155)')
+
+
+class MessageNotSignedError(Exception):
+    """
+    Raised when signing message failed
+    """
+    pass
 
 
 class BaseWallet(ABC):
@@ -34,19 +43,29 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(
+        self,
+        tx_dict: Dict,
+        multiplier: Optional[int] = None,
+        priority: Optional[int] = None,
+        method: Optional[str] = None
+    ) -> str:
         pass
 
     @abstractmethod
-    def sign_hash(self, unsigned_hash: str):
+    def sign_hash(self, unsigned_hash: str) -> str:
         pass
 
     @property
     @abstractmethod
-    def address(self):
+    def address(self) -> str:
         pass
 
     @property
     @abstractmethod
-    def public_key(self):
+    def public_key(self) -> str:
+        pass
+
+    @abstractmethod
+    def wait(self, tx: str, confirmation_blocks: int = None):
         pass

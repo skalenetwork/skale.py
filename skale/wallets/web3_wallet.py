@@ -17,23 +17,30 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from typing import Dict, Optional
 from eth_keys import keys
 from web3 import Web3
 from eth_account import messages
+from web3.exceptions import Web3Exception
 
-from skale.wallets.common import BaseWallet, ensure_chain_id
-from skale.utils.web3_utils import get_eth_nonce
+import skale.config as config
+from skale.transactions.exceptions import (
+    TransactionNotSignedError,
+    TransactionNotSentError
+)
+from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
+from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
 
 def private_key_to_public(pr):
-    pr_bytes = Web3.toBytes(hexstr=pr)
+    pr_bytes = Web3.to_bytes(hexstr=pr)
     pk = keys.PrivateKey(pr_bytes)
     return pk.public_key
 
 
 def public_key_to_address(pk):
     hash = Web3.keccak(hexstr=str(pk))
-    return to_checksum_address(Web3.toHex(hash[-20:]))
+    return to_checksum_address(Web3.to_hex(hash[-20:]))
 
 
 def private_key_to_address(pr):
@@ -42,7 +49,7 @@ def private_key_to_address(pr):
 
 
 def to_checksum_address(address):
-    return Web3.toChecksumAddress(address)
+    return Web3.to_checksum_address(address)
 
 
 def generate_wallet(web3):
@@ -63,21 +70,39 @@ class Web3Wallet(BaseWallet):
         if not tx_dict.get('nonce'):
             tx_dict['nonce'] = get_eth_nonce(self._web3, self._address)
         ensure_chain_id(tx_dict, self._web3)
-        return self._web3.eth.account.sign_transaction(
-            tx_dict,
-            private_key=self._private_key
-        )
+        try:
+            return self._web3.eth.account.sign_transaction(
+                tx_dict,
+                private_key=self._private_key
+            )
+        except (TypeError, ValueError, Web3Exception) as e:
+            raise TransactionNotSignedError(e)
 
     def sign_hash(self, unsigned_hash: str):
-        unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
-        return self._web3.eth.account.sign_message(
-            unsigned_message,
-            private_key=self._private_key
-        )
+        try:
+            unsigned_message = messages.encode_defunct(hexstr=unsigned_hash)
+            return self._web3.eth.account.sign_message(
+                unsigned_message,
+                private_key=self._private_key
+            )
+        except (TypeError, ValueError, Web3Exception) as e:
+            raise MessageNotSignedError(e)
 
-    def sign_and_send(self, tx_dict) -> str:
+    def sign_and_send(
+        self,
+        tx_dict: Dict,
+        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        priority: int = config.DEFAULT_PRIORITY,
+        method: Optional[str] = None,
+        meta: Optional[Dict] = None
+    ) -> str:
         signed_tx = self.sign(tx_dict)
-        return self._web3.eth.sendRawTransaction(signed_tx.rawTransaction).hex()
+        try:
+            return self._web3.eth.send_raw_transaction(
+                signed_tx.rawTransaction
+            ).hex()
+        except (ValueError, Web3Exception) as e:
+            raise TransactionNotSentError(e)
 
     @property
     def address(self):
@@ -86,3 +111,11 @@ class Web3Wallet(BaseWallet):
     @property
     def public_key(self):
         return str(self._public_key)
+
+    def wait(self, tx_hash: str, blocks_to_wait=None, timeout=None):
+        return wait_for_receipt_by_blocks(
+            self._web3,
+            tx_hash,
+            blocks_to_wait=blocks_to_wait,
+            timeout=timeout
+        )

@@ -19,11 +19,18 @@
 """ Account utilities """
 
 import logging
+from typing import Optional
 
-from skale.transactions.tools import send_eth
+from web3 import Web3
+
+from skale.transactions.tools import compose_eth_transfer_tx
 from skale.utils.constants import LONG_LINE
 from skale.wallets import LedgerWallet, Web3Wallet
-from skale.utils.web3_utils import check_receipt, wait_for_receipt_by_blocks
+from skale.utils.web3_utils import (
+    check_receipt,
+    default_gas_price,
+    wait_for_confirmation_blocks
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,45 +45,78 @@ def create_wallet(wallet_type='web3', *args, **kwargs):
     return WALLET_TYPE_TO_CLASS[wallet_type](*args, **kwargs)
 
 
-def send_tokens(skale, sender_wallet, receiver_account, amount,
-                wait_for=True):
+def send_tokens(
+    skale,
+    receiver_address,
+    amount,
+    *args,
+    **kwargs
+):
     logger.info(
-        f'Sending {amount} SKALE tokens from {sender_wallet.address} => '
-        f'{receiver_account}'
+        f'Sending {amount} SKALE tokens from {skale.wallet.address} => '
+        f'{receiver_address}'
     )
 
-    wei_amount = skale.web3.toWei(amount, 'ether')
-    tx_res = skale.token.transfer(receiver_account, wei_amount, wait_for=wait_for)
-    if wait_for:
-        check_receipt(tx_res.receipt)
-    return tx_res
-
-
-def send_ether(web3, sender_wallet, receiver_account, amount,
-               gas_price=None, wait_for=True):
-    logger.info(
-        f'Sending {amount} ETH from {sender_wallet.address} => '
-        f'{receiver_account}'
+    wei_amount = skale.web3.to_wei(amount, 'ether')
+    return skale.token.transfer(
+        receiver_address,
+        wei_amount,
+        *args,
+        **kwargs
     )
 
-    wei_amount = web3.toWei(amount, 'ether')
-    tx = send_eth(web3, receiver_account, wei_amount, sender_wallet,
-                  gas_price=gas_price)
+
+def send_eth(
+    web3: Web3,
+    wallet,
+    receiver_address,
+    amount,
+    *args,
+    gas_price: Optional[int] = None,
+    wait_for: bool = True,
+    confirmation_blocks: int = 0,
+    multiplier: Optional[int] = None,
+    priority: Optional[int] = None,
+    **kwargs
+):
+    logger.info(
+        f'Sending {amount} ETH from {wallet.address} => '
+        f'{receiver_address}'
+    )
+    wei_amount = web3.to_wei(amount, 'ether')
+    gas_price = gas_price or default_gas_price(web3)
+    tx = compose_eth_transfer_tx(
+        web3=web3,
+        *args,
+        gas_price=gas_price,
+        from_address=wallet.address,
+        to_address=receiver_address,
+        value=wei_amount,
+        **kwargs
+    )
+    tx_hash = wallet.sign_and_send(
+        tx,
+        multiplier=multiplier,
+        priority=priority
+    )
     if wait_for:
-        receipt = wait_for_receipt_by_blocks(web3, tx)
-        check_receipt(receipt)
-        return receipt
-    else:  # pragma: no cover
-        return tx
+        receipt = wallet.wait(tx_hash)
+    if confirmation_blocks:
+        wait_for_confirmation_blocks(
+            web3,
+            confirmation_blocks
+        )
+    check_receipt(receipt)
+    return receipt
 
 
 def account_eth_balance_wei(web3, address):
-    return web3.eth.getBalance(address)
+    return web3.eth.get_balance(address)
 
 
 def check_ether_balance(web3, address):
     balance_wei = account_eth_balance_wei(web3, address)
-    balance = web3.fromWei(balance_wei, 'ether')
+    balance = web3.from_wei(balance_wei, 'ether')
 
     logger.info(f'{address} balance: {balance} ETH')
     return balance
@@ -84,7 +124,7 @@ def check_ether_balance(web3, address):
 
 def check_skale_balance(skale, address):
     balance_wei = skale.token.get_balance(address)
-    balance = skale.web3.fromWei(balance_wei, 'ether')
+    balance = skale.web3.from_wei(balance_wei, 'ether')
     logger.info(f'{address} balance: {balance} SKALE')
     return balance
 
@@ -108,8 +148,8 @@ def generate_accounts(skale,
     for _ in range(0, n_wallets):
         wallet = generate_account(skale.web3)
 
-        send_tokens(skale, skale.wallet, wallet['address'], skale_amount)
-        send_ether(skale.web3, skale.wallet, wallet['address'], eth_amount)
+        send_tokens(skale, wallet['address'], skale_amount)
+        send_eth(skale.web3, skale.wallet, wallet['address'], eth_amount)
 
         if debug:
             check_ether_balance(skale.web3, wallet['address'])

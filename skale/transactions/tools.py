@@ -20,22 +20,17 @@
 import logging
 import time
 from functools import partial, wraps
+from typing import Dict, Optional
+
+from web3 import Web3
+from web3.exceptions import ContractLogicError, Web3Exception
+from web3._utils.transactions import get_block_gas_limit
 
 import skale.config as config
-from skale.transactions.result import (
-    DryRunFailedError,
-    InsufficientBalanceError,
-    TransactionFailedError, TxRes
-)
-from skale.utils.constants import GAS_LIMIT_COEFFICIENT
-from skale.utils.exceptions import RPCWalletError
-from skale.utils.web3_utils import (
-    check_receipt,
-    get_eth_nonce,
-    wait_for_receipt_by_blocks,
-)
+from skale.transactions.exceptions import TransactionError
+from skale.transactions.result import TxCallResult, TxRes, TxStatus
+from skale.utils.web3_utils import get_eth_nonce
 
-from web3._utils.transactions import get_block_gas_limit
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +38,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
-def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
+def make_dry_run_call(skale, method, gas_limit=None, value=0) -> TxCallResult:
     opts = {
         'from': skale.wallet.address,
         'value': value
@@ -54,6 +49,7 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
         f'wallet: {skale.wallet.__class__.__name__}, '
         f'value: {value}, '
     )
+    estimated_gas = 0
 
     try:
         if gas_limit:
@@ -63,11 +59,15 @@ def make_dry_run_call(skale, method, gas_limit=None, value=0) -> dict:
         else:
             estimated_gas = estimate_gas(skale.web3, method, opts)
         logger.info(f'Estimated gas for {method.fn_name}: {estimated_gas}')
-    except Exception as err:
-        logger.error('Dry run for method failed with error', exc_info=err)
-        return {'status': 0, 'error': str(err)}
+    except ContractLogicError as e:
+        return TxCallResult(status=TxStatus.FAILED,
+                            error='revert', message=e.message, data=e.data)
+    except (Web3Exception, ValueError) as e:
+        logger.exception('Dry run for %s failed', method)
+        return TxCallResult(status=TxStatus.FAILED, error='exception', message=str(e), data={})
 
-    return {'status': 1, 'payload': estimated_gas}
+    return TxCallResult(status=TxStatus.SUCCESS, error='',
+                        message='success', data={'gas': estimated_gas})
 
 
 def estimate_gas(web3, method, opts):
@@ -76,8 +76,13 @@ def estimate_gas(web3, method, opts):
     except AttributeError:
         block_gas_limit = get_block_gas_limit(web3)
 
-    estimated_gas = method.estimateGas(opts)
-    normalized_estimated_gas = int(estimated_gas * GAS_LIMIT_COEFFICIENT)
+    estimated_gas = method.estimate_gas(
+        opts,
+        block_identifier='latest'
+    )
+    normalized_estimated_gas = int(
+        estimated_gas * config.DEFAULT_GAS_MULTIPLIER
+    )
     if normalized_estimated_gas > block_gas_limit:
         logger.warning(f'Estimate gas for {method.fn_name} - {normalized_estimated_gas} exceeds \
 block gas limit, going to use block_gas_limit ({block_gas_limit}) for this transaction')
@@ -85,82 +90,70 @@ block gas limit, going to use block_gas_limit ({block_gas_limit}) for this trans
     return normalized_estimated_gas
 
 
-def build_tx_dict(method, gas_limit, gas_price=None, nonce=None, value=0):
-    tx_dict_fields = {
+def build_tx_dict(method, *args, **kwargs):
+    base_fields = compose_base_fields(*args, **kwargs)
+    return method.build_transaction(base_fields)
+
+
+def compose_base_fields(
+    nonce: int,
+    gas_limit: int,
+    gas_price: Optional[int] = None,
+    max_fee_per_gas: Optional[int] = None,
+    max_priority_fee_per_gas: Optional[int] = None,
+    value: Optional[int] = 0,
+) -> Dict:
+    fee_fields = {
         'gas': gas_limit,
         'nonce': nonce,
         'value': value
     }
-    if gas_price is not None:
-        tx_dict_fields.update({'gasPrice': gas_price})
+    if max_priority_fee_per_gas is not None:
+        fee_fields.update({
+            'maxPriorityFeePerGas': max_priority_fee_per_gas,
+            'maxFeePerGas': max_fee_per_gas
+        })
+        fee_fields.update({'type': 2})
+    elif gas_price is not None:
+        fee_fields.update({'gasPrice': gas_price})
+        fee_fields.update({'type': 1})
+    return fee_fields
 
-    return method.buildTransaction(tx_dict_fields)
 
-
-def sign_and_send(web3, method, gas_amount, wallet) -> hash:
-    nonce = get_eth_nonce(web3, wallet.address)
-    tx_dict = build_tx_dict(method, gas_amount, nonce)
-    signed_tx = wallet.sign(tx_dict)
-    return web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-
-
-def post_transaction(wallet, method, gas_limit, gas_price=None, nonce=None, value=0) -> str:
+def transaction_from_method(
+    method,
+    *,
+    multiplier: Optional[float] = None,
+    priority: Optional[int] = None,
+    **kwargs
+) -> str:
+    tx = build_tx_dict(method, **kwargs)
     logger.info(
         f'Tx: {method.fn_name}, '
-        f'sender: {wallet.address}, '
-        f'wallet: {wallet.__class__.__name__}, '
-        f'gasLimit: {gas_limit}, '
-        f'gasPrice: {gas_price}, '
-        f'value: {value}'
+        f'Fields: {tx}, '
     )
-    tx_dict = build_tx_dict(method, gas_limit, gas_price, nonce, value)
-    tx_hash = wallet.sign_and_send(tx_dict)
-    return tx_hash
+    return tx
 
 
-def send_eth_with_skale(skale, address: str, amount_wei: int, *,
-                        gas_limit: int = DEFAULT_ETH_SEND_GAS_LIMIT,
-                        gas_price: int = None,
-                        nonce: int = None, wait_for=True):
-    gas_limit = gas_limit or DEFAULT_ETH_SEND_GAS_LIMIT
-    gas_price = gas_price or skale.web3.eth.gasPrice
+def compose_eth_transfer_tx(
+    web3: Web3,
+    from_address: str,
+    to_address: str,
+    value: int,
+    **kwargs
+) -> Dict:
+    nonce = get_eth_nonce(web3, from_address)
+    base_fields = compose_base_fields(
+        nonce=nonce,
+        gas_limit=DEFAULT_ETH_SEND_GAS_LIMIT,
+        value=value,
+        **kwargs
+    )
     tx = {
-        'to': address,
-        'value': amount_wei,
-        'gasPrice': gas_price,
-        'gas': gas_limit,
-        'nonce': nonce
+        'from': from_address,
+        'to': to_address,
+        **base_fields
     }
-    logger.info(f'Sending {amount_wei} WEI to {address}')
-    tx_hash = skale.wallet.sign_and_send(tx)
-    logger.info(f'Waiting for receipt for {tx_hash}')
-
-    if wait_for:
-        receipt = wait_for_receipt_by_blocks(skale.web3, tx_hash)
-        check_receipt(receipt)
-        return receipt
-    return tx_hash
-
-
-def send_eth(web3, account, amount, wallet, gas_price=None):
-    eth_nonce = get_eth_nonce(web3, wallet.address)
-    logger.info(f'Transaction nonce {eth_nonce}')
-    gas_price = gas_price or config.DEFAULT_GAS_PRICE_WEI or web3.eth.gasPrice
-    txn = {
-        'to': account,
-        'value': amount,
-        'gasPrice': gas_price,
-        'gas': 22000,
-        'nonce': eth_nonce
-    }
-
-    signed_txn = wallet.sign(txn)
-
-    tx = web3.eth.sendRawTransaction(signed_txn.rawTransaction)
-    logger.info(
-        f'ETH transfer {wallet.address} => {account}, {amount} wei,'
-        f'tx: {web3.toHex(tx)}'
-    )
     return tx
 
 
@@ -180,32 +173,43 @@ def retry_tx(tx=None, *, max_retries=3, timeout=-1):
 
 def run_tx_with_retry(transaction, *args, max_retries=3,
                       retry_timeout=-1,
+                      raise_for_status=True,
                       **kwargs) -> TxRes:
-    success = False
     attempt = 0
     tx_res = None
     exp_timeout = 1
-    while not success and attempt < max_retries:
+    error = None
+    while attempt < max_retries:
         try:
-            tx_res = transaction(*args, **kwargs)
+            tx_res = transaction(
+                *args,
+                raise_for_status=raise_for_status,
+                **kwargs
+            )
             tx_res.raise_for_status()
-        except (TransactionFailedError, DryRunFailedError, RPCWalletError) as err:
-            logger.error(f'Tx attempt {attempt}/{max_retries} failed',
-                         exc_info=err)
+        except TransactionError as e:
+            error = e
+            logger.exception('Tx attempt %d/%d failed', attempt + 1, max_retries)
+
             timeout = exp_timeout if retry_timeout < 0 else exp_timeout
             time.sleep(timeout)
             exp_timeout *= 2
-        except InsufficientBalanceError as err:
-            logger.error('Sender balance is too low', exc_info=err)
-            raise err
         else:
-            success = True
+            error = None
+            break
         attempt += 1
-    if success:
-        logger.info(f'Tx {transaction.__name__} completed '
-                    f'after {attempt}/{max_retries} retries')
+    if error is None:
+        logger.info(
+            'Tx %s completed after %d/%d retries',
+            transaction.__name__, attempt + 1, max_retries
+        )
     else:
         logger.error(
-            f'Tx {transaction.__name__} failed after '
-            f'{max_retries} retries')
+            'Tx %s failed after %d retries',
+            transaction.__name__, max_retries
+        )
+        if raise_for_status:
+            raise error
+    if tx_res is not None:
+        tx_res.attempts = attempt
     return tx_res

@@ -22,11 +22,14 @@
 import logging
 import socket
 
-from eth_abi import encode_abi
+from eth_abi import encode
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.utils import helper
 from skale.transactions.result import TxRes
+from skale.dataclasses.schain_options import (
+    SchainOptions, get_default_schain_options
+)
 
 logger = logging.getLogger(__name__)
 
@@ -62,17 +65,34 @@ class Manager(BaseContract):
                                   wait_for=True)
 
     @transaction_method
-    def create_schain(self, lifetime, type_of_nodes, deposit, name):
+    def create_schain(
+        self,
+        lifetime: int,
+        type_of_nodes: int,
+        deposit: str,
+        name: str,
+        schain_originator: str = None,
+        options: SchainOptions = None
+    ):
         logger.info(
             f'create_schain: type_of_nodes: {type_of_nodes}, name: {name}')
-
-        token = self.skale.get_contract_by_name('token')
         skale_nonce = helper.generate_nonce()
-        tx_data = encode_abi(
-            ['uint', 'uint8', 'uint16', 'string'],
-            [lifetime, type_of_nodes, skale_nonce, name]
+
+        if schain_originator is None:
+            schain_originator = self.skale.wallet.address
+        if not options:
+            options = get_default_schain_options()
+
+        tx_data = encode(
+            ['(uint,uint8,uint16,string,address,(string,bytes)[])'],
+            [(lifetime, type_of_nodes, skale_nonce, name, schain_originator, options.to_tuples())]
         )
-        return token.contract.functions.send(self.address, deposit, tx_data)
+
+        return self.skale.token.contract.functions.send(
+            self.address,
+            deposit,
+            tx_data
+        )
 
     @transaction_method
     def get_bounty(self, node_id):
@@ -81,6 +101,10 @@ class Manager(BaseContract):
     @transaction_method
     def delete_schain(self, schain_name):
         return self.contract.functions.deleteSchain(schain_name)
+
+    @transaction_method
+    def delete_schain_by_root(self, schain_name):
+        return self.contract.functions.deleteSchainByRoot(schain_name)
 
     @transaction_method
     def node_exit(self, node_id):
@@ -95,6 +119,9 @@ class Manager(BaseContract):
 
     def admin_role(self) -> bytes:
         return self.contract.functions.ADMIN_ROLE().call()
+
+    def schain_removal_role(self) -> bytes:
+        return self.contract.functions.SCHAIN_REMOVAL_ROLE().call()
 
     def has_role(self, role: bytes, address: str) -> bool:
         return self.contract.functions.hasRole(role, address).call()

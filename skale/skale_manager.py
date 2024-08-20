@@ -48,7 +48,8 @@ CONTRACTS_INFO = [
     ContractInfo('schains_internal', 'SchainsInternal', contracts.SChainsInternal,
                  ContractTypes.API, True),
     ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
-    ContractInfo('key_storage', 'KeyStorage', contracts.KeyStorage, ContractTypes.API, True),
+    ContractInfo('key_storage', 'KeyStorage',
+                 contracts.KeyStorage, ContractTypes.API, True),
     ContractInfo('delegation_controller', 'DelegationController', contracts.DelegationController,
                  ContractTypes.API, False),
     ContractInfo('delegation_period_manager', 'DelegationPeriodManager',
@@ -63,6 +64,12 @@ CONTRACTS_INFO = [
                  ContractTypes.API, False),
     ContractInfo('wallets', 'Wallets', contracts.Wallets,
                  ContractTypes.API, True),
+    ContractInfo('bounty_v2', 'Bounty', contracts.BountyV2,
+                 ContractTypes.API, True),
+    ContractInfo('punisher', 'Punisher', contracts.Punisher,
+                 ContractTypes.API, True),
+    ContractInfo('sync_manager', 'SyncManager', contracts.SyncManager,
+                 ContractTypes.API, False),
 ]
 
 
@@ -79,10 +86,11 @@ def spawn_skale_manager_lib(skale):
 
 
 class SkaleManager(SkaleBase):
-    def init_contracts(self):
+    def set_contracts_info(self):
+        self.init_contract_manager()
         abi = get_abi(self._abi_filepath)
-        self.add_lib_contract('contract_manager', ContractManager, abi)
-        self._SkaleBase__init_contracts_from_info(abi, get_contracts_info(CONTRACTS_INFO))
+        self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
         if self._SkaleBase__is_debug_contracts(abi):
             logger.info('Debug contracts found in ABI file')
-            self._SkaleBase__init_contracts_from_info(abi, get_contracts_info(DEBUG_CONTRACTS_INFO))
+            self._SkaleBase__contracts_info.update(
+                get_contracts_info(DEBUG_CONTRACTS_INFO))

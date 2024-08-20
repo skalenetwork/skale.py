@@ -17,89 +17,53 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import enum
+from typing import NamedTuple
 
-SUCCESS_STATUS = 1
-
-
-class TransactionError(Exception):
-    pass
-
-
-class DryRunFailedError(TransactionError):
-    pass
+from skale.transactions.exceptions import (
+    DryRunFailedError,
+    DryRunRevertError,
+    TransactionFailedError
+)
 
 
-class InsufficientBalanceError(TransactionError):
-    pass
+class TxStatus(int, enum.Enum):
+    FAILED = 0
+    SUCCESS = 1
 
 
-class TransactionFailedError(TransactionError):
-    pass
-
-
-def check_balance(balance: int, gas_price: int, gas_limit: int, value: int) -> dict:
-    tx_cost = gas_price * gas_limit + value
-    if balance < tx_cost:
-        status = 0
-        msg = f'Transaction requires {tx_cost}. Wallet has {balance} wei'
-    else:
-        status = 1
-        msg = 'ok'
-    return {'status': status, 'msg': msg}
-
-
-def check_balance_and_gas(balance, gas_price, gas_limit, value):
-    if gas_limit:
-        return check_balance(balance, gas_price, gas_limit, value)
-    return {'status': 0, 'msg': 'Gas limit is empty'}
-
-
-def is_success(result: dict) -> bool:
-    return result.get('status') == SUCCESS_STATUS
-
-
-def is_success_or_not_performed(result: dict) -> bool:
-    return result is None or is_success(result)
+class TxCallResult(NamedTuple):
+    status: TxStatus
+    error: str
+    message: str
+    data: dict
 
 
 class TxRes:
-    def __init__(self, dry_run_result=None, balance_check_result=None,
-                 tx_hash=None, receipt=None):
-        self.dry_run_result = dry_run_result
-        self.balance_check_result = balance_check_result
+    def __init__(self, tx_call_result=None, tx_hash=None, receipt=None, revert=None):
+        self.tx_call_result = tx_call_result
         self.tx_hash = tx_hash
         self.receipt = receipt
+        self.attempts = 0
 
     def __str__(self) -> str:
         return (
-            f'TxRes hash: {self.tx_hash}, dry_run_result {self.dry_run_result}, '
+            f'TxRes hash: {self.tx_hash}, tx_call_result {self.tx_call_result}, '
             f'receipt {self.receipt}'
         )
 
     def __repr__(self) -> str:
         return (
-            f'TxRes hash: {self.tx_hash}, dry_run_result {self.dry_run_result}, '
+            f'TxRes hash: {self.tx_hash}, tx_call_result {self.tx_call_result}, '
             f'receipt {self.receipt}'
         )
 
-    def dry_run_failed(self) -> bool:
-        return not is_success_or_not_performed(self.dry_run_result)
-
-    def balance_check_failed(self) -> bool:
-        return not is_success_or_not_performed(self.balance_check_result)
-
-    def tx_failed(self) -> bool:
-        return not is_success_or_not_performed(self.receipt)
-
     def raise_for_status(self) -> None:
-        if self.dry_run_failed():
-            raise DryRunFailedError(f'Dry run check failed. '
-                                    f'See result {self.dry_run_result}')
-        if self.balance_check_failed():
-            raise InsufficientBalanceError(
-                'Balance check failed. ',
-                f'See result {self.balance_check_result}'
-            )
-        if self.tx_failed():
-            raise TransactionFailedError(f'Transaction failed. '
-                                         f'See receipt {self.receipt}')
+        if self.receipt is not None:
+            if self.receipt['status'] == TxStatus.FAILED:
+                raise TransactionFailedError(self.receipt)
+        elif self.tx_call_result is not None and self.tx_call_result.status == TxStatus.FAILED:
+            if self.tx_call_result.error == 'revert':
+                raise DryRunRevertError(self.tx_call_result.message)
+            else:
+                raise DryRunFailedError(self.tx_call_result.message)
