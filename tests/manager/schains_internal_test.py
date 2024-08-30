@@ -36,7 +36,7 @@ def test_get_schain_id_by_index_for_owner(skale, schain):
         skale.wallet.address, 0
     )
     schain = skale.schains.get(schain_id)
-    assert schain['mainnetOwner'] == skale.wallet.address
+    assert schain.mainnet_owner == skale.wallet.address
 
 
 def test_get_node_ids_for_schain(skale, schain):

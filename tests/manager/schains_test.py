@@ -38,7 +38,7 @@ def test_get_object(skale):
 
 def test_get_by_name(skale):
     schain = skale.schains.get(DEFAULT_SCHAIN_ID)
-    schain_name = schain["name"]
+    schain_name = schain.name
 
     schain_by_name = skale.schains.get_by_name(schain_name)
     assert list(schain_by_name.keys()) == FIELDS
@@ -66,7 +66,7 @@ def test_get_schains_for_node(skale, schain):
 
     test_schain = schains_for_node[0]
     schain_node_ids = skale.schains_internal.get_node_ids_for_schain(
-        test_schain["name"]
+        test_schain.name
     )
 
     assert node_id in schain_node_ids
@@ -96,10 +96,10 @@ def test_add_schain_by_foundation(skale, nodes):
     try:
         skale.schains.add_schain_by_foundation(lifetime_seconds, type_of_nodes, 0, name)
         schains_ids_after = skale.schains_internal.get_all_schains_ids()
-        schains_names = [skale.schains.get(sid)["name"] for sid in schains_ids_after]
+        schains_names = [skale.schains.get(sid).name for sid in schains_ids_after]
         assert name in schains_names
         new_schain = skale.schains.get_by_name(name)
-        assert new_schain["mainnetOwner"] == skale.wallet.address
+        assert new_schain.mainnet_owner == skale.wallet.address
 
         schain = skale.schains.get_by_name(name, obj=True)
         assert schain.options.multitransaction_mode is False
@@ -110,7 +110,7 @@ def test_add_schain_by_foundation(skale, nodes):
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
-    schains_names = [skale.schains.get(sid)["name"] for sid in schains_ids_after]
+    schains_names = [skale.schains.get(sid).name for sid in schains_ids_after]
     assert name not in schains_names
 
 
@@ -164,8 +164,8 @@ def test_add_schain_by_foundation_custom_owner(skale, nodes):
         )
 
         new_schain = skale.schains.get_by_name(name)
-        assert new_schain["mainnetOwner"] != skale.wallet.address
-        assert new_schain["mainnetOwner"] == custom_wallet.address
+        assert new_schain.mainnet_owner != skale.wallet.address
+        assert new_schain.mainnet_owner == custom_wallet.address
 
         skale.wallet = custom_wallet
     finally:
@@ -174,7 +174,7 @@ def test_add_schain_by_foundation_custom_owner(skale, nodes):
 
     schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
-    schains_names = [skale.schains.get(sid)["name"] for sid in schains_ids_after]
+    schains_names = [skale.schains.get(sid).name for sid in schains_ids_after]
     assert name not in schains_names
 
 
@@ -198,8 +198,8 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
         )
         new_schain = skale.schains.get_by_name(name)
 
-        assert new_schain["originator"] != skale.wallet.address
-        assert new_schain["originator"] == custom_originator.address
+        assert new_schain.originator != skale.wallet.address
+        assert new_schain.originator == custom_originator.address
 
     finally:
         if name:
@@ -218,7 +218,7 @@ def test_get_active_schains_for_node(skale, nodes, schain):
         node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
         active_schains = skale.schains.get_active_schains_for_node(node_id)
         all_schains = skale.schains.get_schains_for_node(node_id)
-        all_active_schains = [schain for schain in all_schains if schain["active"]]
+        all_active_schains = [schain for schain in all_schains if schain.active]
         for active_schain in all_active_schains:
             assert active_schain in active_schains
     finally:
