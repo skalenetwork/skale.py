@@ -24,32 +24,50 @@ from tests.constants import (
 )
 
 
-def test_get(skale):
-    schain = skale.schains.get(DEFAULT_SCHAIN_ID)
+def test_schain_get_plain(skale):
+    schain = skale.schains.get(DEFAULT_SCHAIN_ID, obj=False)
     assert list(schain.keys()) == FIELDS
-    assert [k for k, v in schain.items() if v is None] == []
 
 
-def test_get_object(skale):
-    schain = skale.schains.get(DEFAULT_SCHAIN_ID, obj=True)
-    assert isinstance(schain, SchainStructure)
-    assert isinstance(schain.options, SchainOptions)
+def test_schain_get_object(skale):
+    schain_struct = skale.schains.get(DEFAULT_SCHAIN_ID, obj=True)
+    assert isinstance(schain_struct, SchainStructure)
+    assert isinstance(schain_struct.options, SchainOptions)
+    assert schain_struct.name == schain_struct
+    assert schain_struct.index_in_owner_list == 0
+    assert schain_struct.part_of_node == 1
+    assert schain_struct.lifetime == 3600
+    assert schain_struct.deposit == 0
+    assert schain_struct.generation == 0
+    assert schain_struct.options == SchainOptions(
+        multitransaction_mode=False,
+        threshold_encryption=False,
+        allocation_type=AllocationType.DEFAULT
+    )
+    assert schain_struct.active
 
 
-def test_get_by_name(skale):
-    schain = skale.schains.get(DEFAULT_SCHAIN_ID)
-    schain_name = schain.name
-
-    schain_by_name = skale.schains.get_by_name(schain_name)
-    assert list(schain_by_name.keys()) == FIELDS
-    assert schain == schain_by_name
+def test_get_by_name(skale, schain):
+    schain_by_name = skale.schains.get_by_name(schain)
+    assert isinstance(schain_by_name, SchainStructure)
+    assert schain_by_name.name == schain
+    assert schain_by_name.index_in_owner_list == 0
+    assert schain_by_name.part_of_node == 1
+    assert schain_by_name.lifetime == 3600
+    assert schain_by_name.deposit == 0
+    assert schain_by_name.generation == 0
+    assert schain_by_name.options == SchainOptions(
+        multitransaction_mode=False,
+        threshold_encryption=False,
+        allocation_type=AllocationType.DEFAULT
+    )
+    assert schain_by_name.active
 
 
 def test_get_schains_for_owner(skale, schain, empty_account):
     schains = skale.schains.get_schains_for_owner(skale.wallet.address)
     assert isinstance(schains, list)
-    assert len(schains) > 0
-    assert set(schains[-1].keys()) == set(FIELDS)
+    assert schains[-1].mainnet_owner == skale.wallet.address
 
     schains = skale.schains.get_schains_for_owner(empty_account.address)
     assert schains == []
@@ -79,8 +97,19 @@ def test_name_to_id(skale):
 
 def test_get_all_schains_ids(skale, schain):
     schains_ids = skale.schains_internal.get_all_schains_ids()
-    schain = skale.schains.get(schains_ids[-1])
-    assert list(schain.keys()) == FIELDS
+    schain_struct = skale.schains.get(schains_ids[-1])
+    assert schain_struct.name == schain
+    assert schain_struct.index_in_owner_list == 0
+    assert schain_struct.part_of_node == 1
+    assert schain_struct.lifetime == 3600
+    assert schain_struct.deposit == 0
+    assert schain_struct.generation == 0
+    assert schain_struct.options == SchainOptions(
+        multitransaction_mode=False,
+        threshold_encryption=False,
+        allocation_type=AllocationType.DEFAULT
+    )
+    assert schain_struct.active
 
 
 def test_get_schain_price(skale):

@@ -87,7 +87,7 @@ class SChains(BaseContract):
         return res
 
     @format_fields(FIELDS)
-    def get_by_name(self, name, obj=False):
+    def get_by_name(self, name, obj=True):
         id_ = self.name_to_id(name)
         return self.get(id_, obj=obj)
 
