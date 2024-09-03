@@ -29,11 +29,11 @@ def test_schain_get_plain(skale):
     assert list(schain.keys()) == FIELDS
 
 
-def test_schain_get_object(skale):
-    schain_struct = skale.schains.get(DEFAULT_SCHAIN_ID, obj=True)
+def test_schain_get_object(skale, schain):
+    schain_struct = skale.schains.get(schain)
     assert isinstance(schain_struct, SchainStructure)
     assert isinstance(schain_struct.options, SchainOptions)
-    assert schain_struct.name == schain_struct
+    assert schain_struct.name == schain
     assert schain_struct.index_in_owner_list == 0
     assert schain_struct.part_of_node == 1
     assert schain_struct.lifetime == 3600
@@ -55,7 +55,7 @@ def test_get_by_name(skale, schain):
     assert schain_by_name.part_of_node == 1
     assert schain_by_name.lifetime == 3600
     assert schain_by_name.deposit == 0
-    assert schain_by_name.generation == 0
+    assert schain_by_name.generation == 1
     assert schain_by_name.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
@@ -103,7 +103,7 @@ def test_get_all_schains_ids(skale, schain):
     assert schain_struct.part_of_node == 1
     assert schain_struct.lifetime == 3600
     assert schain_struct.deposit == 0
-    assert schain_struct.generation == 0
+    assert schain_struct.generation == 1
     assert schain_struct.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
