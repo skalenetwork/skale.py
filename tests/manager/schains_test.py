@@ -30,7 +30,8 @@ def test_schain_get_plain(skale):
 
 
 def test_schain_get_object(skale, schain):
-    schain_struct = skale.schains.get(schain)
+    schain_id = skale.schains.name_to_id(schain)
+    schain_struct = skale.schains.get(schain_id)
     assert isinstance(schain_struct, SchainStructure)
     assert isinstance(schain_struct.options, SchainOptions)
     assert schain_struct.name == schain
