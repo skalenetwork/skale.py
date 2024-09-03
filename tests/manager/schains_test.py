@@ -39,7 +39,7 @@ def test_schain_get_object(skale, schain):
     assert schain_struct.part_of_node == 1
     assert schain_struct.lifetime == 3600
     assert schain_struct.deposit == 0
-    assert schain_struct.generation == 0
+    assert schain_struct.generation == 1
     assert schain_struct.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
