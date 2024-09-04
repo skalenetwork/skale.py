@@ -53,6 +53,7 @@ class SchainStructure:
     originator: str
     chain_id: int
     options: SchainOptions
+    active: bool
 
 
 class SChains(BaseContract):
@@ -72,20 +73,21 @@ class SChains(BaseContract):
         return self.skale.node_rotation
 
     @format_fields(FIELDS)
-    def get(self, id_, obj=False):
+    def get(self, id_, obj=True):
         res = self.schains_internal.get_raw(id_)
         hash_obj = keccak.new(data=res[0].encode("utf8"), digest_bits=256)
         hash_str = "0x" + hash_obj.hexdigest()[:13]
         res.append(hash_str)
+        active = self.schain_active(res)
         options = self.get_options(id_)
         if obj:  # TODO: temporary solution for backwards compatibility
-            return SchainStructure(*res, options=options)
+            return SchainStructure(*res, active=active, options=options)
         else:
             res += asdict(options).values()
         return res
 
     @format_fields(FIELDS)
-    def get_by_name(self, name, obj=False):
+    def get_by_name(self, name, obj=True):
         id_ = self.name_to_id(name)
         return self.get(id_, obj=obj)
 
@@ -104,7 +106,6 @@ class SChains(BaseContract):
         schain_ids = self.schains_internal.get_schain_ids_for_node(node_id)
         for schain_id in schain_ids:
             schain = self.get(schain_id)
-            schain['active'] = True if self.schain_active(schain) else False
             schains.append(schain)
         return schains
 
@@ -113,7 +114,6 @@ class SChains(BaseContract):
         schain_ids = self.schains_internal.get_active_schain_ids_for_node(node_id)
         for schain_id in schain_ids:
             schain = self.get(schain_id)
-            schain['active'] = True
             schains.append(schain)
         return schains
 
@@ -125,10 +125,9 @@ class SChains(BaseContract):
         rotation_data = self.node_rotation.get_rotation(schain_name)
         return rotation_data['rotation_id']
 
-    def schain_active(self, schain):
-        if schain['name'] != '' and \
-                schain['mainnetOwner'] != '0x0000000000000000000000000000000000000000':
-            return True
+    @classmethod
+    def schain_active(cls, schain: list) -> bool:
+        return schain[0] != '' and schain[1] != '0x0000000000000000000000000000000000000000'  # noqa
 
     def get_schain_price(self, index_of_type, lifetime):
         return self.contract.functions.getSchainPrice(index_of_type,

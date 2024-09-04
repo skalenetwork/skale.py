@@ -17,4 +17,4 @@ def test_get_schain_nodes_with_schains(skale, schain):
     schain_name = schain
     nodes_with_schains = get_schain_nodes_with_schains(skale, schain_name)
     assert isinstance(nodes_with_schains[0]['schains'], list)
-    assert isinstance(nodes_with_schains[0]['schains'][0]['mainnetOwner'], str)
+    assert nodes_with_schains[0]['schains'][0].mainnet_owner == skale.wallet.address

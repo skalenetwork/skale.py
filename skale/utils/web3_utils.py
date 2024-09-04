@@ -108,11 +108,12 @@ def make_client_checking_middleware(allowed_ts_diff: int,
                 latest_block = web3.eth.get_block('latest')
                 current_time = time.time()
 
-                ts_diff = current_time - latest_block['timestamp']
-                if not is_test_env():
-                    ts_diff = abs(ts_diff)
+                if is_test_env():
+                    unsynced = current_time - latest_block['timestamp'] > allowed_ts_diff
+                else:
+                    unsynced = abs(current_time - latest_block['timestamp']) > allowed_ts_diff
 
-                if ts_diff > allowed_ts_diff:
+                if unsynced:
                     raise EthClientOutdatedError(outdated_client_time_msg(
                         method,
                         current_time,
