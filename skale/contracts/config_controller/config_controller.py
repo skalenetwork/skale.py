@@ -1,5 +1,4 @@
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
@@ -40,19 +39,35 @@ class ConfigController(BaseContract):
     def is_address_whitelisted(self, address: ChecksumAddress) -> bool:
         return bool(self.contract.functions.isAddressWhitelisted(address).call())
 
-    def is_deployment_allowed(self, transactionOrigin: ChecksumAddress, deployer: ChecksumAddress) -> bool:
+    def is_deployment_allowed(
+        self,
+        transactionOrigin: ChecksumAddress,
+        deployer: ChecksumAddress
+            ) -> bool:
         return bool(self.contract.functions.isDeploymentAllowed(transactionOrigin, deployer).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(
+        self,
+        role: bytes,
+        address: ChecksumAddress
+            ) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     @transaction_method
-    def add_allowed_origin_role_admin(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def add_allowed_origin_role_admin(
+        self,
+        role: bytes,
+        address: ChecksumAddress
+            ) -> ContractFunction:
         return self.contract.functions.addAllowedOriginRoleAdmin(role, address)
 
     @transaction_method
-    def allow_origin(self, transactionOrigin: ChecksumAddress, deployer: ChecksumAddress) -> ContractFunction:
+    def allow_origin(
+        self,
+        transactionOrigin: ChecksumAddress,
+        deployer: ChecksumAddress
+            ) -> ContractFunction:
         return self.contract.functions.allowOrigin(transactionOrigin, deployer)
 
     @transaction_method
@@ -68,17 +83,25 @@ class ConfigController(BaseContract):
         return self.contract.functions.renounceRole(role, address)
 
     @transaction_method
-    def remove_allowed_origin_role_admin(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def remove_allowed_origin_role_admin(
+        self,
+        role: bytes,
+        address: ChecksumAddress
+            ) -> ContractFunction:
         return self.contract.functions.removeAllowedOriginRoleAdmin(role, address)
 
     @transaction_method
-    def forbid_origin(self, transactionOrigin: ChecksumAddress, deployer: ChecksumAddress) -> ContractFunction:
+    def forbid_origin(
+        self,
+        transactionOrigin: ChecksumAddress,
+        deployer: ChecksumAddress
+            ) -> ContractFunction:
         return self.contract.functions.forbidOrigin(transactionOrigin, deployer)
 
     @transaction_method
     def remove_from_whitelist(self, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.removeFromWhitelist(address)
-    
+
     @transaction_method
     def enable_free_contract_deployment(self) -> ContractFunction:
         return self.contract.functions.enableFreeContractDeployment()
@@ -107,4 +130,3 @@ class ConfigController(BaseContract):
     @transaction_method
     def set_version(self, new_version) -> ContractFunction:
         return self.contract.functions.setVersion(new_version)
-        
