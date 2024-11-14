@@ -107,3 +107,4 @@ class ConfigController(BaseContract):
     @transaction_method
     def set_version(self, new_version) -> ContractFunction:
         return self.contract.functions.setVersion(new_version)
+        
