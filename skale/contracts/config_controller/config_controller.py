@@ -1,34 +1,34 @@
 from skale.contracts.base_contract import BaseContract, transaction_method
 from eth_typing import ChecksumAddress
-from web3.contract.contract import ContractFunction
+from skale.transactions.result import TxRes
 
 
 class ConfigController(BaseContract):
     """Config controller contract"""
 
-    def default_admin_role(self) -> hex:
-        return "0x" + self.contract.functions.DEFAULT_ADMIN_ROLE().call().hex()
+    def default_admin_role(self) -> bytes:
+        return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
 
-    def deployer_admin_role(self) -> hex:
-        return "0x" + self.contract.functions.DEPLOYER_ADMIN_ROLE().call().hex()
+    def deployer_admin_role(self) -> bytes:
+        return self.contract.functions.DEPLOYER_ADMIN_ROLE().call()
 
-    def deployer_role(self) -> hex:
-        return "0x" + self.contract.functions.DEPLOYER_ROLE().call().hex()
+    def deployer_role(self) -> bytes:
+        return self.contract.functions.DEPLOYER_ROLE().call()
 
-    def mtm_admin_role(self) -> hex:
-        return "0x" + self.contract.functions.MTM_ADMIN_ROLE().call().hex()
+    def mtm_admin_role(self) -> bytes:
+        return self.contract.functions.MTM_ADMIN_ROLE().call()
 
-    def allowed_origin_role(self, deployer: ChecksumAddress) -> hex:
-        return "0x" + self.contract.functions.allowedOriginRole(deployer).call().hex()
+    def allowed_origin_role(self, deployer: ChecksumAddress) -> bytes:
+        return self.contract.functions.allowedOriginRole(deployer).call()
 
-    def allowed_origin_role_admin(self, deployer: ChecksumAddress) -> hex:
-        return "0x" + self.contract.functions.allowedOriginRoleAdmin(deployer).call().hex()
+    def allowed_origin_role_admin(self, deployer: ChecksumAddress) -> bytes:
+        return self.contract.functions.allowedOriginRoleAdmin(deployer).call()
 
     def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
         return bool(self.contract.functions.hasRole(role, address).call())
 
-    def get_role_admin(self, role: bytes) -> hex:
-        return self.contract.functions.getRoleAdmin(role).call().hex()
+    def get_role_admin(self, role: bytes) -> bytes:
+        return self.contract.functions.getRoleAdmin(role).call()
 
     def get_role_member(self, role: bytes, index: int) -> bytes:
         return self.contract.functions.getRoleMember(role, index).call()
@@ -51,7 +51,7 @@ class ConfigController(BaseContract):
         self,
         role: bytes,
         address: ChecksumAddress
-            ) -> ContractFunction:
+            ) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
     @transaction_method
@@ -59,7 +59,7 @@ class ConfigController(BaseContract):
         self,
         role: bytes,
         address: ChecksumAddress
-            ) -> ContractFunction:
+            ) -> TxRes:
         return self.contract.functions.addAllowedOriginRoleAdmin(role, address)
 
     @transaction_method
@@ -67,19 +67,19 @@ class ConfigController(BaseContract):
         self,
         transactionOrigin: ChecksumAddress,
         deployer: ChecksumAddress
-            ) -> ContractFunction:
+            ) -> TxRes:
         return self.contract.functions.allowOrigin(transactionOrigin, deployer)
 
     @transaction_method
-    def add_to_whitelist(self, address: ChecksumAddress) -> ContractFunction:
+    def add_to_whitelist(self, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.addToWhitelist(address)
 
     @transaction_method
-    def revoke_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def revoke_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.revokeRole(role, address)
 
     @transaction_method
-    def renounce_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def renounce_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.renounceRole(role, address)
 
     @transaction_method
@@ -87,7 +87,7 @@ class ConfigController(BaseContract):
         self,
         role: bytes,
         address: ChecksumAddress
-            ) -> ContractFunction:
+            ) -> TxRes:
         return self.contract.functions.removeAllowedOriginRoleAdmin(role, address)
 
     @transaction_method
@@ -95,30 +95,30 @@ class ConfigController(BaseContract):
         self,
         transactionOrigin: ChecksumAddress,
         deployer: ChecksumAddress
-            ) -> ContractFunction:
+            ) -> TxRes:
         return self.contract.functions.forbidOrigin(transactionOrigin, deployer)
 
     @transaction_method
-    def remove_from_whitelist(self, address: ChecksumAddress) -> ContractFunction:
+    def remove_from_whitelist(self, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.removeFromWhitelist(address)
 
     @transaction_method
-    def enable_free_contract_deployment(self) -> ContractFunction:
+    def enable_free_contract_deployment(self) -> TxRes:
         return self.contract.functions.enableFreeContractDeployment()
 
     @transaction_method
-    def disable_free_contract_deployment(self) -> ContractFunction:
+    def disable_free_contract_deployment(self) -> TxRes:
         return self.contract.functions.disableFreeContractDeployment()
 
     def is_fcd_enabled(self) -> str:
         return self.contract.functions.isFCDEnabled().call()
 
     @transaction_method
-    def enable_mtm(self) -> ContractFunction:
+    def enable_mtm(self) -> TxRes:
         return self.contract.functions.enableMTM()
 
     @transaction_method
-    def disable_mtm(self) -> ContractFunction:
+    def disable_mtm(self) -> TxRes:
         return self.contract.functions.disableMTM()
 
     def is_mtm_enabled(self) -> str:
@@ -128,5 +128,5 @@ class ConfigController(BaseContract):
         return self.contract.functions.version().call()
 
     @transaction_method
-    def set_version(self, new_version) -> ContractFunction:
+    def set_version(self, new_version) -> TxRes:
         return self.contract.functions.setVersion(new_version)
