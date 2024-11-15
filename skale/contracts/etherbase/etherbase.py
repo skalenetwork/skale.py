@@ -13,10 +13,6 @@ class Etherbase(BaseContract):
         return self.contract.functions.ETHER_MANAGER_ROLE().call()
 
     @transaction_method
-    def revoke_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
-        return self.contract.functions.revokeRole(role, address)
-
-    @transaction_method
     def retrieve(self, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.retrieve(address)
 
