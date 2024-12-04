@@ -84,8 +84,9 @@ class Paymaster(BaseContract):
         return self.contract.functions.getNodesNumber(validator_id).call()
 
     def get_historical_active_nodes_number(self, validator_id: int, time_when: int) -> int:
-        return self.contract.functions.getHistoricalActiveNodesNumber(validator_id,
-                                                                      time_when).call()
+        return self.contract.functions.getHistoricalActiveNodesNumber(
+            validator_id, time_when
+        ).call()
 
     def get_historical_total_active_nodes_number(self, time_when: int) -> int:
         return self.contract.functions.getHistoricalTotalActiveNodesNumber(time_when).call()
@@ -140,10 +141,11 @@ class Paymaster(BaseContract):
         return self.contract.functions.effectiveTimestamp().call()
 
     def get_debts_amount(self, debt_id: int) -> int:
-        return self.contrct.functions.debts(debt_id).call()
+        return self.contract.functions.debts(debt_id).call()
 
     def get_debts_begin(self) -> int:
         return self.contract.functions.debtsBegin().call()
 
     def get_debts_end(self) -> int:
-        return self.contrsct.functions.debtsEnd().call()
+        return self.contract.functions.debtsEnd().call()
+
