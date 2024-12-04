@@ -121,3 +121,5 @@ allocator_contracts_data/
 .DS_Store
 
 .vscode/
+
+fake_multisig_data.json
