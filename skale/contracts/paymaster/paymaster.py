@@ -148,4 +148,3 @@ class Paymaster(BaseContract):
 
     def get_debts_end(self) -> int:
         return self.contract.functions.debtsEnd().call()
-
