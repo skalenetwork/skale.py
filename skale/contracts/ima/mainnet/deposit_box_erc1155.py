@@ -35,5 +35,5 @@ class DepositBoxERC1155(BaseContract):
             schain_name, address, ids, amount
         )
 
-    def get_schain_to_erc1155(self, schain_name: str, token_address: int) -> TxRes:
-        return self.contract.functions.getSchainToERC1155(schain_name, token_address)
+    def get_schain_to_erc1155(self, schain_name: str, token_address: int) -> bool:
+        return self.contract.functions.getSchainToERC1155(schain_name, token_address).call()
