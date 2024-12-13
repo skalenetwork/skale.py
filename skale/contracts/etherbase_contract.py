@@ -16,6 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
+
 from skale.contracts.base_contract import BaseContract
 from skale.skale_config_controller import SkaleEtherbase
 
