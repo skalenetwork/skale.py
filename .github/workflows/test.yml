@@ -31,7 +31,7 @@ jobs:
     - name: Launch hardhat node
       working-directory: hardhat-node
       run: |
-        docker-compose up -d && sleep 20
+        docker compose up -d && sleep 20
 
     - name: Deploy manager
       run: |
@@ -87,7 +87,7 @@ jobs:
     - name: Launch hardhat node
       working-directory: hardhat-node
       run: |
-        docker-compose up -d && sleep 20
+        docker compose up -d && sleep 20
 
     - name: Deploy manager contracts
       run: |
