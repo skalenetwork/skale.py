@@ -52,7 +52,8 @@ class SkaleBase:
             wallet: BaseWallet | None = None,
             state_path: str | None = None,
             ts_diff: int | None = None,
-            provider_timeout: int = 30):
+            provider_timeout: int = 30,
+            debug: bool = False):
         logger.info('Initializing skale.py, endpoint: %s, wallet: %s',
                     endpoint, type(wallet).__name__)
         self._endpoint = endpoint
@@ -65,6 +66,7 @@ class SkaleBase:
         self.instance = self.project.get_instance(alias_or_address)
         self.__contracts: Dict[str, BaseContract[Self]] = {}
         self.__contracts_info: Dict[str, ContractInfo[Self]] = {}
+        self.debug = debug
         self.set_contracts_info()
         if wallet:
             self.wallet = wallet
