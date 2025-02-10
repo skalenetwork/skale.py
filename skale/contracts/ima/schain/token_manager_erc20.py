@@ -41,6 +41,14 @@ class TokenManagerERC20(BaseContract):
         )
 
     @transaction_method
+    def transfer_to_schain_erc20(
+        self, schain_name: str, token_address: int, amount: int, receiver=str
+    ) -> TxRes:
+        return self.contract.functions.transferToSchainERC20Direct(
+            schain_name, token_address, amount, receiver
+        )
+
+    @transaction_method
     def transfer_to_schain_hash_erc20_direct(
         self, schain_hash: str, token_address: int, amount: int, receiver=str
     ) -> TxRes:
