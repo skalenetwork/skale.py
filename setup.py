@@ -48,7 +48,7 @@ setup(
         "skale-contracts==1.0.2a6",
         "typing-extensions==4.9.0",
         "web3==6.13.0",
-        "eth_typing==4.1.0"
+        "eth_typing==4.3.0"
     ],
 
     python_requires='>=3.7,<4',
