@@ -12,7 +12,9 @@ DEFAULT_NODE_HASH = "23bdf46c41fa300e431425baff124dc31625b34ec09b829f61aa16ab010
 DEFAULT_NODE_PORT = 3000
 
 TEST_CONTRACT_NAME = "Nodes"
-TEST_CONTRACT_NAME_HASH = "51468465ffcfb67cf19598bf6dc259b983b35a0ddf02294ef9b1ce0087c47953"
+TEST_CONTRACT_NAME_HASH = (
+    "51468465ffcfb67cf19598bf6dc259b983b35a0ddf02294ef9b1ce0087c47953"
+)
 ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 TOKEN_TRANSFER_VALUE = 100
@@ -88,22 +90,24 @@ MONTH_IN_SECONDS = 60 * 60 * 24 * 31
 
 DELEGATION_STRUCT_LEN = 8
 
-TEST_ECDSA_KEY_NAME = "NEK:36224eb0296c6c28c3c73942cf28b5ba449e4a1e6472d52d459627c4d9479b21"
+TEST_ECDSA_KEY_NAME = (
+    "NEK:36224eb0296c6c28c3c73942cf28b5ba449e4a1e6472d52d459627c4d9479b21"
+)
 
 TEST_GAS_LIMIT = 10000000
 
 SCHAIN_FIELDS = [
     "name",
-    "mainnetOwner",
-    "indexInOwnerList",
-    "partOfNode",
+    "mainnet_owner",
+    "index_in_owner_list",
+    "part_of_node",
     "lifetime",
-    "startDate",
-    "startBlock",
+    "start_date",
+    "start_block",
     "deposit",
     "index",
     "generation",
     "originator",
-    "chainId",
+    "chain_id",
     "options",
 ]

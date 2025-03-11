@@ -26,20 +26,20 @@ from web3.types import Wei
 from skale.dataclasses.schain_options import SchainOptions
 
 
-SchainName = NewType('SchainName', str)
-SchainHash = NewType('SchainHash', bytes)
+SchainName = NewType("SchainName", str)
+SchainHash = NewType("SchainHash", bytes)
 SchainOption = tuple[str, bytes]
 
 
 @dataclass
 class Schain:
     name: SchainName
-    mainnetOwner: ChecksumAddress
-    indexInOwnerList: int
-    partOfNode: int
+    mainnet_owner: ChecksumAddress
+    index_in_owner_list: int
+    part_of_node: int
     lifetime: int
-    startDate: int
-    startBlock: int
+    start_date: int
+    start_block: int
     deposit: Wei
     index: int
     generation: int
@@ -48,7 +48,7 @@ class Schain:
 
 @dataclass
 class SchainStructure(Schain):
-    chainId: SchainHash
+    chain_id: SchainHash
     options: SchainOptions
 
 
