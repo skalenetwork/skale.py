@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE web3 utilities """
+"""SKALE web3 utilities"""
 
 import logging
 import os
@@ -40,7 +40,7 @@ from web3.types import (
     RPCEndpoint,
     RPCResponse,
     Timestamp,
-    TxReceipt
+    TxReceipt,
 )
 
 import skale.config as config
@@ -61,24 +61,18 @@ DEFAULT_BLOCKS_TO_WAIT = 50
 
 
 def get_provider(
-        endpoint: str,
-        timeout: int = DEFAULT_HTTP_TIMEOUT,
-        request_kwargs: Dict[str, Any] | None = None
+    endpoint: str, timeout: int = DEFAULT_HTTP_TIMEOUT, request_kwargs: Dict[str, Any] | None = None
 ) -> JSONBaseProvider:
     scheme = urlparse(endpoint).scheme
-    if scheme == 'ws' or scheme == 'wss':
-        kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
-        return WebsocketProvider(endpoint, websocket_timeout=timeout,
-                                 websocket_kwargs=kwargs)
+    if scheme == "ws" or scheme == "wss":
+        kwargs = request_kwargs or {"max_size": WS_MAX_MESSAGE_DATA_BYTES}
+        return WebsocketProvider(endpoint, websocket_timeout=timeout, websocket_kwargs=kwargs)
 
-    if scheme == 'http' or scheme == 'https':
-        kwargs = {'timeout': timeout, **(request_kwargs or {})}
+    if scheme == "http" or scheme == "https":
+        kwargs = {"timeout": timeout, **(request_kwargs or {})}
         return HTTPProvider(endpoint, request_kwargs=kwargs)
 
-    raise Exception(
-        'Wrong endpoint option.'
-        'Supported endpoint schemes: http/https/ws/wss'
-    )
+    raise Exception("Wrong endpoint option.Supported endpoint schemes: http/https/ws/wss")
 
 
 class EthClientOutdatedError(Exception):
@@ -97,97 +91,87 @@ def get_last_known_block_number(state_path: str) -> int:
 
 
 def save_last_known_block_number(state_path: str, block_number: int) -> None:
-    with open(state_path, 'w') as last_block_file:
+    with open(state_path, "w") as last_block_file:
         last_block_file.write(str(block_number))
 
 
 def outdated_client_time_msg(
-        method: RPCEndpoint,
-        current_time: float,
-        latest_block_timestamp: Timestamp,
-        allowed_ts_diff: int
+    method: RPCEndpoint,
+    current_time: float,
+    latest_block_timestamp: Timestamp,
+    allowed_ts_diff: int,
 ) -> str:
-    return f'{method} failed; \
+    return f"{method} failed; \
 current_time: {current_time}, latest_block_timestamp: {latest_block_timestamp}, \
-allowed_ts_diff: {allowed_ts_diff}'
+allowed_ts_diff: {allowed_ts_diff}"
 
 
 def outdated_client_file_msg(
-        method: RPCEndpoint,
-        latest_block_number: BlockNumber,
-        saved_number: int,
-        state_path: str
+    method: RPCEndpoint, latest_block_number: BlockNumber, saved_number: int, state_path: str
 ) -> str:
-    return f'{method} failed: latest_block_number: {latest_block_number}, \
-        saved_number: {saved_number}, state_path: {state_path}'
+    return f"{method} failed: latest_block_number: {latest_block_number}, \
+        saved_number: {saved_number}, state_path: {state_path}"
 
 
 def make_client_checking_middleware(
-        allowed_ts_diff: int,
-        state_path: str | None = None
+    allowed_ts_diff: int, state_path: str | None = None
 ) -> Callable[
-    [Callable[[RPCEndpoint, Any], RPCResponse], Web3],
-    Callable[[RPCEndpoint, Any], RPCResponse]
+    [Callable[[RPCEndpoint, Any], RPCResponse], Web3], Callable[[RPCEndpoint, Any], RPCResponse]
 ]:
     def eth_client_checking_middleware(
-            make_request: Callable[[RPCEndpoint, Any], RPCResponse],
-            web3: Web3
+        make_request: Callable[[RPCEndpoint, Any], RPCResponse], web3: Web3
     ) -> Callable[[RPCEndpoint, Any], RPCResponse]:
         def middleware(method: RPCEndpoint, params: Any) -> RPCResponse:
-            if method in ('eth_block_number', 'eth_getBlockByNumber'):
+            if method in ("eth_block_number", "eth_getBlockByNumber"):
                 response = make_request(method, params)
             else:
-                latest_block = web3.eth.get_block('latest')
+                latest_block = web3.eth.get_block("latest")
                 current_time = time.time()
 
-                ts_diff = current_time - latest_block['timestamp']
-                if not is_test_env():
-                    ts_diff = abs(ts_diff)
+                if is_test_env():
+                    unsynced = current_time - latest_block["timestamp"] > allowed_ts_diff
+                else:
+                    unsynced = abs(current_time - latest_block["timestamp"]) > allowed_ts_diff
 
-                if ts_diff > allowed_ts_diff:
-                    raise EthClientOutdatedError(outdated_client_time_msg(
-                        method,
-                        current_time,
-                        latest_block['timestamp'],
-                        allowed_ts_diff
-                    ))
+                if unsynced:
+                    raise EthClientOutdatedError(
+                        outdated_client_time_msg(
+                            method, current_time, latest_block["timestamp"], allowed_ts_diff
+                        )
+                    )
 
                 if state_path:
                     saved_number = get_last_known_block_number(state_path)
-                    if latest_block['number'] < saved_number:
-                        raise EthClientOutdatedError(outdated_client_file_msg(
-                            method,
-                            latest_block['number'],
-                            saved_number,
-                            state_path
-                        ))
-                    save_last_known_block_number(state_path,
-                                                 latest_block['number'])
+                    if latest_block["number"] < saved_number:
+                        raise EthClientOutdatedError(
+                            outdated_client_file_msg(
+                                method, latest_block["number"], saved_number, state_path
+                            )
+                        )
+                    save_last_known_block_number(state_path, latest_block["number"])
                 response = make_request(method, params)
             return response
+
         return middleware
+
     return eth_client_checking_middleware
 
 
-def init_web3(endpoint: str,
-              provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
-              middlewares: Iterable[Middleware] | None = None,
-              state_path: str | None = None, ts_diff: int | None = None) -> Web3:
+def init_web3(
+    endpoint: str,
+    provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
+    middlewares: Iterable[Middleware] | None = None,
+    state_path: str | None = None,
+    ts_diff: int | None = None,
+) -> Web3:
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
         if not ts_diff == config.NO_SYNC_TS_DIFF:
             sync_middleware = make_client_checking_middleware(ts_diff, state_path)
-            middewares = [
-                http_retry_request_middleware,
-                sync_middleware,
-                attrdict_middleware
-            ]
+            middewares = [http_retry_request_middleware, sync_middleware, attrdict_middleware]
         else:
-            middewares = [
-                http_retry_request_middleware,
-                attrdict_middleware
-            ]
+            middewares = [http_retry_request_middleware, attrdict_middleware]
 
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
@@ -210,15 +194,16 @@ def wait_for_receipt_by_blocks(
     web3: Web3,
     tx: _Hash32,
     blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-    timeout: int = MAX_WAITING_TIME
+    timeout: int = MAX_WAITING_TIME,
 ) -> TxReceipt:
     blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
     timeout = timeout or MAX_WAITING_TIME
     previous_block = web3.eth.block_number
     current_block = previous_block
     wait_start_time = time.time()
-    while time.time() - wait_start_time < timeout and \
-            current_block <= previous_block + blocks_to_wait:
+    while (
+        time.time() - wait_start_time < timeout and current_block <= previous_block + blocks_to_wait
+    ):
         try:
             receipt = get_receipt(web3, tx)
         except TransactionNotFound:
@@ -228,7 +213,7 @@ def wait_for_receipt_by_blocks(
         current_block = web3.eth.block_number
         time.sleep(3)
     raise TransactionNotMinedError(
-        f'Transaction with hash: {str(tx)} not found in {blocks_to_wait} blocks.'
+        f"Transaction with hash: {str(tx)} not found in {blocks_to_wait} blocks."
     )
 
 
@@ -242,35 +227,29 @@ def wait_receipt(web3: Web3, tx: _Hash32, retries: int = 30, timeout: int = 5) -
             return receipt
         time.sleep(timeout)  # pragma: no cover
     raise TransactionNotMinedError(
-        f'Transaction with hash: {str(tx)} not mined after {retries} retries.'
+        f"Transaction with hash: {str(tx)} not mined after {retries} retries."
     )
 
 
 def check_receipt(receipt: TxReceipt, raise_error: bool = True) -> bool:
-    if receipt['status'] != 1:  # pragma: no cover
+    if receipt["status"] != 1:  # pragma: no cover
         if raise_error:
-            raise TransactionFailedError(
-                f'Transaction failed, see receipt {receipt}'
-            )
+            raise TransactionFailedError(f"Transaction failed, see receipt {receipt}")
         else:
             return False
     return True
 
 
 def wait_for_confirmation_blocks(
-    web3: Web3,
-    blocks_to_wait: int,
-    timeout: int = MAX_WAITING_TIME,
-    request_timeout: int = 5
+    web3: Web3, blocks_to_wait: int, timeout: int = MAX_WAITING_TIME, request_timeout: int = 5
 ) -> None:
     current_block = start_block = web3.eth.block_number
     logger.info(
-        f'Current block number is {current_block}, '
-        f'waiting for {blocks_to_wait} confimration blocks to be mined'
+        f"Current block number is {current_block}, "
+        f"waiting for {blocks_to_wait} confimration blocks to be mined"
     )
     wait_start_time = time.time()
-    while time.time() - wait_start_time < timeout and \
-            current_block <= start_block + blocks_to_wait:
+    while time.time() - wait_start_time < timeout and current_block <= start_block + blocks_to_wait:
         current_block = web3.eth.block_number
         time.sleep(request_timeout)
 
