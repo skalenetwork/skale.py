@@ -69,6 +69,16 @@ You can find usage examples [here](https://github.com/skalenetwork/skale.py-exam
 
 ### Development
 
+##### Add pre-commit hook:
+
+```bash
+nano .git/hooks/pre-commit
+```
+
+```
+ruff check .
+```
+
 ##### Install local version (with hot reload)
 
 ```bash
