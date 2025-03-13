@@ -33,7 +33,7 @@ from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     MAX_WAITING_TIME,
     get_eth_nonce,
-    wait_for_receipt_by_blocks
+    wait_for_receipt_by_blocks,
 )
 from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
@@ -43,11 +43,11 @@ logger = logging.getLogger(__name__)
 
 class SgxWallet(BaseWallet):
     def __init__(
-            self,
-            sgx_endpoint: str,
-            web3: Web3,
-            key_name: str | None = None,
-            path_to_cert: str | None = None
+        self,
+        sgx_endpoint: str,
+        web3: Web3,
+        key_name: str | None = None,
+        path_to_cert: str | None = None,
     ):
         self.sgx_client = SgxClient(sgx_endpoint, path_to_cert=path_to_cert)
         self._web3 = web3
@@ -71,13 +71,11 @@ class SgxWallet(BaseWallet):
         tx_dict: TxParams,
         multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
         priority: int | None = config.DEFAULT_PRIORITY,
-        method: str | None = None
+        method: str | None = None,
     ) -> HexStr:
         signed_tx = self.sign(tx_dict)
         try:
-            return Web3.to_hex(self._web3.eth.send_raw_transaction(
-                signed_tx.rawTransaction
-            ))
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(signed_tx.rawTransaction))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
@@ -92,12 +90,7 @@ class SgxWallet(BaseWallet):
         chain_id = None
         try:
             return cast(
-                SignedMessage,
-                self.sgx_client.sign_hash(
-                    hash_to_sign,
-                    self._key_name,
-                    chain_id
-                )
+                SignedMessage, self.sgx_client.sign_hash(hash_to_sign, self._key_name, chain_id)
             )
         except Exception as e:
             raise MessageNotSignedError(e)
@@ -123,14 +116,11 @@ class SgxWallet(BaseWallet):
         return Web3.to_checksum_address(account.address), account.public_key
 
     def wait(
-            self,
-            tx_hash: _Hash32,
-            blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-            timeout: int = MAX_WAITING_TIME
+        self,
+        tx_hash: _Hash32,
+        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+        timeout: int = MAX_WAITING_TIME,
     ) -> TxReceipt:
         return wait_for_receipt_by_blocks(
-            self._web3,
-            tx_hash,
-            blocks_to_wait=blocks_to_wait,
-            timeout=timeout
+            self._web3, tx_hash, blocks_to_wait=blocks_to_wait, timeout=timeout
         )

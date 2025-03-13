@@ -30,10 +30,10 @@ class TokenState(SkaleManagerContract):
 
     def get_and_update_locked_amount(self, holder_address: ChecksumAddress) -> Wei:
         """This method is for check quantity of `freezed` tokens
-           :param holder_address: Address of the holder
-           :type holder_address: str
-           :returns:
-           :rtype: int
+        :param holder_address: Address of the holder
+        :type holder_address: str
+        :returns:
+        :rtype: int
         """
         return Wei(self.contract.functions.getAndUpdateLockedAmount(holder_address).call())
 

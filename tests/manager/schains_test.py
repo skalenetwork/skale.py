@@ -51,7 +51,7 @@ def test_get_by_name(skale, schain):
 def test_schain_get_plain(skale):
     schain = skale.schains.get(DEFAULT_SCHAIN_ID)
     for field in SCHAIN_FIELDS:
-        assert hasattr(schain, field), f"Missing field: {field}"
+        assert hasattr(schain, field), f'Missing field: {field}'
 
 
 def test_schain_get_object(skale, schain):
@@ -149,7 +149,7 @@ def test_add_schain_by_foundation(skale, nodes):
 
 
 @pytest.mark.parametrize(
-    "mts,threshold,alloc",
+    'mts,threshold,alloc',
     [
         (True, False, AllocationType.MAX_CONSENSUS_DB),
         (False, True, AllocationType.MAX_FILESTORAGE),
@@ -219,7 +219,7 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
     custom_originator = generate_wallet(skale.web3)
 
     fake_multisig_data = get_abi(FAKE_MULTISIG_DATA_PATH)
-    payable_contract_address = fake_multisig_data["address"]
+    payable_contract_address = fake_multisig_data['address']
 
     try:
         skale.schains.add_schain_by_foundation(
@@ -241,7 +241,7 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
 
         schains_ids_after = skale.schains_internal.get_all_schains_ids()
 
-    schains_names = [skale.schains.get(sid)["name"] for sid in schains_ids_after]
+    schains_names = [skale.schains.get(sid)['name'] for sid in schains_ids_after]
     assert name not in schains_names
 
 
@@ -261,11 +261,9 @@ def test_get_active_schains_for_node(skale, nodes, schain):
 
 
 def test_name_to_group_id(skale):
-    name = "TEST"
+    name = 'TEST'
     gid = skale.schains.name_to_group_id(name)
-    assert gid == HexBytes(
-        "0x852daa74cc3c31fe64542bb9b8764cfb91cc30f9acf9389071ffb44a9eefde46"
-    )  # noqa
+    assert gid == HexBytes('0x852daa74cc3c31fe64542bb9b8764cfb91cc30f9acf9389071ffb44a9eefde46')  # noqa
 
 
 def test_get_options(skale, nodes):
@@ -284,9 +282,9 @@ def test_get_options(skale, nodes):
         assert options == schain_options
         raw_options = skale.schains._SChains__raw_get_options(id_)
         assert raw_options == [
-            ("multitr", b"\x01"),
-            ("encrypt", b"\x00"),
-            ("alloc", b"\x00"),
+            ('multitr', b'\x01'),
+            ('encrypt', b'\x00'),
+            ('alloc', b'\x00'),
         ]
 
     finally:

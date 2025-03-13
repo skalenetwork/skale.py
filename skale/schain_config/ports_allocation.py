@@ -35,9 +35,7 @@ def get_schain_index_in_node(schain_name: SchainName, node_schains: list[SchainS
 
 
 def get_schain_base_port_on_node(
-        schains_on_node: list[SchainStructure],
-        schain_name: SchainName,
-        node_base_port: Port
+    schains_on_node: list[SchainStructure], schain_name: SchainName, node_base_port: Port
 ) -> Port:
     schain_index = get_schain_index_in_node(schain_name, schains_on_node)
     return calc_schain_base_port(node_base_port, schain_index)

@@ -55,20 +55,20 @@ TEST_SRW_FUND_VALUE = 3000000000000000000
 
 def _skip_evm_time(web3: Web3, seconds: int, mine: bool = True) -> int:
     """For test purposes only, works only with hardhat node"""
-    res = web3.provider.make_request(RPCEndpoint("evm_increaseTime"), [seconds])
+    res = web3.provider.make_request(RPCEndpoint('evm_increaseTime'), [seconds])
     if mine:
-        web3.provider.make_request(RPCEndpoint("evm_mine"), [])
-    return int(res["result"])
+        web3.provider.make_request(RPCEndpoint('evm_mine'), [])
+    return int(res['result'])
 
 
 def set_automining(web3: Web3, value: bool) -> int:
-    res = web3.provider.make_request(RPCEndpoint("evm_setAutomine"), [value])
-    return int(res["result"])
+    res = web3.provider.make_request(RPCEndpoint('evm_setAutomine'), [value])
+    return int(res['result'])
 
 
 def set_mining_interval(web3: Web3, ms: int) -> int:
-    res = web3.provider.make_request(RPCEndpoint("evm_setIntervalMining"), [ms])
-    return int(res["result"])
+    res = web3.provider.make_request(RPCEndpoint('evm_setIntervalMining'), [ms])
+    return int(res['result'])
 
 
 def set_default_mining_interval(web3: Web3) -> int:
@@ -177,7 +177,7 @@ def cleanup_schains(skale: SkaleManager) -> None:
 
 
 def cleanup_nodes_schains(skale: SkaleManager) -> None:
-    print("Cleanup nodes and schains")
+    print('Cleanup nodes and schains')
     cleanup_schains(skale)
     cleanup_nodes(skale)
 
@@ -217,23 +217,23 @@ def add_delegation_period(skale: SkaleManager) -> None:
 def setup_validator(skale: SkaleManager) -> int:
     """Create and activate a validator"""
     set_test_msr(skale)
-    print("Address", skale.wallet.address)
+    print('Address', skale.wallet.address)
     if not validator_exist(skale):
         create_validator(skale)
     else:
-        print("Skipping default validator creation")
+        print('Skipping default validator creation')
     validator_id = skale.validator_service.validator_id_by_address(skale.wallet.address)
-    if not skale.validator_service.get(validator_id)["trusted"]:
+    if not skale.validator_service.get(validator_id)['trusted']:
         enable_validator(skale, validator_id)
     delegate_to_validator(skale, validator_id)
     delegations = skale.delegation_controller.get_all_delegations_by_validator(validator_id)
-    accept_pending_delegation(skale, delegations[-1]["id"])
+    accept_pending_delegation(skale, delegations[-1]['id'])
     _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
     return validator_id
 
 
 def link_address_to_validator(skale: SkaleManager) -> None:
-    print("Linking address to validator")
+    print('Linking address to validator')
     signature = skale.validator_service.get_link_node_signature(D_VALIDATOR_ID)
     tx_res = skale.validator_service.link_node_address(
         node_address=skale.wallet.address, signature=signature, wait_for=True
@@ -246,7 +246,7 @@ def link_nodes_to_validator(
     validator_id: ValidatorId,
     node_skale_objs: Tuple[SkaleManager] | None = None,
 ) -> None:
-    print("Linking address to validator")
+    print('Linking address to validator')
     node_skale_objs = node_skale_objs or (skale,)
     validator_id = validator_id or D_VALIDATOR_ID
     for node_skale in node_skale_objs:
@@ -257,12 +257,12 @@ def link_nodes_to_validator(
 
 
 def skip_delegation_delay(skale: SkaleManager, delegation_id: int) -> None:
-    print(f"Activating delegation with ID {delegation_id}")
+    print(f'Activating delegation with ID {delegation_id}')
     skale.token_state._skip_transition_delay(delegation_id, wait_for=True)
 
 
 def accept_pending_delegation(skale: SkaleManager, delegation_id: int) -> None:
-    print(f"Accepting delegation with ID: {delegation_id}")
+    print(f'Accepting delegation with ID: {delegation_id}')
     skale.delegation_controller.accept_pending_delegation(
         delegation_id=delegation_id, wait_for=True
     )
@@ -282,7 +282,7 @@ def set_test_mda(skale: SkaleManager) -> None:
 
 
 def delegate_to_validator(skale: SkaleManager, validator_id: int = D_VALIDATOR_ID) -> None:
-    print(f"Delegating tokens to validator ID: {validator_id}")
+    print(f'Delegating tokens to validator ID: {validator_id}')
     skale.delegation_controller.delegate(
         validator_id=validator_id,
         amount=get_test_delegation_amount(skale),
@@ -293,12 +293,12 @@ def delegate_to_validator(skale: SkaleManager, validator_id: int = D_VALIDATOR_I
 
 
 def enable_validator(skale: SkaleManager, validator_id: int = D_VALIDATOR_ID) -> None:
-    print(f"Enabling validator ID: {D_VALIDATOR_ID}")
+    print(f'Enabling validator ID: {D_VALIDATOR_ID}')
     skale.validator_service._enable_validator(validator_id, wait_for=True)
 
 
 def create_validator(skale: SkaleManager) -> None:
-    print("Creating default validator")
+    print('Creating default validator')
     skale.validator_service.register_validator(
         name=D_VALIDATOR_NAME,
         description=D_VALIDATOR_DESC,
@@ -310,7 +310,7 @@ def create_validator(skale: SkaleManager) -> None:
 
 def create_nodes(skales: List[SkaleManager], names: List[str] | None = None) -> list[int]:
     # create couple of nodes
-    print("Creating two nodes")
+    print('Creating two nodes')
     node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)
     for skale, name in zip(skales, node_names):
         ip, public_ip, port, _ = generate_random_node_data()
@@ -333,7 +333,7 @@ def create_schain(
     random_name: bool = False,
     schain_options: SchainOptions | None = None,
 ) -> str:
-    print("Creating schain")
+    print('Creating schain')
     # create 1 s-chain
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
 

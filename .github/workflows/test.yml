@@ -25,8 +25,8 @@ jobs:
       - name: Install python dependencies
         run: bash ./scripts/install_python_dependencies.sh
 
-      - name: Lint with flake8
-        run: flake8 .
+      - name: Lint with ruff
+        run: ruff check skale/
 
       - name: Launch hardhat node
         working-directory: hardhat-node

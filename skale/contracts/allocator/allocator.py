@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE Allocator Core Escrow methods """
+"""SKALE Allocator Core Escrow methods"""
 
 from typing import Any, Dict, List
 
@@ -34,7 +34,7 @@ from skale.types.allocation import (
     Plan,
     PlanId,
     PlanWithId,
-    TimeUnit
+    TimeUnit,
 )
 from skale.utils.helper import format_fields
 
@@ -45,16 +45,10 @@ PLAN_FIELDS = [
     'vestingIntervalTimeUnit',
     'vestingInterval',
     'isDelegationAllowed',
-    'isTerminatable'
+    'isTerminatable',
 ]
 
-BENEFICIARY_FIELDS = [
-    'status',
-    'planId',
-    'startMonth',
-    'fullAmount',
-    'amountAfterLockup'
-]
+BENEFICIARY_FIELDS = ['status', 'planId', 'startMonth', 'fullAmount', 'amountAfterLockup']
 
 MAX_NUM_OF_PLANS = 9999
 MAX_NUM_OF_BENEFICIARIES = 9999
@@ -82,13 +76,13 @@ class Allocator(AllocatorContract):
 
     @transaction_method
     def add_plan(
-            self,
-            vesting_cliff: int,
-            total_vesting_duration: int,
-            vesting_interval_time_unit: TimeUnit,
-            vesting_interval: int,
-            can_delegate: bool,
-            is_terminatable: bool
+        self,
+        vesting_cliff: int,
+        total_vesting_duration: int,
+        vesting_interval_time_unit: TimeUnit,
+        vesting_interval: int,
+        can_delegate: bool,
+        is_terminatable: bool,
     ) -> ContractFunction:
         return self.contract.functions.addPlan(
             vestingCliff=vesting_cliff,
@@ -96,24 +90,24 @@ class Allocator(AllocatorContract):
             vestingIntervalTimeUnit=vesting_interval_time_unit.value,
             vestingInterval=vesting_interval,
             canDelegate=can_delegate,
-            isTerminatable=is_terminatable
+            isTerminatable=is_terminatable,
         )
 
     @transaction_method
     def connect_beneficiary_to_plan(
-            self,
-            beneficiary_address: ChecksumAddress,
-            plan_id: int,
-            start_month: int,
-            full_amount: int,
-            lockup_amount: int,
+        self,
+        beneficiary_address: ChecksumAddress,
+        plan_id: int,
+        start_month: int,
+        full_amount: int,
+        lockup_amount: int,
     ) -> ContractFunction:
         return self.contract.functions.connectBeneficiaryToPlan(
             beneficiary=beneficiary_address,
             planId=plan_id,
             startMonth=start_month,
             fullAmount=full_amount,
-            lockupAmount=lockup_amount
+            lockupAmount=lockup_amount,
         )
 
     @transaction_method
@@ -146,15 +140,13 @@ class Allocator(AllocatorContract):
         if plan_params is None:
             raise ValueError('Plan for ', beneficiary_address, ' is missing')
         if isinstance(plan_params, list):
-            return self._to_beneficiary_plan({
-                **plan_params[0],
-                'statusName': BeneficiaryStatus(plan_params[0]['status']).name
-            })
+            return self._to_beneficiary_plan(
+                {**plan_params[0], 'statusName': BeneficiaryStatus(plan_params[0]['status']).name}
+            )
         if isinstance(plan_params, dict):
-            return self._to_beneficiary_plan({
-                **plan_params,
-                'statusName': BeneficiaryStatus(plan_params.get('status', 0)).name
-            })
+            return self._to_beneficiary_plan(
+                {**plan_params, 'statusName': BeneficiaryStatus(plan_params.get('status', 0)).name}
+            )
         raise TypeError(f'Internal error on getting plan params for ${beneficiary_address}')
 
     def __get_plan_raw(self, plan_id: PlanId) -> List[Any]:
@@ -198,21 +190,25 @@ class Allocator(AllocatorContract):
         return int(self.contract.functions.getTimeOfNextVest(address).call())
 
     def _to_plan(self, untyped_plan: Dict[str, Any]) -> Plan:
-        return Plan({
-            'totalVestingDuration': int(untyped_plan['totalVestingDuration']),
-            'vestingCliff': int(untyped_plan['vestingCliff']),
-            'vestingIntervalTimeUnit': TimeUnit(untyped_plan['vestingIntervalTimeUnit']),
-            'vestingInterval': int(untyped_plan['vestingInterval']),
-            'isDelegationAllowed': bool(untyped_plan['isDelegationAllowed']),
-            'isTerminatable': bool(untyped_plan['isTerminatable'])
-        })
+        return Plan(
+            {
+                'totalVestingDuration': int(untyped_plan['totalVestingDuration']),
+                'vestingCliff': int(untyped_plan['vestingCliff']),
+                'vestingIntervalTimeUnit': TimeUnit(untyped_plan['vestingIntervalTimeUnit']),
+                'vestingInterval': int(untyped_plan['vestingInterval']),
+                'isDelegationAllowed': bool(untyped_plan['isDelegationAllowed']),
+                'isTerminatable': bool(untyped_plan['isTerminatable']),
+            }
+        )
 
     def _to_beneficiary_plan(self, untyped_beneficiary_plan: Dict[str, Any]) -> BeneficiaryPlan:
-        return BeneficiaryPlan({
-            'status': BeneficiaryStatus(untyped_beneficiary_plan['status']),
-            'statusName': str(untyped_beneficiary_plan['statusName']),
-            'planId': PlanId(untyped_beneficiary_plan['planId']),
-            'startMonth': int(untyped_beneficiary_plan['startMonth']),
-            'fullAmount': Wei(untyped_beneficiary_plan['fullAmount']),
-            'amountAfterLockup': Wei(untyped_beneficiary_plan['amountAfterLockup'])
-        })
+        return BeneficiaryPlan(
+            {
+                'status': BeneficiaryStatus(untyped_beneficiary_plan['status']),
+                'statusName': str(untyped_beneficiary_plan['statusName']),
+                'planId': PlanId(untyped_beneficiary_plan['planId']),
+                'startMonth': int(untyped_beneficiary_plan['startMonth']),
+                'fullAmount': Wei(untyped_beneficiary_plan['fullAmount']),
+                'amountAfterLockup': Wei(untyped_beneficiary_plan['amountAfterLockup']),
+            }
+        )

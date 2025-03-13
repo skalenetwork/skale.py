@@ -40,6 +40,7 @@ class MessageNotSignedError(Exception):
     """
     Raised when signing message failed
     """
+
     pass
 
 
@@ -54,7 +55,7 @@ class BaseWallet(ABC):
         tx_dict: TxParams,
         multiplier: Optional[float] = None,
         priority: Optional[int] = None,
-        method: Optional[str] = None
+        method: Optional[str] = None,
     ) -> HexStr:
         pass
 

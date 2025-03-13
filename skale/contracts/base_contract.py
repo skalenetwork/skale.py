@@ -16,7 +16,8 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE base contract class """
+"""SKALE base contract class"""
+
 from __future__ import annotations
 import logging
 from functools import wraps
@@ -34,7 +35,7 @@ from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     get_eth_nonce,
     MAX_WAITING_TIME,
-    wait_for_confirmation_blocks
+    wait_for_confirmation_blocks,
 )
 
 from skale.skale_base import SkaleBase
@@ -52,11 +53,7 @@ SkaleType = TypeVar('SkaleType', bound=SkaleBase)
 
 class BaseContract(Generic[SkaleType]):
     def __init__(
-            self,
-            skale: SkaleType,
-            name: str,
-            address: ChecksumAddress | str | bytes,
-            abi: ABI
+        self, skale: SkaleType, name: str, address: ChecksumAddress | str | bytes, abi: ABI
     ):
         self.skale = skale
         self.name = name
@@ -68,18 +65,17 @@ class BaseContract(Generic[SkaleType]):
 
     def __getattr__(self, attr: str) -> Callable[..., Any]:
         """Fallback for contract calls"""
-        logger.debug("Calling contract function: %s", attr)
+        logger.debug('Calling contract function: %s', attr)
 
         def wrapper(*args: Any, **kw: Any) -> Any:
             logger.debug('called with %r and %r' % (args, kw))
             camel_case_fn_name = to_camel_case(attr)
             if hasattr(self.contract.functions, camel_case_fn_name):
-                return getattr(self.contract.functions,
-                               camel_case_fn_name)(*args, **kw).call()
+                return getattr(self.contract.functions, camel_case_fn_name)(*args, **kw).call()
             if hasattr(self.contract.functions, attr):
-                return getattr(self.contract.functions,
-                               attr)(*args, **kw).call()
+                return getattr(self.contract.functions, attr)(*args, **kw).call()
             raise AttributeError(attr)
+
         return wrapper
 
 
@@ -103,7 +99,7 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
         multiplier: float | None = None,
         priority: int | None = None,
         confirmation_blocks: int = 0,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> TxRes:
         method = transaction(self, *args, **kwargs)
 
@@ -119,8 +115,7 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
                 gas_limit = gas_limit or int(call_result.data['gas'])
                 dry_run_success = True
 
-        should_send = not dry_run_only and \
-            (not should_dry_run or dry_run_success)
+        should_send = not dry_run_only and (not should_dry_run or dry_run_success)
 
         if should_send:
             gas_limit = gas_limit or config.DEFAULT_GAS_LIMIT
@@ -132,14 +127,11 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
                 max_fee_per_gas=max_fee_per_gas,
                 max_priority_fee_per_gas=max_priority_fee_per_gas,
                 nonce=nonce,
-                value=value
+                value=value,
             )
             method_name = f'{self.name}.{method.abi.get("name")}'
             tx_hash = self.skale.wallet.sign_and_send(
-                tx,
-                multiplier=multiplier,
-                priority=priority,
-                method=method_name
+                tx, multiplier=multiplier, priority=priority, method=method_name
             )
 
         if tx_hash is not None and wait_for:

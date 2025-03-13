@@ -29,11 +29,6 @@ from skale.types.schain import SchainName
 class Linker(ImaContract):
     @transaction_method
     def connect_schain(
-            self,
-            schain_name: SchainName,
-            mainnet_contracts: List[ChecksumAddress]
+        self, schain_name: SchainName, mainnet_contracts: List[ChecksumAddress]
     ) -> ContractFunction:
-        return self.contract.functions.connectSchain(
-            schain_name,
-            mainnet_contracts
-        )
+        return self.contract.functions.connectSchain(schain_name, mainnet_contracts)

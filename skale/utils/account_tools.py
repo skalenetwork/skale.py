@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Account utilities """
+"""Account utilities"""
 
 from __future__ import annotations
 from decimal import Decimal
@@ -31,11 +31,7 @@ from skale.transactions.result import TxRes
 from skale.transactions.tools import compose_eth_transfer_tx
 from skale.utils.constants import LONG_LINE
 from skale.wallets import LedgerWallet, Web3Wallet
-from skale.utils.web3_utils import (
-    check_receipt,
-    default_gas_price,
-    wait_for_confirmation_blocks
-)
+from skale.utils.web3_utils import check_receipt, default_gas_price, wait_for_confirmation_blocks
 
 if TYPE_CHECKING:
     from skale.skale_manager import SkaleManager
@@ -52,37 +48,23 @@ class AccountData(TypedDict):
 
 WALLET_TYPE_TO_CLASS: Dict[str, Type[LedgerWallet] | Type[Web3Wallet]] = {
     'ledger': LedgerWallet,
-    'web3': Web3Wallet
+    'web3': Web3Wallet,
 }
 
 
 def create_wallet(
-        wallet_type: Literal['web3'] | Literal['ledger'] = 'web3',
-        *args: Any,
-        **kwargs: Any
+    wallet_type: Literal['web3'] | Literal['ledger'] = 'web3', *args: Any, **kwargs: Any
 ) -> LedgerWallet | Web3Wallet:
     return WALLET_TYPE_TO_CLASS[wallet_type](*args, **kwargs)
 
 
 def send_tokens(
-    skale: SkaleManager,
-    receiver_address: ChecksumAddress,
-    amount: Wei,
-    *args: Any,
-    **kwargs: Any
+    skale: SkaleManager, receiver_address: ChecksumAddress, amount: Wei, *args: Any, **kwargs: Any
 ) -> TxRes:
-    logger.info(
-        f'Sending {amount} SKALE tokens from {skale.wallet.address} => '
-        f'{receiver_address}'
-    )
+    logger.info(f'Sending {amount} SKALE tokens from {skale.wallet.address} => {receiver_address}')
 
     wei_amount = skale.web3.to_wei(amount, 'ether')
-    return skale.token.transfer(
-        receiver_address,
-        wei_amount,
-        *args,
-        **kwargs
-    )
+    return skale.token.transfer(receiver_address, wei_amount, *args, **kwargs)
 
 
 def send_eth(
@@ -96,35 +78,19 @@ def send_eth(
     confirmation_blocks: int = 0,
     multiplier: Optional[int] = None,
     priority: Optional[int] = None,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> TxReceipt:
-    logger.info(
-        f'Sending {amount} ETH from {wallet.address} => '
-        f'{receiver_address}'
-    )
+    logger.info(f'Sending {amount} ETH from {wallet.address} => {receiver_address}')
     wei_amount = web3.to_wei(amount, 'ether')
     gas_price = gas_price or default_gas_price(web3)
     tx = compose_eth_transfer_tx(
-        web3,
-        wallet.address,
-        receiver_address,
-        wei_amount,
-        gas_price=gas_price,
-        *args,
-        **kwargs
+        web3, wallet.address, receiver_address, wei_amount, gas_price=gas_price, *args, **kwargs
     )
-    tx_hash = wallet.sign_and_send(
-        tx,
-        multiplier=multiplier,
-        priority=priority
-    )
+    tx_hash = wallet.sign_and_send(tx, multiplier=multiplier, priority=priority)
     if wait_for:
         receipt = wallet.wait(tx_hash)
     if confirmation_blocks:
-        wait_for_confirmation_blocks(
-            web3,
-            confirmation_blocks
-        )
+        wait_for_confirmation_blocks(web3, confirmation_blocks)
     check_receipt(receipt)
     return receipt
 
@@ -156,12 +122,12 @@ def generate_account(web3: Web3) -> AccountData:
 
 
 def generate_accounts(
-        skale: SkaleManager,
-        base_wallet: BaseWallet,
-        n_wallets: int,
-        skale_amount: Wei,
-        eth_amount: Wei,
-        debug: bool = False
+    skale: SkaleManager,
+    base_wallet: BaseWallet,
+    n_wallets: int,
+    skale_amount: Wei,
+    eth_amount: Wei,
+    debug: bool = False,
 ) -> List[AccountData]:
     n_wallets = int(n_wallets)
     results = []

@@ -1,4 +1,4 @@
-""" SKALE data prep for testing """
+"""SKALE data prep for testing"""
 
 import click
 
@@ -8,8 +8,13 @@ from skale.utils.web3_utils import init_web3
 from skale.utils.helper import get_skale_manager_address, init_default_logger
 from skale.utils.contracts_provision import MONTH_IN_SECONDS
 from skale.utils.contracts_provision.main import (
-    add_test2_schain_type, cleanup_nodes_schains, setup_validator,
-    create_nodes, create_schain, _skip_evm_time, add_test_permissions
+    add_test2_schain_type,
+    cleanup_nodes_schains,
+    setup_validator,
+    create_nodes,
+    create_schain,
+    _skip_evm_time,
+    add_test_permissions,
 )
 from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
@@ -65,5 +70,5 @@ def prepare_data(cleanup_only):
             raise err
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     prepare_data()

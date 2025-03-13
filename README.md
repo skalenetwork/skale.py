@@ -89,21 +89,6 @@ bash build_and_publish.sh major/minor/patch
  export $(cat .env | xargs) && bash build_and_publish.sh major/minor/patch
 ```
 
-##### Format your code before commit
-
-Show flake8 errors on file change:
-
-```bash
-# Test flake8
-WHEN_CHANGED_EVENT=file_modified when-changed -v -s -r -1 skale/ tests/ examples/ -c "clear; flake8 web3 tests ens && echo 'flake8 success' || echo 'error'"
-```
-
-Install `when-changed`:
-
-```bash
- pip install https://github.com/joh/when-changed/archive/master.zip
-```
-
 #### Versioning
 
 The version scheme for this repo is `{major}.{minor}.{patch}`

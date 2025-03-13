@@ -1,4 +1,4 @@
-""" SKALE node rotation test """
+"""SKALE node rotation test"""
 
 import os
 import json
@@ -15,7 +15,7 @@ from skale.utils.account_tools import send_eth
 from skale.utils.helper import get_skale_manager_address
 from skale.wallets.web3_wallet import generate_wallet
 
-from tests.constants import (ENDPOINT, TEST_ABI_FILEPATH)
+from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 
 logger = logging.getLogger(__name__)
 
@@ -31,16 +31,11 @@ with open(DKG_DATA_PATH) as data_file:
 
 def generate_web3_wallets(web3, n_of_keys):
     logger.info(f'Generating {n_of_keys} test wallets')
-    return [
-        generate_wallet(web3)
-        for _ in range(n_of_keys)
-    ]
+    return [generate_wallet(web3) for _ in range(n_of_keys)]
 
 
 def transfer_eth_to_wallets(skale, wallets):
-    logger.info(
-        f'Transfering {TEST_ETH_AMOUNT} ETH to {len(wallets)} test wallets'
-    )
+    logger.info(f'Transfering {TEST_ETH_AMOUNT} ETH to {len(wallets)} test wallets')
     for wallet in wallets:
         send_eth(skale.web3, skale.wallet, wallet.address, TEST_ETH_AMOUNT)
 
@@ -52,18 +47,13 @@ def link_addresses_to_validator(skale, wallets):
 
 
 def link_node_address(skale, wallet):
-    validator_id = skale.validator_service.validator_id_by_address(
-        skale.wallet.address)
+    validator_id = skale.validator_service.validator_id_by_address(skale.wallet.address)
     main_wallet = skale.wallet
     skale.wallet = wallet
-    signature = skale.validator_service.get_link_node_signature(
-        validator_id=validator_id
-    )
+    signature = skale.validator_service.get_link_node_signature(validator_id=validator_id)
     skale.wallet = main_wallet
     skale.validator_service.link_node_address(
-        node_address=wallet.address,
-        signature=signature,
-        wait_for=True
+        node_address=wallet.address, signature=signature, wait_for=True
     )
 
 
@@ -85,22 +75,15 @@ def register_node(skale):
         name=name,
         public_ip=public_ip,
         domain_name=DEFAULT_DOMAIN_NAME,
-        wait_for=True
+        wait_for=True,
     )
     node_id = skale.nodes.node_name_to_index(name)
     logger.info(f'Registered node {name}, ID: {node_id}')
-    return {
-        'node': skale.nodes.get_by_name(name),
-        'node_id': node_id,
-        'wallet': skale.wallet
-    }
+    return {'node': skale.nodes.get_by_name(name), 'node_id': node_id, 'wallet': skale.wallet}
 
 
 def register_nodes(skale_instances):
-    nodes = [
-        register_node(sk)
-        for sk in skale_instances
-    ]
+    nodes = [register_node(sk) for sk in skale_instances]
     return nodes
 
 
@@ -112,9 +95,7 @@ def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None, r
     for i, node in enumerate(nodes):
         if i != skip_node_index:
             verification_vector = [
-                G2Point(*[
-                    Fp2Point(*fp2_point) for fp2_point in g2_point
-                ])
+                G2Point(*[Fp2Point(*fp2_point) for fp2_point in g2_point])
                 for g2_point in TEST_DKG_DATA['test_verification_vectors'][i]
             ]
             secret_key_contribution = [
@@ -126,7 +107,7 @@ def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None, r
                 node['node_id'],
                 verification_vector,
                 secret_key_contribution,
-                rotation_id
+                rotation_id,
             )
         else:
             print(f'Skipping broadcast from node {node["node_id"]}')
@@ -134,10 +115,7 @@ def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None, r
 
 def send_alrights(nodes, skale_instances, group_index):
     for i, node in enumerate(nodes):
-        skale_instances[i].dkg.alright(
-            group_index,
-            node['node_id']
-        )
+        skale_instances[i].dkg.alright(group_index, node['node_id'])
 
 
 def send_complaint(nodes, skale_instances, group_index, failed_node_index):
@@ -147,8 +125,9 @@ def send_complaint(nodes, skale_instances, group_index, failed_node_index):
             skale_instance.dkg.complaint(group_index, nodes[i]['node_id'], failed_node_id)
 
 
-def rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=True,
-                rotation_id=0):
+def rotate_node(
+    skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=True, rotation_id=0
+):
     new_nodes, new_skale_instances = set_up_nodes(skale, 1)
     skale.nodes.init_exit(nodes[exiting_node_index]['node_id'])
     skale_instances[exiting_node_index].manager.node_exit(nodes[exiting_node_index]['node_id'])
@@ -166,7 +145,7 @@ def fail_dkg(
     group_index,
     failed_node_index,
     second_failed_node_index=None,
-    rotation_id=0
+    rotation_id=0,
 ) -> list:
     logger.info('Failing first DKG...')
     new_node_ids = []
@@ -185,16 +164,25 @@ def fail_dkg(
         new_nodes, new_skale_instances = set_up_nodes(skale, 1)
         new_node_ids.append(new_nodes[0]['node_id'])
 
-        send_broadcasts(nodes, skale_instances, group_index, second_failed_node_index,
-                        rotation_id=rotation_id + 1)
+        send_broadcasts(
+            nodes,
+            skale_instances,
+            group_index,
+            second_failed_node_index,
+            rotation_id=rotation_id + 1,
+        )
         _skip_evm_time(skale_instances[0].web3, skale.constants_holder.get_dkg_timeout())
         send_complaint(nodes, skale_instances, group_index, second_failed_node_index)
 
         nodes[second_failed_node_index] = new_nodes[0]
         skale_instances[second_failed_node_index] = new_skale_instances[0]
 
-    run_dkg(nodes, skale_instances, group_index, rotation_id=rotation_id + 1 +
-            (0 if second_failed_node_index is None else 1))
+    run_dkg(
+        nodes,
+        skale_instances,
+        group_index,
+        rotation_id=rotation_id + 1 + (0 if second_failed_node_index is None else 1),
+    )
     return new_node_ids
 
 

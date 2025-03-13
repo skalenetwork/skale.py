@@ -41,9 +41,9 @@ class SchainOptions:
 
     def to_tuples(self) -> list[SchainOption]:
         return [
-            ("multitr", bool_to_bytes(self.multitransaction_mode)),
-            ("encrypt", bool_to_bytes(self.threshold_encryption)),
-            ("alloc", int_to_bytes(self.allocation_type.value)),
+            ('multitr', bool_to_bytes(self.multitransaction_mode)),
+            ('encrypt', bool_to_bytes(self.threshold_encryption)),
+            ('alloc', int_to_bytes(self.allocation_type.value)),
         ]
 
 
@@ -79,16 +79,16 @@ def get_default_schain_options() -> SchainOptions:
 
 
 def bool_to_bytes(bool_value: bool) -> bytes:
-    return bool_value.to_bytes(1, byteorder="big")
+    return bool_value.to_bytes(1, byteorder='big')
 
 
 def int_to_bytes(int_value: int) -> bytes:
-    return int.to_bytes(int_value, length=1, byteorder="big")
+    return int.to_bytes(int_value, length=1, byteorder='big')
 
 
 def bytes_to_int(bytes_value: bytes) -> int:
-    return int.from_bytes(bytes_value, byteorder="big")
+    return int.from_bytes(bytes_value, byteorder='big')
 
 
 def bytes_to_bool(bytes_value: bytes) -> bool:
-    return bool(int.from_bytes(bytes_value, "big"))
+    return bool(int.from_bytes(bytes_value, 'big'))

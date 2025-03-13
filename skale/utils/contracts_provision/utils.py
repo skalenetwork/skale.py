@@ -29,9 +29,7 @@ def generate_random_ip() -> str:
 
 
 def generate_random_name(length: int = 8) -> str:
-    return ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=length)
-    )
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 def generate_random_port() -> Port:
@@ -39,8 +37,12 @@ def generate_random_port() -> Port:
 
 
 def generate_random_node_data() -> tuple[str, str, int, str]:
-    return generate_random_ip(), generate_random_ip(), \
-        generate_random_port(), generate_random_name()
+    return (
+        generate_random_ip(),
+        generate_random_ip(),
+        generate_random_port(),
+        generate_random_name(),
+    )
 
 
 def generate_random_schain_data(skale: SkaleManager) -> tuple[int, int, str]:

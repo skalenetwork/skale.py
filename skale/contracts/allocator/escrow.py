@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE Allocator Core Escrow methods """
+"""SKALE Allocator Core Escrow methods"""
 
 from __future__ import annotations
 import functools
@@ -39,13 +39,11 @@ if TYPE_CHECKING:
 def beneficiary_escrow(transaction: Callable[..., TxRes]) -> Callable[..., TxRes]:
     @functools.wraps(transaction)
     def wrapper(
-            self: AllocatorContract,
-            *args: Any,
-            beneficiary_address: ChecksumAddress,
-            **kwargs: Any
+        self: AllocatorContract, *args: Any, beneficiary_address: ChecksumAddress, **kwargs: Any
     ) -> TxRes:
         self.contract = self.skale.instance.get_contract('Escrow', beneficiary_address)
         return transaction(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -82,11 +80,7 @@ class Escrow(AllocatorContract):
     @beneficiary_escrow
     @transaction_method
     def delegate(
-            self,
-            validator_id: ValidatorId,
-            amount: Wei,
-            delegation_period: int,
-            info: str
+        self, validator_id: ValidatorId, amount: Wei, delegation_period: int, info: str
     ) -> ContractFunction:
         """Allows Core holder to propose a delegation to a validator
 

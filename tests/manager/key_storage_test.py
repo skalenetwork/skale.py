@@ -1,4 +1,4 @@
-from tests.constants import (DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME)
+from tests.constants import DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME
 
 
 def test_get_previous_groups_public_key(skale):
