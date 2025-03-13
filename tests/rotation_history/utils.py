@@ -8,7 +8,7 @@ from skale.types.dkg import Fp2Point, G2Point, KeyShare
 from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 
-from skale import Skale
+from skale import SkaleManager
 from skale.contracts.manager.nodes import NodeStatus
 from skale.utils.contracts_provision.utils import generate_random_node_data
 from skale.utils.account_tools import send_eth
@@ -87,8 +87,8 @@ def register_nodes(skale_instances):
     return nodes
 
 
-def init_skale_from_wallet(wallet) -> Skale:
-    return Skale(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
+def init_skale_from_wallet(wallet) -> SkaleManager:
+    return SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
 
 
 def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None, rotation_id=0):

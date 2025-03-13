@@ -3,7 +3,7 @@ import pytest
 from web3 import Web3
 
 from skale.transactions.exceptions import DryRunFailedError, TransactionFailedError
-from skale import Skale
+from skale import SkaleManager
 from skale.transactions.tools import (
     get_block_gas_limit,
     estimate_gas,
@@ -33,7 +33,7 @@ def generate_new_skale():
     account = generate_account(web3)
     wallet = Web3Wallet(account['private_key'], web3)
     wallet.wait = mock.Mock()
-    return Skale(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
+    return SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
 
 
 def test_run_tx_with_retry(skale):
