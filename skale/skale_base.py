@@ -46,20 +46,21 @@ class SkaleBase:
     __metaclass__ = abc.ABCMeta
 
     def __init__(
-            self,
-            endpoint: str,
-            alias_or_address: str,
-            wallet: BaseWallet | None = None,
-            state_path: str | None = None,
-            ts_diff: int | None = None,
-            provider_timeout: int = 30):
-        logger.info('Initializing skale.py, endpoint: %s, wallet: %s',
-                    endpoint, type(wallet).__name__)
+        self,
+        endpoint: str,
+        alias_or_address: str,
+        wallet: BaseWallet | None = None,
+        state_path: str | None = None,
+        ts_diff: int | None = None,
+        provider_timeout: int = 30,
+    ):
+        logger.info(
+            'Initializing skale.py, endpoint: %s, wallet: %s', endpoint, type(wallet).__name__
+        )
         self._endpoint = endpoint
-        self.web3 = init_web3(endpoint,
-                              state_path=state_path,
-                              ts_diff=ts_diff,
-                              provider_timeout=provider_timeout)
+        self.web3 = init_web3(
+            endpoint, state_path=state_path, ts_diff=ts_diff, provider_timeout=provider_timeout
+        )
         self.network = skale_contracts.get_network_by_provider(self.web3.provider)
         self.project = self.network.get_project(self.project_name)
         self.instance = self.project.get_instance(alias_or_address)
@@ -89,8 +90,10 @@ class SkaleBase:
         if issubclass(type(wallet), BaseWallet):
             self._wallet = wallet
         else:
-            raise InvalidWalletError(f'Wrong wallet class: {type(wallet).__name__}. \
-                                       Must be one of the BaseWallet subclasses')
+            raise InvalidWalletError(
+                f'Wrong wallet class: {type(wallet).__name__}. \
+                                       Must be one of the BaseWallet subclasses'
+            )
 
     @abc.abstractmethod
     def set_contracts_info(self) -> None:
@@ -101,40 +104,32 @@ class SkaleBase:
             self.init_upgradeable_contract(contract_info)
         else:
             self.add_lib_contract(
-                contract_info.name,
-                contract_info.contract_class,
-                contract_info.contract_name
+                contract_info.name, contract_info.contract_class, contract_info.contract_name
             )
 
     def init_upgradeable_contract(self, contract_info: ContractInfo[Self]) -> None:
         address = self.get_contract_address(contract_info.contract_name)
         self.add_lib_contract(
-            contract_info.name,
-            contract_info.contract_class,
-            contract_info.contract_name,
-            address
+            contract_info.name, contract_info.contract_class, contract_info.contract_name, address
         )
 
     def add_lib_contract(
-            self,
-            name: str,
-            contract_class: Type[BaseContract[Self]],
-            contract_name: str,
-            contract_address: ChecksumAddress | None = None
+        self,
+        name: str,
+        contract_class: Type[BaseContract[Self]],
+        contract_name: str,
+        contract_address: ChecksumAddress | None = None,
     ) -> None:
         address = contract_address or self.instance.get_contract_address(contract_name)
         logger.debug('Fetching abi for %s, address %s', name, address)
         contract_abi = self.instance.abi[contract_name]
-        self.add_contract(name, contract_class(
-            self, name, address, contract_abi))
+        self.add_contract(name, contract_class(self, name, address, contract_abi))
 
     def add_contract(self, name: str, contract: BaseContract[Self]) -> None:
         self.__contracts[name] = contract
 
     def get_contract_address(self, name: str) -> ChecksumAddress:
-        return self.web3.to_checksum_address(
-            self.instance.get_contract_address(name)
-        )
+        return self.web3.to_checksum_address(self.instance.get_contract_address(name))
 
     def _get_contract(self, name: str) -> BaseContract[Self]:
         if name not in self.__contracts:

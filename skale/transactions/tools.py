@@ -46,15 +46,9 @@ DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
 def make_dry_run_call(
-        skale: SkaleBase,
-        method: ContractFunction,
-        gas_limit: int | None = None,
-        value: Wei = Wei(0)
+    skale: SkaleBase, method: ContractFunction, gas_limit: int | None = None, value: Wei = Wei(0)
 ) -> TxCallResult:
-    opts = TxParams({
-        'from': skale.wallet.address,
-        'value': value
-    })
+    opts = TxParams({'from': skale.wallet.address, 'value': value})
     logger.info(
         f'Dry run tx: {method.fn_name}, '
         f'sender: {skale.wallet.address}, '
@@ -75,21 +69,13 @@ def make_dry_run_call(
         message = e.message or 'Contract logic error'
         error_data = e.data or {}
         data = {'data': error_data} if isinstance(error_data, str) else error_data
-        return TxCallResult(
-            status=TxStatus.FAILED,
-            error='revert',
-            message=message,
-            data=data
-        )
+        return TxCallResult(status=TxStatus.FAILED, error='revert', message=message, data=data)
     except (Web3Exception, ValueError) as e:
         logger.exception('Dry run for %s failed', method)
         return TxCallResult(status=TxStatus.FAILED, error='exception', message=str(e), data={})
 
     return TxCallResult(
-        status=TxStatus.SUCCESS,
-        error='',
-        message='success',
-        data={'gas': estimated_gas}
+        status=TxStatus.SUCCESS, error='', message='success', data={'gas': estimated_gas}
     )
 
 
@@ -99,16 +85,13 @@ def estimate_gas(web3: Web3, method: ContractFunction, opts: TxParams) -> int:
     except AttributeError:
         block_gas_limit = get_block_gas_limit(web3)
 
-    estimated_gas = method.estimate_gas(
-        opts,
-        block_identifier='latest'
-    )
-    normalized_estimated_gas = int(
-        estimated_gas * config.DEFAULT_GAS_MULTIPLIER
-    )
+    estimated_gas = method.estimate_gas(opts, block_identifier='latest')
+    normalized_estimated_gas = int(estimated_gas * config.DEFAULT_GAS_MULTIPLIER)
     if normalized_estimated_gas > block_gas_limit:
-        logger.warning(f'Estimate gas for {method.fn_name} - {normalized_estimated_gas} exceeds \
-block gas limit, going to use block_gas_limit ({block_gas_limit}) for this transaction')
+        logger.warning(
+            f'Estimate gas for {method.fn_name} - {normalized_estimated_gas} exceeds \
+block gas limit, going to use block_gas_limit ({block_gas_limit}) for this transaction'
+        )
         return block_gas_limit
     return normalized_estimated_gas
 
@@ -126,16 +109,11 @@ def compose_base_fields(
     max_priority_fee_per_gas: Wei | None = None,
     value: Wei = Wei(0),
 ) -> TxParams:
-    fee_fields = TxParams({
-        'gas': gas_limit,
-        'nonce': nonce,
-        'value': value
-    })
+    fee_fields = TxParams({'gas': gas_limit, 'nonce': nonce, 'value': value})
     if max_priority_fee_per_gas is not None and max_fee_per_gas is not None:
-        fee_fields.update({
-            'maxPriorityFeePerGas': max_priority_fee_per_gas,
-            'maxFeePerGas': max_fee_per_gas
-        })
+        fee_fields.update(
+            {'maxPriorityFeePerGas': max_priority_fee_per_gas, 'maxFeePerGas': max_fee_per_gas}
+        )
         fee_fields.update({'type': 2})
     elif gas_price is not None:
         fee_fields.update({'gasPrice': gas_price})
@@ -148,13 +126,10 @@ def transaction_from_method(
     *,
     multiplier: Optional[float] = None,
     priority: Optional[int] = None,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> TxParams:
     tx = build_tx_dict(method, **kwargs)
-    logger.info(
-        f'Tx: {method.fn_name}, '
-        f'Fields: {tx}, '
-    )
+    logger.info(f'Tx: {method.fn_name}, Fields: {tx}, ')
     return tx
 
 
@@ -163,28 +138,18 @@ def compose_eth_transfer_tx(
     from_address: ChecksumAddress,
     to_address: ChecksumAddress,
     value: Wei,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> TxParams:
     nonce = get_eth_nonce(web3, from_address)
     base_fields = compose_base_fields(
-        nonce=nonce,
-        gas_limit=DEFAULT_ETH_SEND_GAS_LIMIT,
-        value=value,
-        **kwargs
+        nonce=nonce, gas_limit=DEFAULT_ETH_SEND_GAS_LIMIT, value=value, **kwargs
     )
-    tx = TxParams({
-        'from': from_address,
-        'to': to_address,
-        **base_fields
-    })
+    tx = TxParams({'from': from_address, 'to': to_address, **base_fields})
     return tx
 
 
 def retry_tx(
-        tx: Callable[..., TxRes] | None = None,
-        *,
-        max_retries: int = 3,
-        timeout: int = -1
+    tx: Callable[..., TxRes] | None = None, *, max_retries: int = 3, timeout: int = -1
 ) -> Callable[..., TxRes | None] | partial[Any]:
     if tx is None:
         return partial(retry_tx, max_retries=3, timeout=timeout)
@@ -192,20 +157,19 @@ def retry_tx(
     @wraps(tx)
     def wrapper(*args: Any, **kwargs: Any) -> TxRes | None:
         return run_tx_with_retry(
-            tx, *args,
-            max_retries=max_retries,
-            retry_timeout=timeout, **kwargs
+            tx, *args, max_retries=max_retries, retry_timeout=timeout, **kwargs
         )
+
     return wrapper
 
 
 def run_tx_with_retry(
-        transaction: Callable[..., TxRes],
-        *args: Any,
-        max_retries: int = 3,
-        retry_timeout: int = -1,
-        raise_for_status: bool = True,
-        **kwargs: Any
+    transaction: Callable[..., TxRes],
+    *args: Any,
+    max_retries: int = 3,
+    retry_timeout: int = -1,
+    raise_for_status: bool = True,
+    **kwargs: Any,
 ) -> TxRes | None:
     attempt = 0
     tx_res = None
@@ -213,11 +177,7 @@ def run_tx_with_retry(
     error = None
     while attempt < max_retries:
         try:
-            tx_res = transaction(
-                *args,
-                raise_for_status=raise_for_status,
-                **kwargs
-            )
+            tx_res = transaction(*args, raise_for_status=raise_for_status, **kwargs)
             tx_res.raise_for_status()
         except TransactionError as e:
             error = e
@@ -232,14 +192,10 @@ def run_tx_with_retry(
         attempt += 1
     if error is None:
         logger.info(
-            'Tx %s completed after %d/%d retries',
-            transaction.__name__, attempt + 1, max_retries
+            'Tx %s completed after %d/%d retries', transaction.__name__, attempt + 1, max_retries
         )
     else:
-        logger.error(
-            'Tx %s failed after %d retries',
-            transaction.__name__, max_retries
-        )
+        logger.error('Tx %s failed after %d retries', transaction.__name__, max_retries)
         if raise_for_status:
             raise error
     if tx_res is not None:

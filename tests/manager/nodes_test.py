@@ -1,4 +1,4 @@
-""" SKALE node test """
+"""SKALE node test"""
 
 import socket
 import random
@@ -75,8 +75,7 @@ def test_get_active_node_ids(skale, nodes):
     assert list(node.keys()) == FIELDS
 
     # 0 is active status
-    assert all([skale.nodes.get_node_status(node_id) == 0
-                for node_id in active_node_ids])
+    assert all([skale.nodes.get_node_status(node_id) == 0 for node_id in active_node_ids])
 
 
 def test_get_active_node_ips(skale, nodes):
@@ -87,8 +86,7 @@ def test_get_active_node_ips(skale, nodes):
 
     assert isinstance(active_node_ips, list)
 
-    assert all([Helper.is_valid_ipv4_address(node_ip)
-               for node_ip in active_node_ips])
+    assert all([Helper.is_valid_ipv4_address(node_ip) for node_ip in active_node_ips])
 
 
 def test_is_node_name_available(skale, nodes):

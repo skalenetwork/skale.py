@@ -41,6 +41,7 @@ def spawn_skale_allocator_lib(skale: SkaleAllocator) -> SkaleAllocator:
 
 class SkaleAllocator(SkaleBase):
     """Represents skale-allocator smart contracts"""
+
     @property
     def project_name(self) -> str:
         return 'skale-allocator'
@@ -51,11 +52,10 @@ class SkaleAllocator(SkaleBase):
 
     def contracts_info(self) -> List[ContractInfo[SkaleAllocator]]:
         import skale.contracts.allocator as contracts
+
         return [
-            ContractInfo('escrow', 'Escrow', contracts.Escrow,
-                         ContractTypes.API, True),
-            ContractInfo('allocator', 'Allocator', contracts.Allocator,
-                         ContractTypes.API, True)
+            ContractInfo('escrow', 'Escrow', contracts.Escrow, ContractTypes.API, True),
+            ContractInfo('allocator', 'Allocator', contracts.Allocator, ContractTypes.API, True),
         ]
 
     def get_contract_address(self, name: str) -> ChecksumAddress:

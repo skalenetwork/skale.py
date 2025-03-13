@@ -15,7 +15,7 @@ def get_tx_dict():
         'value': 0,
         'gasPrice': 1,
         'gas': 22000,
-        'nonce': 0
+        'nonce': 0,
     }
 
 

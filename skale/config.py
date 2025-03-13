@@ -22,7 +22,7 @@ import os
 ENV = os.getenv('ENV', 'prod')
 ALLOWED_TS_DIFF = int(os.getenv('ALLOWED_TS_DIFF') or 300)
 DISABLE_DRY_RUN = os.getenv('DISABLE_DRY_RUN', 'False') == 'True'
-DEFAULT_GAS_LIMIT = int(os.getenv('DEFAULT_GAS_LIMIT') or 10 ** 7)
+DEFAULT_GAS_LIMIT = int(os.getenv('DEFAULT_GAS_LIMIT') or 10**7)
 DEFAULT_GAS_PRICE_WEI = int(os.getenv('DEFAULT_GAS_PRICE_WEI') or 0)
 LAST_BLOCK_FILE = os.getenv('LAST_BLOCK_FILE')
 DEFAULT_GAS_MULTIPLIER = float(os.getenv('DEFAULT_GAS_MULTIPLIER') or 1.2)

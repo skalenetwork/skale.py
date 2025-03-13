@@ -3,15 +3,11 @@ import pytest
 from skale.schain_config.ports_allocation import (
     get_schain_base_port_on_node,
     calc_schain_base_port,
-    get_schain_index_in_node
+    get_schain_index_in_node,
 )
 from skale.utils.exceptions import SChainNotFoundException
 from skale.schain_config import PORTS_PER_SCHAIN
-from tests.constants import (
-    DEFAULT_NODE_NAME,
-    DEFAULT_NODE_PORT,
-    DEFAULT_SCHAIN_INDEX
-)
+from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_PORT, DEFAULT_SCHAIN_INDEX
 
 
 def test_get_schain_base_port_on_node(skale, schain):
@@ -19,9 +15,7 @@ def test_get_schain_base_port_on_node(skale, schain):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     schains_on_node = skale.schains.get_schains_for_node(node_id)
     schain_port_on_node = get_schain_base_port_on_node(
-        schains_on_node,
-        schain_name,
-        DEFAULT_NODE_PORT
+        schains_on_node, schain_name, DEFAULT_NODE_PORT
     )
     assert schain_port_on_node == DEFAULT_NODE_PORT
 

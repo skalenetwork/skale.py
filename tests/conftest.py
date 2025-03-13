@@ -1,4 +1,4 @@
-""" SKALE config test """
+"""SKALE config test"""
 
 import pytest
 from unittest import mock
@@ -15,16 +15,14 @@ from skale.utils.contracts_provision.main import (
     create_nodes,
     create_schain,
     link_nodes_to_validator,
-    setup_validator
+    setup_validator,
 )
 from skale.utils.contracts_provision.main import (
     set_automining,
     set_default_mining_interval,
-    set_mining_interval
+    set_mining_interval,
 )
-from skale.utils.contracts_provision.fake_multisig_contract import (
-    deploy_fake_multisig_contract
-)
+from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
 from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
@@ -39,14 +37,14 @@ ETH_AMOUNT_PER_NODE = 1
 
 @pytest.fixture(scope='session')
 def web3():
-    """ Returns a SKALE Manager instance with provider from config """
+    """Returns a SKALE Manager instance with provider from config"""
     w3 = init_web3(ENDPOINT)
     return w3
 
 
 @pytest.fixture(scope='session')
 def skale(web3):
-    """ Returns a SKALE Manager instance with provider from config """
+    """Returns a SKALE Manager instance with provider from config"""
     skale_obj = init_skale(web3)
     add_test_permissions(skale_obj)
     add_test2_schain_type(skale_obj)
@@ -72,7 +70,7 @@ def node_wallets(skale):
             web3=skale.web3,
             wallet=skale.wallet,
             receiver_address=wallet.address,
-            amount=ETH_AMOUNT_PER_NODE
+            amount=ETH_AMOUNT_PER_NODE,
         )
         wallets.append(wallet)
     return wallets
@@ -102,7 +100,7 @@ def schain(skale, nodes):
         yield create_schain(
             skale,
             schain_type=1,  # test2 should have 1 index
-            random_name=True
+            random_name=True,
         )
     finally:
         cleanup_schains(skale)
@@ -110,7 +108,7 @@ def schain(skale, nodes):
 
 @pytest.fixture
 def skale_allocator(web3):
-    '''Returns a SKALE Allocator instance with provider from config'''
+    """Returns a SKALE Allocator instance with provider from config"""
     return init_skale_allocator(web3)
 
 

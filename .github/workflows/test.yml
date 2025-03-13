@@ -13,49 +13,49 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       MANAGER_TAG: "1.10.0-v1.10.0.0"
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        cache: 'pip'
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          cache: "pip"
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install python dependencies
-      run: bash ./scripts/install_python_dependencies.sh
+      - name: Install python dependencies
+        run: bash ./scripts/install_python_dependencies.sh
 
-    - name: Lint with flake8
-      run: flake8 .
+      - name: Lint with ruff
+        run: ruff check skale/
 
-    - name: Launch hardhat node
-      working-directory: hardhat-node
-      run: |
-        docker-compose up -d && sleep 20
+      - name: Launch hardhat node
+        working-directory: hardhat-node
+        run: |
+          docker compose up -d && sleep 20
 
-    - name: Deploy manager
-      run: |
-        bash ./helper-scripts/deploy_test_manager.sh
-        docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
+      - name: Deploy manager
+        run: |
+          bash ./helper-scripts/deploy_test_manager.sh
+          docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
-    - name: Show stats before tests
-      if: always()
-      run: |
-        sudo lsblk -f
-        sudo free -h
+      - name: Show stats before tests
+        if: always()
+        run: |
+          sudo lsblk -f
+          sudo free -h
 
-    - name: Run tests
-      run: |
-        bash ./scripts/run_manager_tests.sh
-    - name: Codecov
-      run: |
-        codecov -t $CODECOV_TOKEN
+      - name: Run tests
+        run: |
+          bash ./scripts/run_manager_tests.sh
+      - name: Codecov
+        run: |
+          codecov -t $CODECOV_TOKEN
 
-    - name: Show stats after tests
-      if: always()
-      run: |
-        sudo lsblk -f
-        sudo free -h
+      - name: Show stats after tests
+        if: always()
+        run: |
+          sudo lsblk -f
+          sudo free -h
 
   test_allocator:
     runs-on: ubuntu-20.04
@@ -68,43 +68,43 @@ jobs:
       MANAGER_TAG: "1.9.0-develop.20"
       ALLOCATOR_TAG: "2.2.2-develop.0"
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        cache: 'pip'
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          cache: "pip"
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install host dependencies
-      run: bash ./scripts/install_host_dependencies.sh
+      - name: Install host dependencies
+        run: bash ./scripts/install_host_dependencies.sh
 
-    - name: Install python dependencies
-      run: bash ./scripts/install_python_dependencies.sh
+      - name: Install python dependencies
+        run: bash ./scripts/install_python_dependencies.sh
 
-    - name: Launch hardhat node
-      working-directory: hardhat-node
-      run: |
-        docker-compose up -d && sleep 20
+      - name: Launch hardhat node
+        working-directory: hardhat-node
+        run: |
+          docker compose up -d && sleep 20
 
-    - name: Deploy manager contracts
-      run: |
-        bash ./helper-scripts/deploy_test_manager.sh
-        docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
+      - name: Deploy manager contracts
+        run: |
+          bash ./helper-scripts/deploy_test_manager.sh
+          docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
-    - name: Deploy allocator contracts
-      run: |
-        bash ./helper-scripts/deploy_test_allocator.sh
-        docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
+      - name: Deploy allocator contracts
+        run: |
+          bash ./helper-scripts/deploy_test_allocator.sh
+          docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
 
-    - name: Run tests
-      run: |
-        bash ./scripts/run_allocator_tests.sh
+      - name: Run tests
+        run: |
+          bash ./scripts/run_allocator_tests.sh
 
-    - name: Show stats after tests
-      if: always()
-      run: |
-        sudo lsblk -f
-        sudo free -h
+      - name: Show stats after tests
+        if: always()
+        run: |
+          sudo lsblk -f
+          sudo free -h

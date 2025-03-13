@@ -7,11 +7,11 @@ from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 
 class SlashingTable(SkaleManagerContract):
-    """ Wrapper for SlashingTable.sol functions """
+    """Wrapper for SlashingTable.sol functions"""
 
     @transaction_method
     def set_penalty(self, offense: str, penalty: Wei) -> ContractFunction:
-        """ Set slashing penalty
+        """Set slashing penalty
         :param offense: reason of slashing
         :type offense: str
         :param penalty: penalty value to set
@@ -21,7 +21,7 @@ class SlashingTable(SkaleManagerContract):
         return self.contract.functions.setPenalty(offense, penalty)
 
     def get_penalty(self, offense: str) -> Wei:
-        """ Get slashing penalty value
+        """Get slashing penalty value
         :param offense: reason of slashing
         :type offense: str
         :rtype: int

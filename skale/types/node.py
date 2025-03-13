@@ -26,8 +26,8 @@ from skale.types.schain import SchainStructureWithStatus
 from skale.types.validator import ValidatorId
 
 
-NodeId = NewType("NodeId", int)
-Port = NewType("Port", int)
+NodeId = NewType('NodeId', int)
+Port = NewType('Port', int)
 
 
 class NodeStatus(IntEnum):

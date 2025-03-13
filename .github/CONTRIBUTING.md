@@ -30,7 +30,7 @@ Patchsets should always be focused. For example, a pull request could add a feat
 
 In general, please adhere to the following:
 
--   code should conform to PEP8 and linting should be done by `flake8`.
+-   code should conform to PEP8 and linting should be done by `ruff`.
 -   include tests.
 -   include any relevant documentation updates.
 

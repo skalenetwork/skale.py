@@ -33,8 +33,7 @@ def get_nodes_for_schain(skale: SkaleManager, name: SchainName) -> list[NodeWith
 
 
 def get_schain_nodes_with_schains(
-        skale: SkaleManager,
-        schain_name: SchainName
+    skale: SkaleManager, schain_name: SchainName
 ) -> list[NodeWithSchains]:
     """Returns list of nodes for schain with schains for all nodes"""
     nodes = get_nodes_for_schain(skale, schain_name)

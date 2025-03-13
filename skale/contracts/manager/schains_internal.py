@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SchainsInternal.sol functions """
+"""SchainsInternal.sol functions"""
 
 from __future__ import annotations
 import functools
@@ -47,34 +47,26 @@ class SChainsInternal(SkaleManagerContract):
 
     def get_all_schains_ids(self) -> List[SchainHash]:
         return [
-            SchainHash(schain_hash)
-            for schain_hash
-            in self.contract.functions.getSchains().call()
+            SchainHash(schain_hash) for schain_hash in self.contract.functions.getSchains().call()
         ]
 
     def get_schains_number(self) -> int:
         return int(self.contract.functions.numberOfSchains().call())
 
     def get_schain_list_size(self, account: ChecksumAddress) -> int:
-        return int(self.contract.functions.getSchainListSize(account).call(
-            {'from': account}))
+        return int(self.contract.functions.getSchainListSize(account).call({'from': account}))
 
     def get_schain_id_by_index_for_owner(self, account: ChecksumAddress, index: int) -> SchainHash:
         return SchainHash(self.contract.functions.schainIndexes(account, index).call())
 
     def get_node_ids_for_schain(self, name: SchainName) -> List[NodeId]:
         id_ = self.schains.name_to_id(name)
-        return [
-            NodeId(node)
-            for node
-            in self.contract.functions.getNodesInGroup(id_).call()
-        ]
+        return [NodeId(node) for node in self.contract.functions.getNodesInGroup(id_).call()]
 
     def get_schain_ids_for_node(self, node_id: NodeId) -> List[SchainHash]:
         return [
             SchainHash(schain)
-            for schain
-            in self.contract.functions.getSchainHashesForNode(node_id).call()
+            for schain in self.contract.functions.getSchainHashesForNode(node_id).call()
         ]
 
     def is_schain_exist(self, name: SchainName) -> bool:
@@ -84,19 +76,15 @@ class SChainsInternal(SkaleManagerContract):
     def get_active_schain_ids_for_node(self, node_id: NodeId) -> List[SchainHash]:
         return [
             SchainHash(schain)
-            for schain
-            in self.contract.functions.getActiveSchains(node_id).call()
+            for schain in self.contract.functions.getActiveSchains(node_id).call()
         ]
 
     def number_of_schain_types(self) -> int:
         return int(self.contract.functions.numberOfSchainTypes().call())
 
     @transaction_method
-    def add_schain_type(
-        self, part_of_node: int, number_of_nodes: int
-    ) -> ContractFunction:
-        return self.contract.functions.addSchainType(
-            part_of_node, number_of_nodes)
+    def add_schain_type(self, part_of_node: int, number_of_nodes: int) -> ContractFunction:
+        return self.contract.functions.addSchainType(part_of_node, number_of_nodes)
 
     def current_generation(self) -> int:
         return int(self.contract.functions.currentGeneration().call())

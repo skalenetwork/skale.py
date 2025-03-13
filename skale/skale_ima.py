@@ -37,15 +37,13 @@ class SkaleIma(SkaleBase):
 
     def contracts_info(self) -> List[ContractInfo[SkaleIma]]:
         import skale.contracts.ima as contracts
-        return [
-            ContractInfo('linker', 'Linker',
-                         contracts.Linker, ContractTypes.API, False)
-        ]
+
+        return [ContractInfo('linker', 'Linker', contracts.Linker, ContractTypes.API, False)]
 
     def set_contracts_info(self) -> None:
         self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
 
 
 def spawn_skale_ima_lib(skale_ima: SkaleIma) -> SkaleIma:
-    """ Clone skale ima object with the same wallet """
+    """Clone skale ima object with the same wallet"""
     return SkaleIma(skale_ima._endpoint, skale_ima.instance.address, skale_ima.wallet)
