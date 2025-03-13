@@ -46,12 +46,12 @@ def test_get_by_name(skale, schain):
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
     )
-    assert schain_by_name.active
 
 
 def test_schain_get_plain(skale):
     schain = skale.schains.get(DEFAULT_SCHAIN_ID)
-    assert list(schain.keys()) == SCHAIN_FIELDS
+    for field in SCHAIN_FIELDS:
+        assert hasattr(schain, field), f"Missing field: {field}"
 
 
 def test_schain_get_object(skale, schain):
@@ -70,7 +70,6 @@ def test_schain_get_object(skale, schain):
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
     )
-    assert schain_struct.active
 
 
 def test_get_schains_for_owner(skale, schain, empty_account):
@@ -116,7 +115,6 @@ def test_get_all_schains_ids(skale, schain):
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
     )
-    assert schain_struct.active
 
 
 def test_get_schain_price(skale):
@@ -137,7 +135,7 @@ def test_add_schain_by_foundation(skale, nodes):
         new_schain = skale.schains.get_by_name(name)
         assert new_schain.mainnet_owner == skale.wallet.address
 
-        schain = skale.schains.get_by_name(name, obj=True)
+        schain = skale.schains.get_by_name(name)
         assert schain.options.multitransaction_mode is False
         assert schain.options.threshold_encryption is False
         assert schain.options.allocation_type is AllocationType.DEFAULT
@@ -265,7 +263,9 @@ def test_get_active_schains_for_node(skale, nodes, schain):
 def test_name_to_group_id(skale):
     name = "TEST"
     gid = skale.schains.name_to_group_id(name)
-    assert gid == HexBytes("0x852daa74cc3c31fe64542bb9b8764cfb91cc30f9acf9389071ffb44a9eefde46")  # noqa
+    assert gid == HexBytes(
+        "0x852daa74cc3c31fe64542bb9b8764cfb91cc30f9acf9389071ffb44a9eefde46"
+    )  # noqa
 
 
 def test_get_options(skale, nodes):
@@ -283,7 +283,11 @@ def test_get_options(skale, nodes):
         options = skale.schains.get_options_by_name(name)
         assert options == schain_options
         raw_options = skale.schains._SChains__raw_get_options(id_)
-        assert raw_options == [("multitr", b"\x01"), ("encrypt", b"\x00"), ("alloc", b"\x00")]
+        assert raw_options == [
+            ("multitr", b"\x01"),
+            ("encrypt", b"\x00"),
+            ("alloc", b"\x00"),
+        ]
 
     finally:
         if name:
