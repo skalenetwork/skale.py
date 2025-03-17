@@ -43,7 +43,7 @@ setup(
         'pyyaml==6.0',
         'redis==5.0.3',
         'sgx.py==0.9dev5',
-        'skale-contracts==1.0.1a5',
+        'skale-contracts==1.0.2a26',
         'typing-extensions==4.9.0',
         'web3==6.20.2',
     ],
