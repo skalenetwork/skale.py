@@ -23,8 +23,9 @@ from skale.types.node import NodeId, Port
 
 
 @dataclass
-class NodeInfo():
+class NodeInfo:
     """Dataclass that represents base info about the node"""
+
     node_id: NodeId
     name: str
     base_port: Port
@@ -35,7 +36,7 @@ class NodeInfo():
             'httpsRpcPort': Port(self.base_port + SkaledPorts.HTTPS_JSON.value),
             'wsRpcPort': Port(self.base_port + SkaledPorts.WS_JSON.value),
             'wssRpcPort': Port(self.base_port + SkaledPorts.WSS_JSON.value),
-            'infoHttpRpcPort': Port(self.base_port + SkaledPorts.INFO_HTTP_JSON.value)
+            'infoHttpRpcPort': Port(self.base_port + SkaledPorts.INFO_HTTP_JSON.value),
         }
 
     def to_dict(self) -> dict[str, NodeId | str | Port]:
@@ -43,5 +44,5 @@ class NodeInfo():
             'nodeID': self.node_id,
             'nodeName': self.name,
             'basePort': self.base_port,
-            **self.calc_ports()
+            **self.calc_ports(),
         }

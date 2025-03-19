@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" NodeRotation.sol functions """
+"""NodeRotation.sol functions"""
 
 from __future__ import annotations
 import logging
@@ -60,10 +60,7 @@ class NodeRotation(SkaleManagerContract):
     def get_leaving_history(self, node_id: NodeId) -> List[RotationSwap]:
         raw_history = self.contract.functions.getLeavingHistory(node_id).call()
         history = [
-            RotationSwap({
-                'schain_id': SchainHash(schain[0]),
-                'finished_rotation': int(schain[1])
-            })
+            RotationSwap({'schain_id': SchainHash(schain[0]), 'finished_rotation': int(schain[1])})
             for schain in raw_history
         ]
         return history
@@ -72,8 +69,7 @@ class NodeRotation(SkaleManagerContract):
         history = self.get_leaving_history(node_id)
         schain_id = self.skale.schains.name_to_id(schain_name)
         finish_ts = next(
-            (swap['finished_rotation'] for swap in history if swap['schain_id'] == schain_id),
-            None
+            (swap['finished_rotation'] for swap in history if swap['schain_id'] == schain_id), None
         )
         if not finish_ts:
             return None

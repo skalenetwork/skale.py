@@ -30,9 +30,15 @@ from skale.utils.helper import format_fields
 
 
 FIELDS = [
-    'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
-    'registration_time', 'minimum_delegation_amount', 'accept_new_requests',
-    'trusted'
+    'name',
+    'validator_address',
+    'requested_address',
+    'description',
+    'fee_rate',
+    'registration_time',
+    'minimum_delegation_amount',
+    'accept_new_requests',
+    'trusted',
 ]
 
 
@@ -93,18 +99,18 @@ class ValidatorService(SkaleManagerContract):
         :rtype: list
         """
         number_of_validators = self.number_of_validators()
-        validators = [
-            self.get_with_id(val_id)
-            for val_id in self.get_trusted_validator_ids()
-        ] if trusted_only else [
-            self.get_with_id(ValidatorId(val_id))
-            for val_id in range(1, number_of_validators + 1)
-        ]
+        validators = (
+            [self.get_with_id(val_id) for val_id in self.get_trusted_validator_ids()]
+            if trusted_only
+            else [
+                self.get_with_id(ValidatorId(val_id))
+                for val_id in range(1, number_of_validators + 1)
+            ]
+        )
         return validators
 
     def get_linked_addresses_by_validator_address(
-            self,
-            address: ChecksumAddress
+        self, address: ChecksumAddress
     ) -> List[ChecksumAddress]:
         """Returns list of node addresses linked to the validator address.
 
@@ -113,13 +119,11 @@ class ValidatorService(SkaleManagerContract):
         """
         return [
             Web3.to_checksum_address(address)
-            for address
-            in self.contract.functions.getMyNodesAddresses().call({'from': address})
+            for address in self.contract.functions.getMyNodesAddresses().call({'from': address})
         ]
 
     def get_linked_addresses_by_validator_id(
-            self,
-            validator_id: ValidatorId
+        self, validator_id: ValidatorId
     ) -> List[ChecksumAddress]:
         """Returns list of node addresses linked to the validator ID.
 
@@ -128,8 +132,7 @@ class ValidatorService(SkaleManagerContract):
         """
         return [
             Web3.to_checksum_address(address)
-            for address
-            in self.contract.functions.getNodeAddresses(validator_id).call()
+            for address in self.contract.functions.getNodeAddresses(validator_id).call()
         ]
 
     def is_main_address(self, validator_address: ChecksumAddress) -> bool:
@@ -180,11 +183,7 @@ class ValidatorService(SkaleManagerContract):
         :returns: List of trusted validators id
         :rtype: list
         """
-        return [
-            ValidatorId(id)
-            for id
-            in self.contract.functions.getTrustedValidators().call()
-        ]
+        return [ValidatorId(id) for id in self.contract.functions.getTrustedValidators().call()]
 
     @transaction_method
     def _enable_validator(self, validator_id: ValidatorId) -> ContractFunction:
@@ -205,8 +204,9 @@ class ValidatorService(SkaleManagerContract):
         return bool(self.contract.functions.isAcceptingNewRequests(validator_id).call())
 
     @transaction_method
-    def register_validator(self, name: str, description: str, fee_rate: int,
-                           min_delegation_amount: int) -> ContractFunction:
+    def register_validator(
+        self, name: str, description: str, fee_rate: int, min_delegation_amount: int
+    ) -> ContractFunction:
         """Registers a new validator in the SKALE Manager contracts.
 
         :param name: Validator name
@@ -221,7 +221,8 @@ class ValidatorService(SkaleManagerContract):
         :rtype: TxRes
         """
         return self.contract.functions.registerValidator(
-            name, description, fee_rate, min_delegation_amount)
+            name, description, fee_rate, min_delegation_amount
+        )
 
     def get_link_node_signature(self, validator_id: ValidatorId) -> str:
         unsigned_hash = Web3.solidity_keccak(['uint256'], [validator_id])
@@ -254,14 +255,14 @@ class ValidatorService(SkaleManagerContract):
 
     @transaction_method
     def disable_whitelist(self) -> ContractFunction:
-        """ Disable validator whitelist. Master key only transaction.
+        """Disable validator whitelist. Master key only transaction.
         :returns: Transaction results
         :rtype: TxRes
         """
         return self.contract.functions.disableWhitelist()
 
     def get_use_whitelist(self) -> bool:
-        """ Return useWhitelist contract variable
+        """Return useWhitelist contract variable
         :returns: useWhitelist value
         :rtype: bool
         """
@@ -269,15 +270,15 @@ class ValidatorService(SkaleManagerContract):
 
     def get_and_update_bond_amount(self, validator_id: ValidatorId) -> int:
         """Return amount of token that validator delegated to himself
-           :param validator_id: id of the validator
-           :returns:
-           :rtype: int
+        :param validator_id: id of the validator
+        :returns:
+        :rtype: int
         """
         return int(self.contract.functions.getAndUpdateBondAmount(validator_id).call())
 
     @transaction_method
     def set_validator_mda(self, minimum_delegation_amount: Wei) -> ContractFunction:
-        """ Allows a validator to set the minimum delegation amount.
+        """Allows a validator to set the minimum delegation amount.
 
         :param new_minimum_delegation_amount: Minimum delegation amount
         :type new_minimum_delegation_amount: int
@@ -288,7 +289,7 @@ class ValidatorService(SkaleManagerContract):
 
     @transaction_method
     def request_for_new_address(self, new_validator_address: ChecksumAddress) -> ContractFunction:
-        """ Allows a validator to request a new address.
+        """Allows a validator to request a new address.
 
         :param new_validator_address: New validator address
         :type new_validator_address: str
@@ -299,7 +300,7 @@ class ValidatorService(SkaleManagerContract):
 
     @transaction_method
     def confirm_new_address(self, validator_id: ValidatorId) -> ContractFunction:
-        """  Confirm change of the address.
+        """Confirm change of the address.
 
         :param validator_id: ID of the validator
         :type validator_id: int
@@ -310,7 +311,7 @@ class ValidatorService(SkaleManagerContract):
 
     @transaction_method
     def set_validator_name(self, new_name: str) -> ContractFunction:
-        """ Allows a validator to change the name.
+        """Allows a validator to change the name.
 
         :param new_name: New validator name
         :type new_name: str
@@ -321,7 +322,7 @@ class ValidatorService(SkaleManagerContract):
 
     @transaction_method
     def set_validator_description(self, new_description: str) -> ContractFunction:
-        """ Allows a validator to change the name.
+        """Allows a validator to change the name.
 
         :param new_description: New validator description
         :type new_name: str
@@ -341,14 +342,16 @@ class ValidatorService(SkaleManagerContract):
         return bool(self.contract.functions.hasRole(role, address).call())
 
     def _to_validator(self, untyped_validator: Dict[str, Any]) -> Validator:
-        return Validator({
-            'name': str(untyped_validator['name']),
-            'validator_address': ChecksumAddress(untyped_validator['validator_address']),
-            'requested_address': ChecksumAddress(untyped_validator['requested_address']),
-            'description': str(untyped_validator['description']),
-            'fee_rate': int(untyped_validator['fee_rate']),
-            'registration_time': int(untyped_validator['registration_time']),
-            'minimum_delegation_amount': Wei(untyped_validator['minimum_delegation_amount']),
-            'accept_new_requests': bool(untyped_validator['accept_new_requests']),
-            'trusted': bool(untyped_validator['trusted'])
-        })
+        return Validator(
+            {
+                'name': str(untyped_validator['name']),
+                'validator_address': ChecksumAddress(untyped_validator['validator_address']),
+                'requested_address': ChecksumAddress(untyped_validator['requested_address']),
+                'description': str(untyped_validator['description']),
+                'fee_rate': int(untyped_validator['fee_rate']),
+                'registration_time': int(untyped_validator['registration_time']),
+                'minimum_delegation_amount': Wei(untyped_validator['minimum_delegation_amount']),
+                'accept_new_requests': bool(untyped_validator['accept_new_requests']),
+                'trusted': bool(untyped_validator['trusted']),
+            }
+        )

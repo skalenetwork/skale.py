@@ -32,10 +32,7 @@ from skale.utils.helper import ip_from_bytes, ip_to_bytes
 class IpRange(namedtuple('IpRange', ['start_ip', 'end_ip'])):
     @classmethod
     def from_packed(cls, packed_ips: List[bytes]) -> IpRange:
-        return cls(
-            ip_from_bytes(packed_ips[0]),
-            ip_from_bytes(packed_ips[1])
-        )
+        return cls(ip_from_bytes(packed_ips[0]), ip_from_bytes(packed_ips[1]))
 
 
 class SyncManager(SkaleManagerContract):
@@ -43,11 +40,7 @@ class SyncManager(SkaleManagerContract):
 
     @transaction_method
     def add_ip_range(self, name: str, start_ip: str, end_ip: str) -> ContractFunction:
-        return self.contract.functions.addIPRange(
-            name,
-            ip_to_bytes(start_ip),
-            ip_to_bytes(end_ip)
-        )
+        return self.contract.functions.addIPRange(name, ip_to_bytes(start_ip), ip_to_bytes(end_ip))
 
     @transaction_method
     def remove_ip_range(self, name: str) -> ContractFunction:

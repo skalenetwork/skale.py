@@ -28,15 +28,12 @@ from eth_typing import AnyAddress, ChecksumAddress, HexStr
 from web3.exceptions import Web3Exception
 
 import skale.config as config
-from skale.transactions.exceptions import (
-    TransactionNotSignedError,
-    TransactionNotSentError
-)
+from skale.transactions.exceptions import TransactionNotSignedError, TransactionNotSentError
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     MAX_WAITING_TIME,
     get_eth_nonce,
-    wait_for_receipt_by_blocks
+    wait_for_receipt_by_blocks,
 )
 from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
 
@@ -76,10 +73,7 @@ class Web3Wallet(BaseWallet):
         try:
             return cast(
                 SignedTransaction,
-                self._web3.eth.account.sign_transaction(
-                    tx_dict,
-                    private_key=self._private_key
-                )
+                self._web3.eth.account.sign_transaction(tx_dict, private_key=self._private_key),
             )
         except (TypeError, ValueError, Web3Exception) as e:
             raise TransactionNotSignedError(e)
@@ -90,9 +84,8 @@ class Web3Wallet(BaseWallet):
             return cast(
                 SignedMessage,
                 self._web3.eth.account.sign_message(
-                    unsigned_message,
-                    private_key=self._private_key
-                )
+                    unsigned_message, private_key=self._private_key
+                ),
             )
         except (TypeError, ValueError, Web3Exception) as e:
             raise MessageNotSignedError(e)
@@ -102,13 +95,11 @@ class Web3Wallet(BaseWallet):
         tx_dict: TxParams,
         multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
         priority: int | None = config.DEFAULT_PRIORITY,
-        method: str | None = None
+        method: str | None = None,
     ) -> HexStr:
         signed_tx = self.sign(tx_dict)
         try:
-            return Web3.to_hex(self._web3.eth.send_raw_transaction(
-                signed_tx.rawTransaction
-            ))
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(signed_tx.rawTransaction))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
@@ -121,16 +112,13 @@ class Web3Wallet(BaseWallet):
         return str(self._public_key)
 
     def wait(
-            self,
-            tx_hash: _Hash32,
-            blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-            timeout: int = MAX_WAITING_TIME
+        self,
+        tx_hash: _Hash32,
+        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+        timeout: int = MAX_WAITING_TIME,
     ) -> TxReceipt:
         return wait_for_receipt_by_blocks(
-            self._web3,
-            tx_hash,
-            blocks_to_wait=blocks_to_wait,
-            timeout=timeout
+            self._web3, tx_hash, blocks_to_wait=blocks_to_wait, timeout=timeout
         )
 
 

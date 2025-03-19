@@ -28,17 +28,15 @@ class DelegationPeriodManager(SkaleManagerContract):
     """Wrapper for DelegationPeriodManager.sol functions"""
 
     @transaction_method
-    def set_delegation_period(self, months_count: int,
-                              stake_multiplier: int) -> ContractFunction:
+    def set_delegation_period(self, months_count: int, stake_multiplier: int) -> ContractFunction:
         return self.contract.functions.setDelegationPeriod(
-            monthsCount=months_count,
-            stakeMultiplier=stake_multiplier
+            monthsCount=months_count, stakeMultiplier=stake_multiplier
         )
 
     def is_delegation_period_allowed(self, months_count: int) -> bool:
-        return bool(self.contract.functions.isDelegationPeriodAllowed(
-            monthsCount=months_count
-        ).call())
+        return bool(
+            self.contract.functions.isDelegationPeriodAllowed(monthsCount=months_count).call()
+        )
 
     @transaction_method
     def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:

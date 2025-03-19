@@ -37,23 +37,54 @@ class SkaleIma(SkaleBase):
 
     def contracts_info(self) -> List[ContractInfo[SkaleIma]]:
         import skale.contracts.ima.mainnet as contracts
+
         return [
-            ContractInfo('message_proxy_for_mainnet', 'MessageProxyForMainnet',
-                         contracts.MessageProxyForMainnet, ContractTypes.API, False),
-            ContractInfo('linker', 'Linker',
-                         contracts.Linker, ContractTypes.API, False),
-            ContractInfo('community_pool', 'CommunityPool',
-                         contracts.CommunityPool, ContractTypes.API, False),
-            ContractInfo('deposit_box_eth', 'DepositBoxEth',
-                         contracts.DepositBoxEth, ContractTypes.API, False),
-            ContractInfo('deposit_box_erc20', 'DepositBoxERC20',
-                         contracts.DepositBoxERC20, ContractTypes.API, False),
-            ContractInfo('deposit_box_erc721', 'DepositBoxERC721',
-                         contracts.DepositBoxERC721, ContractTypes.API, False),
-            ContractInfo('deposit_box_erc721_wmt', 'DepositBoxERC721WithMetadata',
-                         contracts.DepositBoxERC721WithMetadata, ContractTypes.API, False),
-            ContractInfo('deposit_box_erc1155', 'DepositBoxERC1155',
-                         contracts.DepositBoxERC1155, ContractTypes.API, False)
+            ContractInfo(
+                'message_proxy_for_mainnet',
+                'MessageProxyForMainnet',
+                contracts.MessageProxyForMainnet,
+                ContractTypes.API,
+                False,
+            ),
+            ContractInfo('linker', 'Linker', contracts.Linker, ContractTypes.API, False),
+            ContractInfo(
+                'community_pool', 'CommunityPool', contracts.CommunityPool, ContractTypes.API, False
+            ),
+            ContractInfo(
+                'deposit_box_eth',
+                'DepositBoxEth',
+                contracts.DepositBoxEth,
+                ContractTypes.API,
+                False,
+            ),
+            ContractInfo(
+                'deposit_box_erc20',
+                'DepositBoxERC20',
+                contracts.DepositBoxERC20,
+                ContractTypes.API,
+                False,
+            ),
+            ContractInfo(
+                'deposit_box_erc721',
+                'DepositBoxERC721',
+                contracts.DepositBoxERC721,
+                ContractTypes.API,
+                False,
+            ),
+            ContractInfo(
+                'deposit_box_erc721_wmt',
+                'DepositBoxERC721WithMetadata',
+                contracts.DepositBoxERC721WithMetadata,
+                ContractTypes.API,
+                False,
+            ),
+            ContractInfo(
+                'deposit_box_erc1155',
+                'DepositBoxERC1155',
+                contracts.DepositBoxERC1155,
+                ContractTypes.API,
+                False,
+            ),
         ]
 
     def set_contracts_info(self) -> None:
@@ -61,5 +92,5 @@ class SkaleIma(SkaleBase):
 
 
 def spawn_skale_ima_lib(skale_ima: SkaleIma) -> SkaleIma:
-    """ Clone skale ima object with the same wallet """
+    """Clone skale ima object with the same wallet"""
     return SkaleIma(skale_ima._endpoint, skale_ima.instance.address, skale_ima.wallet)

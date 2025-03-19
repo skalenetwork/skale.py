@@ -1,11 +1,13 @@
-""" SKALE node rotation test """
+"""SKALE node rotation test"""
 
 from unittest import mock
 import pytest
 
 from skale.contracts.manager.node_rotation import Rotation
 from skale.utils.contracts_provision.main import (
-    cleanup_nodes_schains, create_schain, add_test4_schain_type
+    cleanup_nodes_schains,
+    create_schain,
+    add_test4_schain_type,
 )
 from tests.constants import DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME, DEFAULT_SCHAIN_INDEX
 from tests.rotation_history.utils import set_up_nodes, run_dkg, _skip_evm_time, TEST_ROTATION_DELAY
@@ -13,30 +15,22 @@ from tests.rotation_history.utils import set_up_nodes, run_dkg, _skip_evm_time, 
 
 def test_get_rotation(skale):
     assert skale.node_rotation.get_rotation(DEFAULT_SCHAIN_NAME) == Rotation(
-        leaving_node_id=0,
-        new_node_id=0,
-        freeze_until=0,
-        rotation_counter=0
+        leaving_node_id=0, new_node_id=0, freeze_until=0, rotation_counter=0
     )
 
 
 def test_get_leaving_history(skale):
     empty = skale.node_rotation.get_leaving_history(DEFAULT_SCHAIN_INDEX)
     assert empty == []
-    with mock.patch.object(skale.node_rotation.contract.functions.getLeavingHistory, 'call') \
-            as call_mock:
+    with mock.patch.object(
+        skale.node_rotation.contract.functions.getLeavingHistory, 'call'
+    ) as call_mock:
         call_mock.return_value = [(DEFAULT_SCHAIN_ID, 1000), (DEFAULT_SCHAIN_ID, 2000)]
         history = skale.node_rotation.get_leaving_history(DEFAULT_SCHAIN_INDEX)
         assert isinstance(history, list)
         assert history == [
-            {
-                'schain_id': DEFAULT_SCHAIN_ID,
-                'finished_rotation': 1000
-            },
-            {
-                'schain_id': DEFAULT_SCHAIN_ID,
-                'finished_rotation': 2000
-            }
+            {'schain_id': DEFAULT_SCHAIN_ID, 'finished_rotation': 1000},
+            {'schain_id': DEFAULT_SCHAIN_ID, 'finished_rotation': 2000},
         ]
 
 
@@ -56,7 +50,7 @@ def four_node_schain(skale, validator):
         name = create_schain(
             skale,
             schain_type=2,  # test4 should have 2 index
-            random_name=True
+            random_name=True,
         )
         yield nodes, skale_instances, name
     finally:

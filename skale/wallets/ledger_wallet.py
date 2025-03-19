@@ -28,7 +28,7 @@ from eth_account._utils.legacy_transactions import (
     encode_transaction,
     serializable_unsigned_transaction_from_dict as tx_from_dict,
     Transaction,
-    UnsignedTransaction
+    UnsignedTransaction,
 )
 from eth_account._utils.typed_transactions import TypedTransaction
 
@@ -47,7 +47,7 @@ from skale.utils.web3_utils import (
     get_eth_nonce,
     public_key_to_address,
     to_checksum_address,
-    wait_for_receipt_by_blocks
+    wait_for_receipt_by_blocks,
 )
 from skale.wallets.common import BaseWallet, ensure_chain_id
 
@@ -63,7 +63,7 @@ def encode_bip32_path(path: str) -> bytes:
         return b''
     encoded_chunks = []
     for bip32_chunk in path.split('/'):
-        chunk = bip32_chunk.split('\'')
+        chunk = bip32_chunk.split("'")
         if len(chunk) == 1:
             encoded_chunk = struct.pack('>I', int(chunk[0]))
         else:
@@ -80,7 +80,7 @@ def derivation_path_prefix(bin32_path: str) -> bytes:
 
 
 def chunks(sequence: bytes, size: int) -> Generator[bytes, None, None]:
-    return (sequence[pos:pos + size] for pos in range(0, len(sequence), size))
+    return (sequence[pos : pos + size] for pos in range(0, len(sequence), size))
 
 
 def get_derivation_path(address_index: int, legacy: bool) -> str:
@@ -90,11 +90,11 @@ def get_derivation_path(address_index: int, legacy: bool) -> str:
 
 
 def get_live_derivation_path(address_index: int) -> str:
-    return f'44\'/60\'/{address_index}\'/0/0'
+    return f"44'/60'/{address_index}'/0/0"
 
 
 def get_legacy_derivation_path(address_index: int) -> str:
-    return f'44\'/60\'/0\'/{address_index}'
+    return f"44'/60'/0'/{address_index}"
 
 
 class LedgerWallet(BaseWallet):
@@ -110,8 +110,7 @@ class LedgerWallet(BaseWallet):
         try:
             self.dongle = getDongle(debug)
             self._web3 = web3
-            self._address, self._public_key = \
-                self.get_address_with_public_key()
+            self._address, self._public_key = self.get_address_with_public_key()
         except (OSError, CommException):
             raise LedgerCommunicationError(
                 'Error occured during the interaction with Ledger device'
@@ -137,13 +136,13 @@ class LedgerWallet(BaseWallet):
 
     @classmethod
     def parse_sign_result(
-            cls,
-            tx: TypedTransaction | Transaction | UnsignedTransaction,
-            exchange_result: bytearray | bytes
+        cls,
+        tx: TypedTransaction | Transaction | UnsignedTransaction,
+        exchange_result: bytearray | bytes,
     ) -> SignedTransaction:
         sign_v = exchange_result[0]
-        sign_r = int((exchange_result[1:1 + 32]).hex(), 16)
-        sign_s = int((exchange_result[1 + 32: 1 + 32 + 32]).hex(), 16)
+        sign_r = int((exchange_result[1 : 1 + 32]).hex(), 16)
+        sign_s = int((exchange_result[1 + 32 : 1 + 32 + 32]).hex(), 16)
         enctx = encode_transaction(tx, (sign_v, sign_r, sign_s))
         transaction_hash = keccak(enctx)
 
@@ -152,7 +151,7 @@ class LedgerWallet(BaseWallet):
             hash=HexBytes(transaction_hash),
             v=sign_v,
             r=sign_r,
-            s=sign_s
+            s=sign_s,
         )
 
     def exchange_sign_payload_by_chunks(self, payload: bytes) -> bytearray:
@@ -164,9 +163,7 @@ class LedgerWallet(BaseWallet):
         p1 = P1_FIRST
         for chunk in chunks(payload, LedgerWallet.CHUNK_SIZE):
             chunk_size_bytes = len(chunk).to_bytes(1, 'big')
-            apdu = b''.join([
-                LedgerWallet.CLA, INS, p1, P2, chunk_size_bytes, chunk
-            ])
+            apdu = b''.join([LedgerWallet.CLA, INS, p1, P2, chunk_size_bytes, chunk])
             exchange_result = self.dongle.exchange(apdu)
             p1 = P1_SUBSEQUENT
         return cast(bytearray, exchange_result)
@@ -189,25 +186,21 @@ class LedgerWallet(BaseWallet):
         tx: TxParams,
         multiplier: float | None = config.DEFAULT_GAS_MULTIPLIER,
         priority: int | None = config.DEFAULT_PRIORITY,
-        method: str | None = None
+        method: str | None = None,
     ) -> HexStr:
         signed_tx = self.sign(tx)
         try:
-            return Web3.to_hex(self._web3.eth.send_raw_transaction(
-                signed_tx.rawTransaction
-            ))
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(signed_tx.rawTransaction))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
     def sign_hash(self, unsigned_hash: str) -> SignedMessage:
-        raise NotImplementedError(
-            'sign_hash is not implemented for hardware wallet'
-        )
+        raise NotImplementedError('sign_hash is not implemented for hardware wallet')
 
     @classmethod
     def parse_derive_result(cls, exchange_result: bytearray) -> Tuple[ChecksumAddress, str]:
         pk_len = exchange_result[0]
-        pk = HexStr(exchange_result[1: pk_len + 1].hex()[2:])
+        pk = HexStr(exchange_result[1 : pk_len + 1].hex()[2:])
         address = public_key_to_address(pk)
         checksum_address = to_checksum_address(address)
         return checksum_address, pk
@@ -217,10 +210,7 @@ class LedgerWallet(BaseWallet):
         P1 = b'\x00'
         P2 = b'\x00'
         payload_size_in_bytes = len(payload).to_bytes(1, 'big')
-        apdu = b''.join([
-            LedgerWallet.CLA, INS, P1, P2,
-            payload_size_in_bytes, payload
-        ])
+        apdu = b''.join([LedgerWallet.CLA, INS, P1, P2, payload_size_in_bytes, payload])
         return cast(bytearray, self.dongle.exchange(apdu))
 
     def get_address_with_public_key(self) -> tuple[ChecksumAddress, str]:
@@ -229,34 +219,23 @@ class LedgerWallet(BaseWallet):
         return LedgerWallet.parse_derive_result(exchange_result)
 
     def wait(
-            self,
-            tx_hash: _Hash32,
-            blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-            timeout: int = MAX_WAITING_TIME
+        self,
+        tx_hash: _Hash32,
+        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+        timeout: int = MAX_WAITING_TIME,
     ) -> TxReceipt:
         return wait_for_receipt_by_blocks(
-            self._web3,
-            tx_hash,
-            blocks_to_wait=blocks_to_wait,
-            timeout=timeout
+            self._web3, tx_hash, blocks_to_wait=blocks_to_wait, timeout=timeout
         )
 
 
 def hardware_sign_and_send(
-        web3: Web3,
-        method: ContractFunction,
-        gas_amount: int,
-        wallet: LedgerWallet
+    web3: Web3, method: ContractFunction, gas_amount: int, wallet: LedgerWallet
 ) -> str:
     address_from = wallet.address
     eth_nonce = get_eth_nonce(web3, address_from)
-    tx_dict = method.build_transaction({
-        'gas': gas_amount,
-        'nonce': eth_nonce
-    })
+    tx_dict = method.build_transaction({'gas': gas_amount, 'nonce': eth_nonce})
     signed_txn = wallet.sign(tx_dict)
     tx = web3.eth.send_raw_transaction(signed_txn.rawTransaction).hex()
-    logger.info(
-        f'{method.__class__.__name__} - transaction_hash: {tx}'
-    )
+    logger.info(f'{method.__class__.__name__} - transaction_hash: {tx}')
     return tx

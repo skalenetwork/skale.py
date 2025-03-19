@@ -36,7 +36,7 @@ from skale.transactions.exceptions import (
     TransactionError,
     TransactionNotMinedError,
     TransactionNotSentError,
-    TransactionWaitError
+    TransactionWaitError,
 )
 from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, get_receipt, MAX_WAITING_TIME
 from skale.wallets import BaseWallet
@@ -76,10 +76,7 @@ class TxRecordStatus(str, Enum):
 
 TxRecord = TypedDict(
     'TxRecord',
-    {
-        'status': TxRecordStatus,
-        'tx_hash': HexStr
-    },
+    {'status': TxRecordStatus, 'tx_hash': HexStr},
 )
 
 
@@ -127,7 +124,7 @@ class RedisWalletAdapter(BaseWallet):
         tx: TxParams,
         score: int,
         multiplier: float = config.DEFAULT_GAS_MULTIPLIER,
-        method: Optional[str] = None
+        method: Optional[str] = None,
     ) -> Tuple[bytes, bytes]:
         tx_id = cls._make_raw_id()
         params = {
@@ -136,7 +133,7 @@ class RedisWalletAdapter(BaseWallet):
             'multiplier': multiplier,
             'tx_hash': None,
             'method': method,
-            **tx
+            **tx,
         }
         # Ensure gas will be restimated in TM
         params['gas'] = None
@@ -158,17 +155,14 @@ class RedisWalletAdapter(BaseWallet):
         tx: TxParams,
         multiplier: Optional[float] = None,
         priority: Optional[int] = None,
-        method: Optional[str] = None
+        method: Optional[str] = None,
     ) -> HexStr:
         priority = priority or config.DEFAULT_PRIORITY
         try:
             logger.info('Sending %s to redis pool, method: %s', tx, method)
             score = self._make_score(priority)
             raw_id, tx_record = self._make_record(
-                tx,
-                score,
-                multiplier=multiplier or config.DEFAULT_GAS_MULTIPLIER,
-                method=method
+                tx, score, multiplier=multiplier or config.DEFAULT_GAS_MULTIPLIER, method=method
             )
             pipe = self.rs.pipeline()
             logger.info('Adding tx %s to the pool', raw_id)
@@ -189,25 +183,21 @@ class RedisWalletAdapter(BaseWallet):
         response = self.rs.get(rid)
         if isinstance(response, bytes):
             parsed_json = json.loads(response.decode('utf-8'))
-            return TxRecord({
-                'status': parsed_json['status'],
-                'tx_hash': parsed_json['tx_hash']
-            })
+            return TxRecord({'status': parsed_json['status'], 'tx_hash': parsed_json['tx_hash']})
         raise ValueError('Unknown value was returned from get() call', response)
 
     def wait(
         self,
         tx_id: _Hash32,
         blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-        timeout: int = MAX_WAITING_TIME
+        timeout: int = MAX_WAITING_TIME,
     ) -> TxReceipt:
         start_ts = time.time()
         status, result = None, None
-        while status not in [
-            TxRecordStatus.DROPPED,
-            TxRecordStatus.SUCCESS,
-            TxRecordStatus.FAILED
-        ] and time.time() - start_ts < timeout:
+        while (
+            status not in [TxRecordStatus.DROPPED, TxRecordStatus.SUCCESS, TxRecordStatus.FAILED]
+            and time.time() - start_ts < timeout
+        ):
             try:
                 record = self.get_record(tx_id)
                 if record is not None:

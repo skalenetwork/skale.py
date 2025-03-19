@@ -26,7 +26,7 @@ from eth_typing import HexStr
 from skale.transactions.exceptions import (
     DryRunFailedError,
     DryRunRevertError,
-    TransactionFailedError
+    TransactionFailedError,
 )
 
 
@@ -44,10 +44,10 @@ class TxCallResult(NamedTuple):
 
 class TxRes:
     def __init__(
-            self,
-            tx_call_result: TxCallResult | None = None,
-            tx_hash: HexStr | None = None,
-            receipt: TxReceipt | None = None
+        self,
+        tx_call_result: TxCallResult | None = None,
+        tx_hash: HexStr | None = None,
+        receipt: TxReceipt | None = None,
     ):
         self.tx_call_result = tx_call_result
         self.tx_hash = tx_hash
@@ -70,8 +70,7 @@ class TxRes:
         if self.receipt is not None:
             if self.receipt['status'] == TxStatus.FAILED:
                 raise TransactionFailedError(
-                    "Tx status is failed",
-                    {key: str(value) for key, value in self.receipt.items()}
+                    'Tx status is failed', {key: str(value) for key, value in self.receipt.items()}
                 )
         elif self.tx_call_result is not None and self.tx_call_result.status == TxStatus.FAILED:
             if self.tx_call_result.error == 'revert':

@@ -1,28 +1,23 @@
-""" SKALE node rotation test """
+"""SKALE node rotation test"""
 
 import logging
 
 import pytest
 
 from skale.utils.contracts_provision.main import (
-    add_test4_schain_type, cleanup_nodes_schains, create_schain
+    add_test4_schain_type,
+    cleanup_nodes_schains,
+    create_schain,
 )
 from skale.utils.contracts_provision import DEFAULT_SCHAIN_NAME
 from skale.schain_config.rotation_history import get_previous_schain_groups, get_new_nodes_list
-from tests.rotation_history.utils import (
-    set_up_nodes,
-    run_dkg,
-    remove_node,
-    rotate_node,
-    fail_dkg
-)
+from tests.rotation_history.utils import set_up_nodes, run_dkg, remove_node, rotate_node, fail_dkg
 
 logger = logging.getLogger(__name__)
 
 
 def test_get_previous_node_no_node(skale):
-    assert skale.node_rotation.get_previous_node(
-        DEFAULT_SCHAIN_NAME, 0) is None
+    assert skale.node_rotation.get_previous_node(DEFAULT_SCHAIN_NAME, 0) is None
 
 
 @pytest.fixture
@@ -33,7 +28,7 @@ def four_node_schain(skale, validator):
         name = create_schain(
             skale,
             schain_type=2,  # test4 type
-            random_name=True
+            random_name=True,
         )
         yield nodes, skale_instances, name
     finally:
@@ -53,8 +48,7 @@ def test_rotation_history(skale, four_node_schain):
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=1)
 
     previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
+        name, nodes[exiting_node_index]['node_id']
     )
     assert previous_node_id == exiting_node_id
 
@@ -65,8 +59,7 @@ def test_rotation_history(skale, four_node_schain):
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=2)
 
     previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
+        name, nodes[exiting_node_index]['node_id']
     )
     assert previous_node_id == exiting_node_id
 
@@ -77,8 +70,7 @@ def test_rotation_history(skale, four_node_schain):
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=3)
 
     previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
+        name, nodes[exiting_node_index]['node_id']
     )
     assert previous_node_id == exiting_node_id
 
@@ -89,8 +81,7 @@ def test_rotation_history(skale, four_node_schain):
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=4)
 
     previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
+        name, nodes[exiting_node_index]['node_id']
     )
     assert previous_node_id == exiting_node_id
 
@@ -101,8 +92,7 @@ def test_rotation_history(skale, four_node_schain):
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=5)
 
     previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
+        name, nodes[exiting_node_index]['node_id']
     )
     assert previous_node_id == exiting_node_id
 
@@ -150,14 +140,10 @@ def test_rotation_history_single_rotation(skale, four_node_schain):
 
 @pytest.mark.parametrize(
     'first_node_index_to_exit,failed_node_index,second_node_index_to_exit',
-    [(1, 2, 1), (1, 2, 3), (2, 2, 2)]
+    [(1, 2, 1), (1, 2, 3), (2, 2, 2)],
 )
 def test_rotation_history_failed_dkg(
-    skale,
-    four_node_schain,
-    first_node_index_to_exit,
-    failed_node_index,
-    second_node_index_to_exit
+    skale, four_node_schain, first_node_index_to_exit, failed_node_index, second_node_index_to_exit
 ):
     nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.keccak(text=name)
@@ -168,8 +154,15 @@ def test_rotation_history_failed_dkg(
 
     group_ids_0 = skale.schains_internal.get_node_ids_for_schain(name)
 
-    rotate_node(skale, group_index, nodes, skale_instances,
-                first_node_index_to_exit, do_dkg=False, rotation_id=1)
+    rotate_node(
+        skale,
+        group_index,
+        nodes,
+        skale_instances,
+        first_node_index_to_exit,
+        do_dkg=False,
+        rotation_id=1,
+    )
 
     group_ids_1 = skale.schains_internal.get_node_ids_for_schain(name)
 
@@ -183,8 +176,7 @@ def test_rotation_history_failed_dkg(
     rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=3)
 
     previous_node_id = skale.node_rotation.get_previous_node(
-        name,
-        nodes[exiting_node_index]['node_id']
+        name, nodes[exiting_node_index]['node_id']
     )
     assert previous_node_id == exiting_node_id
 
@@ -222,8 +214,9 @@ def test_get_new_nodes_list(skale, four_node_schain):
     run_dkg(nodes, skale_instances, group_index, rotation_id=0)
 
     exiting_node_index = 1  # in group
-    rotate_node(skale, group_index, nodes, skale_instances,
-                exiting_node_index, do_dkg=False, rotation_id=1)
+    rotate_node(
+        skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False, rotation_id=1
+    )
 
     failed_node_index = 2
     second_failed_node_index = 3
@@ -234,14 +227,12 @@ def test_get_new_nodes_list(skale, four_node_schain):
         group_index=group_index,
         failed_node_index=failed_node_index,
         second_failed_node_index=second_failed_node_index,
-        rotation_id=1
+        rotation_id=1,
     )
 
     rotation = skale.node_rotation.get_rotation(name)
     node_groups = get_previous_schain_groups(
-        skale=skale,
-        schain_name=name,
-        leaving_node_id=rotation.leaving_node_id
+        skale=skale, schain_name=name, leaving_node_id=rotation.leaving_node_id
     )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 
@@ -253,9 +244,7 @@ def test_get_new_nodes_list(skale, four_node_schain):
 
     rotation = skale.node_rotation.get_rotation(name)
     node_groups = get_previous_schain_groups(
-        skale=skale,
-        schain_name=name,
-        leaving_node_id=rotation.leaving_node_id
+        skale=skale, schain_name=name, leaving_node_id=rotation.leaving_node_id
     )
     new_nodes = get_new_nodes_list(skale, name, node_groups)
 

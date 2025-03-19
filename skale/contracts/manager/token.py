@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE token operations """
+"""SKALE token operations"""
 
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
@@ -47,6 +47,6 @@ class Token(SkaleManagerContract):
         address: ChecksumAddress,
         amount: Wei,
         user_data: bytes = b'',
-        operator_data: bytes = b''
+        operator_data: bytes = b'',
     ) -> ContractFunction:
         return self.contract.functions.mint(address, amount, user_data, operator_data)

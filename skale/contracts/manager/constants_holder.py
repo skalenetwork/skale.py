@@ -27,10 +27,7 @@ from skale.contracts.skale_manager_contract import SkaleManagerContract
 class ConstantsHolder(SkaleManagerContract):
     @transaction_method
     def set_periods(self, new_reward_period: int, new_delta_period: int) -> ContractFunction:
-        return self.contract.functions.setPeriods(
-            new_reward_period,
-            new_delta_period
-        )
+        return self.contract.functions.setPeriods(new_reward_period, new_delta_period)
 
     def get_reward_period(self) -> int:
         return int(self.contract.functions.rewardPeriod().call())

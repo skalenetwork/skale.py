@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Contract info utilities """
+"""Contract info utilities"""
 
 from __future__ import annotations
 from typing import Generic, NamedTuple, Type, TYPE_CHECKING

@@ -31,8 +31,14 @@ from skale.utils.helper import format_fields
 
 
 FIELDS = [
-    'address', 'validator_id', 'amount', 'delegation_period', 'created',
-    'started', 'finished', 'info'
+    'address',
+    'validator_id',
+    'amount',
+    'delegation_period',
+    'created',
+    'started',
+    'finished',
+    'info',
 ]
 
 
@@ -65,11 +71,13 @@ class DelegationController(SkaleManagerContract):
         :rtype: dict
         """
         delegation = self.get_delegation(delegation_id)
-        return FullDelegation({
-            'id': delegation_id,
-            'status': self._get_delegation_status(delegation_id),
-            **delegation
-        })
+        return FullDelegation(
+            {
+                'id': delegation_id,
+                'status': self._get_delegation_status(delegation_id),
+                **delegation,
+            }
+        )
 
     def __raw_get_delegation(self, delegation_id: DelegationId) -> List[Any]:
         """Returns raw delegation fields.
@@ -80,21 +88,16 @@ class DelegationController(SkaleManagerContract):
         return list(self.contract.functions.getDelegation(delegation_id).call())
 
     def _get_delegation_ids_by_validator(self, validator_id: ValidatorId) -> List[DelegationId]:
-        delegation_ids_len = self._get_delegation_ids_len_by_validator(
-            validator_id)
+        delegation_ids_len = self._get_delegation_ids_len_by_validator(validator_id)
         return [
-            DelegationId(
-                self.contract.functions.delegationsByValidator(validator_id, _id).call()
-            )
+            DelegationId(self.contract.functions.delegationsByValidator(validator_id, _id).call())
             for _id in range(delegation_ids_len)
         ]
 
     def _get_delegation_ids_by_holder(self, address: ChecksumAddress) -> List[DelegationId]:
         delegation_ids_len = self._get_delegation_ids_len_by_holder(address)
         return [
-            DelegationId(
-                self.contract.functions.delegationsByHolder(address, _id).call()
-            )
+            DelegationId(self.contract.functions.delegationsByHolder(address, _id).call())
             for _id in range(delegation_ids_len)
         ]
 
@@ -119,10 +122,7 @@ class DelegationController(SkaleManagerContract):
         :returns: List of formatted delegations
         :rtype: list
         """
-        return [
-            self.skale.delegation_controller.get_delegation_full(_id)
-            for _id in delegation_ids
-        ]
+        return [self.skale.delegation_controller.get_delegation_full(_id) for _id in delegation_ids]
 
     def get_all_delegations_by_holder(self, address: ChecksumAddress) -> List[FullDelegation]:
         """Returns list of formatted delegations for token holder.
@@ -148,11 +148,7 @@ class DelegationController(SkaleManagerContract):
 
     @transaction_method
     def delegate(
-            self,
-            validator_id: ValidatorId,
-            amount: Wei,
-            delegation_period: int,
-            info: str
+        self, validator_id: ValidatorId, amount: Wei, delegation_period: int, info: str
     ) -> ContractFunction:
         """Creates request to delegate amount of tokens to validator_id.
 
@@ -193,7 +189,7 @@ class DelegationController(SkaleManagerContract):
 
     @transaction_method
     def request_undelegation(self, delegation_id: DelegationId) -> ContractFunction:
-        """ This method is  for undelegating request in the end of
+        """This method is  for undelegating request in the end of
             delegation period (3/6/12 months)
 
         :param delegation_id: ID of the delegation to undelegate
@@ -237,13 +233,15 @@ class DelegationController(SkaleManagerContract):
         return Wei(self.contract.functions.getAndUpdateDelegatedAmount(address).call())
 
     def _to_delegation(self, delegation: Dict[str, Any]) -> Delegation:
-        return Delegation({
-            'address': ChecksumAddress(delegation['address']),
-            'validator_id': ValidatorId(delegation['validator_id']),
-            'amount': Wei(delegation['amount']),
-            'delegation_period': int(delegation['delegation_period']),
-            'created': int(delegation['created']),
-            'started': int(delegation['started']),
-            'finished': int(delegation['finished']),
-            'info': str(delegation['info'])
-        })
+        return Delegation(
+            {
+                'address': ChecksumAddress(delegation['address']),
+                'validator_id': ValidatorId(delegation['validator_id']),
+                'amount': Wei(delegation['amount']),
+                'delegation_period': int(delegation['delegation_period']),
+                'created': int(delegation['created']),
+                'started': int(delegation['started']),
+                'finished': int(delegation['finished']),
+                'info': str(delegation['info']),
+            }
+        )

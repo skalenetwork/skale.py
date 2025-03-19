@@ -1,4 +1,4 @@
-""" SKALE test constants """
+"""SKALE test constants"""
 
 import os
 from decimal import Decimal
@@ -26,8 +26,17 @@ LIFETIME_YEARS = 1
 LIFETIME_SECONDS = LIFETIME_YEARS * 366 * 86400
 
 EMPTY_SCHAIN_ARR = [
-    '', '0x0000000000000000000000000000000000000000', 0, 0, 0, 0, 0, 0, 0, 0,
-    '0x0000000000000000000000000000000000000000'
+    '',
+    '0x0000000000000000000000000000000000000000',
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    '0x0000000000000000000000000000000000000000',
 ]
 
 MIN_NODES_IN_SCHAIN = 2
@@ -38,10 +47,12 @@ ENDPOINT = os.environ['ENDPOINT']
 
 HELPER_SCRIPTS_DIR = os.path.join(DIR_PATH, os.pardir, 'helper-scripts')
 
-TEST_ABI_FILEPATH = os.getenv('TEST_ABI_FILEPATH') or \
-    os.path.join(HELPER_SCRIPTS_DIR, 'contracts_data', 'manager.json')
-TEST_ALLOCATOR_ABI_FILEPATH = os.getenv('TEST_ALLOCATOR_ABI_FILEPATH') or \
-    os.path.join(HELPER_SCRIPTS_DIR, 'contracts_data', 'universal.json')
+TEST_ABI_FILEPATH = os.getenv('TEST_ABI_FILEPATH') or os.path.join(
+    HELPER_SCRIPTS_DIR, 'contracts_data', 'manager.json'
+)
+TEST_ALLOCATOR_ABI_FILEPATH = os.getenv('TEST_ALLOCATOR_ABI_FILEPATH') or os.path.join(
+    HELPER_SCRIPTS_DIR, 'contracts_data', 'universal.json'
+)
 IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
 
@@ -80,3 +91,19 @@ DELEGATION_STRUCT_LEN = 8
 TEST_ECDSA_KEY_NAME = 'NEK:36224eb0296c6c28c3c73942cf28b5ba449e4a1e6472d52d459627c4d9479b21'
 
 TEST_GAS_LIMIT = 10000000
+
+SCHAIN_FIELDS = [
+    'name',
+    'mainnet_owner',
+    'index_in_owner_list',
+    'part_of_node',
+    'lifetime',
+    'start_date',
+    'start_block',
+    'deposit',
+    'index',
+    'generation',
+    'originator',
+    'chain_id',
+    'options',
+]
