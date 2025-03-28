@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Nodes.sol functions """
+"""Nodes.sol functions"""
 
 import socket
 from typing import Any, Dict, List, Tuple, cast
@@ -35,8 +35,17 @@ from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.helper import format_fields
 
 FIELDS = [
-    'name', 'ip', 'publicIP', 'port', 'start_block',
-    'last_reward_date', 'finish_time', 'status', 'validator_id', 'publicKey', 'domain_name'
+    'name',
+    'ip',
+    'publicIP',
+    'port',
+    'start_block',
+    'last_reward_date',
+    'finish_time',
+    'status',
+    'validator_id',
+    'publicKey',
+    'domain_name',
 ]
 
 
@@ -97,7 +106,7 @@ class Nodes(SkaleManagerContract):
         ]
 
     def name_to_id(self, name: str) -> bytes:
-        keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
+        keccak_hash = keccak.new(data=name.encode('utf8'), digest_bits=256)
         return keccak_hash.digest()
 
     def is_node_name_available(self, name: str) -> bool:
@@ -127,8 +136,7 @@ class Nodes(SkaleManagerContract):
     def __get_node_public_key_raw(self, node_id: NodeId) -> Tuple[bytes, bytes]:
         try:
             return cast(
-                Tuple[bytes, bytes],
-                self.contract.functions.getNodePublicKey(node_id).call()
+                Tuple[bytes, bytes], self.contract.functions.getNodePublicKey(node_id).call()
             )
         except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
@@ -146,8 +154,7 @@ class Nodes(SkaleManagerContract):
         """
         return [
             NodeId(id)
-            for id
-            in self.contract.functions.getValidatorNodeIndexes(validator_id).call()
+            for id in self.contract.functions.getValidatorNodeIndexes(validator_id).call()
         ]
 
     def get_last_change_ip_time(self, node_id: NodeId) -> int:
@@ -192,17 +199,19 @@ class Nodes(SkaleManagerContract):
     def _to_node(self, untyped_node: Dict[str, Any]) -> Node:
         for key in Node.__annotations__:
             if key not in untyped_node:
-                raise ValueError(f"Key: {key} is not available in node.")
-        return Node({
-            'name': str(untyped_node['name']),
-            'ip': bytes(untyped_node['ip']),
-            'publicIP': bytes(untyped_node['publicIP']),
-            'port': Port(untyped_node['port']),
-            'start_block': BlockNumber(untyped_node['start_block']),
-            'last_reward_date': int(untyped_node['last_reward_date']),
-            'finish_time': int(untyped_node['finish_time']),
-            'status': NodeStatus(untyped_node['status']),
-            'validator_id': ValidatorId(untyped_node['validator_id']),
-            'publicKey': str(untyped_node['publicKey']),
-            'domain_name': str(untyped_node['domain_name']),
-        })
+                raise ValueError(f'Key: {key} is not available in node.')
+        return Node(
+            {
+                'name': str(untyped_node['name']),
+                'ip': bytes(untyped_node['ip']),
+                'publicIP': bytes(untyped_node['publicIP']),
+                'port': Port(untyped_node['port']),
+                'start_block': BlockNumber(untyped_node['start_block']),
+                'last_reward_date': int(untyped_node['last_reward_date']),
+                'finish_time': int(untyped_node['finish_time']),
+                'status': NodeStatus(untyped_node['status']),
+                'validator_id': ValidatorId(untyped_node['validator_id']),
+                'publicKey': str(untyped_node['publicKey']),
+                'domain_name': str(untyped_node['domain_name']),
+            }
+        )

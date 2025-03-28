@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE helper utilities """
+"""SKALE helper utilities"""
 
 from __future__ import annotations
 
@@ -50,37 +50,20 @@ WrapperReturnType = Dict[str, Any] | List[Dict[str, Any]] | None
 
 
 def format_fields(
-        fields: list[str],
-        flist: bool = False
-) -> Callable[
-    [
-        Callable[
-            ...,
-            List[Any]
-        ]
-    ],
-    Callable[..., WrapperReturnType]
-]:
+    fields: list[str], flist: bool = False
+) -> Callable[[Callable[..., List[Any]]], Callable[..., WrapperReturnType]]:
     """
-        Transform array to object with passed fields
-        Usage:
-        @format(['field_name1', 'field_name2'])
-        def my_method()
-            return [0, 'Test']
+    Transform array to object with passed fields
+    Usage:
+    @format(['field_name1', 'field_name2'])
+    def my_method()
+        return [0, 'Test']
 
-        => {'field_name1': 0, 'field_name2': 'Test'}
+    => {'field_name1': 0, 'field_name2': 'Test'}
     """
 
-    def real_decorator(
-            function: Callable[
-                ...,
-                List[Any]
-            ]
-    ) -> Callable[..., WrapperReturnType]:
-        def wrapper(
-                *args: Any,
-                **kwargs: Any
-        ) -> WrapperReturnType:
+    def real_decorator(function: Callable[..., List[Any]]) -> Callable[..., WrapperReturnType]:
+        def wrapper(*args: Any, **kwargs: Any) -> WrapperReturnType:
             result = function(*args, **kwargs)
 
             if result is None:
@@ -156,8 +139,7 @@ def generate_random_ip() -> str:  # pragma: no cover
 
 
 def generate_random_name(length: int = 8) -> str:  # pragma: no cover
-    return ''.join(
-        random.choices(string.ascii_uppercase + string.digits, k=length))
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 def generate_random_port() -> Port:  # pragma: no cover
@@ -166,9 +148,7 @@ def generate_random_port() -> Port:  # pragma: no cover
 
 def generate_custom_config(ip: str, ws_port: Port) -> dict[str, str | Port]:
     if not ip or not ws_port:
-        raise ValueError(
-            f'For custom init you should provide ip and ws_port: {ip}, {ws_port}'
-        )
+        raise ValueError(f'For custom init you should provide ip and ws_port: {ip}, {ws_port}')
     return {
         'ip': ip,
         'ws_port': ws_port,
@@ -187,8 +167,7 @@ def rm_0x_prefix(bytes_string: str) -> str:
 
 def init_default_logger() -> None:  # pragma: no cover
     handlers = []
-    formatter = Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     stream_handler = StreamHandler(sys.stderr)
     stream_handler.setFormatter(formatter)
@@ -220,7 +199,7 @@ def split_public_key(public_key: str) -> list[bytes]:
 
 
 def get_contracts_info(
-        contracts_data: list[ContractInfo[SkaleType]]
+    contracts_data: list[ContractInfo[SkaleType]],
 ) -> dict[str, ContractInfo[SkaleType]]:
     contracts_info = {}
     for contract_info in contracts_data:
@@ -234,4 +213,4 @@ def to_camel_case(snake_str: str) -> str:
 
 
 def is_test_env() -> bool:
-    return "pytest" in sys.modules or ENV == 'test'
+    return 'pytest' in sys.modules or ENV == 'test'

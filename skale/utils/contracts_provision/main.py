@@ -41,10 +41,11 @@ from skale.utils.contracts_provision import (
     D_STAKE_MULTIPLIER,
     INITIAL_DELEGATION_PERIOD,
     DEFAULT_DOMAIN_NAME,
-    MONTH_IN_SECONDS
+    MONTH_IN_SECONDS,
 )
 from skale.utils.contracts_provision.utils import (
-    generate_random_node_data, generate_random_schain_data
+    generate_random_node_data,
+    generate_random_schain_data,
 )
 
 
@@ -147,23 +148,19 @@ def add_all_permissions(skale: SkaleManager, address: ChecksumAddress) -> None:
 def add_test2_schain_type(skale: SkaleManager) -> TxRes:
     part_of_node = 1
     number_of_nodes = 2
-    return skale.schains_internal.add_schain_type(
-        part_of_node, number_of_nodes
-    )
+    return skale.schains_internal.add_schain_type(part_of_node, number_of_nodes)
 
 
 def add_test4_schain_type(skale: SkaleManager) -> TxRes:
     part_of_node = 1
     number_of_nodes = 4
-    return skale.schains_internal.add_schain_type(
-        part_of_node, number_of_nodes
-    )
+    return skale.schains_internal.add_schain_type(part_of_node, number_of_nodes)
 
 
 def cleanup_nodes(skale: SkaleManager, ids: list[NodeId] | None = None) -> None:
     active_ids = filter(
         lambda i: skale.nodes.get_node_status(i) == NodeStatus.ACTIVE,
-        ids or skale.nodes.get_active_node_ids()
+        ids or skale.nodes.get_active_node_ids(),
     )
     for node_id in active_ids:
         if skale.nodes.get(node_id):
@@ -200,24 +197,20 @@ def create_node(skale: SkaleManager) -> str:
         name=name,
         domain_name=DEFAULT_DOMAIN_NAME,
         public_ip=public_ip,
-        wait_for=True
+        wait_for=True,
     )
     return name
 
 
 def validator_exist(skale: SkaleManager) -> bool:
-    return skale.validator_service.validator_address_exists(
-        skale.wallet.address
-    )
+    return skale.validator_service.validator_address_exists(skale.wallet.address)
 
 
 def add_delegation_period(skale: SkaleManager) -> None:
     is_added = skale.delegation_period_manager.is_delegation_period_allowed(D_DELEGATION_PERIOD)
     if not is_added:
         skale.delegation_period_manager.set_delegation_period(
-            months_count=D_DELEGATION_PERIOD,
-            stake_multiplier=D_STAKE_MULTIPLIER,
-            wait_for=True
+            months_count=D_DELEGATION_PERIOD, stake_multiplier=D_STAKE_MULTIPLIER, wait_for=True
         )
 
 
@@ -233,9 +226,7 @@ def setup_validator(skale: SkaleManager) -> int:
     if not skale.validator_service.get(validator_id)['trusted']:
         enable_validator(skale, validator_id)
     delegate_to_validator(skale, validator_id)
-    delegations = skale.delegation_controller.get_all_delegations_by_validator(
-        validator_id
-    )
+    delegations = skale.delegation_controller.get_all_delegations_by_validator(validator_id)
     accept_pending_delegation(skale, delegations[-1]['id'])
     _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
     return validator_id
@@ -245,44 +236,35 @@ def link_address_to_validator(skale: SkaleManager) -> None:
     print('Linking address to validator')
     signature = skale.validator_service.get_link_node_signature(D_VALIDATOR_ID)
     tx_res = skale.validator_service.link_node_address(
-        node_address=skale.wallet.address,
-        signature=signature,
-        wait_for=True
+        node_address=skale.wallet.address, signature=signature, wait_for=True
     )
     tx_res.raise_for_status()
 
 
 def link_nodes_to_validator(
-        skale: SkaleManager,
-        validator_id: ValidatorId,
-        node_skale_objs: Tuple[SkaleManager] | None = None
+    skale: SkaleManager,
+    validator_id: ValidatorId,
+    node_skale_objs: Tuple[SkaleManager] | None = None,
 ) -> None:
     print('Linking address to validator')
     node_skale_objs = node_skale_objs or (skale,)
     validator_id = validator_id or D_VALIDATOR_ID
     for node_skale in node_skale_objs:
-        signature = node_skale.validator_service.get_link_node_signature(
-            validator_id
-        )
+        signature = node_skale.validator_service.get_link_node_signature(validator_id)
         skale.validator_service.link_node_address(
-            node_address=node_skale.wallet.address,
-            signature=signature
+            node_address=node_skale.wallet.address, signature=signature
         )
 
 
 def skip_delegation_delay(skale: SkaleManager, delegation_id: int) -> None:
     print(f'Activating delegation with ID {delegation_id}')
-    skale.token_state._skip_transition_delay(
-        delegation_id,
-        wait_for=True
-    )
+    skale.token_state._skip_transition_delay(delegation_id, wait_for=True)
 
 
 def accept_pending_delegation(skale: SkaleManager, delegation_id: int) -> None:
     print(f'Accepting delegation with ID: {delegation_id}')
     skale.delegation_controller.accept_pending_delegation(
-        delegation_id=delegation_id,
-        wait_for=True
+        delegation_id=delegation_id, wait_for=True
     )
 
 
@@ -292,10 +274,7 @@ def get_test_delegation_amount(skale: SkaleManager) -> int:
 
 
 def set_test_msr(skale: SkaleManager, msr: int = D_VALIDATOR_MIN_DEL) -> None:
-    skale.constants_holder._set_msr(
-        new_msr=msr,
-        wait_for=True
-    )
+    skale.constants_holder._set_msr(new_msr=msr, wait_for=True)
 
 
 def set_test_mda(skale: SkaleManager) -> None:
@@ -309,7 +288,7 @@ def delegate_to_validator(skale: SkaleManager, validator_id: int = D_VALIDATOR_I
         amount=get_test_delegation_amount(skale),
         delegation_period=INITIAL_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
-        wait_for=True
+        wait_for=True,
     )
 
 
@@ -325,7 +304,7 @@ def create_validator(skale: SkaleManager) -> None:
         description=D_VALIDATOR_DESC,
         fee_rate=D_VALIDATOR_FEE,
         min_delegation_amount=D_VALIDATOR_MIN_DEL,
-        wait_for=True
+        wait_for=True,
     )
 
 
@@ -341,12 +320,9 @@ def create_nodes(skales: List[SkaleManager], names: List[str] | None = None) -> 
             name=name,
             domain_name=DEFAULT_DOMAIN_NAME,
             public_ip=public_ip,
-            wait_for=True
+            wait_for=True,
         )
-    ids = [
-        skales[0].nodes.node_name_to_index(name)
-        for name in node_names
-    ]
+    ids = [skales[0].nodes.node_name_to_index(name) for name in node_names]
     return ids
 
 
@@ -355,7 +331,7 @@ def create_schain(
     schain_name: str = DEFAULT_SCHAIN_NAME,
     schain_type: int = 1,
     random_name: bool = False,
-    schain_options: SchainOptions | None = None
+    schain_options: SchainOptions | None = None,
 ) -> str:
     print('Creating schain')
     # create 1 s-chain
@@ -374,6 +350,6 @@ def create_schain(
         schain_name,
         options=schain_options,
         wait_for=True,
-        value=TEST_SRW_FUND_VALUE
+        value=TEST_SRW_FUND_VALUE,
     )
     return schain_name

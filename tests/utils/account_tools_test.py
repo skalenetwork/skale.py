@@ -1,19 +1,22 @@
-""" SKALE account tools test """
+"""SKALE account tools test"""
 
 from unittest import mock
 import pytest
 
 from skale.transactions.exceptions import TransactionNotMinedError
-from skale.utils.account_tools import (check_ether_balance, generate_account,
-                                       generate_accounts, send_eth,
-                                       send_tokens, check_skale_balance)
+from skale.utils.account_tools import (
+    check_ether_balance,
+    generate_account,
+    generate_accounts,
+    send_eth,
+    send_tokens,
+    check_skale_balance,
+)
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.web3_utils import get_eth_nonce
 from skale.wallets.web3_wallet import generate_wallet, Web3Wallet
 
-from tests.constants import (TOKEN_TRANSFER_VALUE,
-                             ETH_TRANSFER_VALUE,
-                             N_TEST_WALLETS)
+from tests.constants import TOKEN_TRANSFER_VALUE, ETH_TRANSFER_VALUE, N_TEST_WALLETS
 
 
 def test_send_tokens(skale, empty_account):
@@ -33,35 +36,33 @@ def test_send_tokens(skale, empty_account):
 def test_send_eth(skale, empty_account):
     sender_balance = check_ether_balance(skale.web3, skale.wallet.address)
 
-    send_eth(
-        skale.web3,
-        skale.wallet,
-        empty_account.address,
-        ETH_TRANSFER_VALUE
-    )
+    send_eth(skale.web3, skale.wallet, empty_account.address, ETH_TRANSFER_VALUE)
 
-    receiver_balance_after = check_ether_balance(skale.web3,
-                                                 empty_account.address)
-    sender_balance_after = check_ether_balance(
-        skale.web3, skale.wallet.address)
+    receiver_balance_after = check_ether_balance(skale.web3, empty_account.address)
+    sender_balance_after = check_ether_balance(skale.web3, skale.wallet.address)
 
     assert receiver_balance_after == ETH_TRANSFER_VALUE
     # check that sender_balance_after
     # have decreased by ETH_TRANSFER_VALUE and some gas
-    assert sender_balance - 2 * ETH_TRANSFER_VALUE < sender_balance_after < \
-        sender_balance - ETH_TRANSFER_VALUE
+    assert (
+        sender_balance - 2 * ETH_TRANSFER_VALUE
+        < sender_balance_after
+        < sender_balance - ETH_TRANSFER_VALUE
+    )
 
 
 def test_send_eth_with_gas_price(skale, empty_account, block_in_seconds):
     def get_signed_tx_with_custom_gas_price(gas_price):
         wei_amount = skale.web3.to_wei(ETH_TRANSFER_VALUE, 'ether')
-        return skale.wallet.sign({
-            'to': empty_account.address,
-            'value': wei_amount,
-            'gasPrice': gas_price,
-            'gas': 22000,
-            'nonce': get_eth_nonce(skale.web3, skale.wallet.address)
-        })
+        return skale.wallet.sign(
+            {
+                'to': empty_account.address,
+                'value': wei_amount,
+                'gasPrice': gas_price,
+                'gas': 22000,
+                'nonce': get_eth_nonce(skale.web3, skale.wallet.address),
+            }
+        )
 
     # Send tx with small gas price
     small_gas_price = 6
@@ -71,28 +72,23 @@ def test_send_eth_with_gas_price(skale, empty_account, block_in_seconds):
             skale.wallet,
             empty_account.address,
             ETH_TRANSFER_VALUE,
-            gas_price=small_gas_price
+            gas_price=small_gas_price,
         )
 
-    custom_default_gas_price = 101 * 10 ** 9
+    custom_default_gas_price = 101 * 10**9
     with mock.patch(
-            'skale.utils.account_tools.default_gas_price',
-            return_value=custom_default_gas_price
+        'skale.utils.account_tools.default_gas_price', return_value=custom_default_gas_price
     ):
         receipt = send_eth(
-            skale.web3,
-            skale.wallet,
-            empty_account.address,
-            ETH_TRANSFER_VALUE,
-            wait_for=True
+            skale.web3, skale.wallet, empty_account.address, ETH_TRANSFER_VALUE, wait_for=True
         )
         assert receipt['effectiveGasPrice'] == custom_default_gas_price
 
     # Send ether with default avg gas price
     avg_gas_price = skale.web3.eth.gas_price * GAS_PRICE_COEFFICIENT
     receipt = send_eth(
-        skale.web3, skale.wallet, empty_account.address,
-        ETH_TRANSFER_VALUE, wait_for=True)
+        skale.web3, skale.wallet, empty_account.address, ETH_TRANSFER_VALUE, wait_for=True
+    )
     assert receipt['effectiveGasPrice'] == avg_gas_price
 
 
@@ -104,12 +100,7 @@ def test_generate_account(skale):
 
 def test_generate_accounts(skale):
     results = generate_accounts(
-        skale,
-        skale.wallet,
-        N_TEST_WALLETS,
-        TOKEN_TRANSFER_VALUE,
-        ETH_TRANSFER_VALUE,
-        debug=True
+        skale, skale.wallet, N_TEST_WALLETS, TOKEN_TRANSFER_VALUE, ETH_TRANSFER_VALUE, debug=True
     )
     assert len(results) == N_TEST_WALLETS
 

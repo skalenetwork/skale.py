@@ -36,6 +36,7 @@ class SChainNotFoundException(Exception):
 
 class InvalidNodeIdError(Exception):
     """Raised when wrong node id passed"""
+
     def __init__(self, node_id: int):
-        message = f'Node with ID = {node_id} doesn\'t exist!'
+        message = f"Node with ID = {node_id} doesn't exist!"
         super().__init__(message)

@@ -10,7 +10,7 @@ from skale.utils.web3_utils import (
     EthClientOutdatedError,
     get_last_known_block_number,
     init_web3,
-    save_last_known_block_number
+    save_last_known_block_number,
 )
 
 from tests.constants import ENDPOINT
@@ -33,10 +33,7 @@ def last_block_file():
 
 @pytest.fixture
 def skale_block_file(last_block_file):
-    w3 = init_web3(
-        ENDPOINT,
-        state_path=last_block_file
-    )
+    w3 = init_web3(ENDPOINT, state_path=last_block_file)
     skale = init_skale(w3)
     yield skale
 
@@ -91,18 +88,14 @@ def test_transaction_with_last_block_file(last_block_file, skale_block_file):
     save_last_known_block_number(state_path, needed_block)
 
     new_rotation_delay = 100
-    skale.constants_holder.set_rotation_delay(new_rotation_delay,
-                                              wait_for=True)
+    skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)
 
     current_block = skale.web3.eth.block_number
     last_block = current_block + 100
     save_last_known_block_number(state_path, last_block)
     new_rotation_delay = 101
     with pytest.raises(EthClientOutdatedError):
-        skale.constants_holder.set_rotation_delay(
-            new_rotation_delay,
-            wait_for=True
-        )
+        skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)
 
 
 def test_transaction_with_outdated_client(skale):
@@ -113,14 +106,10 @@ def test_transaction_with_outdated_client(skale):
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff)
     new_rotation_delay = 100
     with freeze_time(dt):
-        skale.constants_holder.set_rotation_delay(
-            new_rotation_delay, wait_for=True)
+        skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)
 
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 15)
     new_rotation_delay = 101
     with freeze_time(dt):
         with pytest.raises(EthClientOutdatedError):
-            skale.constants_holder.set_rotation_delay(
-                new_rotation_delay,
-                wait_for=True
-            )
+            skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)

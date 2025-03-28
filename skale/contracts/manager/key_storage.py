@@ -33,6 +33,5 @@ class KeyStorage(SkaleManagerContract):
     def get_all_previous_public_keys(self, schain_hash: SchainHash) -> List[G2Point]:
         return [
             G2Point(*key)
-            for key
-            in self.contract.functions.getAllPreviousPublicKeys(schain_hash).call()
+            for key in self.contract.functions.getAllPreviousPublicKeys(schain_hash).call()
         ]

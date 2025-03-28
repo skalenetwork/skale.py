@@ -1,4 +1,4 @@
-""" SKALE token test """
+"""SKALE token test"""
 
 from tests.constants import TOKEN_TRANSFER_VALUE
 
@@ -27,8 +27,7 @@ def test_transfer_wait_for(skale, empty_account):
     assert receiver_balance == 0
     assert sender_balance != 0
 
-    tx_res = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE,
-                                  wait_for=True)
+    tx_res = skale.token.transfer(empty_account.address, TOKEN_TRANSFER_VALUE, wait_for=True)
 
     assert tx_res.receipt['status'] == 1
 

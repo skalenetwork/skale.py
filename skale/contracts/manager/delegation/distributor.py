@@ -38,10 +38,13 @@ def formatter(method: Callable[..., Tuple[Wei, int]]) -> Callable[..., EarnedDat
     @wraps(method)
     def wrapper(self: SkaleManagerContract, *args: Any, **kwargs: Any) -> EarnedData:
         res = method(self, *args, **kwargs)
-        return EarnedData({
-            'earned': res[0],
-            'end_month': res[1],
-        })
+        return EarnedData(
+            {
+                'earned': res[0],
+                'end_month': res[1],
+            }
+        )
+
     return wrapper
 
 
@@ -50,9 +53,7 @@ class Distributor(SkaleManagerContract):
 
     @formatter
     def get_earned_bounty_amount(
-            self,
-            validator_id: ValidatorId,
-            address: ChecksumAddress
+        self, validator_id: ValidatorId, address: ChecksumAddress
     ) -> Tuple[Wei, int]:
         """Get earned bounty amount for the validator
 
@@ -61,9 +62,11 @@ class Distributor(SkaleManagerContract):
         :returns: Earned bounty amount and end month
         :rtype: dict
         """
-        return tuple(self.contract.functions.getAndUpdateEarnedBountyAmount(validator_id).call({
-            'from': address
-        }))
+        return tuple(
+            self.contract.functions.getAndUpdateEarnedBountyAmount(validator_id).call(
+                {'from': address}
+            )
+        )
 
     @formatter
     def get_earned_fee_amount(self, address: str) -> Tuple[Wei, int]:
@@ -74,9 +77,7 @@ class Distributor(SkaleManagerContract):
         :returns: Earned bounty amount and end month
         :rtype: dict
         """
-        return tuple(self.contract.functions.getEarnedFeeAmount().call({
-            'from': address
-        }))
+        return tuple(self.contract.functions.getEarnedFeeAmount().call({'from': address}))
 
     @transaction_method
     def withdraw_bounty(self, validator_id: ValidatorId, to: ChecksumAddress) -> ContractFunction:

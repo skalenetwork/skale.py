@@ -7,24 +7,22 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        "flake8==3.8.3",
-        "isort>=4.2.15,<5.4.3",
-        "importlib-metadata<5.0"
+        'ruff==0.9.10',
+        'isort>=4.2.15,<5.4.3',
+        'importlib-metadata<5.0',
     ],
     'dev': [
-        "bumpversion==0.6.0",
-        "click==7.1.2",
-        "freezegun==1.2.2",
-        "mock==4.0.2",
-        "pytest==7.1.3",
-        "pytest-cov==2.8.1",
-        "Random-Word==1.0.4",
-        "twine==4.0.2",
-        "when-changed"
+        'bumpversion==0.6.0',
+        'click==7.1.2',
+        'freezegun==1.2.2',
+        'mock==4.0.2',
+        'pytest==7.1.3',
+        'pytest-cov==2.8.1',
+        'Random-Word==1.0.4',
+        'twine==4.0.2',
+        'when-changed',
     ],
-    'hw-wallet': [
-        "ledgerblue==0.1.47"
-    ]
+    'hw-wallet': ['ledgerblue==0.1.47'],
 }
 
 extras_require['dev'] = (
@@ -33,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='7',
+    version='7.0',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -41,18 +39,16 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        "asyncio==3.4.3",
-        "pyyaml==6.0",
-        "redis==5.0.3",
-        "sgx.py==0.9dev2",
-        "skale-contracts==1.0.1a5",
-        "typing-extensions==4.9.0",
-        "web3==6.13.0"
+        'asyncio==3.4.3',
+        'pyyaml==6.0',
+        'redis==5.0.3',
+        'sgx.py==0.9dev5',
+        'skale-contracts==1.0.2a26',
+        'typing-extensions==4.9.0',
+        'web3==6.20.2',
     ],
-
     python_requires='>=3.7,<4',
     extras_require=extras_require,
-
     keywords='skale',
     packages=find_packages(exclude=['tests']),
     classifiers=[
@@ -61,5 +57,5 @@ setup(
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.7',
-    ]
+    ],
 )

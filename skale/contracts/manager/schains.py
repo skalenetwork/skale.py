@@ -16,7 +16,7 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" Schains.sol functions """
+"""Schains.sol functions"""
 
 import functools
 from dataclasses import asdict
@@ -34,16 +34,17 @@ from skale.contracts.manager.node_rotation import NodeRotation
 from skale.contracts.manager.schains_internal import SChainsInternal
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
-from skale.types.schain import SchainHash, SchainName, SchainStructure, SchainStructureWithStatus
-from skale.dataclasses.schain_options import (
-    SchainOptions, get_default_schain_options, parse_schain_options
+from skale.types.schain import (
+    SchainHash,
+    SchainName,
+    SchainStructure,
+    SchainStructureWithStatus,
 )
-
-
-FIELDS = [
-    'name', 'mainnetOwner', 'indexInOwnerList', 'partOfNode', 'lifetime', 'startDate', 'startBlock',
-    'deposit', 'index', 'generation', 'originator', 'chainId', 'options'
-]
+from skale.dataclasses.schain_options import (
+    SchainOptions,
+    get_default_schain_options,
+    parse_schain_options,
+)
 
 
 class SChains(SkaleManagerContract):
@@ -65,7 +66,7 @@ class SChains(SkaleManagerContract):
     def get(self, id_: SchainHash) -> SchainStructure:
         res = self.schains_internal.get_raw(id_)
         options = self.get_options(id_)
-        return SchainStructure(**asdict(res), chainId=self.name_to_id(res.name), options=options)
+        return SchainStructure(**asdict(res), chain_id=self.name_to_id(res.name), options=options)
 
     def get_by_name(self, name: SchainName) -> SchainStructure:
         id_ = self.name_to_id(name)
@@ -87,8 +88,7 @@ class SChains(SkaleManagerContract):
         for schain_id in schain_ids:
             simple_schain = self.get(schain_id)
             schain = SchainStructureWithStatus(
-                **asdict(simple_schain),
-                active=self.schain_active(simple_schain)
+                **asdict(simple_schain), active=self.schain_active(simple_schain)
             )
             schains.append(schain)
         return schains
@@ -98,15 +98,12 @@ class SChains(SkaleManagerContract):
         schain_ids = self.schains_internal.get_active_schain_ids_for_node(node_id)
         for schain_id in schain_ids:
             simple_schain = self.get(schain_id)
-            schain = SchainStructureWithStatus(
-                **asdict(simple_schain),
-                active=True
-            )
+            schain = SchainStructureWithStatus(**asdict(simple_schain), active=True)
             schains.append(schain)
         return schains
 
     def name_to_id(self, name: SchainName) -> SchainHash:
-        keccak_hash = keccak.new(data=name.encode("utf8"), digest_bits=256)
+        keccak_hash = keccak.new(data=name.encode('utf8'), digest_bits=256)
         return SchainHash(Web3.to_bytes(hexstr=Web3.to_hex(hexstr=HexStr(keccak_hash.hexdigest()))))
 
     def get_last_rotation_id(self, schain_name: SchainName) -> int:
@@ -114,15 +111,15 @@ class SChains(SkaleManagerContract):
         return rotation_data.rotation_counter
 
     def schain_active(self, schain: SchainStructure) -> bool:
-        if schain.name != '' and \
-                schain.mainnetOwner != '0x0000000000000000000000000000000000000000':
+        if (
+            schain.name != ''
+            and schain.mainnet_owner != '0x0000000000000000000000000000000000000000'
+        ):
             return True
         return False
 
     def get_schain_price(self, index_of_type: int, lifetime: int) -> Wei:
-        return Wei(
-            self.contract.functions.getSchainPrice(index_of_type, lifetime).call()
-        )
+        return Wei(self.contract.functions.getSchainPrice(index_of_type, lifetime).call())
 
     @transaction_method
     def add_schain_by_foundation(
@@ -133,7 +130,7 @@ class SChains(SkaleManagerContract):
         name: SchainName,
         options: SchainOptions | None = None,
         schain_owner: ChecksumAddress | None = None,
-        schain_originator: ChecksumAddress | None = None
+        schain_originator: ChecksumAddress | None = None,
     ) -> ContractFunction:
         if schain_owner is None:
             schain_owner = self.skale.wallet.address
@@ -149,7 +146,7 @@ class SChains(SkaleManagerContract):
             name,
             schain_owner,
             schain_originator,
-            options.to_tuples()
+            options.to_tuples(),
         )
 
     @transaction_method
@@ -163,9 +160,7 @@ class SChains(SkaleManagerContract):
         return list(self.contract.functions.getOptions(schain_id).call())
 
     def get_options(self, schain_id: SchainHash) -> SchainOptions:
-        return parse_schain_options(
-            raw_options=self.__raw_get_options(schain_id)
-        )
+        return parse_schain_options(raw_options=self.__raw_get_options(schain_id))
 
     def get_options_by_name(self, name: SchainName) -> SchainOptions:
         id_ = self.name_to_id(name)
