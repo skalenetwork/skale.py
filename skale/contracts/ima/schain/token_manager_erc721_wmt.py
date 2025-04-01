@@ -20,6 +20,7 @@
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from Crypto.Hash import keccak
+from eth_typing import ChecksumAddress
 
 
 class TokenManagerERC721WithMetadata(BaseContract):
@@ -30,22 +31,16 @@ class TokenManagerERC721WithMetadata(BaseContract):
 
     @transaction_method
     def add_erc721(self, schain_name: str, token_mn: int, token_sc: int) -> TxRes:
-        return self.contract.functions.addERC721TokenByOwner(
-            schain_name, token_mn, token_sc
-        )
+        return self.contract.functions.addERC721TokenByOwner(schain_name, token_mn, token_sc)
 
     @transaction_method
     def enable_automatic_deploy(self) -> TxRes:
         return self.contract.functions.enableAutomaticDeploy()
 
     @transaction_method
-    def transfer_to_schain_erc721(
-        self, schain_name: str, address: int, token_id: int
-    ) -> TxRes:
+    def transfer_to_schain_erc721(self, schain_name: str, address: int, token_id: int) -> TxRes:
         """address - token address on origin chain"""
-        return self.contract.functions.transferToSchainERC721(
-            schain_name, address, token_id
-        )
+        return self.contract.functions.transferToSchainERC721(schain_name, address, token_id)
 
     @transaction_method
     def disable_automatic_deploy(self) -> TxRes:
@@ -65,13 +60,13 @@ class TokenManagerERC721WithMetadata(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
     def get_role_member(self, role: bytes, index: int) -> bytes:
         return self.contract.functions.getRoleMember(role, index).call()
 
-    def get_clones_erc721(self, schain_hash: bytes, address: str) -> int:
-        keccak_hash = keccak.new(data=schain_hash.encode("utf8"), digest_bits=256)
+    def get_clones_erc721(self, schain_name: str, address: ChecksumAddress) -> int:
+        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         hash = keccak_hash.digest()
         return self.contract.functions.clonesErc721(hash, address).call()

@@ -19,6 +19,7 @@
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from eth_typing import ChecksumAddress
 
 
 class MessageProxyForSchain(BaseContract):
@@ -36,5 +37,5 @@ class MessageProxyForSchain(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.grantRole(role, address)

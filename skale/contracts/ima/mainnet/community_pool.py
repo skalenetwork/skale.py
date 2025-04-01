@@ -21,6 +21,7 @@ from Crypto.Hash import keccak
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
+from eth_typing import ChecksumAddress
 
 
 class CommunityPool(BaseContract):
@@ -43,17 +44,15 @@ class CommunityPool(BaseContract):
     def get_balance(self, address: int, schain_name: str) -> int:
         return self.contract.functions.getBalance(address, schain_name).call()
 
-    def check_user_balance(self, schain_name: bytes, receiver: int) -> bool:
-        keccak_hash = keccak.new(data=schain_name.encode("utf8"), digest_bits=256)
+    def check_user_balance(self, schain_name: str, receiver: int) -> bool:
+        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         schain_id = keccak_hash.digest()
         return self.contract.functions.checkUserBalance(schain_id, receiver).call()
 
-    def get_recommended_recharge_amount(self, schain_hash: bytes, receiver: int) -> int:
-        keccak_hash = keccak.new(data=schain_hash.encode("utf8"), digest_bits=256)
+    def get_recommended_recharge_amount(self, schain_name: str, receiver: int) -> int:
+        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         schain_id = keccak_hash.digest()
-        return self.contract.functions.getRecommendedRechargeAmount(
-            schain_id, receiver
-        ).call()
+        return self.contract.functions.getRecommendedRechargeAmount(schain_id, receiver).call()
 
     def constant_setter_role(self) -> bool:
         return self.contract.functions.CONSTANT_SETTER_ROLE().call()
@@ -65,7 +64,7 @@ class CommunityPool(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
     def get_role_member(self, role: bytes, index: int) -> bytes:

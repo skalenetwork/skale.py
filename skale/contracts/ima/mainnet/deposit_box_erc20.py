@@ -20,6 +20,7 @@
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from Crypto.Hash import keccak
+from eth_typing import ChecksumAddress
 
 
 class DepositBoxERC20(BaseContract):
@@ -48,9 +49,7 @@ class DepositBoxERC20(BaseContract):
     def deposit_erc20_direct(
         self, schain_name: str, address: int, amount: int, receiver: int
     ) -> TxRes:
-        return self.contract.functions.depositERC20Direct(
-            schain_name, address, amount, receiver
-        )
+        return self.contract.functions.depositERC20Direct(schain_name, address, amount, receiver)
 
     @transaction_method
     def set_big_transfer_value(self, schain_name: str, token: int, value: int) -> TxRes:
@@ -68,8 +67,8 @@ class DepositBoxERC20(BaseContract):
     def trust_receiver(self, schain_name: str, address: int) -> TxRes:
         return self.contract.functions.trustReceiver(schain_name, address)
 
-    def is_receiver_trusted(self, schain_hash: bytes, address: int) -> bool:
-        keccak_hash = keccak.new(data=schain_hash.encode("utf8"), digest_bits=256)
+    def is_receiver_trusted(self, schain_name: str, address: int) -> bool:
+        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         schain_id = keccak_hash.digest()
         return self.contract.functions.isReceiverTrusted(schain_id, address).call()
 
@@ -83,7 +82,7 @@ class DepositBoxERC20(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
     def get_role_member(self, role: bytes, index: int) -> bytes:
