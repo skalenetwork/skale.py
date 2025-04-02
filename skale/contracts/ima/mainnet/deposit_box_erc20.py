@@ -21,53 +21,54 @@ from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
+from skale.types.schain import SchainName
 
 
 class DepositBoxERC20(BaseContract):
     """Deposit Box"""
 
-    def is_whitelisted(self, schain_name: str) -> bool:
+    def is_whitelisted(self, schain_name: SchainName) -> bool:
         return self.contract.functions.isWhitelisted(schain_name).call()
 
     @transaction_method
-    def enable_whitelist(self, schain_name: str) -> TxRes:
+    def enable_whitelist(self, schain_name: SchainName) -> TxRes:
         return self.contract.functions.enableWhitelist(schain_name)
 
     @transaction_method
-    def disable_whitelist(self, schain_name: str) -> TxRes:
+    def disable_whitelist(self, schain_name: SchainName) -> TxRes:
         return self.contract.functions.disableWhitelist(schain_name)
 
     @transaction_method
-    def add_erc20_token(self, schain_name: str, address: int) -> TxRes:
+    def add_erc20_token(self, schain_name: SchainName, address: int) -> TxRes:
         return self.contract.functions.addERC20TokenByOwner(schain_name, address)
 
     @transaction_method
-    def deposit_erc20(self, schain_name: str, address: int, amount: int) -> TxRes:
+    def deposit_erc20(self, schain_name: SchainName, address: int, amount: int) -> TxRes:
         return self.contract.functions.depositERC20(schain_name, address, amount)
 
     @transaction_method
     def deposit_erc20_direct(
-        self, schain_name: str, address: int, amount: int, receiver: int
+        self, schain_name: SchainName, address: int, amount: int, receiver: int
     ) -> TxRes:
         return self.contract.functions.depositERC20Direct(schain_name, address, amount, receiver)
 
     @transaction_method
-    def set_big_transfer_value(self, schain_name: str, token: int, value: int) -> TxRes:
+    def set_big_transfer_value(self, schain_name: SchainName, token: int, value: int) -> TxRes:
         return self.contract.functions.setBigTransferValue(schain_name, token, value)
 
     @transaction_method
-    def set_big_transfer_delay(self, schain_name: str, delay: int) -> TxRes:
+    def set_big_transfer_delay(self, schain_name: SchainName, delay: int) -> TxRes:
         return self.contract.functions.setBigTransferDelay(schain_name, delay)
 
     @transaction_method
-    def set_arbitrage_duration(self, schain_name: str, delay: int) -> TxRes:
+    def set_arbitrage_duration(self, schain_name: SchainName, delay: int) -> TxRes:
         return self.contract.functions.setArbitrageDuration(schain_name, delay)
 
     @transaction_method
-    def trust_receiver(self, schain_name: str, address: int) -> TxRes:
+    def trust_receiver(self, schain_name: SchainName, address: int) -> TxRes:
         return self.contract.functions.trustReceiver(schain_name, address)
 
-    def is_receiver_trusted(self, schain_name: str, address: int) -> bool:
+    def is_receiver_trusted(self, schain_name: SchainName, address: int) -> bool:
         keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         schain_id = keccak_hash.digest()
         return self.contract.functions.isReceiverTrusted(schain_id, address).call()

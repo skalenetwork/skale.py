@@ -21,6 +21,7 @@ from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
+from skale.types.schain import SchainName
 
 
 class TokenManagerERC20(BaseContract):
@@ -34,12 +35,14 @@ class TokenManagerERC20(BaseContract):
         return self.contract.functions.exitToMainERC20(token_address, amount)
 
     @transaction_method
-    def transfer_to_schain_erc20(self, schain_name: str, token_address: int, amount: int) -> TxRes:
+    def transfer_to_schain_erc20(
+        self, schain_name: SchainName, token_address: int, amount: int
+    ) -> TxRes:
         return self.contract.functions.transferToSchainERC20(schain_name, token_address, amount)
 
     @transaction_method
     def transfer_to_schain_erc20_direct(
-        self, schain_name: str, token_address: int, amount: int, receiver=str
+        self, schain_name: SchainName, token_address: int, amount: int, receiver=str
     ) -> TxRes:
         return self.contract.functions.transferToSchainERC20Direct(
             schain_name, token_address, amount, receiver
@@ -54,7 +57,7 @@ class TokenManagerERC20(BaseContract):
         )
 
     @transaction_method
-    def add_erc20_token(self, schain_name: str, token_mn: int, token_sc: int) -> TxRes:
+    def add_erc20_token(self, schain_name: SchainName, token_mn: int, token_sc: int) -> TxRes:
         return self.contract.functions.addERC20TokenByOwner(schain_name, token_mn, token_sc)
 
     @transaction_method
@@ -81,7 +84,7 @@ class TokenManagerERC20(BaseContract):
     def get_role_member(self, role: bytes, index: int) -> bytes:
         return self.contract.functions.getRoleMember(role, index).call()
 
-    def get_clones_erc20(self, schain_name: str, address: ChecksumAddress) -> int:
+    def get_clones_erc20(self, schain_name: SchainName, address: ChecksumAddress) -> int:
         """schan_hash - origin chain, address - origin token address"""
         keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         hash = keccak_hash.digest()

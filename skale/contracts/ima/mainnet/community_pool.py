@@ -22,15 +22,16 @@ from Crypto.Hash import keccak
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from eth_typing import ChecksumAddress
+from skale.types.schain import SchainName
 
 
 class CommunityPool(BaseContract):
     @transaction_method
-    def recharge_user_wallet(self, schain_name: str, address: int) -> TxRes:
+    def recharge_user_wallet(self, schain_name: SchainName, address: int) -> TxRes:
         return self.contract.functions.rechargeUserWallet(schain_name, address)
 
     @transaction_method
-    def withdraw_funds(self, schain_name: str, amount: int) -> TxRes:
+    def withdraw_funds(self, schain_name: SchainName, amount: int) -> TxRes:
         return self.contract.functions.withdrawFunds(schain_name, amount)
 
     @transaction_method
@@ -41,15 +42,15 @@ class CommunityPool(BaseContract):
     def set_multiplier(self, new_numerator: int, new_divider: int) -> TxRes:
         return self.contract.functions.setMultiplier(new_numerator, new_divider)
 
-    def get_balance(self, address: int, schain_name: str) -> int:
+    def get_balance(self, address: int, schain_name: SchainName) -> int:
         return self.contract.functions.getBalance(address, schain_name).call()
 
-    def check_user_balance(self, schain_name: str, receiver: int) -> bool:
+    def check_user_balance(self, schain_name: SchainName, receiver: int) -> bool:
         keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         schain_id = keccak_hash.digest()
         return self.contract.functions.checkUserBalance(schain_id, receiver).call()
 
-    def get_recommended_recharge_amount(self, schain_name: str, receiver: int) -> int:
+    def get_recommended_recharge_amount(self, schain_name: SchainName, receiver: int) -> int:
         keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         schain_id = keccak_hash.digest()
         return self.contract.functions.getRecommendedRechargeAmount(schain_id, receiver).call()

@@ -27,15 +27,15 @@ class Paymaster(BaseContract):
     """Paymaster contract"""
 
     def name_to_id(self, schain_name: SchainName) -> SchainHash:
-        keccak_hash = keccak.new(data=schain_name.encode("utf8"), digest_bits=256)
+        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         return keccak_hash.digest()
 
     @transaction_method
-    def add_schain(self, schain_name: str) -> TxRes:
+    def add_schain(self, schain_name: SchainName) -> TxRes:
         return self.contract.functions.addSchain(schain_name)
 
     @transaction_method
-    def remove_schain(self, schain_name: str) -> TxRes:
+    def remove_schain(self, schain_name: SchainName) -> TxRes:
         schain_id = self.name_to_id(schain_name)
         return self.contract.functions.removeSchain(schain_id)
 
@@ -80,7 +80,7 @@ class Paymaster(BaseContract):
         return self.contract.functions.clearHistory(timestamp_before)
 
     @transaction_method
-    def pay(self, schain_name: str, month: int) -> TxRes:
+    def pay(self, schain_name: SchainName, month: int) -> TxRes:
         schain_id = self.name_to_id(schain_name)
         return self.contract.functions.pay(schain_id, month)
 
@@ -92,7 +92,7 @@ class Paymaster(BaseContract):
     def set_version(self, new_version) -> TxRes:
         return self.contract.functions.setVersion(new_version)
 
-    def get_schain_expiration_timestamp(self, schain_name: str) -> TxRes:
+    def get_schain_expiration_timestamp(self, schain_name: SchainName) -> TxRes:
         schain_id = self.name_to_id(schain_name)
         return self.contract.functions.getSchainExpirationTimestamp(schain_id).call()
 
@@ -130,7 +130,7 @@ class Paymaster(BaseContract):
     def get_schain_number(self) -> str:
         return self.contract.functions.getSchainsNumber().call()
 
-    def get_schain(self, schain_name: str) -> list:
+    def get_schain(self, schain_name: SchainName) -> list:
         schain_id = self.name_to_id(schain_name)
         return self.contract.functions.schains(schain_id).call()
 

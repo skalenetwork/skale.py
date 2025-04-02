@@ -20,37 +20,38 @@
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from eth_typing import ChecksumAddress
+from skale.types.schain import SchainName
 
 
 class MessageProxyForMainnet(BaseContract):
     @transaction_method
-    def register_extra_contract(self, schain_name: str, contract_address: int) -> TxRes:
+    def register_extra_contract(self, schain_name: SchainName, contract_address: int) -> TxRes:
         return self.contract.functions.registerExtraContract(schain_name, contract_address)
 
     @transaction_method
-    def remove_extra_contract(self, schain_name: str, contract_address: int) -> TxRes:
+    def remove_extra_contract(self, schain_name: SchainName, contract_address: int) -> TxRes:
         return self.contract.functions.removeExtraContract(schain_name, contract_address)
 
     @transaction_method
-    def add_reimbursed_contract(self, schain_name: str, contract_address: int) -> TxRes:
+    def add_reimbursed_contract(self, schain_name: SchainName, contract_address: int) -> TxRes:
         return self.contract.functions.addReimbursedContract(schain_name, contract_address)
 
     @transaction_method
-    def remove_reimbursed_contracts(self, schain_name: str, contract_address: int) -> TxRes:
+    def remove_reimbursed_contracts(self, schain_name: SchainName, contract_address: int) -> TxRes:
         return self.contract.functions.removeReimbursedContract(schain_name, contract_address)
 
     @transaction_method
-    def pause(self, schain_name: str) -> TxRes:
+    def pause(self, schain_name: SchainName) -> TxRes:
         return self.contract.functions.pause(schain_name)
 
     @transaction_method
-    def resume(self, schain_name: str) -> TxRes:
+    def resume(self, schain_name: SchainName) -> TxRes:
         return self.contract.functions.resume(schain_name)
 
-    def is_connected_chain(self, schain_name: str) -> bool:
+    def is_connected_chain(self, schain_name: SchainName) -> bool:
         return self.contract.functions.isConnectedChain(schain_name)
 
-    def is_reimbursed_contract(self, schain_name: str) -> bool:
+    def is_reimbursed_contract(self, schain_name: SchainName) -> bool:
         return self.contract.functions.isReimbursedContract(schain_name)
 
     def is_paused(self, schian_name: str) -> bool:
