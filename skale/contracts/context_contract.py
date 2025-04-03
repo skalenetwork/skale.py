@@ -18,8 +18,8 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract
-from skale.skale_allocator import SkaleAllocator
+from skale.skale_context import SkaleContext
 
 
-class AllocatorContract(BaseContract[SkaleAllocator]):
+class ContextContract(BaseContract[SkaleContext]):
     pass

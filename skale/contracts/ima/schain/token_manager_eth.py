@@ -17,9 +17,14 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract
-from skale.skale_allocator import SkaleAllocator
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 
 
-class AllocatorContract(BaseContract[SkaleAllocator]):
-    pass
+class TokenManagerETH(BaseContract):
+    @transaction_method
+    def exit_to_main(self, amount: int) -> TxRes:
+        return self.contract.functions.exitToMain(amount)
+
+    def get_erc20(self) -> int:
+        return self.contract.functions.ethErc20().call()

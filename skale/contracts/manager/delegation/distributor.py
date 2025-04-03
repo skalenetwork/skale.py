@@ -69,11 +69,11 @@ class Distributor(SkaleManagerContract):
         )
 
     @formatter
-    def get_earned_fee_amount(self, address: str) -> Tuple[Wei, int]:
+    def get_earned_fee_amount(self, address: ChecksumAddress) -> Tuple[Wei, int]:
         """Get earned fee amount for the address
 
         :param address: Address of the validator
-        :type address: str
+        :type address: ChecksumAddress
         :returns: Earned bounty amount and end month
         :rtype: dict
         """

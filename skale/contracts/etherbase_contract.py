@@ -18,8 +18,8 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract
-from skale.skale_allocator import SkaleAllocator
+from skale.skale_config_controller import SkaleEtherbase
 
 
-class AllocatorContract(BaseContract[SkaleAllocator]):
+class EtherbaseContract(BaseContract[SkaleEtherbase]):
     pass

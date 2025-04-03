@@ -33,6 +33,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, cast
 
 from skale.config import ENV
 from skale.types.node import Port
+from eth_typing import ChecksumAddress
 
 if TYPE_CHECKING:
     from skale.contracts.base_contract import SkaleType
@@ -99,7 +100,7 @@ def ip_to_bytes(ip: str) -> bytes:  # pragma: no cover
     return socket.inet_aton(ip)
 
 
-def is_valid_ipv4_address(address: str) -> bool:
+def is_valid_ipv4_address(address: ChecksumAddress) -> bool:
     try:
         ipaddress.IPv4Address(address)
     except ValueError:

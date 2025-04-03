@@ -128,7 +128,7 @@ class DelegationController(SkaleManagerContract):
         """Returns list of formatted delegations for token holder.
 
         :param address: Ethereum address
-        :type address: str
+        :type address: ChecksumAddress
         :returns: List of formatted delegation requests
         :rtype: list
         """
@@ -226,7 +226,7 @@ class DelegationController(SkaleManagerContract):
         """Amount of delegated tokens by token holder
 
         :param address: Token holder address
-        :type address: str
+        :type address: ChecksumAddress
         :returns: Amount of delegated tokens
         :rtype: int
         """

@@ -27,6 +27,7 @@ from skale.skale_manager import SkaleManager
 from skale.transactions.result import TxRes
 from skale.types.node import NodeId, NodeStatus
 from skale.types.validator import ValidatorId
+from skale.types.schain import SchainName
 from skale.utils.contracts_provision import (
     D_VALIDATOR_ID,
     D_VALIDATOR_MIN_DEL,
@@ -328,7 +329,7 @@ def create_nodes(skales: List[SkaleManager], names: List[str] | None = None) -> 
 
 def create_schain(
     skale: SkaleManager,
-    schain_name: str = DEFAULT_SCHAIN_NAME,
+    schain_name: SchainName = DEFAULT_SCHAIN_NAME,
     schain_type: int = 1,
     random_name: bool = False,
     schain_options: SchainOptions | None = None,
