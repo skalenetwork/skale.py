@@ -75,7 +75,7 @@ class TokenManagerERC1155(BaseContract):
     def token_registrar_role(self) -> bytes:
         return self.contract.functions.TOKEN_REGISTRAR_ROLE().call()
 
-    def has_role(self, role: bytes, address: int) -> bool:
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method

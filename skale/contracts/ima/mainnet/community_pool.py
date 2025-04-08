@@ -27,7 +27,7 @@ from skale.types.schain import SchainName
 
 class CommunityPool(BaseContract):
     @transaction_method
-    def recharge_user_wallet(self, schain_name: SchainName, address: int) -> TxRes:
+    def recharge_user_wallet(self, schain_name: SchainName, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.rechargeUserWallet(schain_name, address)
 
     @transaction_method
@@ -42,7 +42,7 @@ class CommunityPool(BaseContract):
     def set_multiplier(self, new_numerator: int, new_divider: int) -> TxRes:
         return self.contract.functions.setMultiplier(new_numerator, new_divider)
 
-    def get_balance(self, address: int, schain_name: SchainName) -> int:
+    def get_balance(self, address: ChecksumAddress, schain_name: SchainName) -> int:
         return self.contract.functions.getBalance(address, schain_name).call()
 
     def check_user_balance(self, schain_name: SchainName, receiver: int) -> bool:
@@ -61,7 +61,7 @@ class CommunityPool(BaseContract):
     def admin_role(self) -> bytes:
         return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
 
-    def has_role(self, role: bytes, address: int) -> bool:
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method

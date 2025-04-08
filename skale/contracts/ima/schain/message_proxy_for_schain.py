@@ -33,7 +33,7 @@ class MessageProxyForSchain(BaseContract):
     def constant_setter_role(self) -> bytes:
         return self.contract.functions.CONSTANT_SETTER_ROLE().call()
 
-    def has_role(self, role: bytes, address: int) -> bool:
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method

@@ -40,7 +40,7 @@ class TokenManagerERC721WithMetadata(BaseContract):
 
     @transaction_method
     def transfer_to_schain_erc721(
-        self, schain_name: SchainName, address: int, token_id: int
+        self, schain_name: SchainName, address: ChecksumAddress, token_id: int
     ) -> TxRes:
         """address - token address on origin chain"""
         return self.contract.functions.transferToSchainERC721(schain_name, address, token_id)
@@ -53,13 +53,13 @@ class TokenManagerERC721WithMetadata(BaseContract):
         return self.contract.functions.AUTOMATIC_DEPLOY_ROLE().call()
 
     @transaction_method
-    def exit_to_main_erc721(self, address: int, token_id: int) -> TxRes:
+    def exit_to_main_erc721(self, address: ChecksumAddress, token_id: int) -> TxRes:
         return self.contract.functions.exitToMainERC721(address, token_id)
 
     def token_registrar_role(self) -> bytes:
         return self.contract.functions.TOKEN_REGISTRAR_ROLE().call()
 
-    def has_role(self, role: bytes, address: int) -> bool:
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method

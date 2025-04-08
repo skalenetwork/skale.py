@@ -22,6 +22,7 @@ from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
+from skale.transactions.result import TxRes
 from skale.contracts.ima_contract import ImaContract
 from skale.types.schain import SchainName
 
@@ -32,3 +33,13 @@ class Linker(ImaContract):
         self, schain_name: SchainName, mainnet_contracts: List[ChecksumAddress]
     ) -> ContractFunction:
         return self.contract.functions.connectSchain(schain_name, mainnet_contracts)
+
+    def linker_role(self) -> bytes:
+        return self.contract.functions.LINKER_ROLE().call()
+
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
+        return self.contract.functions.hasRole(role, address).call()
+
+    @transaction_method
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+        return self.contract.functions.grantRole(role, address)
