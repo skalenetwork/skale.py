@@ -17,6 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from eth_typing import ChecksumAddress
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
 from skale.types.schain import SchainHash, SchainName
@@ -124,7 +125,7 @@ class Paymaster(BaseContract):
         return self.contract.functions.setNodesAmount(validator_id, amount)
 
     @transaction_method
-    def claim_for(self, validator_id: int, address: int) -> TxRes:
+    def claim_for(self, validator_id: int, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.claimFor(validator_id, address)
 
     def get_schain_number(self) -> str:

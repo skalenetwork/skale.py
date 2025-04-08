@@ -67,7 +67,7 @@ class MessageProxyForMainnet(BaseContract):
     def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
-    def has_role(self, role: bytes, address: int) -> bool:
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
     def get_role_member(self, role: bytes, index: int) -> bytes:

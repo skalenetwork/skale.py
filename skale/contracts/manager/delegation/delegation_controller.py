@@ -139,7 +139,7 @@ class DelegationController(SkaleManagerContract):
         """Returns list of formatted delegations for validator.
 
         :param validator_id: ID of the validator
-        :type address: int
+        :type validator_id: ValidatorId
         :returns: List of formatted delegations
         :rtype: list
         """

@@ -39,16 +39,18 @@ class DepositBoxERC20(BaseContract):
         return self.contract.functions.disableWhitelist(schain_name)
 
     @transaction_method
-    def add_erc20_token(self, schain_name: SchainName, address: int) -> TxRes:
+    def add_erc20_token(self, schain_name: SchainName, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.addERC20TokenByOwner(schain_name, address)
 
     @transaction_method
-    def deposit_erc20(self, schain_name: SchainName, address: int, amount: int) -> TxRes:
+    def deposit_erc20(
+        self, schain_name: SchainName, address: ChecksumAddress, amount: int
+    ) -> TxRes:
         return self.contract.functions.depositERC20(schain_name, address, amount)
 
     @transaction_method
     def deposit_erc20_direct(
-        self, schain_name: SchainName, address: int, amount: int, receiver: int
+        self, schain_name: SchainName, address: ChecksumAddress, amount: int, receiver: int
     ) -> TxRes:
         return self.contract.functions.depositERC20Direct(schain_name, address, amount, receiver)
 
@@ -65,10 +67,10 @@ class DepositBoxERC20(BaseContract):
         return self.contract.functions.setArbitrageDuration(schain_name, delay)
 
     @transaction_method
-    def trust_receiver(self, schain_name: SchainName, address: int) -> TxRes:
+    def trust_receiver(self, schain_name: SchainName, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.trustReceiver(schain_name, address)
 
-    def is_receiver_trusted(self, schain_name: SchainName, address: int) -> bool:
+    def is_receiver_trusted(self, schain_name: SchainName, address: ChecksumAddress) -> bool:
         keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
         schain_id = keccak_hash.digest()
         return self.contract.functions.isReceiverTrusted(schain_id, address).call()
@@ -79,7 +81,7 @@ class DepositBoxERC20(BaseContract):
     def admin_role(self) -> bytes:
         return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
 
-    def has_role(self, role: bytes, address: int) -> bool:
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
