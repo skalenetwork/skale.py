@@ -37,10 +37,9 @@ class SkaleContext(SkaleBase):
 
     def contracts_info(self) -> List[ContractInfo[SkaleContext]]:
         import skale.contracts.context as contracts
-        return [
-            ContractInfo('Context', 'ContextContract',
-                         contracts.Context, ContractTypes.API, False)
 
+        return [
+            ContractInfo('Context', 'ContextContract', contracts.Context, ContractTypes.API, False)
         ]
 
     def set_contracts_info(self) -> None:

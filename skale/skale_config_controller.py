@@ -37,10 +37,15 @@ class SkaleConfigController(SkaleBase):
 
     def contracts_info(self) -> List[ContractInfo[SkaleConfigController]]:
         import skale.contracts.config_controller as contracts
-        return [
-            ContractInfo('ConfigController', 'ConfigController',
-                         contracts.ConfigController, ContractTypes.API, False)
 
+        return [
+            ContractInfo(
+                'ConfigController',
+                'ConfigController',
+                contracts.ConfigController,
+                ContractTypes.API,
+                False,
+            )
         ]
 
     def set_contracts_info(self) -> None:

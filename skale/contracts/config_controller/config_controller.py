@@ -62,9 +62,7 @@ class ConfigController(BaseContract):
         self, transaction_origin: ChecksumAddress, deployer: ChecksumAddress
     ) -> bool:
         return bool(
-            self.contract.functions.isDeploymentAllowed(
-                transaction_origin, deployer
-            ).call()
+            self.contract.functions.isDeploymentAllowed(transaction_origin, deployer).call()
         )
 
     @transaction_method
@@ -72,15 +70,11 @@ class ConfigController(BaseContract):
         return self.contract.functions.grantRole(role, address)
 
     @transaction_method
-    def add_allowed_origin_role_admin(
-        self, role: bytes, address: ChecksumAddress
-    ) -> TxRes:
+    def add_allowed_origin_role_admin(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.addAllowedOriginRoleAdmin(role, address)
 
     @transaction_method
-    def allow_origin(
-        self, transaction_origin: ChecksumAddress, deployer: ChecksumAddress
-    ) -> TxRes:
+    def allow_origin(self, transaction_origin: ChecksumAddress, deployer: ChecksumAddress) -> TxRes:
         return self.contract.functions.allowOrigin(transaction_origin, deployer)
 
     @transaction_method
@@ -96,9 +90,7 @@ class ConfigController(BaseContract):
         return self.contract.functions.renounceRole(role, address)
 
     @transaction_method
-    def remove_allowed_origin_role_admin(
-        self, role: bytes, address: ChecksumAddress
-    ) -> TxRes:
+    def remove_allowed_origin_role_admin(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.removeAllowedOriginRoleAdmin(role, address)
 
     @transaction_method

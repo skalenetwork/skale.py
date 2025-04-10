@@ -52,11 +52,7 @@ class Etherbase(BaseContract):
         return self.contract.functions.getRoleMemberCount(role).call()
 
     @transaction_method
-    def grant_role(
-        self,
-        role: bytes,
-        address: ChecksumAddress
-            ) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
         return self.contract.functions.grantRole(role, address)
 
     @transaction_method

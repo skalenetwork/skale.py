@@ -15,12 +15,12 @@ from skale.contracts.ima.mainnet.deposit_box_erc721_wmt import (
 from skale.contracts.ima.mainnet.deposit_box_erc1155 import DepositBoxERC1155
 
 __all__ = [
-    "MessageProxyForMainnet",
-    "Linker",
-    "CommunityPool",
-    "DepositBoxEth",
-    "DepositBoxERC20",
-    "DepositBoxERC721",
-    "DepositBoxERC1155",
-    "DepositBoxERC721WithMetadata",
+    'MessageProxyForMainnet',
+    'Linker',
+    'CommunityPool',
+    'DepositBoxEth',
+    'DepositBoxERC20',
+    'DepositBoxERC721',
+    'DepositBoxERC1155',
+    'DepositBoxERC721WithMetadata',
 ]
