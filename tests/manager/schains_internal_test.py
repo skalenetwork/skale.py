@@ -10,7 +10,7 @@ from tests.constants import (
 
 def test_get_raw(skale):
     schain_arr = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
-    assert len(FIELDS) == len(schain_arr) + 3  # +1 for chainId + options
+    assert len(FIELDS) == len(schain_arr) + 4  # +1 for chainId + options
 
 
 def test_get_raw_not_exist(skale):
@@ -36,7 +36,7 @@ def test_get_schain_id_by_index_for_owner(skale, schain):
         skale.wallet.address, 0
     )
     schain = skale.schains.get(schain_id)
-    assert schain['mainnetOwner'] == skale.wallet.address
+    assert schain.mainnet_owner == skale.wallet.address
 
 
 def test_get_node_ids_for_schain(skale, schain):

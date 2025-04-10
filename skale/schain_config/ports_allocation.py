@@ -27,7 +27,7 @@ def calc_schain_base_port(node_base_port, schain_index):
 
 def get_schain_index_in_node(schain_name, node_schains):
     for index, schain in enumerate(node_schains):
-        if schain_name == schain['name']:
+        if schain_name == schain.name:
             return index
     raise SChainNotFoundException(f'sChain {schain_name} is not found in the list: {node_schains}')
 

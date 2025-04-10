@@ -33,7 +33,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='6.3',
+    version='6.4',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -43,7 +43,7 @@ setup(
     install_requires=[
         "asyncio==3.4.3",
         "pyyaml==6.0",
-        "sgx.py==0.9dev3",
+        "sgx.py==0.9dev4",
         "redis==5.0.3",
         "typing-extensions==4.9.0",
         "web3==6.20.2"
