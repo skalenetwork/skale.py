@@ -37,10 +37,15 @@ class SkalePaymaster(SkaleBase):
 
     def contracts_info(self) -> List[ContractInfo[SkalePaymaster]]:
         import skale.contracts.paymaster as contracts
-        return [
-            ContractInfo('paymaster', 'FastForwardPaymaster' if self.debug else 'Paymaster',
-                         contracts.Paymaster, ContractTypes.API, False)
 
+        return [
+            ContractInfo(
+                'paymaster',
+                'FastForwardPaymaster' if self.debug else 'Paymaster',
+                contracts.Paymaster,
+                ContractTypes.API,
+                False,
+            )
         ]
 
     def set_contracts_info(self) -> None:
@@ -48,5 +53,5 @@ class SkalePaymaster(SkaleBase):
 
 
 def spawn_skale_ima_lib(paymaster: SkalePaymaster) -> SkalePaymaster:
-    """ Clone skale ima object with the same wallet """
+    """Clone skale ima object with the same wallet"""
     return SkalePaymaster(paymaster._endpoint, paymaster.instance.address, paymaster.wallet)

@@ -37,10 +37,9 @@ class SkaleEtherbase(SkaleBase):
 
     def contracts_info(self) -> List[ContractInfo[SkaleEtherbase]]:
         import skale.contracts.etherbase as contracts
-        return [
-            ContractInfo('Etherbase', 'Etherbase',
-                         contracts.Etherbase, ContractTypes.API, False)
 
+        return [
+            ContractInfo('Etherbase', 'Etherbase', contracts.Etherbase, ContractTypes.API, False)
         ]
 
     def set_contracts_info(self) -> None:

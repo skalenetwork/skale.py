@@ -15,11 +15,11 @@ from skale.contracts.ima.schain.token_manager_erc1155 import TokenManagerERC1155
 from skale.contracts.ima.schain.community_locker import CommunityLocker
 
 __all__ = [
-    "MessageProxyForSchain",
-    "TokenManagerETH",
-    "TokenManagerERC20",
-    "TokenManagerERC721",
-    "TokenManagerERC721WithMetadata",
-    "TokenManagerERC1155",
-    "CommunityLocker",
+    'MessageProxyForSchain',
+    'TokenManagerETH',
+    'TokenManagerERC20',
+    'TokenManagerERC721',
+    'TokenManagerERC721WithMetadata',
+    'TokenManagerERC1155',
+    'CommunityLocker',
 ]
