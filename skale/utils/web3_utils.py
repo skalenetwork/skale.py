@@ -21,21 +21,18 @@
 import logging
 import os
 import time
-from typing import Any, Callable, Dict, Iterable
+from typing import Any, Callable, Dict, Iterable, cast
 from urllib.parse import urlparse
 
 from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, BlockNumber, ChecksumAddress, HexStr
-from web3 import Web3, WebsocketProvider, HTTPProvider
+from web3 import Web3, LegacyWebSocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
-from web3.middleware.attrdict import attrdict_middleware
-from web3.middleware.exception_retry_request import http_retry_request_middleware
-from web3.middleware.geth_poa import geth_poa_middleware
+from web3.middleware import AttributeDictMiddleware, Middleware
 from web3.providers.base import JSONBaseProvider
 from web3.types import (
     _Hash32,
     ENS,
-    Middleware,
     Nonce,
     RPCEndpoint,
     RPCResponse,
@@ -66,7 +63,7 @@ def get_provider(
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
         kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
-        return WebsocketProvider(endpoint, websocket_timeout=timeout, websocket_kwargs=kwargs)
+        return LegacyWebSocketProvider(endpoint, websocket_timeout=timeout, websocket_kwargs=kwargs)
 
     if scheme == 'http' or scheme == 'https':
         kwargs = {'timeout': timeout, **(request_kwargs or {})}
@@ -115,9 +112,7 @@ def outdated_client_file_msg(
 
 def make_client_checking_middleware(
     allowed_ts_diff: int, state_path: str | None = None
-) -> Callable[
-    [Callable[[RPCEndpoint, Any], RPCResponse], Web3], Callable[[RPCEndpoint, Any], RPCResponse]
-]:
+) -> Middleware:
     def eth_client_checking_middleware(
         make_request: Callable[[RPCEndpoint, Any], RPCResponse], web3: Web3
     ) -> Callable[[RPCEndpoint, Any], RPCResponse]:
@@ -154,7 +149,7 @@ def make_client_checking_middleware(
 
         return middleware
 
-    return eth_client_checking_middleware
+    return cast(Middleware, eth_client_checking_middleware)
 
 
 def init_web3(
@@ -169,16 +164,14 @@ def init_web3(
         state_path = state_path or config.LAST_BLOCK_FILE
         if not ts_diff == config.NO_SYNC_TS_DIFF:
             sync_middleware = make_client_checking_middleware(ts_diff, state_path)
-            middewares = [http_retry_request_middleware, sync_middleware, attrdict_middleware]
+            middlewares = [sync_middleware, AttributeDictMiddleware]
         else:
-            middewares = [http_retry_request_middleware, attrdict_middleware]
+            middlewares = [AttributeDictMiddleware]
 
     provider = get_provider(endpoint, timeout=provider_timeout)
     web3 = Web3(provider)
-    # required for rinkeby
-    web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-    for middleware in middewares:
-        web3.middleware_onion.add(middleware)  # todo: may cause issues
+    for middleware in middlewares:
+        web3.middleware_onion.add(middleware)
     return web3
 
 
