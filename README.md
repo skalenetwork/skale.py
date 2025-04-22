@@ -1,15 +1,15 @@
 # skale.py
 
 [![PyPI version](https://badge.fury.io/py/skale.py.svg)](https://badge.fury.io/py/skale.py)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/skalenetwork/skale.py/Test) 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/skalenetwork/skale.py/Test)
 [![codecov](https://codecov.io/gh/skalenetwork/skale.py/branch/develop/graph/badge.svg?token=XHiZ15ijpa)](https://codecov.io/gh/skalenetwork/skale.py)
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/skalenetwork/skale.py)
 [![Discord](https://img.shields.io/discord/534485763354787851.svg)](https://discord.gg/vvUtWJB)
 
 Python client library used in SKALE network components.
 
-- Python 3.7+ support
-- Compatibility with `web3.py` v6
+* Python 3.11+ support
+* Compatibility with `web3.py` v7
 
 ### Installation
 
@@ -21,10 +21,10 @@ pip install skale.py
 
 #### Supported wallets
 
-- Ledger Wallet (works with Ledger Nano S and other models)
-- RPC Wallet (works with [SKALE Transactions Manager](https://github.com/skalenetwork/transactions-manager))
-- SGX Wallet (works with [SKALE SGX Wallet](https://github.com/skalenetwork/sgxwallet))
-- Web3 Wallet (works with `web3.py` embeded functions)
+* Ledger Wallet (works with Ledger Nano S and other models)
+* RPC Wallet (works with [SKALE Transactions Manager](https://github.com/skalenetwork/transactions-manager))
+* SGX Wallet (works with [SKALE SGX Wallet](https://github.com/skalenetwork/sgxwallet))
+* Web3 Wallet (works with `web3.py` embeded functions)
 
 #### Library initialization
 
@@ -60,7 +60,7 @@ schains = skale.schains.get_schains_for_owner('0x...')
 
 #### Working in multiple threads
 
-Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.  
+Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.\
 Take a look on the `tests/multithreading_test.py` for the reference.
 
 #### Code samples

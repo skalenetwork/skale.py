@@ -9,8 +9,8 @@ jobs:
         python-version: [3.11]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      ENDPOINT: "http://localhost:8545"
       MANAGER_TAG: "1.10.0-v1.10.0.0"
     steps:
       - uses: actions/checkout@v4
