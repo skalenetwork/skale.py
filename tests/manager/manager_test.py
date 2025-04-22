@@ -37,7 +37,7 @@ def test_get_bounty(skale):
     }
     exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key
-    ).rawTransaction
+    ).raw_transaction
     with mock.patch.object(
         skale.manager.contract.functions.getBounty, 'call', new=Mock(return_value=[])
     ):

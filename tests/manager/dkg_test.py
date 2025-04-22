@@ -33,7 +33,7 @@ PUBLIC_KEY = '0xfcb3765bdb954ab0672fce731583ad8a94cf05fe63c147f881f8feea18e072d4
 #     rotation_id = 0
 
 #     exp = skale.web3.eth.account.sign_transaction(
-#         expected_txn, skale.wallet._private_key).rawTransaction
+#         expected_txn, skale.wallet._private_key).raw_transaction
 #     with mock.patch.object(skale.dkg.contract.functions.broadcast, 'call',
 #                            new=Mock(return_value=[])):
 #         with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
@@ -79,7 +79,7 @@ def test_response(skale):
 
     exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key
-    ).rawTransaction
+    ).raw_transaction
 
     with mock.patch.object(
         skale.dkg.contract.functions.preResponse, 'call', new=Mock(return_value=[])
@@ -111,7 +111,7 @@ def test_response(skale):
     }
     exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key
-    ).rawTransaction
+    ).raw_transaction
 
     with mock.patch.object(
         skale.dkg.contract.functions.response, 'call', new=Mock(return_value=[])
@@ -151,7 +151,7 @@ def test_alright(skale):
 
     exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key
-    ).rawTransaction
+    ).raw_transaction
 
     with mock.patch.object(skale.dkg.contract.functions.alright, 'call', new=Mock(return_value=[])):
         with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
@@ -183,7 +183,7 @@ def test_complaint(skale):
 
     exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key
-    ).rawTransaction
+    ).raw_transaction
     with mock.patch.object(
         skale.dkg.contract.functions.complaint, 'call', new=Mock(return_value=[])
     ):
@@ -218,7 +218,7 @@ def test_complaint_bad_data(skale):
 
     exp = skale.web3.eth.account.sign_transaction(
         expected_txn, skale.wallet._private_key
-    ).rawTransaction
+    ).raw_transaction
     with mock.patch.object(
         skale.dkg.contract.functions.complaintBadData, 'call', new=Mock(return_value=[])
     ):

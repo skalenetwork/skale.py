@@ -59,7 +59,7 @@ def test_sgx_sign_and_send_without_nonce(wallet):
     }
     signed = wallet.sign(tx_dict)
     wallet.sign_and_send(tx_dict)
-    send_tx_mock.assert_called_with(signed.rawTransaction)
+    send_tx_mock.assert_called_with(signed.raw_transaction)
 
 
 @mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
