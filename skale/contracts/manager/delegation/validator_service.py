@@ -21,7 +21,7 @@ from typing import Any, Dict, List
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.contract.contract import ContractFunction
-from web3.types import Wei
+from web3.types import Wei, HexBytes
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
@@ -224,19 +224,21 @@ class ValidatorService(SkaleManagerContract):
             name, description, fee_rate, min_delegation_amount
         )
 
-    def get_link_node_signature(self, validator_id: ValidatorId) -> str:
+    def get_link_node_signature(self, validator_id: ValidatorId) -> HexBytes:
         unsigned_hash = Web3.solidity_keccak(['uint256'], [validator_id])
         signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
-        return signed_hash.signature.hex()
+        return signed_hash.signature
 
     @transaction_method
-    def link_node_address(self, node_address: ChecksumAddress, signature: str) -> ContractFunction:
+    def link_node_address(
+        self, node_address: ChecksumAddress, signature: HexBytes
+    ) -> ContractFunction:
         """Link node address to your validator account.
 
         :param node_address: Address of the node to link
         :type node_address: str
-        :param signature: Signature - reuslt of the get_link_node_signature function
-        :type signature: str
+        :param signature: Signature - result of the get_link_node_signature function
+        :type signature: HexBytes
         :returns: Transaction results
         :rtype: TxRes
         """

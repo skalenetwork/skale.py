@@ -45,17 +45,6 @@ def prepare_data(cleanup_only):
     if not cleanup_only:
         try:
             setup_validator(skale)
-            # signature = skale.validator_service.get_link_node_signature(
-            #     validator_id=D_VALIDATOR_ID
-            # )
-            # skale.validator_service.link_node_address(
-            #     node_address=skale.wallet.address,
-            #     signature=signature,
-            #     wait_for=True
-            # )
-            # skale.time_helpers_with_debug.skip_time(
-            #     MONTH_IN_SECONDS, wait_for=True
-            # )
             _skip_evm_time(skale.web3, MONTH_IN_SECONDS)
             if skale.constants_holder.get_launch_timestamp() != 0:
                 skale.constants_holder.set_launch_timestamp(0, wait_for=True)
