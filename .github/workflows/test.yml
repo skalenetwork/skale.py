@@ -29,14 +29,9 @@ jobs:
       - name: Lint with ruff
         run: ruff check skale/
 
-      - name: Launch hardhat node
-        working-directory: hardhat-node
-        run: |
-          docker compose up -d && sleep 20
-
       - name: Deploy manager
         run: |
-          bash ./helper-scripts/deploy_test_manager.sh
+          bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
       - name: Show stats before tests
@@ -85,19 +80,14 @@ jobs:
       - name: Install python dependencies
         run: bash ./scripts/install_python_dependencies.sh
 
-      - name: Launch hardhat node
-        working-directory: hardhat-node
-        run: |
-          docker compose up -d && sleep 20
-
       - name: Deploy manager contracts
         run: |
-          bash ./helper-scripts/deploy_test_manager.sh
+          bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
       - name: Deploy allocator contracts
         run: |
-          bash ./helper-scripts/deploy_test_allocator.sh
+          bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
 
       - name: Run tests
