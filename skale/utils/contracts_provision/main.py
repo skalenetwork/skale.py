@@ -67,13 +67,12 @@ def set_automining(web3: Web3, value: bool) -> int:
     return int(res['result'])
 
 
-def set_mining_interval(web3: Web3, ms: int) -> int:
-    res = web3.provider.make_request(RPCEndpoint('evm_setIntervalMining'), [ms])
-    return int(res['result'])
+def set_mining_interval(web3: Web3, ms: int) -> None:
+    web3.provider.make_request(RPCEndpoint('evm_setIntervalMining'), [ms])
 
 
-def set_default_mining_interval(web3: Web3) -> int:
-    return set_mining_interval(web3, DEFAULT_MINING_INTERVAL)
+def set_default_mining_interval(web3: Web3) -> None:
+    set_mining_interval(web3, DEFAULT_MINING_INTERVAL)
 
 
 def add_test_permissions(skale: SkaleManager) -> None:

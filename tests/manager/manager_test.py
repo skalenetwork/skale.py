@@ -142,7 +142,7 @@ def test_node_exit_with_no_schains(skale, nodes):
 
 
 def test_failed_node_exit(skale, block_in_seconds):
-    # block_in_seconds fixuture to return transaction revert in a same way as geth does
+    # block_in_seconds fixture to return transaction revert in a same way as geth does
     not_existed_node_id = 1
     with pytest.raises(DryRunRevertError):
         skale.manager.node_exit(not_existed_node_id, wait_for=True, gas_limit=TEST_GAS_LIMIT)

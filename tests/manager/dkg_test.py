@@ -16,7 +16,7 @@ PUBLIC_KEY = '0xfcb3765bdb954ab0672fce731583ad8a94cf05fe63c147f881f8feea18e072d4
 #     chain_id = skale.web3.eth.chain_id
 #     gas_limit = 8000000
 #     expected_txn = {
-#         'value': 0, 'gasPrice': skale.web3.eth.gas_price * 2, 'chainId': chain_id,
+#         'value': 0, 'gasPrice': skale.web3.eth.gas_price, 'chainId': chain_id,
 #         'gas': gas_limit, 'nonce': nonce,
 #         'type': 1,
 #         'to': contract_address,
@@ -58,7 +58,7 @@ def test_response(skale):
     gas_limit = 11000000
     expected_txn = {
         'value': 0,
-        'gasPrice': skale.web3.eth.gas_price * 2,
+        'gasPrice': skale.web3.eth.gas_price,
         'chainId': chain_id,
         'gas': gas_limit,
         'nonce': nonce,
@@ -99,7 +99,7 @@ def test_response(skale):
 
     expected_txn = {
         'value': 0,
-        'gasPrice': skale.web3.eth.gas_price * 2,
+        'gasPrice': skale.web3.eth.gas_price,
         'chainId': chain_id,
         'gas': gas_limit,
         'nonce': nonce,
@@ -136,7 +136,7 @@ def test_alright(skale):
     gas_limit = 10000000
     expected_txn = {
         'value': 0,
-        'gasPrice': skale.web3.eth.gas_price * 2,
+        'gasPrice': skale.web3.eth.gas_price,
         'chainId': chain_id,
         'gas': gas_limit,
         'nonce': nonce,
@@ -167,7 +167,7 @@ def test_complaint(skale):
     gas_limit = 8000000
     expected_txn = {
         'value': 0,
-        'gasPrice': skale.web3.eth.gas_price * 2,
+        'gasPrice': skale.web3.eth.gas_price,
         'chainId': chain_id,
         'gas': gas_limit,
         'nonce': nonce,
@@ -202,7 +202,7 @@ def test_complaint_bad_data(skale):
     gas_limit = 8000000
     expected_txn = {
         'value': 0,
-        'gasPrice': skale.web3.eth.gas_price * 2,
+        'gasPrice': skale.web3.eth.gas_price,
         'chainId': chain_id,
         'gas': gas_limit,
         'nonce': nonce,

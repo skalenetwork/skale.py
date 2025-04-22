@@ -10,7 +10,7 @@ jobs:
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      ENDPOINT: "http://localhost:8545"
+      ENDPOINT: "http://127.0.0.1:8545"
       MANAGER_TAG: "1.12.0-develop.20"
       RUN_ANVIL: "true"
     steps:
