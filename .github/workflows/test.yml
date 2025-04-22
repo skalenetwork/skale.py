@@ -11,7 +11,8 @@ jobs:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       ENDPOINT: "http://localhost:8545"
-      MANAGER_TAG: "1.10.0-v1.10.0.0"
+      MANAGER_TAG: "1.12.0-develop.20"
+      RUN_ANVIL: "true"
     steps:
       - uses: actions/checkout@v4
         with:
