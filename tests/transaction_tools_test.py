@@ -26,6 +26,7 @@ from tests.constants import (
 )
 
 ETH_IN_WEI = 10**18
+RETRIES_NUMBER = 2
 
 
 def generate_new_skale():
@@ -64,7 +65,6 @@ def test_run_tx_with_retry_dry_run_failed(skale):
     )
     account = generate_account(skale.web3)
     token_amount = 10 * ETH_IN_WEI
-    retries_number = 5
     with mock.patch('skale.contracts.base_contract.make_dry_run_call', dry_run_call_mock):
         tx_res = run_tx_with_retry(
             skale.token.transfer,
@@ -72,47 +72,45 @@ def test_run_tx_with_retry_dry_run_failed(skale):
             token_amount,
             wait_for=True,
             raise_for_status=False,
-            max_retries=retries_number,
+            max_retries=RETRIES_NUMBER,
         )
         with pytest.raises(DryRunFailedError):
             tx_res.raise_for_status()
 
-    assert dry_run_call_mock.call_count == retries_number
+    assert dry_run_call_mock.call_count == RETRIES_NUMBER
 
 
 def test_run_tx_with_retry_tx_failed(failed_skale):
     skale = failed_skale
     account = generate_account(skale.web3)
     token_amount = 10 * ETH_IN_WEI
-    retries_number = 5
     tx_res = run_tx_with_retry(
         skale.token.transfer,
         account['address'],
         token_amount,
         wait_for=True,
         raise_for_status=False,
-        max_retries=retries_number,
+        max_retries=RETRIES_NUMBER,
     )
     with pytest.raises(TransactionFailedError):
         tx_res.raise_for_status()
 
-    assert skale.wallet.sign_and_send.call_count == retries_number
-    assert skale.wallet.wait.call_count == retries_number
+    assert skale.wallet.sign_and_send.call_count == RETRIES_NUMBER
+    assert skale.wallet.wait.call_count == RETRIES_NUMBER
 
 
 def test_run_tx_with_retry_insufficient_balance(skale):
     sender_skale = generate_new_skale()
     token_amount = 10 * ETH_IN_WEI
-    retries_number = 5
     tx_res = run_tx_with_retry(
         sender_skale.token.transfer,
         skale.wallet.address,
         token_amount,
         raise_for_status=False,
-        max_retries=retries_number,
+        max_retries=RETRIES_NUMBER,
     )
 
-    assert tx_res.attempts == retries_number
+    assert tx_res.attempts == RETRIES_NUMBER
 
 
 def test_estimate_gas(skale):
