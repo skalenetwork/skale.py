@@ -27,6 +27,11 @@ jobs:
 
       - name: Lint with ruff
         run: ruff check skale/
+      
+      - name: Launch hardhat node
+        working-directory: hardhat-node
+        run: |
+          docker compose up -d && sleep 20
 
       - name: Deploy manager
         run: |
