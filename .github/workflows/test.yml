@@ -6,13 +6,14 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [manager, allocator]
+        component: [manager, allocator, mirage]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       ENDPOINT: "http://127.0.0.1:8545"
       MANAGER_TAG: "1.12.0-develop.21"
       ALLOCATOR_TAG: "2.2.2-develop.0"
+      MIRAGE_TAG: "0.0.1-develop.9"
       MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +37,7 @@ jobs:
           docker compose up -d && sleep 20
 
       - name: Deploy manager
+        if: ${{ matrix.component == 'allocator' || matrix.component == 'manager' }}
         run: |
           bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
@@ -46,6 +48,12 @@ jobs:
           bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
 
+      - name: Deploy mirage
+        if: ${{ matrix.component == 'mirage' }}
+        run: |
+          bash ./helper-scripts/deploy_mirage.sh
+          docker rmi -f skalenetwork/professional:${{ env.MIRAGE_TAG }}
+  
       - name: Show stats before tests
         if: always()
         run: |
