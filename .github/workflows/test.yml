@@ -41,6 +41,9 @@ jobs:
     needs: common
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Deploy manager
         run: |
           bash ./helper-scripts/deploy_manager.sh
@@ -57,6 +60,9 @@ jobs:
     needs: common
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Deploy manager contracts
         run: |
           bash ./helper-scripts/deploy_manager.sh
