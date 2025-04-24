@@ -23,10 +23,10 @@ import logging
 from functools import wraps
 from typing import Any, Callable, TYPE_CHECKING, Generic, TypeVar
 
-from eth_typing import ChecksumAddress
+from eth_typing import ChecksumAddress, ABI
 from web3 import Web3
 from web3.contract.contract import ContractFunction
-from web3.types import ABI, Nonce, Wei
+from web3.types import Nonce, Wei
 
 import skale.config as config
 from skale.transactions.result import TxRes, TxStatus

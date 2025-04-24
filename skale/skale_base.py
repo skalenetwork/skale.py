@@ -56,7 +56,7 @@ class SkaleBase:
         debug: bool = False,
     ):
         logger.info(
-            'Initializing skale.py, endpoint: %s, wallet: %s', endpoint, type(wallet).__name__
+            'Initializing %s, endpoint: %s, wallet: %s', self.__class__.__name__, endpoint, type(wallet).__name__
         )
         self._endpoint = endpoint
         self.web3 = init_web3(

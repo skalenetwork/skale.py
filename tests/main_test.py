@@ -1,7 +1,7 @@
 """SKALE main test"""
 
 import pytest
-from web3 import HTTPProvider, WebsocketProvider
+from web3 import HTTPProvider, LegacyWebSocketProvider
 
 from skale import SkaleManager
 from skale.utils.helper import get_skale_manager_address
@@ -41,7 +41,7 @@ def test_lib_init():
     skale = SkaleManager(ws_endpoint, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
     assert skale.web3.provider.websocket_timeout == 30
     assert skale.web3.provider.conn.websocket_kwargs == {'max_size': 5 * 1024 * 1024}
-    assert isinstance(skale.web3.provider, WebsocketProvider)
+    assert isinstance(skale.web3.provider, LegacyWebSocketProvider)
 
     file_endpoint = 'file://local_file:1001'
     with pytest.raises(Exception):

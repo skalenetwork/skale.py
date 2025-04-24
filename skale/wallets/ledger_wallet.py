@@ -30,7 +30,7 @@ from eth_account._utils.legacy_transactions import (
     Transaction,
     UnsignedTransaction,
 )
-from eth_account._utils.typed_transactions import TypedTransaction
+from eth_account.typed_transactions.typed_transaction import TypedTransaction
 
 from eth_utils.crypto import keccak
 from rlp import encode
@@ -147,7 +147,7 @@ class LedgerWallet(BaseWallet):
         transaction_hash = keccak(enctx)
 
         return SignedTransaction(
-            rawTransaction=HexBytes(enctx),
+            raw_transaction=HexBytes(enctx),
             hash=HexBytes(transaction_hash),
             v=sign_v,
             r=sign_r,
@@ -190,7 +190,7 @@ class LedgerWallet(BaseWallet):
     ) -> HexStr:
         signed_tx = self.sign(tx)
         try:
-            return Web3.to_hex(self._web3.eth.send_raw_transaction(signed_tx.rawTransaction))
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(signed_tx.raw_transaction))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 
@@ -236,6 +236,6 @@ def hardware_sign_and_send(
     eth_nonce = get_eth_nonce(web3, address_from)
     tx_dict = method.build_transaction({'gas': gas_amount, 'nonce': eth_nonce})
     signed_txn = wallet.sign(tx_dict)
-    tx = web3.eth.send_raw_transaction(signed_txn.rawTransaction).hex()
+    tx = web3.eth.send_raw_transaction(signed_txn.raw_transaction).hex()
     logger.info(f'{method.__class__.__name__} - transaction_hash: {tx}')
     return tx

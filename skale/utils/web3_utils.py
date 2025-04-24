@@ -16,37 +16,23 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-"""SKALE web3 utilities"""
 
-import logging
-import os
 import time
-from typing import Any, Callable, Dict, Iterable
+import logging
+from typing import Any, Dict, Iterable
 from urllib.parse import urlparse
 
 from eth_keys.main import lazy_key_api as keys
-from eth_typing import Address, AnyAddress, BlockNumber, ChecksumAddress, HexStr
-from web3 import Web3, WebsocketProvider, HTTPProvider
+from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
+from web3 import Web3, LegacyWebSocketProvider, HTTPProvider
 from web3.exceptions import TransactionNotFound
-from web3.middleware.attrdict import attrdict_middleware
-from web3.middleware.exception_retry_request import http_retry_request_middleware
-from web3.middleware.geth_poa import geth_poa_middleware
+from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
-from web3.types import (
-    _Hash32,
-    ENS,
-    Middleware,
-    Nonce,
-    RPCEndpoint,
-    RPCResponse,
-    Timestamp,
-    TxReceipt,
-)
+from web3.types import _Hash32, ENS, Nonce, TxReceipt
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionFailedError
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
-from skale.utils.helper import is_test_env
 from skale.transactions.exceptions import TransactionNotMinedError
 
 
@@ -66,95 +52,13 @@ def get_provider(
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
         kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
-        return WebsocketProvider(endpoint, websocket_timeout=timeout, websocket_kwargs=kwargs)
+        return LegacyWebSocketProvider(endpoint, websocket_timeout=timeout, websocket_kwargs=kwargs)
 
     if scheme == 'http' or scheme == 'https':
         kwargs = {'timeout': timeout, **(request_kwargs or {})}
         return HTTPProvider(endpoint, request_kwargs=kwargs)
 
     raise Exception('Wrong endpoint option.Supported endpoint schemes: http/https/ws/wss')
-
-
-class EthClientOutdatedError(Exception):
-    pass
-
-
-class BlockWaitTimeoutError(Exception):
-    pass
-
-
-def get_last_known_block_number(state_path: str) -> int:
-    if not os.path.isfile(state_path):
-        return 0
-    with open(state_path) as last_block_file:
-        return int(last_block_file.read())
-
-
-def save_last_known_block_number(state_path: str, block_number: int) -> None:
-    with open(state_path, 'w') as last_block_file:
-        last_block_file.write(str(block_number))
-
-
-def outdated_client_time_msg(
-    method: RPCEndpoint,
-    current_time: float,
-    latest_block_timestamp: Timestamp,
-    allowed_ts_diff: int,
-) -> str:
-    return f'{method} failed; \
-current_time: {current_time}, latest_block_timestamp: {latest_block_timestamp}, \
-allowed_ts_diff: {allowed_ts_diff}'
-
-
-def outdated_client_file_msg(
-    method: RPCEndpoint, latest_block_number: BlockNumber, saved_number: int, state_path: str
-) -> str:
-    return f'{method} failed: latest_block_number: {latest_block_number}, \
-        saved_number: {saved_number}, state_path: {state_path}'
-
-
-def make_client_checking_middleware(
-    allowed_ts_diff: int, state_path: str | None = None
-) -> Callable[
-    [Callable[[RPCEndpoint, Any], RPCResponse], Web3], Callable[[RPCEndpoint, Any], RPCResponse]
-]:
-    def eth_client_checking_middleware(
-        make_request: Callable[[RPCEndpoint, Any], RPCResponse], web3: Web3
-    ) -> Callable[[RPCEndpoint, Any], RPCResponse]:
-        def middleware(method: RPCEndpoint, params: Any) -> RPCResponse:
-            if method in ('eth_block_number', 'eth_getBlockByNumber'):
-                response = make_request(method, params)
-            else:
-                latest_block = web3.eth.get_block('latest')
-                current_time = time.time()
-
-                if is_test_env():
-                    unsynced = current_time - latest_block['timestamp'] > allowed_ts_diff
-                else:
-                    unsynced = abs(current_time - latest_block['timestamp']) > allowed_ts_diff
-
-                if unsynced:
-                    raise EthClientOutdatedError(
-                        outdated_client_time_msg(
-                            method, current_time, latest_block['timestamp'], allowed_ts_diff
-                        )
-                    )
-
-                if state_path:
-                    saved_number = get_last_known_block_number(state_path)
-                    if latest_block['number'] < saved_number:
-                        raise EthClientOutdatedError(
-                            outdated_client_file_msg(
-                                method, latest_block['number'], saved_number, state_path
-                            )
-                        )
-                    save_last_known_block_number(state_path, latest_block['number'])
-                response = make_request(method, params)
-            return response
-
-        return middleware
-
-    return eth_client_checking_middleware
 
 
 def init_web3(
@@ -164,22 +68,19 @@ def init_web3(
     state_path: str | None = None,
     ts_diff: int | None = None,
 ) -> Web3:
+    provider = get_provider(endpoint, timeout=provider_timeout)
+    w3 = Web3(provider)
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
         if not ts_diff == config.NO_SYNC_TS_DIFF:
-            sync_middleware = make_client_checking_middleware(ts_diff, state_path)
-            middewares = [http_retry_request_middleware, sync_middleware, attrdict_middleware]
+            stalecheck_middleware = StalecheckMiddlewareBuilder.build(config.ALLOWED_TS_DIFF)
+            middlewares = [stalecheck_middleware, AttributeDictMiddleware]
         else:
-            middewares = [http_retry_request_middleware, attrdict_middleware]
-
-    provider = get_provider(endpoint, timeout=provider_timeout)
-    web3 = Web3(provider)
-    # required for rinkeby
-    web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-    for middleware in middewares:
-        web3.middleware_onion.add(middleware)  # todo: may cause issues
-    return web3
+            middlewares = [AttributeDictMiddleware]
+    for middleware in middlewares:
+        w3.middleware_onion.add(middleware)
+    return w3
 
 
 def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:

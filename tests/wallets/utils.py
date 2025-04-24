@@ -24,7 +24,7 @@ class SgxClient:
 
     def sign(self, transaction_dict, key_name):
         return SignedTransaction(
-            rawTransaction=HexBytes('0x000000000000'),
+            raw_transaction=HexBytes('0x000000000000'),
             hash=HexBytes('0x000000000000'),
             r=100000000000,
             s=100000000000,
@@ -33,7 +33,7 @@ class SgxClient:
 
     def sign_hash(self, message, key_name, chain_id):
         return SignedMessage(
-            messageHash=HexBytes('0x31323331'),
+            message_hash=HexBytes('0x31323331'),
             r=123,
             s=123,
             v=27,

@@ -183,25 +183,3 @@ def _compose_bls_public_key_info(bls_public_key: G2Point) -> BlsPublicKey | None
             'blsPublicKey3': str(bls_public_key[1][1]),
         }
     return None
-
-
-def get_new_nodes_list(
-    skale: SkaleManager, name: SchainName, node_groups: Dict[int, NodesGroup]
-) -> list[NodeId]:
-    """Returns list of new nodes in for the latest rotation"""
-    logger.info(f'Getting new nodes list for chain {name}')
-    rotation = skale.node_rotation.get_rotation(name)
-    current_group_ids = node_groups[rotation.rotation_counter]['nodes'].keys()
-    new_nodes = []
-    for index in node_groups:
-        past_rotation = node_groups[index]['rotation']
-        if not past_rotation:
-            continue
-        if past_rotation['new_node_id'] in current_group_ids:
-            new_nodes.append(past_rotation['new_node_id'])
-        else:
-            logger.info(f'{past_rotation["new_node_id"]} NOT IN {current_group_ids}')
-        if rotation.leaving_node_id == past_rotation['leaving_node_id']:
-            break
-    logger.info(f'New nodes list for chain {name}: {new_nodes}')
-    return new_nodes

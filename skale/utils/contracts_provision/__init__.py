@@ -21,13 +21,14 @@ from web3.types import Wei
 
 from skale.types.allocation import TimeUnit
 from skale.types.validator import ValidatorId
+from skale.types.schain import SchainName
 
 # manager test constants
 
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 
-DEFAULT_SCHAIN_NAME = 'test_schain_1'
+DEFAULT_SCHAIN_NAME: SchainName = SchainName('test_schain_1')
 
 DEFAULT_DOMAIN_NAME = 'skale.test'
 

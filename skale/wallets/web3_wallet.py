@@ -99,7 +99,7 @@ class Web3Wallet(BaseWallet):
     ) -> HexStr:
         signed_tx = self.sign(tx_dict)
         try:
-            return Web3.to_hex(self._web3.eth.send_raw_transaction(signed_tx.rawTransaction))
+            return Web3.to_hex(self._web3.eth.send_raw_transaction(signed_tx.raw_transaction))
         except (ValueError, Web3Exception) as e:
             raise TransactionNotSentError(e)
 

@@ -9,9 +9,10 @@ jobs:
         python-version: [3.11]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      ENDPOINT: ${{ secrets.ENDPOINT }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      MANAGER_TAG: "1.10.0-v1.10.0.0"
+      ENDPOINT: "http://127.0.0.1:8545"
+      MANAGER_TAG: "1.12.0-develop.21"
+      MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,7 +28,7 @@ jobs:
 
       - name: Lint with ruff
         run: ruff check skale/
-
+      
       - name: Launch hardhat node
         working-directory: hardhat-node
         run: |
@@ -35,7 +36,7 @@ jobs:
 
       - name: Deploy manager
         run: |
-          bash ./helper-scripts/deploy_test_manager.sh
+          bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
       - name: Show stats before tests
@@ -65,7 +66,7 @@ jobs:
     env:
       ENDPOINT: ${{ secrets.ENDPOINT }}
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      MANAGER_TAG: "1.9.0-develop.20"
+      MANAGER_TAG: "1.12.0-develop.21"
       ALLOCATOR_TAG: "2.2.2-develop.0"
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +84,7 @@ jobs:
 
       - name: Install python dependencies
         run: bash ./scripts/install_python_dependencies.sh
-
+      
       - name: Launch hardhat node
         working-directory: hardhat-node
         run: |
@@ -91,12 +92,12 @@ jobs:
 
       - name: Deploy manager contracts
         run: |
-          bash ./helper-scripts/deploy_test_manager.sh
+          bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
       - name: Deploy allocator contracts
         run: |
-          bash ./helper-scripts/deploy_test_allocator.sh
+          bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
 
       - name: Run tests

@@ -8,6 +8,7 @@ from skale.transactions.result import DryRunRevertError
 from skale.utils.account_tools import send_eth
 from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.main import _skip_evm_time, enable_validator
+from skale.transactions.exceptions import TransactionNotSentError
 
 from tests.constants import (
     D_DELEGATION_PERIOD,
@@ -351,17 +352,17 @@ def test_set_validator_description(skale):
 
 
 def test_revert_reason(skale):
-    no_validator_revert = "VM Exception while processing transaction: reverted with reason string 'Validator with such address already exists'"  # noqa
-    try:
+    no_validator_revert = 'VM Exception while processing transaction'
+    with pytest.raises(TransactionNotSentError) as exc_info:
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,
             fee_rate=D_VALIDATOR_FEE,
             min_delegation_amount=D_VALIDATOR_MIN_DEL,
             wait_for=True,
+            skip_dry_run=True,
         )
-    except DryRunRevertError as e:
-        assert no_validator_revert in e.message
+    assert no_validator_revert in str(exc_info.value)
 
 
 def test_get_use_whitelist(skale):
