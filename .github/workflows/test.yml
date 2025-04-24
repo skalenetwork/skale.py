@@ -1,9 +1,6 @@
 name: Test
 on: [push, pull_request]
 
-env:
-
-
 jobs:
   test:
     runs-on: ubuntu-22.04
