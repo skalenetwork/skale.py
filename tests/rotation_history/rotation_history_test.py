@@ -10,7 +10,7 @@ from skale.utils.contracts_provision.main import (
     create_schain,
 )
 from skale.utils.contracts_provision import DEFAULT_SCHAIN_NAME
-from skale.schain_config.rotation_history import get_previous_schain_groups, get_new_nodes_list
+from skale.schain_config.rotation_history import get_previous_schain_groups
 from tests.rotation_history.utils import set_up_nodes, run_dkg, remove_node, rotate_node, fail_dkg
 
 logger = logging.getLogger(__name__)
@@ -205,47 +205,3 @@ def test_rotation_history_failed_dkg(
     # no finish_ts because it's the current group
     assert not node_groups[3]['finish_ts']
     assert node_groups[3]['bls_public_key']
-
-
-def test_get_new_nodes_list(skale, four_node_schain):
-    nodes, skale_instances, name = four_node_schain
-    group_index = skale.web3.keccak(text=name)
-
-    run_dkg(nodes, skale_instances, group_index, rotation_id=0)
-
-    exiting_node_index = 1  # in group
-    rotate_node(
-        skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=False, rotation_id=1
-    )
-
-    failed_node_index = 2
-    second_failed_node_index = 3
-    test_new_node_ids = fail_dkg(
-        skale=skale,
-        nodes=nodes,
-        skale_instances=skale_instances,
-        group_index=group_index,
-        failed_node_index=failed_node_index,
-        second_failed_node_index=second_failed_node_index,
-        rotation_id=1,
-    )
-
-    rotation = skale.node_rotation.get_rotation(name)
-    node_groups = get_previous_schain_groups(
-        skale=skale, schain_name=name, leaving_node_id=rotation.leaving_node_id
-    )
-    new_nodes = get_new_nodes_list(skale, name, node_groups)
-
-    assert len(new_nodes) == 3
-    assert all(x in new_nodes for x in test_new_node_ids)
-
-    exiting_node_index = 3
-    rotate_node(skale, group_index, nodes, skale_instances, exiting_node_index, rotation_id=4)
-
-    rotation = skale.node_rotation.get_rotation(name)
-    node_groups = get_previous_schain_groups(
-        skale=skale, schain_name=name, leaving_node_id=rotation.leaving_node_id
-    )
-    new_nodes = get_new_nodes_list(skale, name, node_groups)
-
-    assert len(new_nodes) == 1

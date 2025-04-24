@@ -74,7 +74,7 @@ def init_web3(
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         state_path = state_path or config.LAST_BLOCK_FILE
         if not ts_diff == config.NO_SYNC_TS_DIFF:
-            stalecheck_middleware = StalecheckMiddlewareBuilder.build(60 * 60 * 24 * 2)
+            stalecheck_middleware = StalecheckMiddlewareBuilder.build(config.ALLOWED_TS_DIFF)
             middlewares = [stalecheck_middleware, AttributeDictMiddleware]
         else:
             middlewares = [AttributeDictMiddleware]
