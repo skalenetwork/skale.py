@@ -2,78 +2,68 @@ name: Test
 on: [push, pull_request]
 
 env:
-  ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  ENDPOINT: "http://127.0.0.1:8545"
-  MANAGER_TAG: "1.12.0-develop.21"
-  MINING_INTERVAL: 10
-  ALLOCATOR_TAG: "2.2.2-develop.0"
-  MIRAGE_TAG: "1.0.0-develop.0"
+
 
 jobs:
-  common:
+  test:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.11]
+        component: [manager, allocator]
+    env:
+      ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      ENDPOINT: "http://127.0.0.1:8545"
+      MANAGER_TAG: "1.12.0-develop.21"
+      ALLOCATOR_TAG: "2.2.2-develop.0"
+      MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           cache: "pip"
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.11
 
       - name: Install python dependencies
         run: bash ./scripts/install_python_dependencies.sh
 
       - name: Lint with ruff
         run: ruff check skale/
-
+      
       - name: Launch hardhat node
         working-directory: hardhat-node
         run: |
           docker compose up -d && sleep 20
 
-  test_manager:
-    needs: common
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
       - name: Deploy manager
         run: |
           bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
-      - name: Run tests
-        run: |
-          bash ./scripts/run_manager_tests.sh
-      - name: Codecov
-        run: |
-          codecov -t $CODECOV_TOKEN
-
-  test_allocator:
-    needs: common
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Deploy manager contracts
-        run: |
-          bash ./helper-scripts/deploy_manager.sh
-          docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
-
-      - name: Deploy allocator contracts
+      - name: Deploy allocator
+        if: ${{ matrix.component == 'allocator' }}
         run: |
           bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
 
-      - name: Run tests
+      - name: Show stats before tests
+        if: always()
         run: |
-          bash ./scripts/run_allocator_tests.sh
+          sudo lsblk -f
+          sudo free -h
 
+      - name: Run tests for ${{ matrix.component }}
+        run: bash ./scripts/run_${{ matrix.component }}_tests.sh
+
+      - name: Codecov
+        run: |
+          codecov -t $CODECOV_TOKEN
+
+      - name: Show stats after tests
+        if: always()
+        run: |
+          sudo lsblk -f
+          sudo free -h
