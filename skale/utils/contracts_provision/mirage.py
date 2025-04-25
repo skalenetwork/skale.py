@@ -30,6 +30,7 @@ from skale.utils.contracts_provision.main import (
     add_test2_schain_type,
     add_test4_schain_type,
     create_schain,
+    setup_validator,
     DEFAULT_DOMAIN_NAME,
 )
 from skale.utils.contracts_provision.utils import generate_random_node_data
@@ -113,6 +114,7 @@ def init_skale_manager(
 def bootstrap_mirage(endpoint: str, alias_or_address: str, eth_private_key: HexStr) -> None:
     skale = init_skale_manager(endpoint, alias_or_address, eth_private_key)
     add_test_permissions(skale)
+    setup_validator(skale)
     add_test2_schain_type(skale)
     add_test4_schain_type(skale)
 
