@@ -56,9 +56,13 @@ class SkaleBase:
         debug: bool = False,
     ):
         logger.info(
-            'Initializing %s, endpoint: %s, wallet: %s', self.__class__.__name__, endpoint, type(wallet).__name__
+            'Initializing %s, endpoint: %s, wallet: %s',
+            self.__class__.__name__,
+            endpoint,
+            type(wallet).__name__,
         )
         self._endpoint = endpoint
+        self._alias_or_address = alias_or_address
         self.web3 = init_web3(
             endpoint, state_path=state_path, ts_diff=ts_diff, provider_timeout=provider_timeout
         )

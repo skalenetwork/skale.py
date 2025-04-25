@@ -37,7 +37,6 @@ jobs:
           docker compose up -d && sleep 20
 
       - name: Deploy manager
-        if: ${{ matrix.component == 'allocator' || matrix.component == 'manager' }}
         run: |
           bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
@@ -47,6 +46,11 @@ jobs:
         run: |
           bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
+      
+      - name: Deploy mirage
+        if: ${{ matrix.component == 'mirage' }}
+        run: |
+          bash ./scripts/bootstrap_mirage.sh
 
       - name: Deploy mirage
         if: ${{ matrix.component == 'mirage' }}

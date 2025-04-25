@@ -6,20 +6,14 @@ import logging
 
 from skale.types.dkg import Fp2Point, G2Point, KeyShare
 from skale.utils.contracts_provision.main import _skip_evm_time
-from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
+from skale.utils.contracts_provision.mirage import set_up_nodes
 
-from skale import SkaleManager
 from skale.contracts.manager.nodes import NodeStatus
-from skale.utils.contracts_provision.utils import generate_random_node_data
-from skale.utils.account_tools import send_eth
-from skale.utils.helper import get_skale_manager_address
-from skale.wallets.web3_wallet import generate_wallet
 
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 
 logger = logging.getLogger(__name__)
 
-TEST_ETH_AMOUNT = 1
+
 TEST_ROTATION_DELAY = 45260
 
 DIR = os.path.dirname(os.path.realpath(__file__))
@@ -27,68 +21,6 @@ DKG_DATA_PATH = os.path.join(DIR, 'dkg_data.json')
 
 with open(DKG_DATA_PATH) as data_file:
     TEST_DKG_DATA = json.loads(data_file.read())
-
-
-def generate_web3_wallets(web3, n_of_keys):
-    logger.info(f'Generating {n_of_keys} test wallets')
-    return [generate_wallet(web3) for _ in range(n_of_keys)]
-
-
-def transfer_eth_to_wallets(skale, wallets):
-    logger.info(f'Transfering {TEST_ETH_AMOUNT} ETH to {len(wallets)} test wallets')
-    for wallet in wallets:
-        send_eth(skale.web3, skale.wallet, wallet.address, TEST_ETH_AMOUNT)
-
-
-def link_addresses_to_validator(skale, wallets):
-    logger.info('Linking addresses to validator')
-    for wallet in wallets:
-        link_node_address(skale, wallet)
-
-
-def link_node_address(skale, wallet):
-    validator_id = skale.validator_service.validator_id_by_address(skale.wallet.address)
-    main_wallet = skale.wallet
-    skale.wallet = wallet
-    signature = skale.validator_service.get_link_node_signature(validator_id=validator_id)
-    skale.wallet = main_wallet
-    skale.validator_service.link_node_address(
-        node_address=wallet.address, signature=signature, wait_for=True
-    )
-
-
-def set_up_nodes(skale, nodes_number):
-    wallets = generate_web3_wallets(skale.web3, nodes_number)
-    transfer_eth_to_wallets(skale, wallets)
-    link_addresses_to_validator(skale, wallets)
-    skale_instances = [init_skale_from_wallet(wallet) for wallet in wallets]
-    nodes_data = register_nodes(skale_instances)
-    return nodes_data, skale_instances
-
-
-def register_node(skale):
-    ip, public_ip, port, name = generate_random_node_data()
-    port = 10000
-    skale.manager.create_node(
-        ip=ip,
-        port=port,
-        name=name,
-        public_ip=public_ip,
-        domain_name=DEFAULT_DOMAIN_NAME,
-        wait_for=True,
-    )
-    node_id = skale.nodes.node_name_to_index(name)
-    logger.info(f'Registered node {name}, ID: {node_id}')
-    return {'node': skale.nodes.get_by_name(name), 'node_id': node_id, 'wallet': skale.wallet}
-
-
-def register_nodes(skale_instances):
-    nodes = [register_node(sk) for sk in skale_instances]
-    return nodes
-
-
-def init_skale_from_wallet(wallet) -> SkaleManager:
-    return SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
 
 
 def send_broadcasts(nodes, skale_instances, group_index, skip_node_index=None, rotation_id=0):
