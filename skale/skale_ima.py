@@ -17,78 +17,60 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
-import logging
-from typing import List
+from functools import cached_property
+
+from skale_contracts.projects.ima import MainnetImaContract
+from skale_contracts.project_factory import SkaleProject
 
 from skale.skale_base import SkaleBase
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-
-logger = logging.getLogger(__name__)
+from skale.contracts.ima.mainnet.message_proxy_for_mainnet import MessageProxyForMainnet
+from skale.contracts.ima.mainnet.linker import Linker
+from skale.contracts.ima.mainnet.community_pool import CommunityPool
+from skale.contracts.ima.mainnet.deposit_box_eth import DepositBoxEth
+from skale.contracts.ima.mainnet.deposit_box_erc20 import DepositBoxERC20
+from skale.contracts.ima.mainnet.deposit_box_erc721 import DepositBoxERC721
+from skale.contracts.ima.mainnet.deposit_box_erc721_wmt import (
+    DepositBoxERC721WithMetadata,
+)
+from skale.contracts.ima.mainnet.deposit_box_erc1155 import DepositBoxERC1155
 
 
 class SkaleIma(SkaleBase):
     @property
-    def project_name(self) -> str:
-        return 'mainnet-ima'
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.MAINNET_IMA
 
-    def contracts_info(self) -> List[ContractInfo[SkaleIma]]:
-        import skale.contracts.ima.mainnet as contracts
+    @cached_property
+    def message_proxy_for_mainnet(self) -> MessageProxyForMainnet:
+        return MessageProxyForMainnet(self, MainnetImaContract.MESSAGE_PROXY_FOR_MAINNET)
 
-        return [
-            ContractInfo(
-                'message_proxy_for_mainnet',
-                'MessageProxyForMainnet',
-                contracts.MessageProxyForMainnet,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo('linker', 'Linker', contracts.Linker, ContractTypes.API, False),
-            ContractInfo(
-                'community_pool', 'CommunityPool', contracts.CommunityPool, ContractTypes.API, False
-            ),
-            ContractInfo(
-                'deposit_box_eth',
-                'DepositBoxEth',
-                contracts.DepositBoxEth,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'deposit_box_erc20',
-                'DepositBoxERC20',
-                contracts.DepositBoxERC20,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'deposit_box_erc721',
-                'DepositBoxERC721',
-                contracts.DepositBoxERC721,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'deposit_box_erc721_wmt',
-                'DepositBoxERC721WithMetadata',
-                contracts.DepositBoxERC721WithMetadata,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'deposit_box_erc1155',
-                'DepositBoxERC1155',
-                contracts.DepositBoxERC1155,
-                ContractTypes.API,
-                False,
-            ),
-        ]
+    @cached_property
+    def linker(self) -> Linker:
+        return Linker(self, MainnetImaContract.LINKER)
 
-    def set_contracts_info(self) -> None:
-        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
+    @cached_property
+    def community_pool(self) -> CommunityPool:
+        return CommunityPool(self, MainnetImaContract.COMMUNITY_POOL)
+
+    @cached_property
+    def deposit_box_eth(self) -> DepositBoxEth:
+        return DepositBoxEth(self, MainnetImaContract.DEPOSIT_BOX_ETH)
+
+    @cached_property
+    def deposit_box_erc20(self) -> DepositBoxERC20:
+        return DepositBoxERC20(self, MainnetImaContract.DEPOSIT_BOX_ERC20)
+
+    @cached_property
+    def deposit_box_erc721(self) -> DepositBoxERC721:
+        return DepositBoxERC721(self, MainnetImaContract.DEPOSIT_BOX_ERC721)
+
+    @cached_property
+    def deposit_box_erc721_wmt(self) -> DepositBoxERC721WithMetadata:
+        return DepositBoxERC721WithMetadata(self, MainnetImaContract.DEPOSIT_BOX_ERC721_WMT)
+
+    @cached_property
+    def deposit_box_erc1155(self) -> DepositBoxERC1155:
+        return DepositBoxERC1155(self, MainnetImaContract.DEPOSIT_BOX_ERC1155)
 
 
 def spawn_skale_ima_lib(skale_ima: SkaleIma) -> SkaleIma:

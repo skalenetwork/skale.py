@@ -83,7 +83,7 @@ class Allocator(AllocatorContract):
         vesting_interval: int,
         can_delegate: bool,
         is_terminatable: bool,
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.addPlan(
             vestingCliff=vesting_cliff,
             totalVestingDuration=total_vesting_duration,
@@ -101,7 +101,7 @@ class Allocator(AllocatorContract):
         start_month: int,
         full_amount: int,
         lockup_amount: int,
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.connectBeneficiaryToPlan(
             beneficiary=beneficiary_address,
             planId=plan_id,
@@ -111,15 +111,15 @@ class Allocator(AllocatorContract):
         )
 
     @transaction_method
-    def start_vesting(self, beneficiary_address: ChecksumAddress) -> ContractFunction:
+    def start_vesting(self, beneficiary_address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.startVesting(beneficiary_address)
 
     @transaction_method
-    def stop_vesting(self, beneficiary_address: ChecksumAddress) -> ContractFunction:
+    def stop_vesting(self, beneficiary_address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.stopVesting(beneficiary_address)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def vesting_manager_role(self) -> bytes:

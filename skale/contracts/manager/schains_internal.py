@@ -18,7 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """SchainsInternal.sol functions"""
 
-from __future__ import annotations
 import functools
 from typing import TYPE_CHECKING, List
 
@@ -39,7 +38,7 @@ class SChainsInternal(SkaleManagerContract):
 
     @property
     @functools.lru_cache()
-    def schains(self) -> SChains:
+    def schains(self) -> 'SChains':
         return self.skale.schains
 
     def get_raw(self, name: SchainHash) -> Schain:
@@ -83,14 +82,14 @@ class SChainsInternal(SkaleManagerContract):
         return int(self.contract.functions.numberOfSchainTypes().call())
 
     @transaction_method
-    def add_schain_type(self, part_of_node: int, number_of_nodes: int) -> ContractFunction:
+    def add_schain_type(self, part_of_node: int, number_of_nodes: int) -> 'ContractFunction':
         return self.contract.functions.addSchainType(part_of_node, number_of_nodes)
 
     def current_generation(self) -> int:
         return int(self.contract.functions.currentGeneration().call())
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
@@ -106,7 +105,7 @@ class SChainsInternal(SkaleManagerContract):
         return bytes(self.contract.functions.GENERATION_MANAGER_ROLE().call())
 
     @transaction_method
-    def new_generation(self) -> ContractFunction:
+    def new_generation(self) -> 'ContractFunction':
         return self.contract.functions.newGeneration()
 
     def check_exception(self, schain_name: SchainName, node_id: NodeId) -> bool:

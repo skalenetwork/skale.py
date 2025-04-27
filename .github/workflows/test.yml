@@ -47,7 +47,7 @@ jobs:
           bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
       
-      - name: Deploy mirage
+      - name: Bootstrap mirage-boot contracts
         if: ${{ matrix.component == 'mirage' }}
         run: |
           bash ./scripts/bootstrap_mirage.sh

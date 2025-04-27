@@ -20,7 +20,7 @@
 from enum import IntEnum
 from typing import List, NewType, TypedDict
 
-from eth_typing import BlockNumber
+from eth_typing import BlockNumber, ChecksumAddress
 
 from skale.types.schain import SchainStructureWithStatus
 from skale.types.validator import ValidatorId
@@ -49,6 +49,14 @@ class Node(TypedDict):
     validator_id: ValidatorId
     publicKey: str
     domain_name: str
+
+
+class MirageNode(TypedDict):
+    id: NodeId
+    ip: bytes
+    domain_name: str
+    address: ChecksumAddress
+    port: Port
 
 
 class NodeWithId(Node):

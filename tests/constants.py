@@ -2,6 +2,7 @@
 
 import os
 from decimal import Decimal
+from eth_typing import HexStr
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -54,7 +55,9 @@ TEST_ALLOCATOR_ABI_FILEPATH = os.getenv('TEST_ALLOCATOR_ABI_FILEPATH') or os.pat
     HELPER_SCRIPTS_DIR, 'allocator_contracts_data', 'allocator.json'
 )
 IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
-ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
+ETH_PRIVATE_KEY = HexStr(os.environ['ETH_PRIVATE_KEY'])
+
+MIRAGE_CONTRACTS = os.getenv('MIRAGE_CONTRACTS')
 
 # constants contract
 NEW_REWARD_PERIOD = 600

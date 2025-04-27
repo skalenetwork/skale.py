@@ -27,7 +27,7 @@ class TimeHelpersWithDebug(SkaleManagerContract):
     """Wrapper for TimeHelpersWithDebug.sol functions (internal usage only)"""
 
     @transaction_method
-    def skip_time(self, sec: int) -> ContractFunction:
+    def skip_time(self, sec: int) -> 'ContractFunction':
         """Skip time on contracts
 
         :param sec: Time to skip in seconds

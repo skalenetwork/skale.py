@@ -5,8 +5,9 @@ from timeit import default_timer as timer
 
 from unittest.mock import Mock, MagicMock
 from web3 import Web3
+from eth_typing import HexStr
 
-from skale import SkaleManager, SkaleAllocator
+from skale import SkaleManager, SkaleAllocator, MirageManager
 from skale.utils.helper import get_allocator_address, get_skale_manager_address
 from skale.wallets import Web3Wallet
 from tests.constants import (
@@ -14,6 +15,7 @@ from tests.constants import (
     TEST_ABI_FILEPATH,
     TEST_ALLOCATOR_ABI_FILEPATH,
     ETH_PRIVATE_KEY,
+    MIRAGE_CONTRACTS,
 )
 
 
@@ -32,15 +34,24 @@ def request_mock(response_mock):
 
 
 def init_skale(
-    web3: Web3, eth_private_key: str = ETH_PRIVATE_KEY, test_abi_filepath: str = TEST_ABI_FILEPATH
+    web3: Web3,
+    eth_private_key: HexStr = ETH_PRIVATE_KEY,
+    test_abi_filepath: str = TEST_ABI_FILEPATH,
 ) -> SkaleManager:
     wallet = Web3Wallet(eth_private_key, web3)
     return SkaleManager(ENDPOINT, get_skale_manager_address(test_abi_filepath), wallet)
 
 
+def init_mirage(web3: Web3, eth_private_key: HexStr = ETH_PRIVATE_KEY) -> MirageManager:
+    wallet = Web3Wallet(eth_private_key, web3)
+    if not MIRAGE_CONTRACTS:
+        raise ValueError('MIRAGE_CONTRACTS is not set')
+    return MirageManager(ENDPOINT, MIRAGE_CONTRACTS, wallet)
+
+
 def init_skale_allocator(
     web3: Web3,
-    eth_private_key: str = ETH_PRIVATE_KEY,
+    eth_private_key: HexStr = ETH_PRIVATE_KEY,
     test_allocator_abi_filepath: str = TEST_ALLOCATOR_ABI_FILEPATH,
 ) -> SkaleAllocator:
     wallet = Web3Wallet(eth_private_key, web3)

@@ -18,9 +18,8 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """SKALE Allocator Core Escrow methods"""
 
-from __future__ import annotations
 import functools
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, Callable
 
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
@@ -32,8 +31,7 @@ from skale.transactions.result import TxRes
 from skale.types.delegation import DelegationId
 from skale.types.validator import ValidatorId
 
-if TYPE_CHECKING:
-    from skale.contracts.allocator.allocator import Allocator
+from skale.contracts.allocator.allocator import Allocator
 
 
 def beneficiary_escrow(transaction: Callable[..., TxRes]) -> Callable[..., TxRes]:
@@ -58,7 +56,7 @@ class Escrow(AllocatorContract):
 
     @beneficiary_escrow
     @transaction_method
-    def retrieve(self) -> ContractFunction:
+    def retrieve(self) -> 'ContractFunction':
         """Allows Holder to retrieve vested tokens from the Escrow contract
 
         :returns: Transaction results
@@ -68,7 +66,7 @@ class Escrow(AllocatorContract):
 
     @beneficiary_escrow
     @transaction_method
-    def retrieve_after_termination(self, address: ChecksumAddress) -> ContractFunction:
+    def retrieve_after_termination(self, address: ChecksumAddress) -> 'ContractFunction':
         """Allows Core Owner to retrieve remaining transferrable escrow balance
         after Core holder termination. Slashed tokens are non-transferable
 
@@ -81,7 +79,7 @@ class Escrow(AllocatorContract):
     @transaction_method
     def delegate(
         self, validator_id: ValidatorId, amount: Wei, delegation_period: int, info: str
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         """Allows Core holder to propose a delegation to a validator
 
         :param validator_id: ID of the validator to delegate tokens
@@ -99,7 +97,7 @@ class Escrow(AllocatorContract):
 
     @beneficiary_escrow
     @transaction_method
-    def request_undelegation(self, delegation_id: DelegationId) -> ContractFunction:
+    def request_undelegation(self, delegation_id: DelegationId) -> 'ContractFunction':
         """Allows Holder and Owner to request undelegation. Only Owner can
         request undelegation after Core holder is deactivated (upon holder termination)
 
@@ -112,7 +110,7 @@ class Escrow(AllocatorContract):
 
     @beneficiary_escrow
     @transaction_method
-    def withdraw_bounty(self, validator_id: ValidatorId, to: ChecksumAddress) -> ContractFunction:
+    def withdraw_bounty(self, validator_id: ValidatorId, to: ChecksumAddress) -> 'ContractFunction':
         """Allows Beneficiary and Vesting Owner to withdraw earned bounty.
 
         :param validator_id: ID of the validator
@@ -126,7 +124,7 @@ class Escrow(AllocatorContract):
 
     @beneficiary_escrow
     @transaction_method
-    def cancel_pending_delegation(self, delegation_id: DelegationId) -> ContractFunction:
+    def cancel_pending_delegation(self, delegation_id: DelegationId) -> 'ContractFunction':
         """Cancel pending delegation request.
 
         :param delegation_id: ID of the delegation to cancel

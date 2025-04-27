@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2025-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,21 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-"""SKALE group class"""
 
-from skale.contracts.skale_manager_contract import SkaleManagerContract
+from functools import cached_property
+
+from skale.skale_base import SkaleBase
+from skale_contracts.projects.mirage_manager import MirageManagerContract
+from skale_contracts.project_factory import SkaleProject
+
+from skale.contracts.mirage.nodes import Nodes
 
 
-class Groups(SkaleManagerContract):
-    pass
+class MirageManager(SkaleBase):
+    @property
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.MIRAGE_MANAGER
+
+    @cached_property
+    def nodes(self) -> Nodes:
+        return Nodes(self, MirageManagerContract.NODES)

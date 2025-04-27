@@ -17,88 +17,62 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
-import logging
-from typing import List
+from functools import cached_property
+
+from skale_contracts.projects.ima import SchainImaContract
+from skale_contracts.project_factory import SkaleProject
 
 from skale.skale_base import SkaleBase
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-
-logger = logging.getLogger(__name__)
+from skale.contracts.ima.schain.message_proxy_for_schain import MessageProxyForSchain
+from skale.contracts.ima.schain.token_manager_linker import TokenManagerLinker
+from skale.contracts.ima.schain.token_manager_eth import TokenManagerETH
+from skale.contracts.ima.schain.token_manager_erc20 import TokenManagerERC20
+from skale.contracts.ima.schain.token_manager_erc721 import TokenManagerERC721
+from skale.contracts.ima.schain.token_manager_erc721_wmt import (
+    TokenManagerERC721WithMetadata,
+)
+from skale.contracts.ima.schain.token_manager_erc1155 import TokenManagerERC1155
+from skale.contracts.ima.schain.community_locker import CommunityLocker
 
 
 class SchainIma(SkaleBase):
     @property
-    def project_name(self) -> str:
-        return 'schain-ima'
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.SCHAIN_IMA
 
-    def contracts_info(self) -> List[ContractInfo[SchainIma]]:
-        import skale.contracts.ima.schain as contract
+    @cached_property
+    def message_proxy_for_schain(self) -> MessageProxyForSchain:
+        return MessageProxyForSchain(self, SchainImaContract.MESSAGE_PROXY_FOR_SCHAIN)
 
-        return [
-            ContractInfo(
-                'message_proxy_for_schain',
-                'MessageProxyForSchain',
-                contract.MessageProxyForSchain,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'community_locker',
-                'CommunityLocker',
-                contract.CommunityLocker,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'token_manager_eth',
-                'TokenManagerEth',
-                contract.TokenManagerETH,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'token_manager_erc20',
-                'TokenManagerERC20',
-                contract.TokenManagerERC20,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'token_manager_erc721',
-                'TokenManagerERC721',
-                contract.TokenManagerERC721,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'token_manager_erc721_wmt',
-                'TokenManagerERC721WithMetadata',
-                contract.TokenManagerERC721WithMetadata,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'token_manager_erc1155',
-                'TokenManagerERC1155',
-                contract.TokenManagerERC1155,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'token_manager_linker',
-                'TokenManagerLinker',
-                contract.TokenManagerLinker,
-                ContractTypes.API,
-                False,
-            ),
-        ]
+    @cached_property
+    def community_locker(self) -> CommunityLocker:
+        return CommunityLocker(self, SchainImaContract.COMMUNITY_LOCKER)
 
-    def set_contracts_info(self) -> None:
-        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
+    @cached_property
+    def token_manager_eth(self) -> TokenManagerETH:
+        return TokenManagerETH(self, SchainImaContract.TOKEN_MANAGER_ETH)
+
+    @cached_property
+    def token_manager_erc20(self) -> TokenManagerERC20:
+        return TokenManagerERC20(self, SchainImaContract.TOKEN_MANAGER_ERC20)
+
+    @cached_property
+    def token_manager_erc721(self) -> TokenManagerERC721:
+        return TokenManagerERC721(self, SchainImaContract.TOKEN_MANAGER_ERC721)
+
+    @cached_property
+    def token_manager_erc721_wmt(self) -> TokenManagerERC721WithMetadata:
+        return TokenManagerERC721WithMetadata(
+            self, SchainImaContract.TOKEN_MANAGER_ERC721_WITH_META
+        )
+
+    @cached_property
+    def token_manager_erc1155(self) -> TokenManagerERC1155:
+        return TokenManagerERC1155(self, SchainImaContract.TOKEN_MANAGER_ERC1155)
+
+    @cached_property
+    def token_manager_linker(self) -> TokenManagerLinker:
+        return TokenManagerLinker(self, SchainImaContract.TOKEN_MANAGER_LINKER)
 
 
 def spawn_skale_ima_lib(schain_ima: SchainIma) -> SchainIma:

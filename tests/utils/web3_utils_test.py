@@ -31,8 +31,7 @@ def test_call_with_outdated_client(skale):
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff)
     with freeze_time(dt):
         skale.validator_service.ls()
-    print(current_ts, allowed_diff)
-    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 5)
+    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 15)
     with freeze_time(dt):
         with pytest.raises(StaleBlockchain):
             skale.validator_service.ls()

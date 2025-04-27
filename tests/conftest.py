@@ -28,7 +28,7 @@ from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
-from tests.helper import init_skale, init_skale_allocator
+from tests.helper import init_skale, init_skale_allocator, init_mirage
 
 
 NUMBER_OF_NODES = 2
@@ -52,6 +52,11 @@ def skale(web3):
         skale_obj.constants_holder.set_launch_timestamp(0)
     deploy_fake_multisig_contract(skale_obj.web3, skale_obj.wallet)
     return skale_obj
+
+
+@pytest.fixture(scope='session')
+def mirage(web3):
+    return init_mirage(web3)
 
 
 @pytest.fixture(scope='session')

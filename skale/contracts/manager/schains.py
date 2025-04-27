@@ -131,7 +131,7 @@ class SChains(SkaleManagerContract):
         options: SchainOptions | None = None,
         schain_owner: ChecksumAddress | None = None,
         schain_originator: ChecksumAddress | None = None,
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         if schain_owner is None:
             schain_owner = self.skale.wallet.address
         if schain_originator is None:
@@ -150,7 +150,7 @@ class SChains(SkaleManagerContract):
         )
 
     @transaction_method
-    def grant_role(self, role: bytes, owner: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, owner: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, owner)
 
     def schain_creator_role(self) -> bytes:
@@ -166,5 +166,5 @@ class SChains(SkaleManagerContract):
         id_ = self.name_to_id(name)
         return self.get_options(id_)
 
-    def restart_schain_creation(self, name: SchainName) -> ContractFunction:
+    def restart_schain_creation(self, name: SchainName) -> 'ContractFunction':
         return self.contract.functions.restartSchainCreation(name)

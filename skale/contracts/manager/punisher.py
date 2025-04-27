@@ -26,7 +26,7 @@ from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 class Punisher(SkaleManagerContract):
     @transaction_method
-    def grant_role(self, role: bytes, owner: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, owner: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, owner)
 
     def has_role(self, role: bytes, address: ChecksumAddress) -> bool:

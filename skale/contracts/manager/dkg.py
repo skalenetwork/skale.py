@@ -39,7 +39,7 @@ class DKG(SkaleManagerContract):
         verification_vector: VerificationVector,
         secret_key_contribution: List[KeyShare],
         rotation_id: int,
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.broadcast(
             group_index, node_index, verification_vector, secret_key_contribution, rotation_id
         )
@@ -53,7 +53,7 @@ class DKG(SkaleManagerContract):
         verification_vector: VerificationVector,
         verification_vector_mult: VerificationVector,
         secret_key_contribution: List[KeyShare],
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.preResponse(
             group_index,
             fromNodeIndex=from_node_index,
@@ -70,7 +70,7 @@ class DKG(SkaleManagerContract):
         from_node_index: NodeId,
         secret_number: int,
         multiplied_share: G2Point,
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.response(
             group_index,
             fromNodeIndex=from_node_index,
@@ -80,21 +80,21 @@ class DKG(SkaleManagerContract):
 
     @retry_tx
     @transaction_method
-    def alright(self, group_index: SchainHash, from_node_index: NodeId) -> ContractFunction:
+    def alright(self, group_index: SchainHash, from_node_index: NodeId) -> 'ContractFunction':
         return self.contract.functions.alright(group_index, from_node_index)
 
     @retry_tx
     @transaction_method
     def complaint(
         self, group_index: SchainHash, from_node_index: NodeId, to_node_index: NodeId
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.complaint(group_index, from_node_index, to_node_index)
 
     @retry_tx
     @transaction_method
     def complaint_bad_data(
         self, group_index: SchainHash, from_node_index: NodeId, to_node_index: NodeId
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.complaintBadData(group_index, from_node_index, to_node_index)
 
     def is_last_dkg_successful(self, group_index: SchainHash) -> bool:

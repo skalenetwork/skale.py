@@ -26,7 +26,7 @@ from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 class ConstantsHolder(SkaleManagerContract):
     @transaction_method
-    def set_periods(self, new_reward_period: int, new_delta_period: int) -> ContractFunction:
+    def set_periods(self, new_reward_period: int, new_delta_period: int) -> 'ContractFunction':
         return self.contract.functions.setPeriods(new_reward_period, new_delta_period)
 
     def get_reward_period(self) -> int:
@@ -36,14 +36,14 @@ class ConstantsHolder(SkaleManagerContract):
         return int(self.contract.functions.deltaPeriod().call())
 
     @transaction_method
-    def set_check_time(self, new_check_time: int) -> ContractFunction:
+    def set_check_time(self, new_check_time: int) -> 'ContractFunction':
         return self.contract.functions.setCheckTime(new_check_time)
 
     def get_check_time(self) -> int:
         return int(self.contract.functions.checkTime().call())
 
     @transaction_method
-    def set_latency(self, new_allowable_latency: int) -> ContractFunction:
+    def set_latency(self, new_allowable_latency: int) -> 'ContractFunction':
         return self.contract.functions.setLatency(new_allowable_latency)
 
     def get_latency(self) -> int:
@@ -61,7 +61,7 @@ class ConstantsHolder(SkaleManagerContract):
         return int(self.contract.functions.msr().call())
 
     @transaction_method
-    def _set_msr(self, new_msr: int) -> ContractFunction:
+    def _set_msr(self, new_msr: int) -> 'ContractFunction':
         """For internal usage only"""
         return self.contract.functions.setMSR(new_msr)
 
@@ -69,11 +69,11 @@ class ConstantsHolder(SkaleManagerContract):
         return int(self.contract.functions.launchTimestamp().call())
 
     @transaction_method
-    def set_launch_timestamp(self, launch_timestamp: int) -> ContractFunction:
+    def set_launch_timestamp(self, launch_timestamp: int) -> 'ContractFunction':
         return self.contract.functions.setLaunchTimestamp(launch_timestamp)
 
     @transaction_method
-    def set_rotation_delay(self, rotation_delay: int) -> ContractFunction:
+    def set_rotation_delay(self, rotation_delay: int) -> 'ContractFunction':
         """For internal usage only"""
         return self.contract.functions.setRotationDelay(rotation_delay)
 
@@ -84,11 +84,11 @@ class ConstantsHolder(SkaleManagerContract):
         return int(self.contract.functions.complaintTimeLimit().call())
 
     @transaction_method
-    def set_complaint_timelimit(self, complaint_timelimit: int) -> ContractFunction:
+    def set_complaint_timelimit(self, complaint_timelimit: int) -> 'ContractFunction':
         return self.contract.functions.setComplaintTimeLimit(complaint_timelimit)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def constants_holder_role(self) -> bytes:

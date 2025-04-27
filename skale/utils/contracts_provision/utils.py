@@ -22,14 +22,15 @@ import string
 
 from skale.skale_manager import SkaleManager
 from skale.types.node import Port
+from skale.types.schain import SchainName
 
 
 def generate_random_ip() -> str:
     return '.'.join('%s' % random.randint(0, 255) for i in range(4))
 
 
-def generate_random_name(length: int = 8) -> str:
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+def generate_random_name(length: int = 8) -> SchainName:
+    return SchainName(''.join(random.choices(string.ascii_uppercase + string.digits, k=length)))
 
 
 def generate_random_port() -> Port:
@@ -45,7 +46,7 @@ def generate_random_node_data() -> tuple[str, str, int, str]:
     )
 
 
-def generate_random_schain_data(skale: SkaleManager) -> tuple[int, int, str]:
+def generate_random_schain_data(skale: SkaleManager) -> tuple[int, int, SchainName]:
     schain_type = skale.schains_internal.number_of_schain_types()
     lifetime_seconds = 3600  # 1 hour
     return schain_type, lifetime_seconds, generate_random_name()

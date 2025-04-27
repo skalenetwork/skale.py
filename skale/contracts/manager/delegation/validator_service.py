@@ -186,12 +186,12 @@ class ValidatorService(SkaleManagerContract):
         return [ValidatorId(id) for id in self.contract.functions.getTrustedValidators().call()]
 
     @transaction_method
-    def _enable_validator(self, validator_id: ValidatorId) -> ContractFunction:
+    def _enable_validator(self, validator_id: ValidatorId) -> 'ContractFunction':
         """For internal usage only"""
         return self.contract.functions.enableValidator(validator_id)
 
     @transaction_method
-    def _disable_validator(self, validator_id: ValidatorId) -> ContractFunction:
+    def _disable_validator(self, validator_id: ValidatorId) -> 'ContractFunction':
         """For internal usage only"""
         return self.contract.functions.disableValidator(validator_id)
 
@@ -206,7 +206,7 @@ class ValidatorService(SkaleManagerContract):
     @transaction_method
     def register_validator(
         self, name: str, description: str, fee_rate: int, min_delegation_amount: int
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         """Registers a new validator in the SKALE Manager contracts.
 
         :param name: Validator name
@@ -232,7 +232,7 @@ class ValidatorService(SkaleManagerContract):
     @transaction_method
     def link_node_address(
         self, node_address: ChecksumAddress, signature: HexBytes
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         """Link node address to your validator account.
 
         :param node_address: Address of the node to link
@@ -245,7 +245,7 @@ class ValidatorService(SkaleManagerContract):
         return self.contract.functions.linkNodeAddress(node_address, signature)
 
     @transaction_method
-    def unlink_node_address(self, node_address: ChecksumAddress) -> ContractFunction:
+    def unlink_node_address(self, node_address: ChecksumAddress) -> 'ContractFunction':
         """Unlink node address from your validator account.
 
         :param node_address: Address of the node to unlink
@@ -256,7 +256,7 @@ class ValidatorService(SkaleManagerContract):
         return self.contract.functions.unlinkNodeAddress(node_address)
 
     @transaction_method
-    def disable_whitelist(self) -> ContractFunction:
+    def disable_whitelist(self) -> 'ContractFunction':
         """Disable validator whitelist. Master key only transaction.
         :returns: Transaction results
         :rtype: TxRes
@@ -279,7 +279,7 @@ class ValidatorService(SkaleManagerContract):
         return int(self.contract.functions.getAndUpdateBondAmount(validator_id).call())
 
     @transaction_method
-    def set_validator_mda(self, minimum_delegation_amount: Wei) -> ContractFunction:
+    def set_validator_mda(self, minimum_delegation_amount: Wei) -> 'ContractFunction':
         """Allows a validator to set the minimum delegation amount.
 
         :param new_minimum_delegation_amount: Minimum delegation amount
@@ -290,7 +290,7 @@ class ValidatorService(SkaleManagerContract):
         return self.contract.functions.setValidatorMDA(minimum_delegation_amount)
 
     @transaction_method
-    def request_for_new_address(self, new_validator_address: ChecksumAddress) -> ContractFunction:
+    def request_for_new_address(self, new_validator_address: ChecksumAddress) -> 'ContractFunction':
         """Allows a validator to request a new address.
 
         :param new_validator_address: New validator address
@@ -301,7 +301,7 @@ class ValidatorService(SkaleManagerContract):
         return self.contract.functions.requestForNewAddress(new_validator_address)
 
     @transaction_method
-    def confirm_new_address(self, validator_id: ValidatorId) -> ContractFunction:
+    def confirm_new_address(self, validator_id: ValidatorId) -> 'ContractFunction':
         """Confirm change of the address.
 
         :param validator_id: ID of the validator
@@ -312,7 +312,7 @@ class ValidatorService(SkaleManagerContract):
         return self.contract.functions.confirmNewAddress(validator_id)
 
     @transaction_method
-    def set_validator_name(self, new_name: str) -> ContractFunction:
+    def set_validator_name(self, new_name: str) -> 'ContractFunction':
         """Allows a validator to change the name.
 
         :param new_name: New validator name
@@ -323,7 +323,7 @@ class ValidatorService(SkaleManagerContract):
         return self.contract.functions.setValidatorName(new_name)
 
     @transaction_method
-    def set_validator_description(self, new_description: str) -> ContractFunction:
+    def set_validator_description(self, new_description: str) -> 'ContractFunction':
         """Allows a validator to change the name.
 
         :param new_description: New validator description
@@ -334,7 +334,7 @@ class ValidatorService(SkaleManagerContract):
         return self.contract.functions.setValidatorDescription(new_description)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def validator_manager_role(self) -> bytes:

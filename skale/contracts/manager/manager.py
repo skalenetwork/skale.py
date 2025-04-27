@@ -40,7 +40,7 @@ class Manager(SkaleManagerContract):
     @transaction_method
     def create_node(
         self, ip: str, port: Port, name: str, domain_name: str, public_ip: str | None = None
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         logger.info(f'create_node: {ip}:{port}, name: {name}, domain_name: {domain_name}')
         skale_nonce = helper.generate_nonce()
         if not public_ip:
@@ -67,7 +67,7 @@ class Manager(SkaleManagerContract):
         name: SchainName,
         schain_originator: ChecksumAddress | None = None,
         options: SchainOptions | None = None,
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         logger.info(f'create_schain: type_of_nodes: {type_of_nodes}, name: {name}')
         skale_nonce = helper.generate_nonce()
 
@@ -84,23 +84,23 @@ class Manager(SkaleManagerContract):
         return self.skale.token.contract.functions.send(self.address, deposit, tx_data)
 
     @transaction_method
-    def get_bounty(self, node_id: NodeId) -> ContractFunction:
+    def get_bounty(self, node_id: NodeId) -> 'ContractFunction':
         return self.contract.functions.getBounty(node_id)
 
     @transaction_method
-    def delete_schain(self, schain_name: SchainName) -> ContractFunction:
+    def delete_schain(self, schain_name: SchainName) -> 'ContractFunction':
         return self.contract.functions.deleteSchain(schain_name)
 
     @transaction_method
-    def delete_schain_by_root(self, schain_name: SchainName) -> ContractFunction:
+    def delete_schain_by_root(self, schain_name: SchainName) -> 'ContractFunction':
         return self.contract.functions.deleteSchainByRoot(schain_name)
 
     @transaction_method
-    def node_exit(self, node_id: NodeId) -> ContractFunction:
+    def node_exit(self, node_id: NodeId) -> 'ContractFunction':
         return self.contract.functions.nodeExit(node_id)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def default_admin_role(self) -> bytes:

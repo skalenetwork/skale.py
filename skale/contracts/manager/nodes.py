@@ -161,22 +161,22 @@ class Nodes(SkaleManagerContract):
         return int(self.contract.functions.getLastChangeIpTime(node_id).call())
 
     @transaction_method
-    def set_node_in_maintenance(self, node_id: NodeId) -> ContractFunction:
+    def set_node_in_maintenance(self, node_id: NodeId) -> 'ContractFunction':
         return self.contract.functions.setNodeInMaintenance(node_id)
 
     @transaction_method
-    def remove_node_from_in_maintenance(self, node_id: NodeId) -> ContractFunction:
+    def remove_node_from_in_maintenance(self, node_id: NodeId) -> 'ContractFunction':
         return self.contract.functions.removeNodeFromInMaintenance(node_id)
 
     @transaction_method
-    def set_domain_name(self, node_id: NodeId, domain_name: str) -> ContractFunction:
+    def set_domain_name(self, node_id: NodeId, domain_name: str) -> 'ContractFunction':
         return self.contract.functions.setDomainName(node_id, domain_name)
 
     def get_domain_name(self, node_id: NodeId) -> str:
         return str(self.contract.functions.getNodeDomainName(node_id).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, owner: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, owner: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, owner)
 
     def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
@@ -189,11 +189,11 @@ class Nodes(SkaleManagerContract):
         return bytes(self.contract.functions.COMPLIANCE_ROLE().call())
 
     @transaction_method
-    def init_exit(self, node_id: NodeId) -> ContractFunction:
+    def init_exit(self, node_id: NodeId) -> 'ContractFunction':
         return self.contract.functions.initExit(node_id)
 
     @transaction_method
-    def change_ip(self, node_id: NodeId, ip: bytes, public_ip: bytes) -> ContractFunction:
+    def change_ip(self, node_id: NodeId, ip: bytes, public_ip: bytes) -> 'ContractFunction':
         return self.contract.functions.changeIP(node_id, ip, public_ip)
 
     def _to_node(self, untyped_node: Dict[str, Any]) -> Node:
