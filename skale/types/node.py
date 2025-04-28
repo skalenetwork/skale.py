@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from enum import IntEnum
+from dataclasses import dataclass
 from typing import List, NewType, TypedDict
 
 from eth_typing import BlockNumber, ChecksumAddress
@@ -51,7 +52,8 @@ class Node(TypedDict):
     domain_name: str
 
 
-class MirageNode(TypedDict):
+@dataclass
+class MirageNode:
     id: NodeId
     ip: bytes
     domain_name: str

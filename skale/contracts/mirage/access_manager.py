@@ -17,25 +17,8 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import Any, List
-
-from eth_typing import ChecksumAddress
 from skale.contracts.base_contract import BaseContract
-from skale.types.node import MirageNode, NodeId, Port
 
 
-class Nodes(BaseContract):
-    def __get_raw(self, node_id: NodeId) -> List[Any]:
-        return list(self.contract.functions.nodes(node_id).call())
-
-    def get(self, node_id: NodeId) -> MirageNode:
-        return self._to_node(self.__get_raw(node_id))
-
-    def _to_node(self, untyped_node: List[Any]) -> MirageNode:
-        return MirageNode(
-            id=untyped_node[0],
-            ip=bytes(untyped_node[1]),
-            domain_name=untyped_node[2],
-            address=ChecksumAddress(untyped_node[3]),
-            port=Port(untyped_node[4]),
-        )
+class AccessManager(BaseContract):
+    pass

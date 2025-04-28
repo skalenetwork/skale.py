@@ -24,6 +24,11 @@ from skale_contracts.projects.mirage_manager import MirageManagerContract
 from skale_contracts.project_factory import SkaleProject
 
 from skale.contracts.mirage.nodes import Nodes
+from skale.contracts.mirage.committee import Committee
+from skale.contracts.mirage.dkg import DKG
+from skale.contracts.mirage.access_manager import AccessManager
+from skale.contracts.mirage.status import Status
+from skale.contracts.mirage.staking import Staking
 
 
 class MirageManager(SkaleBase):
@@ -34,3 +39,23 @@ class MirageManager(SkaleBase):
     @cached_property
     def nodes(self) -> Nodes:
         return Nodes(self, MirageManagerContract.NODES)
+
+    @cached_property
+    def committee(self) -> Committee:
+        return Committee(self, MirageManagerContract.COMMITTEE)
+
+    @cached_property
+    def dkg(self) -> DKG:
+        return DKG(self, MirageManagerContract.DKG)
+
+    @cached_property
+    def access_manager(self) -> AccessManager:
+        return AccessManager(self, MirageManagerContract.MIRAGE_ACCESS_MANAGER)
+
+    @cached_property
+    def status(self) -> Status:
+        return Status(self, MirageManagerContract.STATUS)
+
+    @cached_property
+    def staking(self) -> Staking:
+        return Staking(self, MirageManagerContract.STAKING)
