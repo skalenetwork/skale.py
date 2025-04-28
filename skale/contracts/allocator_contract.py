@@ -27,10 +27,10 @@ from skale.contracts.base_contract import BaseContract
 class AllocatorContract(BaseContract):
     def init_contract(self, contract_name: ContractName) -> None:
         if contract_name == SkaleAllocatorContract.ESCROW:
-            address = CHECKSUM_ADDRESSS_ZERO
+            self.address = CHECKSUM_ADDRESSS_ZERO
         else:
-            address = self.skale.instance.get_contract_address(contract_name)
+            self.address = self.skale.instance.get_contract_address(contract_name)
         self.contract = self.skale.web3.eth.contract(
-            address=address,
+            address=self.address,
             abi=self.skale.instance.abi[contract_name],
         )
