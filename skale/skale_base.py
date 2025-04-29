@@ -55,11 +55,13 @@ class SkaleBase:
             endpoint,
             type(wallet).__name__,
         )
+        if state_path:
+            logger.warning(
+                'state_path is deprecated and will be ignored. This option will be removed in v8.'
+            )
         self._endpoint = endpoint
         self._alias_or_address = alias_or_address
-        self.web3 = init_web3(
-            endpoint, state_path=state_path, ts_diff=ts_diff, provider_timeout=provider_timeout
-        )
+        self.web3 = init_web3(endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
         self.network = skale_contracts.get_network_by_provider(self.web3.provider)
         self.project = self.network.get_project(self.project_name)
         self.instance = self.project.get_instance(alias_or_address)

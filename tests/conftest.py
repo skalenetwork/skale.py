@@ -31,7 +31,6 @@ from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 from tests.helper import init_skale, init_skale_allocator, init_mirage
 
 
-NUMBER_OF_NODES = 2
 ETH_AMOUNT_PER_NODE = 1
 
 
@@ -64,10 +63,15 @@ def validator(skale):
     return setup_validator(skale)
 
 
+@pytest.fixture(scope='session')
+def number_of_nodes():
+    return 2
+
+
 @pytest.fixture
-def node_wallets(skale):
+def node_wallets(skale, number_of_nodes):
     wallets = []
-    for i in range(NUMBER_OF_NODES):
+    for i in range(number_of_nodes):
         acc = generate_account(skale.web3)
         pk = acc['private_key']
         wallet = Web3Wallet(pk, skale.web3)

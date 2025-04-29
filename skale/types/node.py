@@ -56,6 +56,7 @@ class Node(TypedDict):
 class MirageNode:
     id: NodeId
     ip: bytes
+    ip_str: str
     domain_name: str
     address: ChecksumAddress
     port: Port
