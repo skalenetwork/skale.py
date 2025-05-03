@@ -22,7 +22,7 @@ extras_require = {
         'twine==4.0.2',
         'when-changed',
     ],
-    'hw-wallet': ['ledgerblue==0.1.47'],
+    'hw-wallet': ['ledgerblue==0.1.54'],
 }
 
 extras_require['dev'] = (
