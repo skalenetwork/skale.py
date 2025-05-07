@@ -60,6 +60,7 @@ class MirageNode:
     domain_name: str
     address: ChecksumAddress
     port: Port
+    name: str
 
 
 class NodeWithId(Node):

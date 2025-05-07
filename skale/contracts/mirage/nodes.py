@@ -57,6 +57,7 @@ class Nodes(BaseContract):
             domain_name=untyped_node[2],
             address=ChecksumAddress(untyped_node[3]),
             port=Port(untyped_node[4]),
+            name=f'node-{untyped_node[0]}',
         )
 
     @transaction_method
