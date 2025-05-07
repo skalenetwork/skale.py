@@ -76,3 +76,7 @@ class Nodes(BaseContract):
     @transaction_method
     def confirm_address_change(self, node_id: NodeId):
         return self.contract.functions.confirmAddressChange(node_id)
+
+    @transaction_method
+    def set_domain_name(self, node_id: NodeId, domain_name: str):
+        return self.contract.functions.setDomainName(node_id, domain_name)
