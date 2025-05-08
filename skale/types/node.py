@@ -21,7 +21,7 @@ from enum import IntEnum
 from dataclasses import dataclass
 from typing import List, NewType, TypedDict
 
-from eth_typing import BlockNumber, ChecksumAddress
+from eth_typing import BlockNumber, ChecksumAddress, HexStr
 
 from skale.types.schain import SchainStructureWithStatus
 from skale.types.validator import ValidatorId
@@ -48,7 +48,7 @@ class Node(TypedDict):
     finish_time: int
     status: NodeStatus
     validator_id: ValidatorId
-    publicKey: str
+    publicKey: HexStr
     domain_name: str
 
 
