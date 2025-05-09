@@ -4,4 +4,4 @@
 	branch = add-mirage-container
 [submodule "hardhat-node"]
 	path = hardhat-node
-	url = git@github.com:skalenetwork/hardhat-node.git
+	url = https://github.com/skalenetwork/hardhat-node.git
