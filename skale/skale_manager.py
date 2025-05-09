@@ -137,3 +137,7 @@ class SkaleManager(SkaleBase):
     @cached_property
     def time_helpers_with_debug(self) -> TimeHelpersWithDebug:
         return TimeHelpersWithDebug(self, SkaleManagerContract.TIME_HELPERS_WITH_DEBUG)
+
+
+def spawn_skale_manager_lib(skale: SkaleManager) -> SkaleManager:
+    return SkaleManager(skale._endpoint, skale.instance.address, skale.wallet)
