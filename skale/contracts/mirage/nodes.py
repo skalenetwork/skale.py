@@ -20,7 +20,7 @@
 import socket
 from typing import Any, List
 
-from eth_typing import ChecksumAddress
+from eth_typing import ChecksumAddress, HexStr
 from skale.contracts.base_contract import BaseContract
 from skale.types.node import MirageNode, NodeId, Port
 from skale.contracts.base_contract import transaction_method
@@ -58,6 +58,7 @@ class Nodes(BaseContract):
             address=ChecksumAddress(untyped_node[3]),
             port=Port(untyped_node[4]),
             name=f'node-{untyped_node[0]}',
+            public_key=HexStr('0x0'),
         )
 
     @transaction_method

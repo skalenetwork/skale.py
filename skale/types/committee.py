@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2025-Present SKALE Labs
+#   Copyright (C) 2024-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,18 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract
-from skale.types.committee import Committee as CommitteeStruct, CommitteeIndex
+from __future__ import annotations
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, List, NewType
+
+if TYPE_CHECKING:
+    from skale.types.node import NodeId
+
+DkgId = NewType('DkgId', int)
+CommitteeIndex = NewType('CommitteeIndex', int)
 
 
-class Committee(BaseContract):
-    def get_committee(self, committee_index: CommitteeIndex) -> CommitteeStruct:
-        return self.contract.functions.getCommittee(committee_index).call()
+@dataclass
+class Committee:
+    node_ids: List[NodeId]
+    dkg_id: DkgId

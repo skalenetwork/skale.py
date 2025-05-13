@@ -61,6 +61,7 @@ class MirageNode:
     address: ChecksumAddress
     port: Port
     name: str
+    public_key: HexStr
 
 
 class NodeWithId(Node):

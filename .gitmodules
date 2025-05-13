@@ -1,7 +1,6 @@
 [submodule "helper-scripts"]
 	path = helper-scripts
 	url = https://github.com/skalenetwork/helper-scripts.git
-	branch = add-mirage-container
 [submodule "hardhat-node"]
 	path = hardhat-node
 	url = https://github.com/skalenetwork/hardhat-node.git
