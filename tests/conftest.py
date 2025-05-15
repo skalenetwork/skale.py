@@ -42,15 +42,17 @@ def web3():
 
 
 @pytest.fixture(scope='session')
-def skale(web3):
-    """Returns a SKALE Manager instance with provider from config"""
-    skale_obj = init_skale(web3)
-    add_test_permissions(skale_obj)
-    add_test2_schain_type(skale_obj)
-    if skale_obj.constants_holder.get_launch_timestamp() != 0:
-        skale_obj.constants_holder.set_launch_timestamp(0)
-    deploy_fake_multisig_contract(skale_obj.web3, skale_obj.wallet)
-    return skale_obj
+def skale(web3, request):
+    """Returns a cached SKALE Manager instance with provider from config"""
+    if not hasattr(request.config, '_cached_skale'):
+        skale_obj = init_skale(web3)
+        add_test_permissions(skale_obj)
+        add_test2_schain_type(skale_obj)
+        if skale_obj.constants_holder.get_launch_timestamp() != 0:
+            skale_obj.constants_holder.set_launch_timestamp(0)
+        deploy_fake_multisig_contract(skale_obj.web3, skale_obj.wallet)
+        request.config._cached_skale = skale_obj
+    return request.config._cached_skale
 
 
 @pytest.fixture(scope='session')
