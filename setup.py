@@ -45,7 +45,7 @@ setup(
         'sgx.py==0.10dev0',
         'skale-contracts==1.0.2a27',
         'typing-extensions==4.9.0',
-        'web3==7.10.0',
+        'web3==7.11.1',
     ],
     python_requires='>=3.11,<4',
     extras_require=extras_require,
