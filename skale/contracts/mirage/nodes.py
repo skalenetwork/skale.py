@@ -24,6 +24,7 @@ from eth_typing import ChecksumAddress, HexStr
 from skale.contracts.base_contract import BaseContract
 from skale.types.node import MirageNode, NodeId, Port
 from skale.contracts.base_contract import transaction_method
+from skale.utils import helper
 
 
 class Nodes(BaseContract):
@@ -52,19 +53,24 @@ class Nodes(BaseContract):
     def _to_node(self, untyped_node: List[Any]) -> MirageNode:
         return MirageNode(
             id=untyped_node[0],
-            ip=bytes(untyped_node[1]),
-            ip_str=socket.inet_ntoa(untyped_node[1]),
-            domain_name=untyped_node[2],
-            address=ChecksumAddress(untyped_node[3]),
-            port=Port(untyped_node[4]),
+            public_key=self.decode_public_key(untyped_node[1]),
+            ip=bytes(untyped_node[2]),
+            ip_str=socket.inet_ntoa(untyped_node[2]),
+            domain_name=untyped_node[3],
+            address=ChecksumAddress(untyped_node[4]),
+            port=Port(untyped_node[5]),
             name=f'node-{untyped_node[0]}',
-            public_key=HexStr('0x0'),
         )
+
+    def decode_public_key(self, raw_public_key: list[bytes]) -> HexStr:
+        key_bytes = raw_public_key[0] + raw_public_key[1]
+        return self.skale.web3.to_hex(key_bytes)
 
     @transaction_method
     def register(self, ip: str, port: Port):
         ip_bytes = socket.inet_aton(ip)
-        return self.contract.functions.registerNode(ip_bytes, port)
+        pk_parts_bytes = helper.split_public_key(self.skale.wallet.public_key)
+        return self.contract.functions.registerNode(ip_bytes, pk_parts_bytes, port)
 
     @transaction_method
     def register_passive(self, ip: str, port: Port):
