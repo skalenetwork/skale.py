@@ -41,8 +41,11 @@ class Nodes(BaseContract):
         node_id = self.get_id(address)
         return self.get(node_id)
 
-    def get_passive_node_ids(self, node_address: ChecksumAddress) -> list[NodeId]:
-        return self.contract.functions.getPassiveNodeIds(node_address).call()
+    def get_passive_node_ids_for_address(self, node_address: ChecksumAddress) -> list[NodeId]:
+        return self.contract.functions.getPassiveNodesIdsForAddress(node_address).call()
+
+    def get_passive_node_ids(self) -> list[NodeId]:
+        return self.contract.functions.getPassiveNodesIds().call()
 
     def get_active_node_ids(self) -> list[NodeId]:
         return self.contract.functions.getActiveNodesIds().call()
@@ -78,13 +81,22 @@ class Nodes(BaseContract):
         return self.contract.functions.registerPassiveNode(ip_bytes, port)
 
     @transaction_method
-    def request_change_address(self, node_id: NodeId, new_address: ChecksumAddress):
-        return self.contract.functions.requestChangeAddress(node_id, new_address)
+    def request_change_owner(self, node_id: NodeId, new_owner: ChecksumAddress):
+        return self.contract.functions.requestChangeOwner(node_id, new_owner)
 
     @transaction_method
-    def confirm_address_change(self, node_id: NodeId):
-        return self.contract.functions.confirmAddressChange(node_id)
+    def confirm_owner_change(self, node_id: NodeId):
+        return self.contract.functions.confirmOwnerChange(node_id)
 
     @transaction_method
     def set_domain_name(self, node_id: NodeId, domain_name: str):
         return self.contract.functions.setDomainName(node_id, domain_name)
+
+    @transaction_method
+    def set_ip_address(self, node_id: NodeId, ip: str, port: Port):
+        ip_bytes = socket.inet_aton(ip)
+        return self.contract.functions.setIpAddress(node_id, ip_bytes, port)
+
+    @transaction_method
+    def set_committee(self, committee_address: ChecksumAddress):
+        return self.contract.functions.setCommittee(committee_address)

@@ -24,11 +24,16 @@ from typing import TYPE_CHECKING, List, NewType
 if TYPE_CHECKING:
     from skale.types.node import NodeId
 
+from skale.types.dkg import G2Point
+
 DkgId = NewType('DkgId', int)
 CommitteeIndex = NewType('CommitteeIndex', int)
+TimeStamp = NewType('TimeStamp', int)
 
 
 @dataclass
 class Committee:
     node_ids: List[NodeId]
     dkg_id: DkgId
+    common_public_key: G2Point
+    starting_timestamp: TimeStamp
