@@ -24,9 +24,8 @@ from typing import TYPE_CHECKING, List, NewType
 if TYPE_CHECKING:
     from skale.types.node import NodeId
 
-from skale.types.dkg import G2Point
+from skale.types.dkg import G2Point, DkgId
 
-DkgId = NewType('DkgId', int)
 CommitteeIndex = NewType('CommitteeIndex', int)
 TimeStamp = NewType('TimeStamp', int)
 

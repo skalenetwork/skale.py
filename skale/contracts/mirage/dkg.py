@@ -18,7 +18,34 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import transaction_method
+from skale.types.dkg import G2Point, DkgId, KeyShare, VerificationVector
+from skale.types.node import NodeId
 
 
 class DKG(BaseContract):
-    pass
+    def is_node_broadcasted(self, dkg: DkgId, node: NodeId) -> bool:
+        return self.contract.functions.isNodeBroadcasted(dkg, node).call()
+
+    def get_participants(self, dkg: DkgId) -> list[NodeId]:
+        return self.contract.functions.getParticipants(dkg).call()
+
+    def get_public_key(self, dkg: DkgId) -> G2Point:
+        return self.contract.functions.getPublicKey(dkg).call()
+
+    @transaction_method
+    def alright(self, dkg: DkgId):
+        return self.contract.functions.alright(dkg)
+
+    @transaction_method
+    def broadcast(
+        self,
+        dkg: DkgId,
+        verification_vector: VerificationVector,
+        secret_key_contribution: list[KeyShare],
+    ):
+        return self.contract.functions.broadcast(dkg, verification_vector, secret_key_contribution)
+
+    @transaction_method
+    def generate(self, participants: list[NodeId]):
+        return self.contract.functions.generate(participants)

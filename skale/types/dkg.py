@@ -24,6 +24,7 @@ from eth_typing import HexStr
 
 
 Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
+DkgId = NewType('DkgId', int)
 
 
 class G2Point(NamedTuple):
