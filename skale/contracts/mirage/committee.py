@@ -18,9 +18,75 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import transaction_method
 from skale.types.committee import Committee as CommitteeStruct, CommitteeIndex
+from skale.types.dkg import DkgId
+from skale.types.node import NodeId
+from eth_typing import ChecksumAddress
 
 
 class Committee(BaseContract):
     def get_committee(self, committee_index: CommitteeIndex) -> CommitteeStruct:
         return self.contract.functions.getCommittee(committee_index).call()
+
+    def is_node_in_current_or_next_committee(self, node: NodeId) -> bool:
+        return self.contract.functions.isNodeInCurrentOrNextCommittee(node).call()
+
+    def get_active_committee_index(self) -> CommitteeIndex:
+        return self.contract.functions.getActiveCommitteeIndex().call()
+
+    @transaction_method
+    def select(self):
+        return self.contract.functions.select()
+
+    @transaction_method
+    def set_dkg(self, dkg_address: ChecksumAddress):
+        return self.contract.functions.setDkg(dkg_address)
+
+    @transaction_method
+    def set_nodes(self, nodes_address: ChecksumAddress):
+        return self.contract.functions.setNodes(nodes_address)
+
+    @transaction_method
+    def set_status(self, status_address: ChecksumAddress):
+        return self.contract.functions.setStatus(status_address)
+
+    @transaction_method
+    def set_staking(self, staking_address: ChecksumAddress):
+        return self.contract.functions.setStaking(staking_address)
+
+    @transaction_method
+    def set_version(self, new_version: str):
+        return self.contract.functions.setVersion(new_version)
+
+    @transaction_method
+    def process_successful_dkg(self, round: DkgId):
+        return self.contract.functions.processSuccessfulDkg(round)
+
+    @transaction_method
+    def set_committee_size(self, size: int):
+        return self.contract.functions.setCommitteeSize(size)
+
+    @transaction_method
+    def set_transition_delay(self, delay: int):
+        return self.contract.functions.setTransitionDelay(delay)
+
+    @transaction_method
+    def node_created(self, node: NodeId):
+        return self.contract.functions.nodeCreated(node)
+
+    @transaction_method
+    def node_removed(self, node: NodeId):
+        return self.contract.functions.nodeRemoved(node)
+
+    @transaction_method
+    def node_whitelisted(self, node: NodeId):
+        return self.contract.functions.nodeWhitelisted(node)
+
+    @transaction_method
+    def node_blacklisted(self, node: NodeId):
+        return self.contract.functions.nodeBlacklisted(node)
+
+    @transaction_method
+    def process_heartbeat(self, node: NodeId):
+        return self.contract.functions.processHeartbeat(node)
