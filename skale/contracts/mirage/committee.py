@@ -17,23 +17,37 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from typing import Any
+
+from eth_typing import ChecksumAddress
+
 from skale.contracts.base_contract import BaseContract
 from skale.contracts.base_contract import transaction_method
 from skale.types.committee import Committee as CommitteeStruct, CommitteeIndex
 from skale.types.dkg import DkgId
 from skale.types.node import NodeId
-from eth_typing import ChecksumAddress
 
 
 class Committee(BaseContract):
+    def __get_raw(self, committee_index: CommitteeIndex) -> list[Any]:
+        return list(self.contract.functions.getCommittee(committee_index).call())
+
     def get_committee(self, committee_index: CommitteeIndex) -> CommitteeStruct:
-        return self.contract.functions.getCommittee(committee_index).call()
+        return self._to_committee(self.__get_raw(committee_index))
+
+    def _to_committee(self, untyped_committee: list[Any]) -> CommitteeStruct:
+        return CommitteeStruct(
+            node_ids=untyped_committee[0],
+            dkg_id=untyped_committee[1],
+            common_public_key=untyped_committee[2],
+            starting_timestamp=untyped_committee[3],
+        )
 
     def is_node_in_current_or_next_committee(self, node: NodeId) -> bool:
         return self.contract.functions.isNodeInCurrentOrNextCommittee(node).call()
 
     def get_active_committee_index(self) -> CommitteeIndex:
-        return self.contract.functions.getActiveCommitteeIndex().call()
+        return CommitteeIndex(self.contract.functions.getActiveCommitteeIndex().call())
 
     @transaction_method
     def select(self):
