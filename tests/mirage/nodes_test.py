@@ -28,7 +28,7 @@ def test_get(mirage):
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
-def test_register(mirage, node_wallets):
+def test_register_active_node(mirage, node_wallets):
     main_wallet = mirage.wallet
     mirage.wallet = node_wallets[0]
     ip, _, port, _ = generate_random_node_data()
@@ -37,12 +37,33 @@ def test_register(mirage, node_wallets):
         mirage.nodes.get_by_address(mirage.wallet.address)
 
     active_node_ids_before = mirage.nodes.get_active_node_ids()
-    mirage.nodes.register(ip=ip, port=port)
+    mirage.nodes.register_active(ip=ip, port=port)
     active_node_ids_after = mirage.nodes.get_active_node_ids()
 
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
 
     node = mirage.nodes.get_by_address(mirage.wallet.address)
     assert node.address == mirage.wallet.address
+
+    mirage.wallet = main_wallet
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_register_passive_node(mirage, node_wallets):
+    main_wallet = mirage.wallet
+    mirage.wallet = node_wallets[0]
+    ip, _, port, _ = generate_random_node_data()
+
+    with pytest.raises(ContractLogicError):
+        mirage.nodes.get_passive_node_ids_for_address(mirage.wallet.address)
+
+    passive_node_ids_before = mirage.nodes.get_passive_node_ids()
+    mirage.nodes.register_passive(ip=ip, port=port)
+    passive_node_ids_after = mirage.nodes.get_passive_node_ids()
+
+    assert len(passive_node_ids_after) == len(passive_node_ids_before) + 1
+
+    node_id = mirage.nodes.get_passive_node_ids_for_address(mirage.wallet.address)[0]
+    assert node_id in passive_node_ids_after
 
     mirage.wallet = main_wallet

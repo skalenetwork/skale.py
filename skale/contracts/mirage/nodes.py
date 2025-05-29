@@ -70,7 +70,7 @@ class Nodes(BaseContract):
         return self.skale.web3.to_hex(key_bytes)
 
     @transaction_method
-    def register(self, ip: str, port: Port):
+    def register_active(self, ip: str, port: Port):
         ip_bytes = socket.inet_aton(ip)
         pk_parts_bytes = helper.split_public_key(self.skale.wallet.public_key)
         return self.contract.functions.registerNode(ip_bytes, pk_parts_bytes, port)
