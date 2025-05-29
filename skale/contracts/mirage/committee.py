@@ -84,23 +84,3 @@ class Committee(BaseContract):
     @transaction_method
     def set_transition_delay(self, delay: int):
         return self.contract.functions.setTransitionDelay(delay)
-
-    @transaction_method
-    def node_created(self, node: NodeId):
-        return self.contract.functions.nodeCreated(node)
-
-    @transaction_method
-    def node_removed(self, node: NodeId):
-        return self.contract.functions.nodeRemoved(node)
-
-    @transaction_method
-    def node_whitelisted(self, node: NodeId):
-        return self.contract.functions.nodeWhitelisted(node)
-
-    @transaction_method
-    def node_blacklisted(self, node: NodeId):
-        return self.contract.functions.nodeBlacklisted(node)
-
-    @transaction_method
-    def process_heartbeat(self, node: NodeId):
-        return self.contract.functions.processHeartbeat(node)
