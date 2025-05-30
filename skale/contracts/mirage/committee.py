@@ -24,7 +24,6 @@ from eth_typing import ChecksumAddress
 from skale.contracts.base_contract import BaseContract
 from skale.contracts.base_contract import transaction_method
 from skale.types.committee import Committee as CommitteeStruct, CommitteeIndex
-from skale.types.dkg import DkgId
 from skale.types.node import NodeId
 
 
