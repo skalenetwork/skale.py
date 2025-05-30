@@ -19,12 +19,28 @@ def mirage_node(mirage, node_wallets):
         """TODO: Remove the node from the mirage instance."""
 
 
-def test_get(mirage):
-    node = mirage.nodes.get(1)
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_get_node(mirage, node_wallets):
+    main_wallet = mirage.wallet
+    mirage.wallet = node_wallets[0]
+    ip, _, port, _ = generate_random_node_data()
+
+    mirage.nodes.register_active(ip=ip, port=port)
+    registered_node = mirage.nodes.get_by_address(mirage.wallet.address)
+    node_id = registered_node.id
+
+    node = mirage.nodes.get(node_id)
+
     assert node is not None
-    print(node)
-    assert node.id == 1
-    assert 1
+    assert node.id == node_id
+    assert node.address == mirage.wallet.address
+    assert node.ip_str == ip
+    assert node.port == port
+    assert node.name == f'node-{node_id}'
+    assert isinstance(node.public_key, str)
+    assert node.public_key.startswith('0x')
+
+    mirage.wallet = main_wallet
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
