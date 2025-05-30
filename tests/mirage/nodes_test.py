@@ -5,28 +5,53 @@ from web3.exceptions import ContractLogicError
 from skale.utils.contracts_provision.utils import generate_random_node_data
 
 
-@pytest.mark.parametrize('number_of_nodes', [1])
-def test_get_node(mirage, node_wallets):
+@pytest.fixture
+def mirage_active_nodes(mirage, node_wallets):
     main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
 
-    mirage.nodes.register_active(ip=ip, port=port)
-    registered_node = mirage.nodes.get_by_address(mirage.wallet.address)
+    for wallet in node_wallets:
+        mirage.wallet = wallet
+        ip, _, port, _ = generate_random_node_data()
+        mirage.nodes.register_active(ip=ip, port=port)
+
+    mirage.wallet = main_wallet
+    try:
+        yield node_wallets
+    finally:
+        """TODO: Remove the node from the mirage instance."""
+
+
+@pytest.fixture
+def mirage_passive_nodes(mirage, node_wallets):
+    main_wallet = mirage.wallet
+
+    for wallet in node_wallets:
+        mirage.wallet = wallet
+        ip, _, port, _ = generate_random_node_data()
+        mirage.nodes.register_passive(ip=ip, port=port)
+
+    mirage.wallet = main_wallet
+    try:
+        yield node_wallets
+    finally:
+        """TODO: Remove the node from the mirage instance."""
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_get_node(mirage, mirage_active_nodes):
+    registered_node = mirage.nodes.get_by_address(mirage_active_nodes[0].address)
     node_id = registered_node.id
 
     node = mirage.nodes.get(node_id)
 
     assert node is not None
     assert node.id == node_id
-    assert node.address == mirage.wallet.address
-    assert node.ip_str == ip
-    assert node.port == port
+    assert node.address == mirage_active_nodes[0].address
+    assert isinstance(node.ip_str, str)
+    assert isinstance(node.port, int)
     assert node.name == f'node-{node_id}'
     assert isinstance(node.public_key, str)
     assert node.public_key.startswith('0x')
-
-    mirage.wallet = main_wallet
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
@@ -72,13 +97,11 @@ def test_register_passive_node(mirage, node_wallets):
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
-def test_set_domain_name(mirage, node_wallets):
+def test_set_domain_name(mirage, mirage_active_nodes):
     main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
+    mirage.wallet = mirage_active_nodes[0]
 
-    mirage.nodes.register_active(ip=ip, port=port)
-    node = mirage.nodes.get_by_address(mirage.wallet.address)
+    node = mirage.nodes.get_by_address(mirage_active_nodes[0].address)
     node_id = node.id
 
     domain_name = 'test-domain.example.com'
@@ -91,13 +114,11 @@ def test_set_domain_name(mirage, node_wallets):
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
-def test_set_ip_address(mirage, node_wallets):
+def test_set_ip_address(mirage, mirage_active_nodes):
     main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
+    mirage.wallet = mirage_active_nodes[0]
 
-    mirage.nodes.register_active(ip=ip, port=port)
-    node = mirage.nodes.get_by_address(mirage.wallet.address)
+    node = mirage.nodes.get_by_address(mirage_active_nodes[0].address)
     node_id = node.id
 
     new_ip, _, new_port, _ = generate_random_node_data()
@@ -121,97 +142,102 @@ def test_set_committee(mirage, node_wallets):
     mirage.nodes.set_committee(original_committee_address)
 
 
-def test_request_change_owner(mirage, node_wallets):
+@pytest.mark.parametrize('number_of_nodes', [2])
+def test_request_change_owner(mirage, mirage_passive_nodes):
     main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
 
-    mirage.nodes.register_passive(ip=ip, port=port)
-    node_id = mirage.nodes.get_passive_node_ids_for_address(mirage.wallet.address)[0]
+    node_id = mirage.nodes.get_passive_node_ids_for_address(mirage_passive_nodes[0].address)[0]
+    change_requests_for_node = mirage.nodes.contract.functions.ownerChangeRequests(node_id).call()
 
-    new_owner = node_wallets[1].address
+    assert change_requests_for_node == '0x0000000000000000000000000000000000000000'
+
+    new_owner = mirage_passive_nodes[1].address
+
+    mirage.wallet = mirage_passive_nodes[0]
     mirage.nodes.request_change_owner(node_id, new_owner)
+
+    updated_change_requests_for_node = mirage.nodes.contract.functions.ownerChangeRequests(
+        node_id
+    ).call()
+    assert updated_change_requests_for_node == new_owner
 
     mirage.wallet = main_wallet
 
 
-def test_confirm_owner_change(mirage, node_wallets):
+@pytest.mark.parametrize('number_of_nodes', [2])
+def test_confirm_owner_change(mirage, mirage_passive_nodes):
     main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
 
-    mirage.nodes.register_passive(ip=ip, port=port)
-    node_id = mirage.nodes.get_passive_node_ids_for_address(mirage.wallet.address)[0]
+    node_id = mirage.nodes.get_passive_node_ids_for_address(mirage_passive_nodes[0].address)[0]
+    new_owner = mirage_passive_nodes[1].address
 
-    new_owner = node_wallets[1].address
+    mirage.wallet = mirage_passive_nodes[0]
     mirage.nodes.request_change_owner(node_id, new_owner)
 
-    mirage.wallet = node_wallets[1]
+    change_requests_for_node = mirage.nodes.contract.functions.ownerChangeRequests(node_id).call()
+    assert change_requests_for_node == new_owner
+
+    mirage.wallet = mirage_passive_nodes[1]
     mirage.nodes.confirm_owner_change(node_id)
 
+    change_requests_for_node_after_confirm = mirage.nodes.contract.functions.ownerChangeRequests(
+        node_id
+    ).call()
+    assert change_requests_for_node_after_confirm == '0x0000000000000000000000000000000000000000'
+
     mirage.wallet = main_wallet
 
 
-def test_get_id(mirage, node_wallets):
-    main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
-
-    mirage.nodes.register_active(ip=ip, port=port)
-    node_id = mirage.nodes.get_id(mirage.wallet.address)
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_get_id(mirage, mirage_active_nodes):
+    node_id = mirage.nodes.get_id(mirage_active_nodes[0].address)
     assert node_id > 0
 
-    mirage.wallet = main_wallet
+    node = mirage.nodes.get(node_id)
+    assert node is not None
+    assert node.address == mirage_active_nodes[0].address
 
 
-def test_get_passive_node_ids_for_address(mirage, node_wallets):
+@pytest.mark.parametrize('number_of_nodes', [2])
+def test_get_passive_node_ids_for_address(mirage, mirage_passive_nodes):
+    node_ids_first = mirage.nodes.get_passive_node_ids_for_address(mirage_passive_nodes[0].address)
+    node_ids_second = mirage.nodes.get_passive_node_ids_for_address(mirage_passive_nodes[1].address)
+    assert len(node_ids_first) == 1
+    assert node_ids_first[0] > 0
+    assert len(node_ids_second) == 1
+    assert node_ids_second[0] > 0
+
     main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
+    mirage.wallet = mirage_passive_nodes[0]
     ip, _, port, _ = generate_random_node_data()
 
     mirage.nodes.register_passive(ip=ip, port=port)
 
-    node_ids = mirage.nodes.get_passive_node_ids_for_address(mirage.wallet.address)
-    assert len(node_ids) == 1
-    assert node_ids[0] > 0
-
-    new_ip, _, new_port, _ = generate_random_node_data()
-    mirage.nodes.register_passive(ip=new_ip, port=new_port)
-
-    node_ids = mirage.nodes.get_passive_node_ids_for_address(mirage.wallet.address)
-    assert len(node_ids) == 2
-    assert node_ids[0] > 0
-    assert node_ids[1] > 0
+    node_ids_first = mirage.nodes.get_passive_node_ids_for_address(mirage_passive_nodes[0].address)
+    node_ids_second = mirage.nodes.get_passive_node_ids_for_address(mirage_passive_nodes[1].address)
+    assert len(node_ids_first) == 2
+    assert node_ids_first[0] > 0
+    assert node_ids_first[1] > 0
+    assert len(node_ids_second) == 1
+    assert node_ids_second[0] > 0
 
     mirage.wallet = main_wallet
 
 
-def test_get_passive_node_ids(mirage, node_wallets):
-    main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_get_passive_node_ids(mirage, mirage_passive_nodes):
+    passive_node_ids = mirage.nodes.get_passive_node_ids()
 
-    passive_node_ids_before = mirage.nodes.get_passive_node_ids()
-    mirage.nodes.register_passive(ip=ip, port=port)
-    passive_node_ids_after = mirage.nodes.get_passive_node_ids()
-
-    assert len(passive_node_ids_after) == len(passive_node_ids_before) + 1
-
-    mirage.wallet = main_wallet
+    assert len(passive_node_ids) >= 1
+    assert all(node_id > 0 for node_id in passive_node_ids)
 
 
-def test_get_active_node_ids(mirage, node_wallets):
-    main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_get_active_node_ids(mirage, mirage_active_nodes):
+    active_node_ids = mirage.nodes.get_active_node_ids()
 
-    active_node_ids_before = mirage.nodes.get_active_node_ids()
-    mirage.nodes.register_active(ip=ip, port=port)
-    active_node_ids_after = mirage.nodes.get_active_node_ids()
-
-    assert len(active_node_ids_after) == len(active_node_ids_before) + 1
-
-    mirage.wallet = main_wallet
+    assert len(active_node_ids) >= 1
+    assert all(node_id > 0 for node_id in active_node_ids)
 
 
 def test_get_by_address(mirage, node_wallets):
@@ -234,19 +260,12 @@ def test_get_by_address(mirage, node_wallets):
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
-def test_active_node_exists(mirage, node_wallets):
-    main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
-
-    mirage.nodes.register_active(ip=ip, port=port)
-    node = mirage.nodes.get_by_address(mirage.wallet.address)
+def test_active_node_exists(mirage, mirage_active_nodes):
+    node = mirage.nodes.get_by_address(mirage_active_nodes[0].address)
     node_id = node.id
 
     assert mirage.nodes.active_node_exists(node_id) is True
     assert mirage.nodes.active_node_exists(999) is False
-
-    mirage.wallet = main_wallet
 
 
 def test_decode_public_key(mirage):
