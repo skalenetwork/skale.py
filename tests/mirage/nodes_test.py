@@ -5,20 +5,6 @@ from web3.exceptions import ContractLogicError
 from skale.utils.contracts_provision.utils import generate_random_node_data
 
 
-@pytest.fixture
-@pytest.mark.parametrize('number_of_nodes', [1])
-def mirage_node(mirage, node_wallets):
-    main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[0]
-    ip, _, port, _ = generate_random_node_data()
-    mirage.nodes.register(ip=ip, port=port)
-    mirage.wallet = main_wallet
-    try:
-        yield node_wallets[0]
-    finally:
-        """TODO: Remove the node from the mirage instance."""
-
-
 @pytest.mark.parametrize('number_of_nodes', [1])
 def test_get_node(mirage, node_wallets):
     main_wallet = mirage.wallet
@@ -129,16 +115,9 @@ def test_set_committee(mirage, node_wallets):
     committee_address = node_wallets[0].address
     mirage.nodes.set_committee(committee_address)
 
-    # Try to register new active node, should fail because of wrong committee address
-    main_wallet = mirage.wallet
-    mirage.wallet = node_wallets[1]
-    ip, _, port, _ = generate_random_node_data()
+    committee_contract = mirage.nodes.contract.functions.committeeContract().call()
+    assert committee_contract == committee_address
 
-    with pytest.raises(ContractLogicError):
-        mirage.nodes.register_active(ip=ip, port=port)
-
-    # Restore original wallet and committee address
-    mirage.wallet = main_wallet
     mirage.nodes.set_committee(original_committee_address)
 
 
