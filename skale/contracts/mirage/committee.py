@@ -74,10 +74,6 @@ class Committee(BaseContract):
         return self.contract.functions.setVersion(new_version)
 
     @transaction_method
-    def process_successful_dkg(self, round: DkgId):
-        return self.contract.functions.processSuccessfulDkg(round)
-
-    @transaction_method
     def set_committee_size(self, size: int):
         return self.contract.functions.setCommitteeSize(size)
 
