@@ -5,38 +5,6 @@ from web3.exceptions import ContractLogicError
 from skale.utils.contracts_provision.utils import generate_random_node_data
 
 
-@pytest.fixture
-def mirage_active_nodes(mirage, node_wallets):
-    main_wallet = mirage.wallet
-
-    for wallet in node_wallets:
-        mirage.wallet = wallet
-        ip, _, port, _ = generate_random_node_data()
-        mirage.nodes.register_active(ip=ip, port=port)
-
-    mirage.wallet = main_wallet
-    try:
-        yield node_wallets
-    finally:
-        """TODO: Remove the node from the mirage instance."""
-
-
-@pytest.fixture
-def mirage_passive_nodes(mirage, node_wallets):
-    main_wallet = mirage.wallet
-
-    for wallet in node_wallets:
-        mirage.wallet = wallet
-        ip, _, port, _ = generate_random_node_data()
-        mirage.nodes.register_passive(ip=ip, port=port)
-
-    mirage.wallet = main_wallet
-    try:
-        yield node_wallets
-    finally:
-        """TODO: Remove the node from the mirage instance."""
-
-
 @pytest.mark.parametrize('number_of_nodes', [1])
 def test_get_node(mirage, mirage_active_nodes):
     registered_node = mirage.nodes.get_by_address(mirage_active_nodes[0].address)

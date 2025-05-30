@@ -29,7 +29,7 @@ from skale.wallets import Web3Wallet
 
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 from tests.helper import init_skale, init_skale_allocator, init_mirage
-
+from skale.utils.contracts_provision.utils import generate_random_node_data
 
 ETH_AMOUNT_PER_NODE = 1
 
@@ -103,6 +103,38 @@ def nodes(skale, node_skales, validator):
         yield ids
     finally:
         cleanup_nodes(skale, ids)
+
+
+@pytest.fixture
+def mirage_active_nodes(mirage, node_wallets):
+    main_wallet = mirage.wallet
+
+    for wallet in node_wallets:
+        mirage.wallet = wallet
+        ip, _, port, _ = generate_random_node_data()
+        mirage.nodes.register_active(ip=ip, port=port)
+
+    mirage.wallet = main_wallet
+    try:
+        yield node_wallets
+    finally:
+        """TODO: Remove the node from the mirage instance."""
+
+
+@pytest.fixture
+def mirage_passive_nodes(mirage, node_wallets):
+    main_wallet = mirage.wallet
+
+    for wallet in node_wallets:
+        mirage.wallet = wallet
+        ip, _, port, _ = generate_random_node_data()
+        mirage.nodes.register_passive(ip=ip, port=port)
+
+    mirage.wallet = main_wallet
+    try:
+        yield node_wallets
+    finally:
+        """TODO: Remove the node from the mirage instance."""
 
 
 @pytest.fixture
