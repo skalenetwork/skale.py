@@ -50,9 +50,10 @@ class SkaleBase:
         debug: bool = False,
     ):
         logger.info(
-            'Initializing %s, endpoint: %s, wallet: %s',
+            'Initializing %s, endpoint: %s, alias_or_address: %s, wallet: %s',
             self.__class__.__name__,
             endpoint,
+            alias_or_address,
             type(wallet).__name__,
         )
         if state_path:
