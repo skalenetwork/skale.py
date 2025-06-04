@@ -17,9 +17,11 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from typing import Any
+
 from skale.contracts.base_contract import BaseContract
 from skale.contracts.base_contract import transaction_method
-from skale.types.dkg import G2Point, DkgId, KeyShare, VerificationVector
+from skale.types.dkg import Fp2Point, G2Point, DkgId, KeyShare, VerificationVector, Status, Round
 from skale.types.node import NodeId
 
 
@@ -32,6 +34,30 @@ class DKG(BaseContract):
 
     def get_public_key(self, dkg: DkgId) -> G2Point:
         return self.contract.functions.getPublicKey(dkg).call()
+
+    def get_last_dkg_id(self) -> DkgId:
+        return DkgId(self.contract.functions.lastDkgId().call())
+
+    def __get_raw_round(self, dkg: DkgId) -> list[Any]:
+        return list(self.contract.functions.rounds(dkg).call())
+
+    def get_round(self, dkg: DkgId) -> Round:
+        return self._to_round(self.__get_raw_round(dkg))
+
+    def _to_round(self, untyped_round: list[Any]) -> Round:
+        return Round(
+            id=DkgId(untyped_round[0]),
+            status=Status(untyped_round[1]),
+            nodes=untyped_round[2],
+            publicKey=G2Point(
+                x=Fp2Point(a=untyped_round[3][0][0], b=untyped_round[3][0][1]),
+                y=Fp2Point(a=untyped_round[3][1][0], b=untyped_round[3][1][1]),
+            ),
+            numberOfBroadcasted=untyped_round[4],
+            hashedData=untyped_round[5],
+            numberOfCompleted=untyped_round[6],
+            completed=untyped_round[7],
+        )
 
     @transaction_method
     def alright(self, dkg: DkgId):
