@@ -81,6 +81,26 @@ def init_web3(
     return w3
 
 
+def get_endpoint(endpoint: str | list[str]) -> str:
+    if isinstance(endpoint, str):
+        return endpoint
+    elif isinstance(endpoint, list) and len(endpoint) > 0:
+        return _get_connected_endpoint(endpoint)
+    else:
+        raise ValueError('Endpoint must be a string or a non-empty list of strings.')
+
+
+def _get_connected_endpoint(endpoints: list[str]) -> str:
+    for url in endpoints:
+        try:
+            w3 = Web3(HTTPProvider(url))
+            if w3.is_connected():
+                return url
+        except Exception as e:
+            logger.warning(f'Could not connect to {url}. Error: {e}. Trying next endpoint...')
+    raise ConnectionError('Could not connect to any RPC endpoints.')
+
+
 def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
     return web3.eth.get_transaction_receipt(tx)
 

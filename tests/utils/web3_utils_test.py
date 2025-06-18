@@ -3,11 +3,14 @@ import os
 from datetime import datetime
 
 import pytest
+from unittest import mock
 from freezegun import freeze_time
 
 from web3.exceptions import StaleBlockchain
-
+from skale.utils.web3_utils import get_endpoint
 import skale.config as config
+
+from tests.constants import ENDPOINT
 
 
 @pytest.fixture
@@ -52,3 +55,18 @@ def test_transaction_with_outdated_client(skale):
     with freeze_time(dt):
         with pytest.raises(StaleBlockchain):
             skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)
+
+
+def test_get_endpoint():
+    with mock.patch('web3.main.Web3.is_connected', return_value=True):
+        endpoint = get_endpoint(['http://localhost:8545', 'http://localhost:8546'])
+        assert endpoint == 'http://localhost:8545'
+
+        endpoint = get_endpoint('http://localhost:1111')
+        assert endpoint == 'http://localhost:1111'
+
+    with pytest.raises(ConnectionError):
+        get_endpoint(['invalid_endpoint'])
+
+    endpoint = get_endpoint(['http://localhost:1111', ENDPOINT])
+    assert endpoint == ENDPOINT
