@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
 from web3 import Web3, LegacyWebSocketProvider, HTTPProvider
-from web3.exceptions import TransactionNotFound
+from web3.exceptions import TransactionNotFound, ProviderConnectionError
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
 from web3.types import _Hash32, ENS, Nonce, TxReceipt
@@ -96,9 +96,10 @@ def _get_connected_endpoint(endpoints: list[str]) -> str:
             w3 = Web3(HTTPProvider(url))
             if w3.is_connected():
                 return url
-        except Exception as e:
+        except ProviderConnectionError as e:
             logger.warning(f'Could not connect to {url}. Error: {e}. Trying next endpoint...')
-    raise ConnectionError('Could not connect to any RPC endpoints.')
+            time.sleep(2)
+    raise ProviderConnectionError('Could not connect to any RPC endpoints.')
 
 
 def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
