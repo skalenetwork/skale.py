@@ -57,5 +57,7 @@ class DepositBoxERC1155(BaseContract):
     ) -> TxRes:
         return self.contract.functions.depositERC1155Batch(schain_name, address, ids, amount)
 
-    def get_schain_to_erc1155(self, schain_name: SchainName, token_address: int) -> bool:
+    def get_schain_to_erc1155(
+        self, schain_name: SchainName, token_address: ChecksumAddress
+    ) -> bool:
         return self.contract.functions.getSchainToERC1155(schain_name, token_address).call()

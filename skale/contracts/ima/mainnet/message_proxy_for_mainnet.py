@@ -25,19 +25,27 @@ from skale.types.schain import SchainName
 
 class MessageProxyForMainnet(BaseContract):
     @transaction_method
-    def register_extra_contract(self, schain_name: SchainName, contract_address: int) -> TxRes:
+    def register_extra_contract(
+        self, schain_name: SchainName, contract_address: ChecksumAddress
+    ) -> TxRes:
         return self.contract.functions.registerExtraContract(schain_name, contract_address)
 
     @transaction_method
-    def remove_extra_contract(self, schain_name: SchainName, contract_address: int) -> TxRes:
+    def remove_extra_contract(
+        self, schain_name: SchainName, contract_address: ChecksumAddress
+    ) -> TxRes:
         return self.contract.functions.removeExtraContract(schain_name, contract_address)
 
     @transaction_method
-    def add_reimbursed_contract(self, schain_name: SchainName, contract_address: int) -> TxRes:
+    def add_reimbursed_contract(
+        self, schain_name: SchainName, contract_address: ChecksumAddress
+    ) -> TxRes:
         return self.contract.functions.addReimbursedContract(schain_name, contract_address)
 
     @transaction_method
-    def remove_reimbursed_contracts(self, schain_name: SchainName, contract_address: int) -> TxRes:
+    def remove_reimbursed_contracts(
+        self, schain_name: SchainName, contract_address: ChecksumAddress
+    ) -> TxRes:
         return self.contract.functions.removeReimbursedContract(schain_name, contract_address)
 
     @transaction_method

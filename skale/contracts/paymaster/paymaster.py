@@ -41,7 +41,7 @@ class Paymaster(BaseContract):
         return self.contract.functions.removeSchain(schain_id)
 
     @transaction_method
-    def add_validator(self, validator_id: int, validator_address: int) -> TxRes:
+    def add_validator(self, validator_id: int, validator_address: ChecksumAddress) -> TxRes:
         return self.contract.functions.addValidator(validator_id, validator_address)
 
     @transaction_method
@@ -49,7 +49,7 @@ class Paymaster(BaseContract):
         return self.contract.functions.removeValidator(validator_id)
 
     @transaction_method
-    def set_validator_address(self, validator_id: int, new_address: int) -> TxRes:
+    def set_validator_address(self, validator_id: int, new_address: ChecksumAddress) -> TxRes:
         return self.contract.functions.setValidatorAddress(validator_id, new_address)
 
     @transaction_method
@@ -73,7 +73,7 @@ class Paymaster(BaseContract):
         return self.contract.functions.setAllowedSklPriceLag(lag_seconds)
 
     @transaction_method
-    def set_skale_token(self, token_address: int) -> TxRes:
+    def set_skale_token(self, token_address: ChecksumAddress) -> TxRes:
         return self.contract.functions.setSkaleToken(token_address)
 
     @transaction_method
@@ -86,7 +86,7 @@ class Paymaster(BaseContract):
         return self.contract.functions.pay(schain_id, month)
 
     @transaction_method
-    def claim(self, to_address: int) -> TxRes:
+    def claim(self, to_address: ChecksumAddress) -> TxRes:
         return self.contract.functions.claim(to_address)
 
     @transaction_method

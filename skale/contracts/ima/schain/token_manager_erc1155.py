@@ -17,10 +17,11 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
+
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 from skale.types.schain import SchainName
 
 
@@ -30,7 +31,9 @@ class TokenManagerERC1155(BaseContract):
         return self.contract.functions.addERC1155TokenByOwner(schain_name, token_mn, token_sc)
 
     @transaction_method
-    def exit_to_main_erc1155(self, token_address: int, token_id: int, amount: int) -> TxRes:
+    def exit_to_main_erc1155(
+        self, token_address: ChecksumAddress, token_id: int, amount: int
+    ) -> TxRes:
         return self.contract.functions.exitToMainERC1155(token_address, token_id, amount)
 
     @transaction_method
@@ -39,7 +42,7 @@ class TokenManagerERC1155(BaseContract):
 
     @transaction_method
     def transfer_to_schain_erc1155(
-        self, schain_name: SchainName, token_address: int, token_id: int, amount: int
+        self, schain_name: SchainName, token_address: ChecksumAddress, token_id: int, amount: int
     ) -> TxRes:
         """
         schain_name - destination chain
@@ -51,7 +54,7 @@ class TokenManagerERC1155(BaseContract):
 
     @transaction_method
     def transfer_to_schain_erc1155_batch(
-        self, schain_name: SchainName, token_address: int, token_ids: list, amount: list
+        self, schain_name: SchainName, token_address: ChecksumAddress, token_ids: list, amount: list
     ) -> TxRes:
         return self.contract.functions.transferToSchainERC1155Batch(
             schain_name, token_address, token_ids, amount

@@ -31,18 +31,18 @@ class TokenManagerERC20(BaseContract):
         return self.contract.functions.automaticDeploy().call()
 
     @transaction_method
-    def exit_to_main_erc20(self, token_address: int, amount: int) -> TxRes:
+    def exit_to_main_erc20(self, token_address: ChecksumAddress, amount: int) -> TxRes:
         return self.contract.functions.exitToMainERC20(token_address, amount)
 
     @transaction_method
     def transfer_to_schain_erc20(
-        self, schain_name: SchainName, token_address: int, amount: int
+        self, schain_name: SchainName, token_address: ChecksumAddress, amount: int
     ) -> TxRes:
         return self.contract.functions.transferToSchainERC20(schain_name, token_address, amount)
 
     @transaction_method
     def transfer_to_schain_erc20_direct(
-        self, schain_name: SchainName, token_address: int, amount: int, receiver=str
+        self, schain_name: SchainName, token_address: ChecksumAddress, amount: int, receiver=str
     ) -> TxRes:
         return self.contract.functions.transferToSchainERC20Direct(
             schain_name, token_address, amount, receiver
@@ -50,7 +50,7 @@ class TokenManagerERC20(BaseContract):
 
     @transaction_method
     def transfer_to_schain_hash_erc20_direct(
-        self, schain_hash: str, token_address: int, amount: int, receiver=str
+        self, schain_hash: str, token_address: ChecksumAddress, amount: int, receiver=str
     ) -> TxRes:
         return self.contract.functions.transferToSchainHashERC20Direct(
             schain_hash, token_address, amount, receiver
