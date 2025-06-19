@@ -18,16 +18,15 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """SKALE base contract class"""
 
-from __future__ import annotations
 import logging
 from functools import wraps
 from typing import Any, Callable, TYPE_CHECKING, Generic, TypeVar
 
-from eth_typing import ChecksumAddress, ABI
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.types import Nonce, Wei
 
+from skale_contracts.types import ContractName
 import skale.config as config
 from skale.transactions.result import TxRes, TxStatus
 from skale.transactions.tools import make_dry_run_call, transaction_from_method
@@ -37,7 +36,6 @@ from skale.utils.web3_utils import (
     MAX_WAITING_TIME,
     wait_for_confirmation_blocks,
 )
-
 from skale.skale_base import SkaleBase
 from skale.utils.helper import to_camel_case
 
@@ -52,16 +50,17 @@ SkaleType = TypeVar('SkaleType', bound=SkaleBase)
 
 
 class BaseContract(Generic[SkaleType]):
-    def __init__(
-        self, skale: SkaleType, name: str, address: ChecksumAddress | str | bytes, abi: ABI
-    ):
+    def __init__(self, skale: SkaleType, name: ContractName):
         self.skale = skale
         self.name = name
-        self.address = Web3.to_checksum_address(address)
-        self.init_contract(skale, self.address, abi)
+        self.init_contract(name)
 
-    def init_contract(self, skale: SkaleBase, address: ChecksumAddress, abi: ABI) -> None:
-        self.contract = skale.web3.eth.contract(address=address, abi=abi)
+    def init_contract(self, contract_name: ContractName) -> None:
+        self.address = Web3.to_checksum_address(self.skale.instance.get_contract_address(self.name))
+        self.contract = self.skale.web3.eth.contract(
+            address=self.address,
+            abi=self.skale.instance.abi[contract_name],
+        )
 
     def __getattr__(self, attr: str) -> Callable[..., Any]:
         """Fallback for contract calls"""

@@ -17,30 +17,20 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
-import logging
-from typing import List
+from functools import cached_property
+
+from skale_contracts.projects.context import ContextContract
+from skale_contracts.project_factory import SkaleProject
 
 from skale.skale_base import SkaleBase
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-
-logger = logging.getLogger(__name__)
+from skale.contracts.context.context import Context
 
 
 class SkaleContext(SkaleBase):
     @property
-    def project_name(self) -> str:
-        return 'context-contract'
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.CONTEXT_CONTRACT
 
-    def contracts_info(self) -> List[ContractInfo[SkaleContext]]:
-        import skale.contracts.context as contracts
-
-        return [
-            ContractInfo('Context', 'ContextContract', contracts.Context, ContractTypes.API, False)
-        ]
-
-    def set_contracts_info(self) -> None:
-        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
+    @cached_property
+    def context(self) -> Context:
+        return Context(self, ContextContract.CONTEXT_CONTRACT)

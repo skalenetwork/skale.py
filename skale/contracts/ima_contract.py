@@ -18,8 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from skale.contracts.base_contract import BaseContract
-from skale.skale_ima import SkaleIma
 
 
-class ImaContract(BaseContract[SkaleIma]):
+class ImaContract(BaseContract):
     pass

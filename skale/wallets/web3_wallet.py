@@ -126,3 +126,7 @@ def generate_wallet(web3: Web3) -> Web3Wallet:
     account = web3.eth.account.create()
     private_key = account.key.hex()
     return Web3Wallet(private_key, web3)
+
+
+def generate_wallets(web3: Web3, n_of_keys: int) -> list[Web3Wallet]:
+    return [generate_wallet(web3) for _ in range(n_of_keys)]

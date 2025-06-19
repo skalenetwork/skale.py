@@ -32,7 +32,7 @@ class ContractManager(SkaleManagerContract):
     @transaction_method
     def set_contracts_address(
         self, contracts_name: str, contracts_address: ChecksumAddress
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.setContractsAddress(contracts_name, contracts_address)
 
     def get_contract_address(self, name: str) -> ChecksumAddress:

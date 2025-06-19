@@ -21,9 +21,13 @@ from collections import namedtuple
 from typing import List, NamedTuple, NewType, Tuple
 
 from eth_typing import HexStr
+from enum import Enum
+
+from skale.types.node import NodeId
 
 
 Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
+DkgId = NewType('DkgId', int)
 
 
 class G2Point(NamedTuple):
@@ -37,3 +41,21 @@ VerificationVector = NewType('VerificationVector', List[G2Point])
 class KeyShare(NamedTuple):
     publicKey: Tuple[bytes | HexStr, bytes | HexStr]
     share: bytes | HexStr
+
+
+class Status(Enum):
+    SUCCESS = 0
+    BROADCAST = 1
+    ALRIGHT = 2
+    FAILED = 3
+
+
+class Round(NamedTuple):
+    id: DkgId
+    status: Status
+    nodes: List[NodeId]
+    publicKey: G2Point
+    numberOfBroadcasted: int
+    hashedData: List[bytes]
+    numberOfCompleted: int
+    completed: List[bool]

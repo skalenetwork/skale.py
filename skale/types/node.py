@@ -18,9 +18,10 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from enum import IntEnum
+from dataclasses import dataclass
 from typing import List, NewType, TypedDict
 
-from eth_typing import BlockNumber
+from eth_typing import BlockNumber, ChecksumAddress, HexStr
 
 from skale.types.schain import SchainStructureWithStatus
 from skale.types.validator import ValidatorId
@@ -47,8 +48,20 @@ class Node(TypedDict):
     finish_time: int
     status: NodeStatus
     validator_id: ValidatorId
-    publicKey: str
+    publicKey: HexStr
     domain_name: str
+
+
+@dataclass
+class MirageNode:
+    id: NodeId
+    ip: bytes
+    ip_str: str
+    domain_name: str
+    address: ChecksumAddress
+    port: Port
+    name: str
+    public_key: HexStr
 
 
 class NodeWithId(Node):

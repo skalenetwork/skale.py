@@ -10,7 +10,7 @@ class SlashingTable(SkaleManagerContract):
     """Wrapper for SlashingTable.sol functions"""
 
     @transaction_method
-    def set_penalty(self, offense: str, penalty: Wei) -> ContractFunction:
+    def set_penalty(self, offense: str, penalty: Wei) -> 'ContractFunction':
         """Set slashing penalty
         :param offense: reason of slashing
         :type offense: str
@@ -29,7 +29,7 @@ class SlashingTable(SkaleManagerContract):
         return Wei(self.contract.functions.getPenalty(offense).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def penalty_setter_role(self) -> bytes:

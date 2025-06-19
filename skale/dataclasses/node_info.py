@@ -36,7 +36,6 @@ class NodeInfo:
             'httpsRpcPort': Port(self.base_port + SkaledPorts.HTTPS_JSON.value),
             'wsRpcPort': Port(self.base_port + SkaledPorts.WS_JSON.value),
             'wssRpcPort': Port(self.base_port + SkaledPorts.WSS_JSON.value),
-            'infoHttpRpcPort': Port(self.base_port + SkaledPorts.INFO_HTTP_JSON.value),
         }
 
     def to_dict(self) -> dict[str, NodeId | str | Port]:

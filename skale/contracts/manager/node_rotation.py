@@ -109,7 +109,7 @@ class NodeRotation(SkaleManagerContract):
         return bool(self.contract.functions.waitForNewNode(schain_id).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, owner: str) -> ContractFunction:
+    def grant_role(self, role: bytes, owner: str) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, owner)
 
     def has_role(self, role: bytes, address: ChecksumAddress) -> bool:

@@ -28,10 +28,9 @@ from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
-from tests.helper import init_skale, init_skale_allocator
+from tests.helper import init_skale, init_skale_allocator, init_mirage
+from skale.utils.contracts_provision.utils import generate_random_node_data
 
-
-NUMBER_OF_NODES = 2
 ETH_AMOUNT_PER_NODE = 1
 
 
@@ -43,15 +42,22 @@ def web3():
 
 
 @pytest.fixture(scope='session')
-def skale(web3):
-    """Returns a SKALE Manager instance with provider from config"""
-    skale_obj = init_skale(web3)
-    add_test_permissions(skale_obj)
-    add_test2_schain_type(skale_obj)
-    if skale_obj.constants_holder.get_launch_timestamp() != 0:
-        skale_obj.constants_holder.set_launch_timestamp(0)
-    deploy_fake_multisig_contract(skale_obj.web3, skale_obj.wallet)
-    return skale_obj
+def skale(web3, request):
+    """Returns a cached SKALE Manager instance with provider from config"""
+    if not hasattr(request.config, '_cached_skale'):
+        skale_obj = init_skale(web3)
+        add_test_permissions(skale_obj)
+        add_test2_schain_type(skale_obj)
+        if skale_obj.constants_holder.get_launch_timestamp() != 0:
+            skale_obj.constants_holder.set_launch_timestamp(0)
+        deploy_fake_multisig_contract(skale_obj.web3, skale_obj.wallet)
+        request.config._cached_skale = skale_obj
+    return request.config._cached_skale
+
+
+@pytest.fixture(scope='session')
+def mirage(web3):
+    return init_mirage(web3)
 
 
 @pytest.fixture(scope='session')
@@ -59,10 +65,15 @@ def validator(skale):
     return setup_validator(skale)
 
 
+@pytest.fixture(scope='session')
+def number_of_nodes():
+    return 2
+
+
 @pytest.fixture
-def node_wallets(skale):
+def node_wallets(skale, number_of_nodes):
     wallets = []
-    for i in range(NUMBER_OF_NODES):
+    for i in range(number_of_nodes):
         acc = generate_account(skale.web3)
         pk = acc['private_key']
         wallet = Web3Wallet(pk, skale.web3)
@@ -92,6 +103,38 @@ def nodes(skale, node_skales, validator):
         yield ids
     finally:
         cleanup_nodes(skale, ids)
+
+
+@pytest.fixture
+def mirage_active_nodes(mirage, node_wallets):
+    main_wallet = mirage.wallet
+
+    for wallet in node_wallets:
+        mirage.wallet = wallet
+        ip, _, port, _ = generate_random_node_data()
+        mirage.nodes.register_active(ip=ip, port=port)
+
+    mirage.wallet = main_wallet
+    try:
+        yield node_wallets
+    finally:
+        """TODO: Remove the node from the mirage instance."""
+
+
+@pytest.fixture
+def mirage_passive_nodes(mirage, node_wallets):
+    main_wallet = mirage.wallet
+
+    for wallet in node_wallets:
+        mirage.wallet = wallet
+        ip, _, port, _ = generate_random_node_data()
+        mirage.nodes.register_passive(ip=ip, port=port)
+
+    mirage.wallet = main_wallet
+    try:
+        yield node_wallets
+    finally:
+        """TODO: Remove the node from the mirage instance."""
 
 
 @pytest.fixture

@@ -23,7 +23,7 @@ from decimal import Decimal
 import logging
 from typing import Any, Dict, List, Literal, Optional, TYPE_CHECKING, Type, TypedDict
 
-from eth_typing import ChecksumAddress
+from eth_typing import ChecksumAddress, HexStr
 from web3 import Web3
 from web3.types import TxReceipt, Wei
 
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 class AccountData(TypedDict):
     address: ChecksumAddress
-    private_key: str
+    private_key: HexStr
 
 
 WALLET_TYPE_TO_CLASS: Dict[str, Type[LedgerWallet] | Type[Web3Wallet]] = {

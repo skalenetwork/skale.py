@@ -17,7 +17,7 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
+
 import logging
 import time
 from functools import partial, wraps
@@ -46,7 +46,7 @@ DEFAULT_ETH_SEND_GAS_LIMIT = 22000
 
 
 def make_dry_run_call(
-    skale: SkaleBase, method: ContractFunction, gas_limit: int | None = None, value: Wei = Wei(0)
+    skale: 'SkaleBase', method: ContractFunction, gas_limit: int | None = None, value: Wei = Wei(0)
 ) -> TxCallResult:
     opts = TxParams({'from': skale.wallet.address, 'value': value})
     logger.info(

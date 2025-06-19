@@ -17,41 +17,20 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
-import logging
-from typing import List
+from functools import cached_property
+
+from skale_contracts.projects.paymaster import PaymasterContract
+from skale_contracts.project_factory import SkaleProject
 
 from skale.skale_base import SkaleBase
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-
-logger = logging.getLogger(__name__)
+from skale.contracts.paymaster.paymaster import Paymaster
 
 
 class SkalePaymaster(SkaleBase):
     @property
-    def project_name(self) -> str:
-        return 'paymaster'
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.PAYMASTER
 
-    def contracts_info(self) -> List[ContractInfo[SkalePaymaster]]:
-        import skale.contracts.paymaster as contracts
-
-        return [
-            ContractInfo(
-                'paymaster',
-                'FastForwardPaymaster' if self.debug else 'Paymaster',
-                contracts.Paymaster,
-                ContractTypes.API,
-                False,
-            )
-        ]
-
-    def set_contracts_info(self) -> None:
-        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
-
-
-def spawn_skale_ima_lib(paymaster: SkalePaymaster) -> SkalePaymaster:
-    """Clone skale ima object with the same wallet"""
-    return SkalePaymaster(paymaster._endpoint, paymaster.instance.address, paymaster.wallet)
+    @cached_property
+    def paymaster(self) -> Paymaster:
+        return Paymaster(self, PaymasterContract.PAYMASTER)

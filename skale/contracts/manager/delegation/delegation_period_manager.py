@@ -28,7 +28,7 @@ class DelegationPeriodManager(SkaleManagerContract):
     """Wrapper for DelegationPeriodManager.sol functions"""
 
     @transaction_method
-    def set_delegation_period(self, months_count: int, stake_multiplier: int) -> ContractFunction:
+    def set_delegation_period(self, months_count: int, stake_multiplier: int) -> 'ContractFunction':
         return self.contract.functions.setDelegationPeriod(
             monthsCount=months_count, stakeMultiplier=stake_multiplier
         )
@@ -39,7 +39,7 @@ class DelegationPeriodManager(SkaleManagerContract):
         )
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def delegation_period_setter_role(self) -> bytes:

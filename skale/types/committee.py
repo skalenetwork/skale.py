@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2024-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -16,21 +16,23 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-"""Contract info utilities"""
 
 from __future__ import annotations
-from typing import Generic, NamedTuple, Type, TYPE_CHECKING
-
-from skale.contracts.base_contract import SkaleType
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, List, NewType
 
 if TYPE_CHECKING:
-    from skale.contracts.base_contract import BaseContract
-    from skale.utils.contract_types import ContractTypes
+    from skale.types.node import NodeId
+
+from skale.types.dkg import G2Point, DkgId
+
+CommitteeIndex = NewType('CommitteeIndex', int)
+TimeStamp = NewType('TimeStamp', int)
 
 
-class ContractInfo(NamedTuple, Generic[SkaleType]):
-    name: str
-    contract_name: str
-    contract_class: Type[BaseContract[SkaleType]]
-    type: ContractTypes
-    upgradeable: bool
+@dataclass
+class Committee:
+    node_ids: List[NodeId]
+    dkg_id: DkgId
+    common_public_key: G2Point
+    starting_timestamp: TimeStamp

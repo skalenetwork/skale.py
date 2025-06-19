@@ -17,30 +17,20 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
-import logging
-from typing import List
+from functools import cached_property
+
+from skale_contracts.projects.etherbase import EtherbaseContract
+from skale_contracts.project_factory import SkaleProject
 
 from skale.skale_base import SkaleBase
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-
-logger = logging.getLogger(__name__)
+from skale.contracts.etherbase.etherbase import Etherbase
 
 
 class SkaleEtherbase(SkaleBase):
     @property
-    def project_name(self) -> str:
-        return 'etherbase'
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.ETHERBASE
 
-    def contracts_info(self) -> List[ContractInfo[SkaleEtherbase]]:
-        import skale.contracts.etherbase as contracts
-
-        return [
-            ContractInfo('Etherbase', 'Etherbase', contracts.Etherbase, ContractTypes.API, False)
-        ]
-
-    def set_contracts_info(self) -> None:
-        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
+    @cached_property
+    def etherbase(self) -> Etherbase:
+        return Etherbase(self, EtherbaseContract.ETHERBASE)

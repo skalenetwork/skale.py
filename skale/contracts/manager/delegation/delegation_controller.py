@@ -149,7 +149,7 @@ class DelegationController(SkaleManagerContract):
     @transaction_method
     def delegate(
         self, validator_id: ValidatorId, amount: Wei, delegation_period: int, info: str
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         """Creates request to delegate amount of tokens to validator_id.
 
         :param validator_id: ID of the validator to delegate tokens
@@ -166,7 +166,7 @@ class DelegationController(SkaleManagerContract):
         return self.contract.functions.delegate(validator_id, amount, delegation_period, info)
 
     @transaction_method
-    def accept_pending_delegation(self, delegation_id: DelegationId) -> ContractFunction:
+    def accept_pending_delegation(self, delegation_id: DelegationId) -> 'ContractFunction':
         """Accepts a pending delegation by delegation ID.
 
         :param delegation_id: Delegation ID to accept
@@ -177,7 +177,7 @@ class DelegationController(SkaleManagerContract):
         return self.contract.functions.acceptPendingDelegation(delegation_id)
 
     @transaction_method
-    def cancel_pending_delegation(self, delegation_id: DelegationId) -> ContractFunction:
+    def cancel_pending_delegation(self, delegation_id: DelegationId) -> 'ContractFunction':
         """Cancel pending delegation request.
 
         :param delegation_id: ID of the delegation to cancel
@@ -188,7 +188,7 @@ class DelegationController(SkaleManagerContract):
         return self.contract.functions.cancelPendingDelegation(delegation_id)
 
     @transaction_method
-    def request_undelegation(self, delegation_id: DelegationId) -> ContractFunction:
+    def request_undelegation(self, delegation_id: DelegationId) -> 'ContractFunction':
         """This method is  for undelegating request in the end of
             delegation period (3/6/12 months)
 

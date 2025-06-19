@@ -80,7 +80,7 @@ class Distributor(SkaleManagerContract):
         return tuple(self.contract.functions.getEarnedFeeAmount().call({'from': address}))
 
     @transaction_method
-    def withdraw_bounty(self, validator_id: ValidatorId, to: ChecksumAddress) -> ContractFunction:
+    def withdraw_bounty(self, validator_id: ValidatorId, to: ChecksumAddress) -> 'ContractFunction':
         """Withdraw earned bounty to specified address
 
         :param validator_id: ID of the validator
@@ -93,7 +93,7 @@ class Distributor(SkaleManagerContract):
         return self.contract.functions.withdrawBounty(validator_id, to)
 
     @transaction_method
-    def withdraw_fee(self, to: ChecksumAddress) -> ContractFunction:
+    def withdraw_fee(self, to: ChecksumAddress) -> 'ContractFunction':
         """Withdraw earned fee to specified address
 
         :param to: Address to transfer bounty

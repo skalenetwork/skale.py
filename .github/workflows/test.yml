@@ -2,26 +2,28 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  test_manager:
+  test:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [3.11]
+        component: [manager, allocator, mirage]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       ENDPOINT: "http://127.0.0.1:8545"
       MANAGER_TAG: "1.12.0-develop.21"
+      ALLOCATOR_TAG: "2.2.2-develop.0"
+      MIRAGE_TAG: "0.0.1-develop.20"
       MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           cache: "pip"
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.11
 
       - name: Install python dependencies
         run: bash ./scripts/install_python_dependencies.sh
@@ -39,70 +41,39 @@ jobs:
           bash ./helper-scripts/deploy_manager.sh
           docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
 
+      - name: Deploy allocator
+        if: ${{ matrix.component == 'allocator' }}
+        run: |
+          bash ./helper-scripts/deploy_allocator.sh
+          docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
+      
+      - name: Bootstrap mirage-boot contracts
+        if: ${{ matrix.component == 'mirage' }}
+        run: |
+          bash ./scripts/bootstrap_mirage.sh
+
+      - name: Deploy mirage
+        if: ${{ matrix.component == 'mirage' }}
+        env:
+          MAINNET_ENDPOINT: "http://127.0.0.1:8545"
+          CHAIN_NAME: "mirage"
+        run: |
+          export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
+          bash ./helper-scripts/deploy_mirage.sh
+          docker rmi -f skalenetwork/professional:${{ env.MIRAGE_TAG }}
+  
       - name: Show stats before tests
         if: always()
         run: |
           sudo lsblk -f
           sudo free -h
 
-      - name: Run tests
-        run: |
-          bash ./scripts/run_manager_tests.sh
+      - name: Run tests for ${{ matrix.component }}
+        run: bash ./scripts/run_${{ matrix.component }}_tests.sh
+
       - name: Codecov
         run: |
           codecov -t $CODECOV_TOKEN
-
-      - name: Show stats after tests
-        if: always()
-        run: |
-          sudo lsblk -f
-          sudo free -h
-
-  test_allocator:
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        python-version: [3.11]
-    env:
-      ENDPOINT: ${{ secrets.ENDPOINT }}
-      ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      MANAGER_TAG: "1.12.0-develop.21"
-      ALLOCATOR_TAG: "2.2.2-develop.0"
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          cache: "pip"
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install host dependencies
-        run: bash ./scripts/install_host_dependencies.sh
-
-      - name: Install python dependencies
-        run: bash ./scripts/install_python_dependencies.sh
-      
-      - name: Launch hardhat node
-        working-directory: hardhat-node
-        run: |
-          docker compose up -d && sleep 20
-
-      - name: Deploy manager contracts
-        run: |
-          bash ./helper-scripts/deploy_manager.sh
-          docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
-
-      - name: Deploy allocator contracts
-        run: |
-          bash ./helper-scripts/deploy_allocator.sh
-          docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
-
-      - name: Run tests
-        run: |
-          bash ./scripts/run_allocator_tests.sh
 
       - name: Show stats after tests
         if: always()

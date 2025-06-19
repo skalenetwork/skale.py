@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
 from web3 import Web3, LegacyWebSocketProvider, HTTPProvider
-from web3.exceptions import TransactionNotFound
+from web3.exceptions import TransactionNotFound, ProviderConnectionError
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
 from web3.types import _Hash32, ENS, Nonce, TxReceipt
@@ -65,14 +65,12 @@ def init_web3(
     endpoint: str,
     provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
     middlewares: Iterable[Middleware] | None = None,
-    state_path: str | None = None,
     ts_diff: int | None = None,
 ) -> Web3:
     provider = get_provider(endpoint, timeout=provider_timeout)
     w3 = Web3(provider)
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
-        state_path = state_path or config.LAST_BLOCK_FILE
         if not ts_diff == config.NO_SYNC_TS_DIFF:
             stalecheck_middleware = StalecheckMiddlewareBuilder.build(config.ALLOWED_TS_DIFF)
             middlewares = [stalecheck_middleware, AttributeDictMiddleware]
@@ -81,6 +79,27 @@ def init_web3(
     for middleware in middlewares:
         w3.middleware_onion.add(middleware)
     return w3
+
+
+def get_endpoint(endpoint: str | list[str]) -> str:
+    if isinstance(endpoint, str):
+        return endpoint
+    elif isinstance(endpoint, list) and len(endpoint) > 0:
+        return _get_connected_endpoint(endpoint)
+    else:
+        raise ValueError('Endpoint must be a string or a non-empty list of strings.')
+
+
+def _get_connected_endpoint(endpoints: list[str]) -> str:
+    for url in endpoints:
+        try:
+            w3 = Web3(HTTPProvider(url))
+            if w3.is_connected():
+                return url
+        except ProviderConnectionError as e:
+            logger.warning(f'Could not connect to {url}. Error: {e}. Trying next endpoint...')
+            time.sleep(2)
+    raise ProviderConnectionError('Could not connect to any RPC endpoints.')
 
 
 def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:

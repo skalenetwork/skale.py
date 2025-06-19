@@ -31,7 +31,7 @@ class Linker(ImaContract):
     @transaction_method
     def connect_schain(
         self, schain_name: SchainName, mainnet_contracts: List[ChecksumAddress]
-    ) -> ContractFunction:
+    ) -> 'ContractFunction':
         return self.contract.functions.connectSchain(schain_name, mainnet_contracts)
 
     def linker_role(self) -> bytes:

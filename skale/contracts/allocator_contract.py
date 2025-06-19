@@ -17,9 +17,20 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+from web3.constants import CHECKSUM_ADDRESSS_ZERO
+from skale_contracts.types import ContractName
+from skale_contracts.projects.skale_allocator import SkaleAllocatorContract
+
 from skale.contracts.base_contract import BaseContract
-from skale.skale_allocator import SkaleAllocator
 
 
-class AllocatorContract(BaseContract[SkaleAllocator]):
-    pass
+class AllocatorContract(BaseContract):
+    def init_contract(self, contract_name: ContractName) -> None:
+        if contract_name == SkaleAllocatorContract.ESCROW:
+            self.address = CHECKSUM_ADDRESSS_ZERO
+        else:
+            self.address = self.skale.instance.get_contract_address(contract_name)
+        self.contract = self.skale.web3.eth.contract(
+            address=self.address,
+            abi=self.skale.instance.abi[contract_name],
+        )

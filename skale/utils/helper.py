@@ -18,8 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 """SKALE helper utilities"""
 
-from __future__ import annotations
-
 import ipaddress
 import json
 import logging
@@ -29,15 +27,11 @@ import string
 import sys
 from logging import Formatter, StreamHandler
 from random import randint
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List, cast
+from typing import Any, Callable, Dict, Generator, List, cast
 
 from skale.config import ENV
 from skale.types.node import Port
 from eth_typing import ChecksumAddress
-
-if TYPE_CHECKING:
-    from skale.contracts.base_contract import SkaleType
-    from skale.utils.contract_info import ContractInfo
 
 
 logger = logging.getLogger(__name__)
@@ -197,15 +191,6 @@ def split_public_key(public_key: str) -> list[bytes]:
     public_key = rm_0x_prefix(public_key)
     pk_parts = list(chunk(public_key, 2))
     return list(map(bytes.fromhex, pk_parts))
-
-
-def get_contracts_info(
-    contracts_data: list[ContractInfo[SkaleType]],
-) -> dict[str, ContractInfo[SkaleType]]:
-    contracts_info = {}
-    for contract_info in contracts_data:
-        contracts_info[contract_info.name] = contract_info
-    return contracts_info
 
 
 def to_camel_case(snake_str: str) -> str:

@@ -2,7 +2,7 @@
 #
 #   This file is part of SKALE.py
 #
-#   Copyright (C) 2019-Present SKALE Labs
+#   Copyright (C) 2025-Present SKALE Labs
 #
 #   SKALE.py is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as published by
@@ -16,12 +16,9 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-"""Contract type utilities"""
 
-from enum import Enum
+from skale.contracts.base_contract import BaseContract
 
 
-class ContractTypes(Enum):
-    API = 0
-    DATA = 1
-    INTERNAL = 2
+class AccessManager(BaseContract):
+    pass

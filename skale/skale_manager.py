@@ -17,207 +17,127 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
-import logging
-from typing import List, TYPE_CHECKING, cast
+from functools import cached_property
+
+from skale_contracts.projects.skale_manager import SkaleManagerContract
+from skale_contracts.project_factory import SkaleProject
 
 from skale.skale_base import SkaleBase
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
 
-if TYPE_CHECKING:
-    import skale.contracts.manager as contracts
-
-
-logger = logging.getLogger(__name__)
+from skale.contracts.manager.bounty_v2 import BountyV2
+from skale.contracts.manager.constants_holder import ConstantsHolder
+from skale.contracts.manager.contract_manager import ContractManager
+from skale.contracts.manager.delegation.delegation_controller import DelegationController
+from skale.contracts.manager.delegation.delegation_period_manager import DelegationPeriodManager
+from skale.contracts.manager.delegation.distributor import Distributor
+from skale.contracts.manager.delegation.slashing_table import SlashingTable
+from skale.contracts.manager.delegation.token_state import TokenState
+from skale.contracts.manager.delegation.validator_service import ValidatorService
+from skale.contracts.manager.dkg import DKG
+from skale.contracts.manager.key_storage import KeyStorage
+from skale.contracts.manager.manager import Manager
+from skale.contracts.manager.node_rotation import NodeRotation
+from skale.contracts.manager.nodes import Nodes
+from skale.contracts.manager.punisher import Punisher
+from skale.contracts.manager.schains import SChains
+from skale.contracts.manager.schains_internal import SChainsInternal
+from skale.contracts.manager.sync_manager import SyncManager
+from skale.contracts.manager.test.time_helpers_with_debug import TimeHelpersWithDebug
+from skale.contracts.manager.token import Token
+from skale.contracts.manager.wallets import Wallets
 
 
 class SkaleManager(SkaleBase):
     """Represents skale-manager smart contracts"""
 
     @property
-    def project_name(self) -> str:
-        return 'skale-manager'
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.SKALE_MANAGER
 
-    @staticmethod
-    def contracts_info() -> List[ContractInfo[SkaleManager]]:
-        import skale.contracts.manager as contracts
+    @cached_property
+    def contract_manager(self) -> ContractManager:
+        return ContractManager(self, SkaleManagerContract.CONTRACT_MANAGER)
 
-        return [
-            ContractInfo(
-                'contract_manager',
-                'ContractManager',
-                contracts.ContractManager,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo('token', 'SkaleToken', contracts.Token, ContractTypes.API, False),
-            ContractInfo('manager', 'SkaleManager', contracts.Manager, ContractTypes.API, True),
-            ContractInfo(
-                'constants_holder',
-                'ConstantsHolder',
-                contracts.ConstantsHolder,
-                ContractTypes.INTERNAL,
-                True,
-            ),
-            ContractInfo('nodes', 'Nodes', contracts.Nodes, ContractTypes.API, True),
-            ContractInfo(
-                'node_rotation', 'NodeRotation', contracts.NodeRotation, ContractTypes.API, True
-            ),
-            ContractInfo('schains', 'Schains', contracts.SChains, ContractTypes.API, True),
-            ContractInfo(
-                'schains_internal',
-                'SchainsInternal',
-                contracts.SChainsInternal,
-                ContractTypes.API,
-                True,
-            ),
-            ContractInfo('dkg', 'SkaleDKG', contracts.DKG, ContractTypes.API, True),
-            ContractInfo(
-                'key_storage', 'KeyStorage', contracts.KeyStorage, ContractTypes.API, True
-            ),
-            ContractInfo(
-                'delegation_controller',
-                'DelegationController',
-                contracts.DelegationController,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'delegation_period_manager',
-                'DelegationPeriodManager',
-                contracts.DelegationPeriodManager,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'validator_service',
-                'ValidatorService',
-                contracts.ValidatorService,
-                ContractTypes.API,
-                False,
-            ),
-            ContractInfo(
-                'token_state', 'TokenState', contracts.TokenState, ContractTypes.API, False
-            ),
-            ContractInfo(
-                'distributor', 'Distributor', contracts.Distributor, ContractTypes.API, False
-            ),
-            ContractInfo(
-                'slashing_table', 'SlashingTable', contracts.SlashingTable, ContractTypes.API, False
-            ),
-            ContractInfo('wallets', 'Wallets', contracts.Wallets, ContractTypes.API, True),
-            ContractInfo('bounty_v2', 'BountyV2', contracts.BountyV2, ContractTypes.API, True),
-            ContractInfo('punisher', 'Punisher', contracts.Punisher, ContractTypes.API, True),
-            ContractInfo(
-                'sync_manager', 'SyncManager', contracts.SyncManager, ContractTypes.API, False
-            ),
-            ContractInfo(
-                'time_helpers_with_debug',
-                'TimeHelpersWithDebug',
-                contracts.TimeHelpersWithDebug,
-                ContractTypes.API,
-                False,
-            ),
-        ]
+    @cached_property
+    def token(self) -> Token:
+        return Token(self, SkaleManagerContract.SKALE_TOKEN)
 
-    @property
-    def bounty_v2(self) -> contracts.BountyV2:
-        return cast('contracts.BountyV2', self._get_contract('bounty_v2'))
+    @cached_property
+    def manager(self) -> Manager:
+        return Manager(self, SkaleManagerContract.SKALE_MANAGER)
 
-    @property
-    def constants_holder(self) -> contracts.ConstantsHolder:
-        return cast('contracts.ConstantsHolder', self._get_contract('constants_holder'))
+    @cached_property
+    def constants_holder(self) -> ConstantsHolder:
+        return ConstantsHolder(self, SkaleManagerContract.CONSTANTS_HOLDER)
 
-    @property
-    def contract_manager(self) -> contracts.ContractManager:
-        return cast('contracts.ContractManager', self._get_contract('contract_manager'))
+    @cached_property
+    def nodes(self) -> Nodes:
+        return Nodes(self, SkaleManagerContract.NODES)
 
-    @property
-    def delegation_controller(self) -> contracts.DelegationController:
-        return cast('contracts.DelegationController', self._get_contract('delegation_controller'))
+    @cached_property
+    def node_rotation(self) -> NodeRotation:
+        return NodeRotation(self, SkaleManagerContract.NODE_ROTATION)
 
-    @property
-    def delegation_period_manager(self) -> contracts.DelegationPeriodManager:
-        return cast(
-            'contracts.DelegationPeriodManager', self._get_contract('delegation_period_manager')
-        )
+    @cached_property
+    def schains(self) -> SChains:
+        return SChains(self, SkaleManagerContract.SCHAINS)
 
-    @property
-    def distributor(self) -> contracts.Distributor:
-        return cast('contracts.Distributor', self._get_contract('distributor'))
+    @cached_property
+    def schains_internal(self) -> SChainsInternal:
+        return SChainsInternal(self, SkaleManagerContract.SCHAINS_INTERNAL)
 
-    @property
-    def dkg(self) -> contracts.DKG:
-        return cast('contracts.DKG', self._get_contract('dkg'))
+    @cached_property
+    def dkg(self) -> DKG:
+        return DKG(self, SkaleManagerContract.SKALE_DKG)
 
-    @property
-    def key_storage(self) -> contracts.KeyStorage:
-        return cast('contracts.KeyStorage', self._get_contract('key_storage'))
+    @cached_property
+    def key_storage(self) -> KeyStorage:
+        return KeyStorage(self, SkaleManagerContract.KEY_STORAGE)
 
-    @property
-    def manager(self) -> contracts.Manager:
-        return cast('contracts.Manager', self._get_contract('manager'))
+    @cached_property
+    def delegation_controller(self) -> DelegationController:
+        return DelegationController(self, SkaleManagerContract.DELEGATION_CONTROLLER)
 
-    @property
-    def node_rotation(self) -> contracts.NodeRotation:
-        return cast('contracts.NodeRotation', self._get_contract('node_rotation'))
+    @cached_property
+    def delegation_period_manager(self) -> DelegationPeriodManager:
+        return DelegationPeriodManager(self, SkaleManagerContract.DELEGATION_PERIOD_MANAGER)
 
-    @property
-    def nodes(self) -> contracts.Nodes:
-        return cast('contracts.Nodes', self._get_contract('nodes'))
+    @cached_property
+    def validator_service(self) -> ValidatorService:
+        return ValidatorService(self, SkaleManagerContract.VALIDATOR_SERVICE)
 
-    @property
-    def punisher(self) -> contracts.Punisher:
-        return cast('contracts.Punisher', self._get_contract('punisher'))
+    @cached_property
+    def token_state(self) -> TokenState:
+        return TokenState(self, SkaleManagerContract.TOKEN_STATE)
 
-    @property
-    def schains(self) -> contracts.SChains:
-        return cast('contracts.SChains', self._get_contract('schains'))
+    @cached_property
+    def distributor(self) -> Distributor:
+        return Distributor(self, SkaleManagerContract.DISTRIBUTOR)
 
-    @property
-    def schains_internal(self) -> contracts.SChainsInternal:
-        return cast('contracts.SChainsInternal', self._get_contract('schains_internal'))
+    @cached_property
+    def slashing_table(self) -> SlashingTable:
+        return SlashingTable(self, SkaleManagerContract.SLASHING_TABLE)
 
-    @property
-    def slashing_table(self) -> contracts.SlashingTable:
-        return cast('contracts.SlashingTable', self._get_contract('slashing_table'))
+    @cached_property
+    def wallets(self) -> Wallets:
+        return Wallets(self, SkaleManagerContract.WALLETS)
 
-    @property
-    def sync_manager(self) -> contracts.SyncManager:
-        return cast('contracts.SyncManager', self._get_contract('sync_manager'))
+    @cached_property
+    def bounty_v2(self) -> BountyV2:
+        return BountyV2(self, SkaleManagerContract.BOUNTY_V2)
 
-    @property
-    def time_helpers_with_debug(self) -> contracts.TimeHelpersWithDebug:
-        return cast('contracts.TimeHelpersWithDebug', self._get_contract('time_helpers_with_debug'))
+    @cached_property
+    def punisher(self) -> Punisher:
+        return Punisher(self, SkaleManagerContract.PUNISHER)
 
-    @property
-    def token(self) -> contracts.Token:
-        return cast('contracts.Token', self._get_contract('token'))
+    @cached_property
+    def sync_manager(self) -> SyncManager:
+        return SyncManager(self, SkaleManagerContract.SYNC_MANAGER)
 
-    @property
-    def token_state(self) -> contracts.TokenState:
-        return cast('contracts.TokenState', self._get_contract('token_state'))
-
-    @property
-    def validator_service(self) -> contracts.ValidatorService:
-        return cast('contracts.ValidatorService', self._get_contract('validator_service'))
-
-    @property
-    def wallets(self) -> contracts.Wallets:
-        return cast('contracts.Wallets', self._get_contract('wallets'))
-
-    def init_contract_manager(self) -> None:
-        from skale.contracts.manager.contract_manager import ContractManager
-
-        self.add_lib_contract('contract_manager', ContractManager, 'ContractManager')
-
-    def set_contracts_info(self) -> None:
-        self.init_contract_manager()
-        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
+    @cached_property
+    def time_helpers_with_debug(self) -> TimeHelpersWithDebug:
+        return TimeHelpersWithDebug(self, SkaleManagerContract.TIME_HELPERS_WITH_DEBUG)
 
 
 def spawn_skale_manager_lib(skale: SkaleManager) -> SkaleManager:
-    """Clone skale manager object with the same wallet"""
     return SkaleManager(skale._endpoint, skale.instance.address, skale.wallet)

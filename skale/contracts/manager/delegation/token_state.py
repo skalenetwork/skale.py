@@ -38,7 +38,7 @@ class TokenState(SkaleManagerContract):
         return Wei(self.contract.functions.getAndUpdateLockedAmount(holder_address).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, owner: ChecksumAddress) -> ContractFunction:
+    def grant_role(self, role: bytes, owner: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, owner)
 
     def has_role(self, role: bytes, address: ChecksumAddress) -> bool:

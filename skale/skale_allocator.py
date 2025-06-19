@@ -16,52 +16,32 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-from __future__ import annotations
 
-import logging
-from typing import TYPE_CHECKING, List, cast
-from web3.constants import CHECKSUM_ADDRESSS_ZERO
+from functools import cached_property
+
+from skale_contracts.projects.skale_allocator import SkaleAllocatorContract
+from skale_contracts.project_factory import SkaleProject
 
 from skale.skale_base import SkaleBase
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-if TYPE_CHECKING:
-    from eth_typing import ChecksumAddress
-    from skale.contracts.allocator.allocator import Allocator
-
-
-logger = logging.getLogger(__name__)
-
-
-def spawn_skale_allocator_lib(skale: SkaleAllocator) -> SkaleAllocator:
-    return SkaleAllocator(skale._endpoint, skale.instance.address, skale.wallet)
+from skale.contracts.allocator.allocator import Allocator
+from skale.contracts.allocator.escrow import Escrow
 
 
 class SkaleAllocator(SkaleBase):
     """Represents skale-allocator smart contracts"""
 
     @property
-    def project_name(self) -> str:
-        return 'skale-allocator'
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.SKALE_ALLOCATOR
 
-    @property
+    @cached_property
     def allocator(self) -> Allocator:
-        return cast('Allocator', super()._get_contract('allocator'))
+        return Allocator(self, SkaleAllocatorContract.ALLOCATOR)
 
-    def contracts_info(self) -> List[ContractInfo[SkaleAllocator]]:
-        import skale.contracts.allocator as contracts
+    @cached_property
+    def escrow(self) -> Escrow:
+        return Escrow(self, SkaleAllocatorContract.ESCROW)
 
-        return [
-            ContractInfo('escrow', 'Escrow', contracts.Escrow, ContractTypes.API, True),
-            ContractInfo('allocator', 'Allocator', contracts.Allocator, ContractTypes.API, True),
-        ]
 
-    def get_contract_address(self, name: str) -> ChecksumAddress:
-        if name == 'Escrow':
-            return CHECKSUM_ADDRESSS_ZERO
-        return super().get_contract_address(name)
-
-    def set_contracts_info(self) -> None:
-        self._SkaleBase__contracts_info = get_contracts_info(self.contracts_info())
+def spawn_skale_allocator_lib(skale: SkaleAllocator) -> SkaleAllocator:
+    return SkaleAllocator(skale._endpoint, skale.instance.address, skale.wallet)
