@@ -52,7 +52,7 @@ def committee_data_to_node_groups(
 
 
 def get_node_groups(mirage: MirageManager) -> list[dict]:
-    latest_committee_index: int = mirage.committee.get_current_committee_index()
+    latest_committee_index: int = mirage.committee.get_active_committee_index()
     committees = []
     for committee_index in range(latest_committee_index, -1):
         committee = mirage.committee.get_committe(committee_index)
