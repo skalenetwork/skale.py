@@ -99,7 +99,7 @@ def _get_connected_endpoint(endpoints: list[str]) -> str:
         except ProviderConnectionError as e:
             logger.warning(f'Could not connect to {url}. Error: {e}. Trying next endpoint...')
             time.sleep(2)
-    raise ProviderConnectionError('Could not connect to any RPC endpoints.')
+    raise ProviderConnectionError(f'Could not connect to any RPC endpoints: {endpoints}')
 
 
 def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
