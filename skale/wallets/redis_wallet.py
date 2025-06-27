@@ -147,8 +147,8 @@ class RedisWalletAdapter(BaseWallet):
         return Web3.to_bytes(tx_id)
 
     @classmethod
-    def _to_id(cls, raw_id: bytes) -> HexStr:
-        return Web3.to_hex(raw_id)
+    def _to_id(cls, raw_id: bytes) -> str:
+        return raw_id.decode('utf-8')
 
     def sign_and_send(
         self,
@@ -156,7 +156,7 @@ class RedisWalletAdapter(BaseWallet):
         multiplier: Optional[float] = None,
         priority: Optional[int] = None,
         method: Optional[str] = None,
-    ) -> HexStr:
+    ):
         priority = priority or config.DEFAULT_PRIORITY
         try:
             logger.info('Sending %s to redis pool, method: %s', tx, method)
