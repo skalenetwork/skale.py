@@ -6,7 +6,7 @@ import pytest
 from unittest import mock
 from freezegun import freeze_time
 
-from web3.exceptions import StaleBlockchain
+from web3.exceptions import StaleBlockchain, ProviderConnectionError
 from skale.utils.web3_utils import get_endpoint
 import skale.config as config
 
@@ -65,7 +65,7 @@ def test_get_endpoint():
         endpoint = get_endpoint('http://localhost:1111')
         assert endpoint == 'http://localhost:1111'
 
-    with pytest.raises(ConnectionError):
+    with pytest.raises(ProviderConnectionError):
         get_endpoint(['invalid_endpoint'])
 
     endpoint = get_endpoint(['http://localhost:1111', ENDPOINT])
