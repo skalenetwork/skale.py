@@ -27,34 +27,7 @@ from skale.types.node import MirageNode, NodeId
 
 logger = logging.getLogger(__name__)
 
-
-def get_committee_nodes(mirage: MirageManager, committee_index: int) -> list[MirageNode]:
-    return [
-        mirage.nodes.get(cast(NodeId, node_id))
-        for node_id in mirage.committee.get_committee(
-            cast(CommitteeIndex, committee_index)
-        ).node_ids
-    ]
-
-
-def get_nodes_from_last_two_committee(mirage: MirageManager) -> dict[int, dict]:
-    latest_committee_index: int = mirage.committee.get_active_committee_index()
-    # if there is only one committee, index -1 for previous non-existent committee
-    committee_indices = [latest_committee_index - 1, latest_committee_index]
-
-    nodes = {}
-    for committee_index in committee_indices:
-        committee_nodes_data: dict = {'group': get_committee_nodes(mirage, committee_index)}
-        if committee_index >= 0:
-            ts = mirage.committee.get_committee(
-                cast(CommitteeIndex, committee_index)
-            ).starting_timestamp
-        else:
-            ts = 0
-        committee_nodes_data.update({'ts': ts})
-        nodes[committee_index] = committee_nodes_data
-
-    return nodes
+""" This functions are used to generate mirage config 'nodeGroups' section data"""
 
 
 def unpack_bls_public_key(bls_public_key: G2Point) -> dict[str, str]:
@@ -66,7 +39,9 @@ def unpack_bls_public_key(bls_public_key: G2Point) -> dict[str, str]:
     }
 
 
-def committee_data_to_node_groups(mirage: MirageManager, committee: Committee) -> dict:
+def committee_data_to_historical_representation(
+    mirage: MirageManager, committee: Committee
+) -> dict:
     bls_public_key = committee.common_public_key
     node_ids = committee.node_ids
     nodes = {}
@@ -86,7 +61,7 @@ def committee_data_to_node_groups(mirage: MirageManager, committee: Committee) -
     return committee_data
 
 
-def get_node_groups(mirage: MirageManager) -> dict:
+def generate_committee_history(mirage: MirageManager) -> dict:
     latest_committee_index: int = mirage.committee.get_active_committee_index()
     committees = {}
 
@@ -95,7 +70,7 @@ def get_node_groups(mirage: MirageManager) -> dict:
         logger.info('HEREC Current index %s', committee_index)
         committee = mirage.committee.get_committee(cast(CommitteeIndex, committee_index))
         logger.info('HEREC Current committee %s', committee)
-        committee_data = committee_data_to_node_groups(mirage, committee)
+        committee_data = committee_data_to_historical_representation(mirage, committee)
         logger.info('HEREC Current committee data %s', committee_data)
         committees.update({str(committee_index): committee_data})
     return committees
