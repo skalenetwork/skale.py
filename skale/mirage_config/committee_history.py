@@ -45,10 +45,8 @@ def committee_data_to_historical_representation(
     bls_public_key = committee.common_public_key
     node_ids = committee.node_ids
     nodes = {}
-    logger.info('HEREC nodes ids %s', node_ids)
     for index_in_committee, node_id in enumerate(node_ids):
         node: MirageNode = mirage.nodes.get(cast(NodeId, node_id))
-        logger.info('HEREC current node %s', node)
         nodes[node.id] = (index_in_committee, node.id, node.public_key)
     committee_data = {
         'rotation': None,
@@ -57,7 +55,6 @@ def committee_data_to_historical_representation(
         'bls_public_key': unpack_bls_public_key(bls_public_key),
     }
 
-    logger.info('HEREC committee data %s', committee_data)
     return committee_data
 
 
@@ -65,12 +62,8 @@ def generate_committee_history(mirage: MirageManager) -> dict:
     latest_committee_index: int = mirage.committee.get_active_committee_index()
     committees = {}
 
-    logger.info('HEREC Fetching node groups for committees up to index %d', latest_committee_index)
     for committee_index in range(0, latest_committee_index + 1):
-        logger.info('HEREC Current index %s', committee_index)
         committee = mirage.committee.get_committee(cast(CommitteeIndex, committee_index))
-        logger.info('HEREC Current committee %s', committee)
         committee_data = committee_data_to_historical_representation(mirage, committee)
-        logger.info('HEREC Current committee data %s', committee_data)
         committees.update({str(committee_index): committee_data})
     return committees
