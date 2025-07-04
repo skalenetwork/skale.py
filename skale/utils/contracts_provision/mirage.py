@@ -17,27 +17,26 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
 import logging
+import os
+
 from eth_typing import HexStr
 
 from skale import SkaleManager
-from skale.utils.web3_utils import init_web3
 from skale.types.schain import SchainName
-from skale.wallets import Web3Wallet
+from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.main import (
-    add_test_permissions,
+    DEFAULT_DOMAIN_NAME,
     add_test2_schain_type,
     add_test4_schain_type,
+    add_test_permissions,
     create_schain,
     setup_validator,
-    DEFAULT_DOMAIN_NAME,
 )
 from skale.utils.contracts_provision.utils import generate_random_node_data
-
+from skale.utils.web3_utils import init_web3
+from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallets
-from skale.utils.account_tools import send_eth
-
 
 logger = logging.getLogger(__name__)
 
@@ -94,15 +93,18 @@ def register_node(skale):
     return {'node': skale.nodes.get_by_name(name), 'node_id': node_id, 'wallet': skale.wallet}
 
 
-def set_up_nodes(skale, nodes_number):
+def set_up_nodes(skale, nodes_number, remove_zero=True):
     wallets = generate_wallets(skale.web3, nodes_number + 1)
     transfer_eth_to_wallets(skale, wallets)
     link_addresses_to_validator(skale, wallets)
     skale_instances = [init_skale_from_wallet(skale, wallet) for wallet in wallets]
     nodes_data = register_nodes(skale_instances)
-    skale.nodes.init_exit(0)
-    skale.manager.node_exit(0)
-    return nodes_data[1:], skale_instances[1:]
+    if remove_zero:
+        skale.nodes.init_exit(0)
+        skale.manager.node_exit(0)
+        return nodes_data[1:], skale_instances[1:]
+    else:
+        return nodes_data, skale_instances
 
 
 def init_skale_manager(
