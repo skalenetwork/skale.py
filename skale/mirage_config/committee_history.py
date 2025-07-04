@@ -18,7 +18,6 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-from typing import cast
 
 from skale import MirageManager
 from skale.types.committee import Committee, CommitteeIndex
@@ -64,7 +63,7 @@ def generate_committee_history(mirage: MirageManager) -> dict:
 
     current_finish_ts = None
     for committee_index in reversed(range(0, latest_committee_index + 1)):
-        committee = mirage.committee.get_committee(cast(CommitteeIndex, committee_index))
+        committee = mirage.committee.get_committee(CommitteeIndex(committee_index))
         committee_data = committee_data_to_historical_representation(mirage, committee)
         committee_data['finish_ts'] = current_finish_ts
         current_finish_ts = committee_data.pop('start_ts')
