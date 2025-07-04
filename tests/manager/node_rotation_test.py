@@ -45,7 +45,7 @@ def test_wait_for_new_node(skale):
 
 @pytest.fixture
 def four_node_schain(skale, validator):
-    nodes, skale_instances = set_up_nodes(skale, 4, remove_zero=False)
+    nodes, skale_instances = set_up_nodes(skale, 4, no_zero_id=False)
     add_test4_schain_type(skale)
     try:
         name = create_schain(
@@ -65,7 +65,7 @@ def test_is_rotation_active(skale, four_node_schain):
     run_dkg(nodes, skale_instances, group_index)
 
     exiting_node_index = 3
-    new_nodes, new_skale_instances = set_up_nodes(skale, 1, remove_zero=False)
+    new_nodes, new_skale_instances = set_up_nodes(skale, 1, no_zero_id=False)
 
     assert not skale.node_rotation.is_new_node_found(name)
     assert not skale.node_rotation.is_rotation_in_progress(name)

@@ -93,13 +93,15 @@ def register_node(skale):
     return {'node': skale.nodes.get_by_name(name), 'node_id': node_id, 'wallet': skale.wallet}
 
 
-def set_up_nodes(skale, nodes_number, remove_zero=True):
-    wallets = generate_wallets(skale.web3, nodes_number + 1)
+def set_up_nodes(skale, nodes_number, no_zero_id=True):
+    if no_zero_id:
+        nodes_number += 1
+    wallets = generate_wallets(skale.web3, nodes_number)
     transfer_eth_to_wallets(skale, wallets)
     link_addresses_to_validator(skale, wallets)
     skale_instances = [init_skale_from_wallet(skale, wallet) for wallet in wallets]
     nodes_data = register_nodes(skale_instances)
-    if remove_zero:
+    if no_zero_id:
         skale.nodes.init_exit(0)
         skale.manager.node_exit(0)
         return nodes_data[1:], skale_instances[1:]

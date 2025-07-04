@@ -22,7 +22,7 @@ def test_get_previous_node_no_node(skale):
 
 @pytest.fixture
 def four_node_schain(skale, validator):
-    nodes, skale_instances = set_up_nodes(skale, 4, remove_zero=False)
+    nodes, skale_instances = set_up_nodes(skale, 4, no_zero_id=False)
     add_test4_schain_type(skale)
     try:
         name = create_schain(
