@@ -1,16 +1,17 @@
 """SKALE node rotation test"""
 
 from unittest import mock
+
 import pytest
 
 from skale.contracts.manager.node_rotation import Rotation
 from skale.utils.contracts_provision.main import (
+    add_test4_schain_type,
     cleanup_nodes_schains,
     create_schain,
-    add_test4_schain_type,
 )
-from tests.constants import DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME, DEFAULT_SCHAIN_INDEX
-from tests.rotation_history.utils import set_up_nodes, run_dkg, _skip_evm_time, TEST_ROTATION_DELAY
+from tests.constants import DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_INDEX, DEFAULT_SCHAIN_NAME
+from tests.rotation_history.utils import TEST_ROTATION_DELAY, _skip_evm_time, run_dkg, set_up_nodes
 
 
 def test_get_rotation(skale):
@@ -44,7 +45,7 @@ def test_wait_for_new_node(skale):
 
 @pytest.fixture
 def four_node_schain(skale, validator):
-    nodes, skale_instances = set_up_nodes(skale, 4)
+    nodes, skale_instances = set_up_nodes(skale, 4, remove_zero=False)
     add_test4_schain_type(skale)
     try:
         name = create_schain(
@@ -64,7 +65,7 @@ def test_is_rotation_active(skale, four_node_schain):
     run_dkg(nodes, skale_instances, group_index)
 
     exiting_node_index = 3
-    new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+    new_nodes, new_skale_instances = set_up_nodes(skale, 1, remove_zero=False)
 
     assert not skale.node_rotation.is_new_node_found(name)
     assert not skale.node_rotation.is_rotation_in_progress(name)
