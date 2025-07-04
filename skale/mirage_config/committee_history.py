@@ -23,7 +23,7 @@ from typing import cast
 from skale import MirageManager
 from skale.types.committee import Committee, CommitteeIndex
 from skale.types.dkg import G2Point
-from skale.types.node import MirageNode, NodeId
+from skale.types.node import MirageNode
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def committee_data_to_historical_representation(
     node_ids = committee.node_ids
     nodes = {}
     for index_in_committee, node_id in enumerate(node_ids):
-        node: MirageNode = mirage.nodes.get(cast(NodeId, node_id))
+        node: MirageNode = mirage.nodes.get(node_id)
         nodes[node.id] = (index_in_committee, node.id, node.public_key)
     committee_data = {
         'rotation': None,
