@@ -51,7 +51,7 @@ def committee_data_to_historical_representation(
     committee_data = {
         'rotation': None,
         'nodes': nodes,
-        'finish_ts': committee.starting_timestamp,
+        'start_ts': committee.starting_timestamp,
         'bls_public_key': unpack_bls_public_key(bls_public_key),
     }
 
@@ -62,8 +62,11 @@ def generate_committee_history(mirage: MirageManager) -> dict:
     latest_committee_index: int = mirage.committee.get_active_committee_index()
     committees = {}
 
-    for committee_index in range(0, latest_committee_index + 1):
+    current_finish_ts = None
+    for committee_index in reversed(range(0, latest_committee_index + 1)):
         committee = mirage.committee.get_committee(cast(CommitteeIndex, committee_index))
         committee_data = committee_data_to_historical_representation(mirage, committee)
+        committee_data['finish_ts'] = current_finish_ts
+        current_finish_ts = committee_data.pop('start_ts')
         committees.update({str(committee_index): committee_data})
     return committees

@@ -50,8 +50,6 @@ from skale.utils.contracts_provision.utils import (
     generate_random_schain_data,
 )
 
-# Add missing imports for set_up_nodes function
-
 DEFAULT_MINING_INTERVAL = 1000
 TEST_SRW_FUND_VALUE = 3000000000000000000
 
