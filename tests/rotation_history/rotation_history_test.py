@@ -4,14 +4,14 @@ import logging
 
 import pytest
 
+from skale.schain_config.rotation_history import get_previous_schain_groups
+from skale.utils.contracts_provision import DEFAULT_SCHAIN_NAME
 from skale.utils.contracts_provision.main import (
     add_test4_schain_type,
     cleanup_nodes_schains,
     create_schain,
 )
-from skale.utils.contracts_provision import DEFAULT_SCHAIN_NAME
-from skale.schain_config.rotation_history import get_previous_schain_groups
-from tests.rotation_history.utils import set_up_nodes, run_dkg, remove_node, rotate_node, fail_dkg
+from tests.rotation_history.utils import fail_dkg, remove_node, rotate_node, run_dkg, set_up_nodes
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def test_get_previous_node_no_node(skale):
 
 @pytest.fixture
 def four_node_schain(skale, validator):
-    nodes, skale_instances = set_up_nodes(skale, 4)
+    nodes, skale_instances = set_up_nodes(skale, 4, no_zero_id=False)
     add_test4_schain_type(skale)
     try:
         name = create_schain(

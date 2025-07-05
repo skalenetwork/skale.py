@@ -18,13 +18,12 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, List, NewType
+from typing import List, NewType, TypedDict
 
-if TYPE_CHECKING:
-    from skale.types.node import NodeId
-
-from skale.types.dkg import G2Point, DkgId
+from skale.types.dkg import DkgId, G2Point
+from skale.types.node import MirageNode, NodeId
 
 CommitteeIndex = NewType('CommitteeIndex', int)
 TimeStamp = NewType('TimeStamp', int)
@@ -36,3 +35,13 @@ class Committee:
     dkg_id: DkgId
     common_public_key: G2Point
     starting_timestamp: TimeStamp
+
+
+CommitteeGroup = TypedDict(
+    'CommitteeGroup',
+    {
+        'ts': TimeStamp,
+        'index': CommitteeIndex,
+        'group': List[MirageNode],
+    },
+)

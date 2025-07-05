@@ -18,37 +18,37 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import List, Tuple
+
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.types import RPCEndpoint
 
+from skale import SkaleManager
 from skale.dataclasses.schain_options import SchainOptions
-from skale.skale_manager import SkaleManager
 from skale.transactions.result import TxRes
 from skale.types.node import NodeId, NodeStatus
-from skale.types.validator import ValidatorId
 from skale.types.schain import SchainName
+from skale.types.validator import ValidatorId
 from skale.utils.contracts_provision import (
-    D_VALIDATOR_ID,
-    D_VALIDATOR_MIN_DEL,
-    D_DELEGATION_PERIOD,
     D_DELEGATION_INFO,
-    D_VALIDATOR_NAME,
+    D_DELEGATION_PERIOD,
+    D_STAKE_MULTIPLIER,
     D_VALIDATOR_DESC,
     D_VALIDATOR_FEE,
-    DEFAULT_NODE_NAME,
-    SECOND_NODE_NAME,
-    DEFAULT_SCHAIN_NAME,
-    D_STAKE_MULTIPLIER,
-    INITIAL_DELEGATION_PERIOD,
+    D_VALIDATOR_ID,
+    D_VALIDATOR_MIN_DEL,
+    D_VALIDATOR_NAME,
     DEFAULT_DOMAIN_NAME,
+    DEFAULT_NODE_NAME,
+    DEFAULT_SCHAIN_NAME,
+    INITIAL_DELEGATION_PERIOD,
     MONTH_IN_SECONDS,
+    SECOND_NODE_NAME,
 )
 from skale.utils.contracts_provision.utils import (
     generate_random_node_data,
     generate_random_schain_data,
 )
-
 
 DEFAULT_MINING_INTERVAL = 1000
 TEST_SRW_FUND_VALUE = 3000000000000000000

@@ -1,15 +1,13 @@
 """SKALE node rotation test"""
 
-import os
 import json
 import logging
+import os
 
+from skale.contracts.manager.nodes import NodeStatus
 from skale.types.dkg import Fp2Point, G2Point, KeyShare
 from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision.mirage import set_up_nodes
-
-from skale.contracts.manager.nodes import NodeStatus
-
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +58,7 @@ def send_complaint(nodes, skale_instances, group_index, failed_node_index):
 def rotate_node(
     skale, group_index, nodes, skale_instances, exiting_node_index, do_dkg=True, rotation_id=0
 ):
-    new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+    new_nodes, new_skale_instances = set_up_nodes(skale, 1, no_zero_id=False)
     skale.nodes.init_exit(nodes[exiting_node_index]['node_id'])
     skale_instances[exiting_node_index].manager.node_exit(nodes[exiting_node_index]['node_id'])
     nodes[exiting_node_index] = new_nodes[0]
@@ -81,7 +79,7 @@ def fail_dkg(
 ) -> list:
     logger.info('Failing first DKG...')
     new_node_ids = []
-    new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+    new_nodes, new_skale_instances = set_up_nodes(skale, 1, no_zero_id=False)
     new_node_ids.append(new_nodes[0]['node_id'])
 
     send_broadcasts(nodes, skale_instances, group_index, failed_node_index, rotation_id=rotation_id)
@@ -93,7 +91,7 @@ def fail_dkg(
 
     if second_failed_node_index:
         logger.info('Failing second DKG...')
-        new_nodes, new_skale_instances = set_up_nodes(skale, 1)
+        new_nodes, new_skale_instances = set_up_nodes(skale, 1, no_zero_id=False)
         new_node_ids.append(new_nodes[0]['node_id'])
 
         send_broadcasts(

@@ -21,9 +21,9 @@ import socket
 from typing import Any, List
 
 from eth_typing import ChecksumAddress, HexStr
-from skale.contracts.base_contract import BaseContract
+
+from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.types.node import MirageNode, NodeId, Port
-from skale.contracts.base_contract import transaction_method
 from skale.utils import helper
 
 
@@ -42,13 +42,13 @@ class Nodes(BaseContract):
         return self.get(node_id)
 
     def get_passive_node_ids_for_address(self, node_address: ChecksumAddress) -> list[NodeId]:
-        return self.contract.functions.getPassiveNodesIdsForAddress(node_address).call()
+        return self.contract.functions.getPassiveNodeIdsForAddress(node_address).call()
 
     def get_passive_node_ids(self) -> list[NodeId]:
-        return self.contract.functions.getPassiveNodesIds().call()
+        return self.contract.functions.getPassiveNodeIds().call()
 
     def get_active_node_ids(self) -> list[NodeId]:
-        return self.contract.functions.getActiveNodesIds().call()
+        return self.contract.functions.getActiveNodeIds().call()
 
     def active_node_exists(self, node_id: NodeId) -> bool:
         return self.contract.functions.activeNodeExists(node_id).call()
