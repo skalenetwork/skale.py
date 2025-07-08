@@ -22,6 +22,7 @@ def get_nodes_from_last_two_committees(mirage: MirageManager) -> list[CommitteeG
     latest_committee_index: int = mirage.committee.get_active_committee_index()
     if latest_committee_index == 0:
         committee_a_index: CommitteeIndex = CommitteeIndex(0)
+        committee_a = mirage.committee.get_committee(CommitteeIndex(0))
         ts_a = 0
     else:
         committee_a_index: CommitteeIndex = CommitteeIndex(latest_committee_index - 1)
