@@ -43,5 +43,6 @@ CommitteeGroup = TypedDict(
         'ts': TimeStamp,
         'index': CommitteeIndex,
         'group': List[MirageNode],
+        'committee': Committee,
     },
 )
