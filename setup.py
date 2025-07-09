@@ -7,7 +7,7 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        'ruff==0.9.10',
+        'ruff==0.12.2',
         'isort>=4.2.15,<5.4.3',
         'importlib-metadata<5.0',
     ],
@@ -39,13 +39,12 @@ setup(
     url='https://github.com/skalenetwork/skale.py',
     include_package_data=True,
     install_requires=[
-        'asyncio==3.4.3',
         'pyyaml==6.0',
-        'redis==5.0.3',
+        'redis==6.2.0',
         'sgx.py==0.10dev0',
-        'skale-contracts==1.1.0a0',
-        'typing-extensions==4.9.0',
-        'web3==7.10.0',
+        'skale-contracts==2.0.0a3',
+        'typing-extensions==4.14.1',
+        'web3==7.12.0',
     ],
     python_requires='>=3.11,<4',
     extras_require=extras_require,

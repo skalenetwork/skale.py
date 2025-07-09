@@ -26,7 +26,7 @@ from skale.types.dkg import DkgId, G2Point
 from skale.types.node import MirageNode, NodeId
 
 CommitteeIndex = NewType('CommitteeIndex', int)
-TimeStamp = NewType('TimeStamp', int)
+Timestamp = NewType('Timestamp', int)
 
 
 @dataclass
@@ -34,13 +34,13 @@ class Committee:
     node_ids: List[NodeId]
     dkg_id: DkgId
     common_public_key: G2Point
-    starting_timestamp: TimeStamp
+    starting_timestamp: Timestamp
 
 
 CommitteeGroup = TypedDict(
     'CommitteeGroup',
     {
-        'ts': TimeStamp,
+        'ts': Timestamp,
         'index': CommitteeIndex,
         'group': List[MirageNode],
         'committee': Committee,

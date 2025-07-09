@@ -20,9 +20,16 @@
 from skale.contracts.base_contract import BaseContract
 from skale.contracts.base_contract import transaction_method
 from skale.types.node import NodeId
+from skale.types.committee import Timestamp
 
 
 class Status(BaseContract):
+    def last_heartbeat_timestamp(self, node_id: NodeId) -> Timestamp:
+        return self.contract.functions.lastHeartbeatTimestamp(node_id).call()
+
+    def heartbeat_interval(self) -> int:
+        return self.contract.functions.heartbeatInterval().call()
+
     def is_healthy(self, node_id: NodeId) -> bool:
         return self.contract.functions.isHealthy(node_id).call()
 
