@@ -55,6 +55,7 @@ class Round(NamedTuple):
     status: Status
     nodes: List[NodeId]
     publicKey: G2Point
+    startingBlockNumber: int,
     numberOfBroadcasted: int
     hashedData: List[bytes]
     numberOfCompleted: int
