@@ -28,6 +28,10 @@ from skale.types.node import NodeId
 class DKG(BaseContract):
     def is_node_broadcasted(self, dkg: DkgId, node: NodeId) -> bool:
         return self.contract.functions.isNodeBroadcasted(dkg, node).call()
+    
+    def is_node_sent_alright(self, dkg: DkgId, node: NodeId) -> bool:
+        round_info = self.get_round(dkg)
+        return round_info.completed[node]
 
     def get_participants(self, dkg: DkgId) -> list[NodeId]:
         return self.contract.functions.getParticipants(dkg).call()
@@ -37,6 +41,9 @@ class DKG(BaseContract):
 
     def get_last_dkg_id(self) -> DkgId:
         return DkgId(self.contract.functions.lastDkgId().call())
+    
+    def get_starting_block_number(self, dkg: DkgId) -> int:
+        return self.contract.functions.getStartingBlockNumber(dkg).call()
 
     def __get_raw_round(self, dkg: DkgId) -> list[Any]:
         return list(self.contract.functions.rounds(dkg).call())
@@ -53,10 +60,11 @@ class DKG(BaseContract):
                 x=Fp2Point(a=untyped_round[3][0][0], b=untyped_round[3][0][1]),
                 y=Fp2Point(a=untyped_round[3][1][0], b=untyped_round[3][1][1]),
             ),
-            numberOfBroadcasted=untyped_round[4],
-            hashedData=untyped_round[5],
-            numberOfCompleted=untyped_round[6],
-            completed=untyped_round[7],
+            startingBlockNumber=untyped_round[4],
+            numberOfBroadcasted=untyped_round[5],
+            hashedData=untyped_round[6],
+            numberOfCompleted=untyped_round[7],
+            completed=untyped_round[8],
         )
 
     @transaction_method
