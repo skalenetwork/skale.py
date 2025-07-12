@@ -63,6 +63,17 @@ class MirageNode:
     name: str
     public_key: HexStr
 
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'ip_str': self.ip_str,
+            'domain_name': self.domain_name,
+            'address': self.address,
+            'port': self.port,
+            'name': self.name,
+            'public_key': self.public_key,
+        }
+
 
 class NodeWithId(Node):
     id: NodeId
