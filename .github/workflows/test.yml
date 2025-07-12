@@ -13,7 +13,7 @@ jobs:
       ENDPOINT: "http://127.0.0.1:8545"
       MANAGER_TAG: "1.12.0-develop.21"
       ALLOCATOR_TAG: "2.2.2-develop.0"
-      MIRAGE_TAG: "0.0.1-develop.24"
+      MIRAGE_TAG: "0.0.1-develop.25"
       MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v4
