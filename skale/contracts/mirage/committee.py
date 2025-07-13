@@ -48,6 +48,9 @@ class Committee(BaseContract):
     def get_active_committee_index(self) -> CommitteeIndex:
         return CommitteeIndex(self.contract.functions.getActiveCommitteeIndex().call())
 
+    def last_committee_index(self) -> CommitteeIndex:
+        return CommitteeIndex(self.contract.functions.lastCommitteeIndex().call())
+
     @transaction_method
     def select(self):
         return self.contract.functions.select()

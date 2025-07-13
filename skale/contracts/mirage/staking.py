@@ -19,7 +19,6 @@
 
 from typing import List
 from eth_typing import ChecksumAddress
-from web3.types import Wei
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.types.node import NodeId
@@ -51,8 +50,8 @@ class Staking(BaseContract):
         return self.contract.functions.getStakedToNodeAmountFor(node, holder).call()
 
     @transaction_method
-    def stake(self, node: NodeId, value: Wei):
-        return self.contract.functions.stake(node, value=value)
+    def stake(self, node: NodeId):
+        return self.contract.functions.stake(node)
 
     @transaction_method
     def retrieve(self, node: NodeId, value: int):
