@@ -31,7 +31,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='7.1',
+    version='7.2',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -42,7 +42,7 @@ setup(
         'pyyaml==6.0',
         'redis==6.2.0',
         'sgx.py==0.10dev0',
-        'skale-contracts==2.0.0a3',
+        'skale-contracts==2.0.0a4',
         'typing-extensions==4.14.1',
         'web3==7.12.0',
     ],
