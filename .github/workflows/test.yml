@@ -13,7 +13,7 @@ jobs:
       ENDPOINT: "http://127.0.0.1:8545"
       MANAGER_TAG: "1.12.0-develop.21"
       ALLOCATOR_TAG: "2.2.2-develop.0"
-      MIRAGE_TAG: "0.0.1-develop.31"
+      FAIR_TAG: "0.0.1-develop.31"
       MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +59,7 @@ jobs:
           CHAIN_NAME: "mirage"
         run: |
           export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
-          bash ./helper-scripts/deploy_mirage.sh
+          bash ./helper-scripts/deploy_fair.sh
           docker rmi -f skalenetwork/professional:${{ env.MIRAGE_TAG }}
   
       - name: Show stats before tests
