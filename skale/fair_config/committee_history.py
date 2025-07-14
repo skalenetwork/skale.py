@@ -19,14 +19,14 @@
 
 import logging
 
-from skale import MirageManager
+from skale import FairManager
 from skale.types.committee import Committee, CommitteeIndex
 from skale.types.dkg import G2Point
-from skale.types.node import MirageNode
+from skale.types.node import FairNode
 
 logger = logging.getLogger(__name__)
 
-""" This functions are used to generate mirage config 'nodeGroups' section data"""
+""" This functions are used to generate fair config 'nodeGroups' section data"""
 
 
 def unpack_bls_public_key(bls_public_key: G2Point) -> dict[str, str]:
@@ -39,13 +39,13 @@ def unpack_bls_public_key(bls_public_key: G2Point) -> dict[str, str]:
 
 
 def committee_data_to_historical_representation(
-    mirage: MirageManager, committee: Committee
+    fair: FairManager, committee: Committee
 ) -> dict:
     bls_public_key = committee.common_public_key
     node_ids = committee.node_ids
     nodes = {}
     for index_in_committee, node_id in enumerate(node_ids):
-        node: MirageNode = mirage.nodes.get(node_id)
+        node: FairNode = fair.nodes.get(node_id)
         nodes[node.id] = (index_in_committee, node.id, node.public_key)
     committee_data = {
         'rotation': None,
@@ -57,14 +57,14 @@ def committee_data_to_historical_representation(
     return committee_data
 
 
-def generate_committee_history(mirage: MirageManager) -> dict:
-    latest_committee_index: int = mirage.committee.get_active_committee_index()
+def generate_committee_history(fair: FairManager) -> dict:
+    latest_committee_index: int = fair.committee.get_active_committee_index()
     committees = {}
 
     current_finish_ts = None
     for committee_index in reversed(range(0, latest_committee_index + 1)):
-        committee = mirage.committee.get_committee(CommitteeIndex(committee_index))
-        committee_data = committee_data_to_historical_representation(mirage, committee)
+        committee = fair.committee.get_committee(CommitteeIndex(committee_index))
+        committee_data = committee_data_to_historical_representation(fair, committee)
         committee_data['finish_ts'] = current_finish_ts
         current_finish_ts = committee_data.pop('start_ts')
         committees.update({str(committee_index): committee_data})

@@ -20,42 +20,42 @@
 from functools import cached_property
 
 from skale.skale_base import SkaleBase
-from skale_contracts.projects.mirage_manager import MirageManagerContract
+from skale_contracts.projects.fair_manager import FairManagerContract
 from skale_contracts.project_factory import SkaleProject
 
-from skale.contracts.mirage.nodes import Nodes
-from skale.contracts.mirage.committee import Committee
-from skale.contracts.mirage.dkg import DKG
-from skale.contracts.mirage.access_manager import AccessManager
-from skale.contracts.mirage.status import Status
-from skale.contracts.mirage.staking import Staking
+from skale.contracts.fair.nodes import Nodes
+from skale.contracts.fair.committee import Committee
+from skale.contracts.fair.dkg import DKG
+from skale.contracts.fair.access_manager import AccessManager
+from skale.contracts.fair.status import Status
+from skale.contracts.fair.staking import Staking
 
 
-class MirageManager(SkaleBase):
+class FairManager(SkaleBase):
     @property
     def project_name(self) -> SkaleProject:
-        return SkaleProject.MIRAGE_MANAGER
+        return SkaleProject.FAIR_MANAGER
 
     @cached_property
     def nodes(self) -> Nodes:
-        return Nodes(self, MirageManagerContract.NODES)
+        return Nodes(self, FairManagerContract.NODES)
 
     @cached_property
     def committee(self) -> Committee:
-        return Committee(self, MirageManagerContract.COMMITTEE)
+        return Committee(self, FairManagerContract.COMMITTEE)
 
     @cached_property
     def dkg(self) -> DKG:
-        return DKG(self, MirageManagerContract.DKG)
+        return DKG(self, FairManagerContract.DKG)
 
     @cached_property
     def access_manager(self) -> AccessManager:
-        return AccessManager(self, MirageManagerContract.MIRAGE_ACCESS_MANAGER)
+        return AccessManager(self, FairManagerContract.FAIR_ACCESS_MANAGER)
 
     @cached_property
     def status(self) -> Status:
-        return Status(self, MirageManagerContract.STATUS)
+        return Status(self, FairManagerContract.STATUS)
 
     @cached_property
     def staking(self) -> Staking:
-        return Staking(self, MirageManagerContract.STAKING)
+        return Staking(self, FairManagerContract.STAKING)

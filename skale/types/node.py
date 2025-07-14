@@ -53,7 +53,7 @@ class Node(TypedDict):
 
 
 @dataclass
-class MirageNode:
+class FairNode:
     id: NodeId
     ip: bytes
     ip_str: str
