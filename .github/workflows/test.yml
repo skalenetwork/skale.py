@@ -60,7 +60,7 @@ jobs:
         run: |
           export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
           bash ./helper-scripts/deploy_fair.sh
-          docker rmi -f skalenetwork/professional:${{ env.MIRAGE_TAG }}
+          docker rmi -f skalenetwork/fair:${{ env.MIRAGE_TAG }}
   
       - name: Show stats before tests
         if: always()
