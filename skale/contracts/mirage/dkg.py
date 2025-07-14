@@ -46,7 +46,7 @@ class DKG(BaseContract):
         return self.contract.functions.getStartingBlockNumber(dkg).call()
 
     def __get_raw_round(self, dkg: DkgId) -> list[Any]:
-        return list(self.contract.functions.rounds(dkg).call())
+        return list(self.contract.functions.getRound(dkg).call())
 
     def get_round(self, dkg: DkgId) -> Round:
         return self._to_round(self.__get_raw_round(dkg))
