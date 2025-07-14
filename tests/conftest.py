@@ -28,7 +28,7 @@ from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
-from tests.helper import init_skale, init_skale_allocator, init_mirage
+from tests.helper import init_skale, init_skale_allocator, init_fair
 from skale.utils.contracts_provision.utils import generate_random_node_data
 
 ETH_AMOUNT_PER_NODE = 1
@@ -56,8 +56,8 @@ def skale(web3, request):
 
 
 @pytest.fixture(scope='session')
-def mirage(web3):
-    return init_mirage(web3)
+def fair(web3):
+    return init_fair(web3)
 
 
 @pytest.fixture(scope='session')
@@ -106,35 +106,35 @@ def nodes(skale, node_skales, validator):
 
 
 @pytest.fixture
-def mirage_active_nodes(mirage, node_wallets):
-    main_wallet = mirage.wallet
+def fair_active_nodes(fair, node_wallets):
+    main_wallet = fair.wallet
 
     for wallet in node_wallets:
-        mirage.wallet = wallet
+        fair.wallet = wallet
         ip, _, port, _ = generate_random_node_data()
-        mirage.nodes.register_active(ip=ip, port=port)
+        fair.nodes.register_active(ip=ip, port=port)
 
-    mirage.wallet = main_wallet
+    fair.wallet = main_wallet
     try:
         yield node_wallets
     finally:
-        """TODO: Remove the node from the mirage instance."""
+        """TODO: Remove the node from the fair instance."""
 
 
 @pytest.fixture
-def mirage_passive_nodes(mirage, node_wallets):
-    main_wallet = mirage.wallet
+def fair_passive_nodes(fair, node_wallets):
+    main_wallet = fair.wallet
 
     for wallet in node_wallets:
-        mirage.wallet = wallet
+        fair.wallet = wallet
         ip, _, port, _ = generate_random_node_data()
-        mirage.nodes.register_passive(ip=ip, port=port)
+        fair.nodes.register_passive(ip=ip, port=port)
 
-    mirage.wallet = main_wallet
+    fair.wallet = main_wallet
     try:
         yield node_wallets
     finally:
-        """TODO: Remove the node from the mirage instance."""
+        """TODO: Remove the node from the fair instance."""
 
 
 @pytest.fixture

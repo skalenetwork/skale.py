@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from typing import List, NewType, TypedDict
 
 from skale.types.dkg import DkgId, G2Point
-from skale.types.node import MirageNode, NodeId
+from skale.types.node import FairNode, NodeId
 
 CommitteeIndex = NewType('CommitteeIndex', int)
 Timestamp = NewType('Timestamp', int)
@@ -42,7 +42,7 @@ CommitteeGroup = TypedDict(
     {
         'ts': Timestamp,
         'index': CommitteeIndex,
-        'group': List[MirageNode],
+        'group': List[FairNode],
         'committee': Committee,
     },
 )

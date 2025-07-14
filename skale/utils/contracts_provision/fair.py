@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 TEST_ETH_AMOUNT = 1
 NODES_IN_SCHAIN = 4
-CHAIN_NAME = SchainName('mirage')
+CHAIN_NAME = SchainName('fair')
 
 
 def transfer_eth_to_wallets(skale, wallets):
@@ -117,7 +117,7 @@ def init_skale_manager(
     return SkaleManager(endpoint, alias_or_address, wallet)
 
 
-def bootstrap_mirage(endpoint: str, alias_or_address: str, eth_private_key: HexStr) -> None:
+def bootstrap_fair(endpoint: str, alias_or_address: str, eth_private_key: HexStr) -> None:
     skale = init_skale_manager(endpoint, alias_or_address, eth_private_key)
     add_test_permissions(skale)
     setup_validator(skale)
@@ -136,4 +136,4 @@ if __name__ == '__main__':
     ENDPOINT = os.environ['ENDPOINT']
     ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
     MANAGER_CONTRACTS = os.environ['MANAGER_CONTRACTS']
-    bootstrap_mirage(ENDPOINT, MANAGER_CONTRACTS, HexStr(ETH_PRIVATE_KEY))
+    bootstrap_fair(ENDPOINT, MANAGER_CONTRACTS, HexStr(ETH_PRIVATE_KEY))

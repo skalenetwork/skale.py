@@ -6,6 +6,6 @@ if sys.version_info < (3, 7):
 from skale.skale_manager import SkaleManager
 from skale.skale_allocator import SkaleAllocator
 from skale.skale_ima import SkaleIma
-from skale.mirage_manager import MirageManager
+from skale.fair_manager import FairManager
 
-__all__ = ['SkaleManager', 'SkaleAllocator', 'SkaleIma', 'MirageManager']
+__all__ = ['SkaleManager', 'SkaleAllocator', 'SkaleIma', 'FairManager']
