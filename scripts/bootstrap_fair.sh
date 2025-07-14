@@ -8,5 +8,5 @@ export ENDPOINT=${ENDPOINT:-http://127.0.0.1:8545}
 
 export MANAGER_CONTRACTS=$(bash $PROJECT_DIR/helper-scripts/helper.sh manager_address)
 
-echo "Going to bootstrap Mirage with ${ENDPOINT} and ${MANAGER_CONTRACTS}"
-python skale/utils/contracts_provision/mirage.py
+echo "Going to bootstrap Fair with ${ENDPOINT} and ${MANAGER_CONTRACTS}"
+python skale/utils/contracts_provision/fair.py

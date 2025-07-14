@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-set -e
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PROJECT_DIR=$(dirname $DIR)
-export ENDPOINT=${ENDPOINT:-http://localhost:8545}
-export ENV=test
 
-py.test --cov=$PROJECT_DIR/ $PROJECT_DIR/tests/ --ignore $PROJECT_DIR/tests/allocator --ignore $PROJECT_DIR/tests/fair $@
+export ENDPOINT=${ENDPOINT:-http://localhost:8545}
+export FAIR_CONTRACTS=$(bash $PROJECT_DIR/helper-scripts/helper.sh fair_address)
+
+echo "Running Fair tests with contracts at $FAIR_CONTRACTS"
+pytest $PROJECT_DIR/tests/fair

@@ -57,7 +57,7 @@ TEST_ALLOCATOR_ABI_FILEPATH = os.getenv('TEST_ALLOCATOR_ABI_FILEPATH') or os.pat
 IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = HexStr(os.environ['ETH_PRIVATE_KEY'])
 
-MIRAGE_CONTRACTS = os.getenv('MIRAGE_CONTRACTS')
+FAIR_CONTRACTS = os.getenv('FAIR_CONTRACTS')
 
 # constants contract
 NEW_REWARD_PERIOD = 600

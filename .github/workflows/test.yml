@@ -6,14 +6,14 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [manager, allocator, mirage]
+        component: [manager, allocator, fair]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       ENDPOINT: "http://127.0.0.1:8545"
       MANAGER_TAG: "1.12.0-develop.21"
       ALLOCATOR_TAG: "2.2.2-develop.0"
-      MIRAGE_TAG: "0.0.1-develop.25"
+      FAIR_TAG: "0.0.1-develop.31"
       MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v4
@@ -47,20 +47,20 @@ jobs:
           bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
       
-      - name: Bootstrap mirage-boot contracts
-        if: ${{ matrix.component == 'mirage' }}
+      - name: Bootstrap fair-boot contracts
+        if: ${{ matrix.component == 'fair' }}
         run: |
-          bash ./scripts/bootstrap_mirage.sh
+          bash ./scripts/bootstrap_fair.sh
 
-      - name: Deploy mirage
-        if: ${{ matrix.component == 'mirage' }}
+      - name: Deploy fair
+        if: ${{ matrix.component == 'fair' }}
         env:
           MAINNET_ENDPOINT: "http://127.0.0.1:8545"
-          CHAIN_NAME: "mirage"
+          CHAIN_NAME: "fair"
         run: |
           export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
-          bash ./helper-scripts/deploy_mirage.sh
-          docker rmi -f skalenetwork/professional:${{ env.MIRAGE_TAG }}
+          bash ./helper-scripts/deploy_fair.sh
+          docker rmi -f skalenetwork/fair-manager:${{ env.FAIR_TAG }}
   
       - name: Show stats before tests
         if: always()
