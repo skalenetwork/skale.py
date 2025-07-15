@@ -29,6 +29,7 @@ extras_require['dev'] = (
     extras_require['linter'] + extras_require['dev'] + extras_require['hw-wallet']
 )
 
+
 setup(
     name='skale.py',
     version='7.2',
