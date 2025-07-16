@@ -32,7 +32,9 @@ class Staking(BaseContract):
         return self.contract.functions.getStakedAmount().call()
 
     def get_staked_to_node_amount(self, node: NodeId) -> int:
-        return self.contract.functions.getStakedToNodeAmount(node).call()
+        return self.contract.functions.getStakedToNodeAmount(node).call(
+            {'from': self.skale.wallet.address}
+        )
 
     def get_staked_nodes(self) -> List[NodeId]:
         return self.contract.functions.getStakedNodes().call()
