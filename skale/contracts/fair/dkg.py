@@ -28,7 +28,7 @@ from skale.types.node import NodeId
 class DKG(BaseContract):
     def is_node_broadcasted(self, dkg: DkgId, node: NodeId) -> bool:
         return self.contract.functions.isNodeBroadcasted(dkg, node).call()
-    
+
     def is_node_sent_alright(self, dkg: DkgId, node: NodeId) -> bool:
         round_info = self.get_round(dkg)
         return round_info.completed[node]
@@ -41,7 +41,7 @@ class DKG(BaseContract):
 
     def get_last_dkg_id(self) -> DkgId:
         return DkgId(self.contract.functions.lastDkgId().call())
-    
+
     def get_starting_block_number(self, dkg: DkgId) -> int:
         return self.contract.functions.getStartingBlockNumber(dkg).call()
 
@@ -66,6 +66,11 @@ class DKG(BaseContract):
             numberOfCompleted=untyped_round[7],
             completed=untyped_round[8],
         )
+
+    def is_last_dkg_successful(self) -> bool:
+        last_dkg_id = self.get_last_dkg_id()
+        round_info = self.get_round(last_dkg_id)
+        return round_info.status == Status.SUCCESS
 
     @transaction_method
     def alright(self, dkg: DkgId):
