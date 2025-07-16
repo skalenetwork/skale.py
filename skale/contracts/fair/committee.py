@@ -51,6 +51,17 @@ class Committee(BaseContract):
     def last_committee_index(self) -> CommitteeIndex:
         return CommitteeIndex(self.contract.functions.lastCommitteeIndex().call())
 
+    def skale_rng(self) -> ChecksumAddress:
+        return self.contract.functions.skaleRng().call()
+
+    @transaction_method
+    def set_rng(self, address: ChecksumAddress):
+        return self.contract.functions.setRNG(address)
+
+    @transaction_method
+    def disableRNG(self):
+        return self.contract.functions.disableRNG()
+
     @transaction_method
     def select(self):
         return self.contract.functions.select()
