@@ -19,7 +19,7 @@ def get_nodes_from_last_two_committees(fair: FairManager) -> list[CommitteeGroup
     as first and second committee with first timestamp equal to 0
     """
 
-    latest_committee_index: int = fair.committee.get_active_committee_index()
+    latest_committee_index: int = fair.committee.last_committee_index()
     if latest_committee_index == 0:
         committee_a_index: CommitteeIndex = CommitteeIndex(0)
         committee_a = fair.committee.get_committee(CommitteeIndex(0))

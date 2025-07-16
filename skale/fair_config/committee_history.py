@@ -38,9 +38,7 @@ def unpack_bls_public_key(bls_public_key: G2Point) -> dict[str, str]:
     }
 
 
-def committee_data_to_historical_representation(
-    fair: FairManager, committee: Committee
-) -> dict:
+def committee_data_to_historical_representation(fair: FairManager, committee: Committee) -> dict:
     bls_public_key = committee.common_public_key
     node_ids = committee.node_ids
     nodes = {}
@@ -58,7 +56,7 @@ def committee_data_to_historical_representation(
 
 
 def generate_committee_history(fair: FairManager) -> dict:
-    latest_committee_index: int = fair.committee.get_active_committee_index()
+    latest_committee_index: int = fair.committee.last_committee_index()
     committees = {}
 
     current_finish_ts = None
