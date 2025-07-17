@@ -69,6 +69,8 @@ class DKG(BaseContract):
 
     def is_last_dkg_successful(self) -> bool:
         last_dkg_id = self.get_last_dkg_id()
+        if last_dkg_id == DkgId(0):
+            return True
         round_info = self.get_round(last_dkg_id)
         return round_info.status == Status.SUCCESS
 
