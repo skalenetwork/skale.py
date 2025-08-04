@@ -26,7 +26,6 @@ from skale import SkaleManager
 from skale.types.schain import SchainName
 from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.main import (
-    DEFAULT_DOMAIN_NAME,
     add_test2_schain_type,
     add_test4_schain_type,
     add_test_permissions,
