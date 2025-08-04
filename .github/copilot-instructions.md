@@ -6,7 +6,7 @@
 - do not generate any in-line comments
 - for the new files, always add a license header, same format as in the existing files
 - no commented out code
-- no console logs in production code
+- no print statements in production code
 - no unused imports
 - no redundant code - move repeated logic into helper functions
 - use type hints to specify the expected types of function arguments and return values
