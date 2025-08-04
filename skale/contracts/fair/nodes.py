@@ -100,3 +100,7 @@ class Nodes(BaseContract):
     @transaction_method
     def set_committee(self, committee_address: ChecksumAddress):
         return self.contract.functions.setCommittee(committee_address)
+
+    @transaction_method
+    def delete_node(self, node_id: NodeId):
+        return self.contract.functions.deleteNode(node_id)

@@ -243,3 +243,22 @@ def test_decode_public_key(fair):
     assert isinstance(decoded, str)
     assert decoded.startswith('0x')
     assert len(decoded) == 18
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_delete_node(fair, fair_passive_nodes):
+    main_wallet = fair.wallet
+
+    node_id = fair.nodes.get_passive_node_ids_for_address(fair_passive_nodes[0].address)[0]
+
+    passive_node_ids_before = fair.nodes.get_passive_node_ids()
+    assert node_id in passive_node_ids_before
+
+    fair.wallet = fair_passive_nodes[0]
+    fair.nodes.delete_node(node_id)
+
+    passive_node_ids_after = fair.nodes.get_passive_node_ids()
+    assert node_id not in passive_node_ids_after
+    assert len(passive_node_ids_after) == len(passive_node_ids_before) - 1
+
+    fair.wallet = main_wallet
