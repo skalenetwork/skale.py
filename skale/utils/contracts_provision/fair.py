@@ -26,7 +26,6 @@ from skale import SkaleManager
 from skale.types.schain import SchainName
 from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.main import (
-    DEFAULT_DOMAIN_NAME,
     add_test2_schain_type,
     add_test4_schain_type,
     add_test_permissions,
@@ -85,7 +84,7 @@ def register_node(skale):
         port=port,
         name=name,
         public_ip=public_ip,
-        domain_name=DEFAULT_DOMAIN_NAME,
+        domain_name=f'{name}.com',
         wait_for=True,
     )
     node_id = skale.nodes.node_name_to_index(name)
