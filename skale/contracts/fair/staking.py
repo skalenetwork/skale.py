@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import List
+
 from eth_typing import ChecksumAddress
 
 from skale.contracts.base_contract import BaseContract, transaction_method
@@ -78,3 +79,6 @@ class Staking(BaseContract):
     @transaction_method
     def enable(self, node: NodeId):
         return self.contract.functions.enable(node)
+
+    def get_reward_wallet(self, node: NodeId) -> ChecksumAddress:
+        return self.contract.functions.getRewardWallet(node).call()

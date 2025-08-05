@@ -1,13 +1,22 @@
 from skale.fair_manager import FairManager
 from skale.types.committee import CommitteeGroup, CommitteeIndex
-from skale.types.node import FairNode, NodeId
+from skale.types.node import FairNode, FairNodeWithRewardWalletAddress, NodeId
 
 """ This functions are used to generate fair config 'nodes' section data"""
 
 
-def get_committee_nodes(fair: FairManager, committee_index: int) -> list[FairNode]:
+def with_reward_address(fair: FairManager, node: FairNode) -> FairNodeWithRewardWalletAddress:
+    reward_wallet_address = fair.staking.get_reward_wallet(node.id)
+    return FairNodeWithRewardWalletAddress(
+        **node.to_dict(), reward_wallet_address=reward_wallet_address
+    )
+
+
+def get_committee_nodes(
+    fair: FairManager, committee_index: int
+) -> list[FairNodeWithRewardWalletAddress]:
     return [
-        fair.nodes.get(NodeId(node_id))
+        with_reward_address(fair, fair.nodes.get(NodeId(node_id)))
         for node_id in fair.committee.get_committee(CommitteeIndex(committee_index)).node_ids
     ]
 
