@@ -11,7 +11,7 @@ def with_reward_address(fair: FairManager, node: FairNode) -> FairNodeWithReward
     # Checking if the node is in boot node group i.e. is in the initial committee
     initial_committee_index: CommitteeIndex = CommitteeIndex(0)
     initial_committee = fair.committee.get_committee(initial_committee_index)
-    if node.id in initial_committee.node_ids:
+    if node.id not in initial_committee.node_ids:
         reward_wallet_address = fair.staking.get_reward_wallet(node.id)
     return FairNodeWithRewardWalletAddress(
         **node.to_dict(), ip=node.ip, reward_wallet_address=reward_wallet_address
