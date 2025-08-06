@@ -9,7 +9,8 @@ from skale.utils.constants import ZERO_ADDRESS
 def with_reward_address(fair: FairManager, node: FairNode) -> FairNodeWithRewardWalletAddress:
     reward_wallet_address = fair.web3.to_checksum_address(ZERO_ADDRESS)
     # Checking if the node is in boot node group i.e. is in the initial committee
-    initial_committee = fair.committee.get(0)
+    initial_committee_index: CommitteeIndex = CommitteeIndex(0)
+    initial_committee = fair.committee.get_committee(initial_committee_index)
     if node.id in initial_committee.node_ids:
         reward_wallet_address = fair.staking.get_reward_wallet(node.id)
     return FairNodeWithRewardWalletAddress(
