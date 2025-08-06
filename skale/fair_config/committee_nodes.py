@@ -1,12 +1,17 @@
 from skale.fair_manager import FairManager
 from skale.types.committee import CommitteeGroup, CommitteeIndex
 from skale.types.node import FairNode, FairNodeWithRewardWalletAddress, NodeId
+from skale.utils.constants import ZERO_ADDRESS
 
 """ This functions are used to generate fair config 'nodes' section data"""
 
 
 def with_reward_address(fair: FairManager, node: FairNode) -> FairNodeWithRewardWalletAddress:
-    reward_wallet_address = fair.staking.get_reward_wallet(node.id)
+    reward_wallet_address = fair.web3.to_checksum_address(ZERO_ADDRESS)
+    # Checking if the node is in boot node group i.e. is in the initial committee
+    initial_committee = fair.committee.get(0)
+    if node.id in initial_committee.node_ids:
+        reward_wallet_address = fair.staking.get_reward_wallet(node.id)
     return FairNodeWithRewardWalletAddress(
         **node.to_dict(), reward_wallet_address=reward_wallet_address
     )
