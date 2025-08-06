@@ -14,7 +14,7 @@ def with_reward_address(fair: FairManager, node: FairNode) -> FairNodeWithReward
     if node.id in initial_committee.node_ids:
         reward_wallet_address = fair.staking.get_reward_wallet(node.id)
     return FairNodeWithRewardWalletAddress(
-        **node.to_dict(), reward_wallet_address=reward_wallet_address
+        **node.to_dict(), ip=node.ip, reward_wallet_address=reward_wallet_address
     )
 
 
