@@ -17,15 +17,14 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from enum import IntEnum
 from dataclasses import dataclass
+from enum import IntEnum
 from typing import List, NewType, TypedDict
 
 from eth_typing import BlockNumber, ChecksumAddress, HexStr
 
 from skale.types.schain import SchainStructureWithStatus
 from skale.types.validator import ValidatorId
-
 
 NodeId = NewType('NodeId', int)
 Port = NewType('Port', int)
@@ -73,6 +72,14 @@ class FairNode:
             'name': self.name,
             'public_key': self.public_key,
         }
+
+
+@dataclass
+class FairNodeWithRewardWalletAddress(FairNode):
+    reward_wallet_address: ChecksumAddress
+
+    def to_dict(self) -> dict:
+        return {'reward_wallet_address': self.reward_wallet_address, **super().to_dict()}
 
 
 class NodeWithId(Node):
