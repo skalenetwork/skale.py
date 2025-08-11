@@ -68,6 +68,8 @@ def test_get_nodes_from_last_two_committees_first_committee():
     assert result[0]['ts'] == 0
     assert result[1]['index'] == 0
     assert result[1]['ts'] == 1500
+    assert result[0]['staking_contract_address'] == '0x0000000000000000000000000000000000000000'
+    assert result[1]['staking_contract_address'] == '0x0000000000000000000000000000000000000000'
 
 
 def test_get_nodes_from_last_two_committees_multiple_committees():
@@ -90,6 +92,7 @@ def test_get_nodes_from_last_two_committees_multiple_committees():
 
     fair.committee.get_committee.side_effect = get_committee_side_effect
     fair.web3.to_checksum_address.return_value = '0x0000000000000000000000000000000000000000'
+    fair.staking.contract.address = '0x7777777777777777777777777777777777777777'
 
     nodes = {}
     for node_id in node_ids_1 + node_ids_2:
@@ -104,6 +107,8 @@ def test_get_nodes_from_last_two_committees_multiple_committees():
     assert result[0]['ts'] == 1000
     assert result[1]['index'] == 2
     assert result[1]['ts'] == 2000
+    assert result[0]['staking_contract_address'] == '0x7777777777777777777777777777777777777777'
+    assert result[1]['staking_contract_address'] == '0x7777777777777777777777777777777777777777'
 
 
 def test_get_nodes_from_last_two_committees_structure():
