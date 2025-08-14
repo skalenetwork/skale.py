@@ -28,7 +28,6 @@ def create_mock_node(node_id, address='0x123', name=None):
     mock_node.address = address
     mock_node.port = 10000
     mock_node.name = name
-    mock_node.public_key = f'0xpublickey{node_id}'
     mock_node.to_dict.return_value = {
         'id': node_id,
         'ip_str': f'127.0.0.{node_id}',
@@ -36,7 +35,6 @@ def create_mock_node(node_id, address='0x123', name=None):
         'address': address,
         'port': 10000,
         'name': name,
-        'public_key': f'0xpublickey{node_id}',
     }
     return mock_node
 
@@ -60,6 +58,7 @@ def test_get_nodes_from_last_two_committees_first_committee():
         nodes[node_id] = node
     fair.nodes.get.side_effect = lambda nid: nodes[nid]
     fair.staking.get_reward_wallet.side_effect = lambda node_id: f'0xreward{node_id}'
+    fair.node.get_public_key.side_effect = lambda node_id: f'0xpublickey{node_id}'
 
     result = get_nodes_from_last_two_committees(fair)
 
@@ -99,6 +98,7 @@ def test_get_nodes_from_last_two_committees_multiple_committees():
         nodes[node_id] = create_mock_node(node_id)
     fair.nodes.get.side_effect = lambda nid: nodes[nid]
     fair.staking.get_reward_wallet.return_value = '0xreward'
+    fair.node.get_public_key.side_effect = lambda node_id: f'0xpublickey{node_id}'
 
     result = get_nodes_from_last_two_committees(fair)
 
@@ -125,6 +125,7 @@ def test_get_nodes_from_last_two_committees_structure():
     fair.web3.to_checksum_address.return_value = '0x0000000000000000000000000000000000000000'
     fair.nodes.get.return_value = create_mock_node(1)
     fair.staking.get_reward_wallet.return_value = '0xreward'
+    fair.node.get_public_key.side_effect = lambda node_id: f'0xpublickey{node_id}'
 
     result = get_nodes_from_last_two_committees(fair)
 
