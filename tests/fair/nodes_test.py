@@ -1,5 +1,4 @@
 import pytest
-
 from web3.exceptions import ContractLogicError
 
 from skale.utils.contracts_provision.utils import generate_random_node_data
@@ -18,8 +17,16 @@ def test_get_node(fair, fair_active_nodes):
     assert isinstance(node.ip_str, str)
     assert isinstance(node.port, int)
     assert node.name == f'node-{node_id}'
-    assert isinstance(node.public_key, str)
     assert node.public_key.startswith('0x')
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_get_public_key(fair, fair_active_nodes):
+    registered_node = fair.nodes.get_by_address(fair_active_nodes[0].address)
+    node_id = registered_node.id
+    public_key = fair.nodes.get_public_key(node_id)
+    assert isinstance(public_key, str)
+    assert public_key.startswith('0x')
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
