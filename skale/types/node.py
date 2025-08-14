@@ -17,14 +17,17 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import socket
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import List, NewType, TypedDict
+from typing import List, NewType, Type, TypedDict, TypeVar
 
 from eth_typing import BlockNumber, ChecksumAddress, HexStr
+from eth_utils.address import to_checksum_address
 
 from skale.types.schain import SchainStructureWithStatus
 from skale.types.validator import ValidatorId
+from skale.utils.constants import ZERO_ADDRESS, ZERO_PUBLIC_KEY
 
 NodeId = NewType('NodeId', int)
 Port = NewType('Port', int)
@@ -51,6 +54,9 @@ class Node(TypedDict):
     domain_name: str
 
 
+FairNodeType = TypeVar('FairNodeType', bound='FairNode')
+
+
 @dataclass
 class FairNode:
     id: NodeId
@@ -60,7 +66,6 @@ class FairNode:
     address: ChecksumAddress
     port: Port
     name: str
-    # public_key: HexStr
 
     def to_dict(self) -> dict:
         return {
@@ -71,6 +76,22 @@ class FairNode:
             'port': self.port,
             'name': self.name,
         }
+
+    @classmethod
+    def create_empty(cls: Type[FairNodeType]) -> FairNodeType:
+        ip_str = '255.255.255.255'
+        return cls(
+            id=NodeId(0),
+            ip=socket.inet_aton(ip_str),
+            ip_str=ip_str,
+            domain_name='',
+            address=to_checksum_address(ZERO_ADDRESS),
+            port=Port(10000),
+            name='',
+        )
+
+
+FairNodeForChainConfigType = TypeVar('FairNodeForChainConfigType', bound='FairNodeForChainConfig')
 
 
 @dataclass
@@ -84,6 +105,15 @@ class FairNodeForChainConfig(FairNode):
             'public_key': self.public_key,
             **super().to_dict(),
         }
+
+    @classmethod
+    def create_empty(cls: Type[FairNodeForChainConfigType]) -> FairNodeForChainConfigType:
+        parent = super().create_empty()
+        return cls(
+            **parent.__dict__,
+            reward_wallet_address=to_checksum_address(ZERO_ADDRESS),
+            public_key=HexStr(ZERO_PUBLIC_KEY),
+        )
 
 
 class NodeWithId(Node):
