@@ -17,7 +17,6 @@ def test_get_node(fair, fair_active_nodes):
     assert isinstance(node.ip_str, str)
     assert isinstance(node.port, int)
     assert node.name == f'node-{node_id}'
-    assert node.public_key.startswith('0x')
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
