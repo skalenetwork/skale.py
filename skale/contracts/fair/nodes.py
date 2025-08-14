@@ -105,4 +105,5 @@ class Nodes(BaseContract):
         return self.contract.functions.deleteNode(node_id)
 
     def get_public_key(self, node_id: NodeId) -> HexStr:
-        return self.contract.functions.getPublicKey(node_id).call()
+        raw_public_key = self.contract.functions.getPublicKey(node_id).call()
+        return self.decode_public_key(raw_public_key)
