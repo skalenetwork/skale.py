@@ -60,7 +60,7 @@ class FairNode:
     address: ChecksumAddress
     port: Port
     name: str
-    public_key: HexStr
+    # public_key: HexStr
 
     def to_dict(self) -> dict:
         return {
@@ -70,16 +70,20 @@ class FairNode:
             'address': self.address,
             'port': self.port,
             'name': self.name,
-            'public_key': self.public_key,
         }
 
 
 @dataclass
-class FairNodeWithRewardWalletAddress(FairNode):
+class FairNodeForChainConfig(FairNode):
     reward_wallet_address: ChecksumAddress
+    public_key: HexStr
 
     def to_dict(self) -> dict:
-        return {'reward_wallet_address': self.reward_wallet_address, **super().to_dict()}
+        return {
+            'reward_wallet_address': self.reward_wallet_address,
+            'public_key': self.public_key,
+            **super().to_dict(),
+        }
 
 
 class NodeWithId(Node):
