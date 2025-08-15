@@ -27,7 +27,7 @@ from eth_utils.address import to_checksum_address
 
 from skale.types.schain import SchainStructureWithStatus
 from skale.types.validator import ValidatorId
-from skale.utils.constants import ZERO_ADDRESS, ZERO_PUBLIC_KEY
+from skale.utils.constants import ZERO_ADDRESS
 
 NodeId = NewType('NodeId', int)
 Port = NewType('Port', int)
@@ -94,18 +94,16 @@ class FairNodeForChainConfig(FairNode):
         }
 
 
-def get_empty_fair_node_for_chain_config() -> FairNode:
+def get_ghost_fair_node(node_id: NodeId) -> FairNode:
     ip_str = '255.255.255.255'
-    return FairNodeForChainConfig(
-        id=NodeId(0),
+    return FairNode(
+        id=node_id,
         ip=socket.inet_aton(ip_str),
         ip_str=ip_str,
         domain_name='',
         address=to_checksum_address(ZERO_ADDRESS),
         port=Port(10000),
         name='',
-        reward_wallet_address=to_checksum_address(ZERO_ADDRESS),
-        public_key=HexStr(ZERO_PUBLIC_KEY),
     )
 
 

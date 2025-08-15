@@ -22,7 +22,7 @@ from eth_utils.address import to_checksum_address
 from skale.fair_config.utils import convert_to_node_for_chain_config
 from skale.fair_manager import FairManager
 from skale.types.committee import CommitteeGroup, CommitteeIndex
-from skale.types.node import FairNodeForChainConfig, NodeId, get_empty_fair_node_for_chain_config
+from skale.types.node import FairNodeForChainConfig, NodeId, get_ghost_fair_node
 from skale.utils.constants import ZERO_ADDRESS
 
 """ This functions are used to generate fair config 'nodes' section data"""
@@ -30,12 +30,13 @@ from skale.utils.constants import ZERO_ADDRESS
 
 def get_committee_nodes(fair: FairManager, committee_index: int) -> list[FairNodeForChainConfig]:
     committee_nodes = []
-    for node_id in fair.committee.get_committee(CommitteeIndex(committee_index)).node_ids:
-        if fair.nodes.active_node_exists(NodeId(node_id)):
-            fair_node_for_config = get_empty_fair_node_for_chain_config()
+    for raw_id in fair.committee.get_committee(CommitteeIndex(committee_index)).node_ids:
+        node_id: NodeId = NodeId(raw_id)
+        if fair.nodes.active_node_exists(node_id):
+            fair_node = fair.nodes.get(node_id)
         else:
-            fair_node = fair.nodes.get(NodeId(node_id))
-            fair_node_for_config = convert_to_node_for_chain_config(fair, fair_node)
+            fair_node = get_ghost_fair_node(node_id)
+        fair_node_for_config = convert_to_node_for_chain_config(fair, fair_node)
         committee_nodes.append(fair_node_for_config)
     return committee_nodes
 
