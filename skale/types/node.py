@@ -20,7 +20,7 @@
 import socket
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import List, NewType, Type, TypedDict, TypeVar
+from typing import List, NewType, TypedDict, TypeVar
 
 from eth_typing import BlockNumber, ChecksumAddress, HexStr
 from eth_utils.address import to_checksum_address
@@ -77,19 +77,6 @@ class FairNode:
             'name': self.name,
         }
 
-    @classmethod
-    def create_empty(cls: Type[FairNodeType]) -> FairNodeType:
-        ip_str = '255.255.255.255'
-        return cls(
-            id=NodeId(0),
-            ip=socket.inet_aton(ip_str),
-            ip_str=ip_str,
-            domain_name='',
-            address=to_checksum_address(ZERO_ADDRESS),
-            port=Port(10000),
-            name='',
-        )
-
 
 FairNodeForChainConfigType = TypeVar('FairNodeForChainConfigType', bound='FairNodeForChainConfig')
 
@@ -106,14 +93,20 @@ class FairNodeForChainConfig(FairNode):
             **super().to_dict(),
         }
 
-    @classmethod
-    def create_empty(cls: Type[FairNodeForChainConfigType]) -> FairNodeForChainConfigType:
-        parent = super().create_empty()
-        return cls(
-            **parent.__dict__,
-            reward_wallet_address=to_checksum_address(ZERO_ADDRESS),
-            public_key=HexStr(ZERO_PUBLIC_KEY),
-        )
+
+def get_empty_fair_node_for_chain_config() -> FairNode:
+    ip_str = '255.255.255.255'
+    return FairNodeForChainConfig(
+        id=NodeId(0),
+        ip=socket.inet_aton(ip_str),
+        ip_str=ip_str,
+        domain_name='',
+        address=to_checksum_address(ZERO_ADDRESS),
+        port=Port(10000),
+        name='',
+        reward_wallet_address=to_checksum_address(ZERO_ADDRESS),
+        public_key=HexStr(ZERO_PUBLIC_KEY),
+    )
 
 
 class NodeWithId(Node):
