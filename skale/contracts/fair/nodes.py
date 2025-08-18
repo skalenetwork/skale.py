@@ -56,12 +56,11 @@ class Nodes(BaseContract):
     def _to_node(self, untyped_node: List[Any]) -> FairNode:
         return FairNode(
             id=untyped_node[0],
-            public_key=self.decode_public_key(untyped_node[1]),
-            ip=bytes(untyped_node[2]),
-            ip_str=socket.inet_ntoa(untyped_node[2]),
-            domain_name=untyped_node[3],
-            address=ChecksumAddress(untyped_node[4]),
-            port=Port(untyped_node[5]),
+            ip=bytes(untyped_node[1]),
+            ip_str=socket.inet_ntoa(untyped_node[1]),
+            domain_name=untyped_node[2],
+            address=ChecksumAddress(untyped_node[3]),
+            port=Port(untyped_node[4]),
             name=f'node-{untyped_node[0]}',
         )
 
@@ -104,3 +103,7 @@ class Nodes(BaseContract):
     @transaction_method
     def delete_node(self, node_id: NodeId):
         return self.contract.functions.deleteNode(node_id)
+
+    def get_public_key(self, node_id: NodeId) -> HexStr:
+        raw_public_key = self.contract.functions.getPublicKey(node_id).call()
+        return self.decode_public_key(raw_public_key)

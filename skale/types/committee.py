@@ -25,7 +25,7 @@ from typing import List, NewType, TypedDict
 from skale_contracts.instance import ChecksumAddress
 
 from skale.types.dkg import DkgId, G2Point
-from skale.types.node import FairNodeWithRewardWalletAddress, NodeId
+from skale.types.node import FairNodeForChainConfig, NodeId
 
 CommitteeIndex = NewType('CommitteeIndex', int)
 Timestamp = NewType('Timestamp', int)
@@ -45,7 +45,7 @@ CommitteeGroup = TypedDict(
         'ts': Timestamp,
         'index': CommitteeIndex,
         'staking_contract_address': ChecksumAddress,
-        'group': List[FairNodeWithRewardWalletAddress],
+        'group': List[FairNodeForChainConfig],
         'committee': Committee,
     },
 )

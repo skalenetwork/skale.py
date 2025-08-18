@@ -22,7 +22,6 @@ import logging
 from skale import FairManager
 from skale.types.committee import Committee, CommitteeIndex
 from skale.types.dkg import G2Point
-from skale.types.node import FairNode
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +42,12 @@ def committee_data_to_historical_representation(fair: FairManager, committee: Co
     node_ids = committee.node_ids
     nodes = {}
     for index_in_committee, node_id in enumerate(node_ids):
-        node: FairNode = fair.nodes.get(node_id)
-        nodes[node.id] = (index_in_committee, node.id, node.public_key)
+        public_key = fair.nodes.get_public_key(node_id)
+        nodes[node_id] = (
+            index_in_committee,
+            node_id,
+            public_key,
+        )
     committee_data = {
         'rotation': None,
         'nodes': nodes,

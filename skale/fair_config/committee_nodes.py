@@ -1,34 +1,44 @@
+#   -*- coding: utf-8 -*-
+#
+#   This file is part of SKALE.py
+#
+#   Copyright (C) 2025-Present SKALE Labs
+#
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   SKALE.py is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Affero General Public License for more details.
+#
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
+
 from eth_utils.address import to_checksum_address
 
+from skale.fair_config.utils import convert_to_node_for_chain_config
 from skale.fair_manager import FairManager
 from skale.types.committee import CommitteeGroup, CommitteeIndex
-from skale.types.node import FairNode, FairNodeWithRewardWalletAddress, NodeId
+from skale.types.node import FairNodeForChainConfig, NodeId, get_ghost_fair_node
 from skale.utils.constants import ZERO_ADDRESS
 
 """ This functions are used to generate fair config 'nodes' section data"""
 
 
-def convert_to_node_with_reward_address(
-    fair: FairManager, node: FairNode
-) -> FairNodeWithRewardWalletAddress:
-    reward_wallet_address = fair.web3.to_checksum_address(ZERO_ADDRESS)
-    # Checking if the node is in boot node group i.e. is in the initial committee
-    initial_committee_index: CommitteeIndex = CommitteeIndex(0)
-    initial_committee = fair.committee.get_committee(initial_committee_index)
-    if node.id not in initial_committee.node_ids:
-        reward_wallet_address = fair.staking.get_reward_wallet(node.id)
-    return FairNodeWithRewardWalletAddress(
-        **node.to_dict(), ip=node.ip, reward_wallet_address=reward_wallet_address
-    )
-
-
-def get_committee_nodes(
-    fair: FairManager, committee_index: int
-) -> list[FairNodeWithRewardWalletAddress]:
-    return [
-        convert_to_node_with_reward_address(fair, fair.nodes.get(NodeId(node_id)))
-        for node_id in fair.committee.get_committee(CommitteeIndex(committee_index)).node_ids
-    ]
+def get_committee_nodes(fair: FairManager, committee_index: int) -> list[FairNodeForChainConfig]:
+    committee_nodes = []
+    for raw_id in fair.committee.get_committee(CommitteeIndex(committee_index)).node_ids:
+        node_id: NodeId = NodeId(raw_id)
+        if fair.nodes.active_node_exists(node_id):
+            fair_node = fair.nodes.get(node_id)
+        else:
+            fair_node = get_ghost_fair_node(node_id)
+        fair_node_for_config = convert_to_node_for_chain_config(fair, fair_node)
+        committee_nodes.append(fair_node_for_config)
+    return committee_nodes
 
 
 def get_nodes_from_last_two_committees(fair: FairManager) -> list[CommitteeGroup]:
