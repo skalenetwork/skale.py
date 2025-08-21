@@ -33,9 +33,6 @@ class Status(BaseContract):
     def is_healthy(self, node_id: NodeId) -> bool:
         return self.contract.functions.isHealthy(node_id).call()
 
-    def get_nodes_eligible_for_committee(self) -> list[NodeId]:
-        return self.contract.functions.getNodesEligibleForCommittee().call()
-
     def get_whitelisted_nodes(self) -> list[NodeId]:
         return self.contract.functions.getWhitelistedNodes().call()
 

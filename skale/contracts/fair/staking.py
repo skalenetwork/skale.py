@@ -29,6 +29,21 @@ class Staking(BaseContract):
     def get_node_share(self, node: NodeId) -> int:
         return self.contract.functions.getNodeShare(node).call()
 
+    def get_node_total_stake(self, node: NodeId) -> int:
+        return self.contract.functions.getNodeTotalStake(node).call()
+
+    def get_node_fee_rate(self, node: NodeId) -> int:
+        return self.contract.functions.getNodeFeeRate(node).call()
+
+    def is_node_enabled(self, node: NodeId) -> bool:
+        return self.contract.functions.isNodeEnabled(node).call()
+
+    def get_delegators_to_node(self, node: NodeId) -> List[ChecksumAddress]:
+        return self.contract.functions.getDelegatorsToNode(node).call()
+
+    def get_delegators_to_node_count(self, node: NodeId) -> int:
+        return self.contract.functions.getDelegatorsToNodeCount(node).call()
+
     def get_staked_amount(self) -> int:
         return self.contract.functions.getStakedAmount().call()
 
@@ -65,12 +80,20 @@ class Staking(BaseContract):
         return self.contract.functions.setFeeRate(fee_rate)
 
     @transaction_method
-    def claim_fee(self, to: ChecksumAddress, amount: int):
-        return self.contract.functions.claimFee(to, amount)
+    def claim_fees(self, node: NodeId, amount: int):
+        return self.contract.functions.claimFees(node, amount)
 
     @transaction_method
-    def claim_all_fee(self, to: ChecksumAddress):
-        return self.contract.functions.claimAllFee(to)
+    def claim_all_fees(self, node: NodeId):
+        return self.contract.functions.claimAllFees(node)
+
+    @transaction_method
+    def send_fees(self, to: ChecksumAddress, amount: int):
+        return self.contract.functions.sendFees(to, amount)
+
+    @transaction_method
+    def send_all_fees(self, to: ChecksumAddress):
+        return self.contract.functions.sendAllFees(to)
 
     @transaction_method
     def disable(self, node: NodeId):
@@ -79,6 +102,22 @@ class Staking(BaseContract):
     @transaction_method
     def enable(self, node: NodeId):
         return self.contract.functions.enable(node)
+
+    @transaction_method
+    def add_allowed_receiver(self, receiver: ChecksumAddress):
+        return self.contract.functions.addAllowedReceiver(receiver)
+
+    @transaction_method
+    def remove_allowed_receiver(self, receiver: ChecksumAddress):
+        return self.contract.functions.removeAllowedReceiver(receiver)
+
+    @transaction_method
+    def set_stake_limit(self, limit: int):
+        return self.contract.functions.setStakeLimit(limit)
+
+    @transaction_method
+    def set_reward_wallet_reference(self, reward_wallet_reference: ChecksumAddress):
+        return self.contract.functions.setRewardWalletReference(reward_wallet_reference)
 
     def get_reward_wallet(self, node: NodeId) -> ChecksumAddress:
         return self.contract.functions.getRewardWallet(node).call()
