@@ -26,33 +26,23 @@ def test_is_healthy(fair, fair_active_nodes):
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
-def test_get_nodes_eligible_for_committee(fair, fair_active_nodes):
+def test_node_becomes_enabled_after_whitelist_and_heartbeat(fair, fair_active_nodes):
     prev_heartbeat_interval = fair.status.contract.functions.heartbeatInterval().call()
     fair.status.set_heartbeat_interval(5 * 60)
 
     node = fair.nodes.get_by_address(fair_active_nodes[0].address)
     node_id = node.id
 
-    eligible_nodes = fair.status.get_nodes_eligible_for_committee()
-    assert isinstance(eligible_nodes, list)
-    assert all(isinstance(node_id, int) for node_id in eligible_nodes)
-    assert node_id not in eligible_nodes
-
-    number_of_nodes = len(eligible_nodes)
-
+    assert fair.staking.is_node_enabled(node_id) is False
     fair.status.whitelist_node(node_id)
-
-    eligible_nodes_after_whitelist = fair.status.get_nodes_eligible_for_committee()
-    assert node_id not in eligible_nodes_after_whitelist
+    assert fair.staking.is_node_enabled(node_id) is False
 
     main_wallet = fair.wallet
     fair.wallet = fair_active_nodes[0]
     fair.status.alive()
     fair.wallet = main_wallet
 
-    eligible_nodes_after_alive = fair.status.get_nodes_eligible_for_committee()
-    assert node_id in eligible_nodes_after_alive
-    assert len(eligible_nodes_after_alive) == number_of_nodes + 1
+    assert fair.staking.is_node_enabled(node_id) is True
 
     fair.status.set_heartbeat_interval(prev_heartbeat_interval)
 
