@@ -37,6 +37,8 @@ def test_node_becomes_enabled_after_whitelist_and_heartbeat(fair, fair_active_no
     fair.status.whitelist_node(node_id)
     assert fair.staking.is_node_enabled(node_id) is False
 
+    fair.staking.stake(node_id, value=10000)
+
     main_wallet = fair.wallet
     fair.wallet = fair_active_nodes[0]
     fair.status.alive()
