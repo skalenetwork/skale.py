@@ -60,7 +60,7 @@ class SkaleBase:
             logger.warning(
                 'state_path is deprecated and will be ignored. This option will be removed in v8.'
             )
-        self._endpoint = get_endpoint(endpoint)
+        self._endpoint = get_endpoint(endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
         self._alias_or_address = alias_or_address
         self.web3 = init_web3(self._endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
         self.network = skale_contracts.get_network_by_provider(self.web3.provider)

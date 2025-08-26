@@ -70,3 +70,16 @@ def test_get_endpoint():
 
     endpoint = get_endpoint(['http://localhost:1111', ENDPOINT])
     assert endpoint == ENDPOINT
+
+
+def test_get_endpoint_stale_blockchain(skale):
+    current_ts = skale.web3.eth.get_block('latest')['timestamp']
+    allowed_diff = config.ALLOWED_TS_DIFF
+    dt = datetime.utcfromtimestamp(current_ts + allowed_diff)
+    with freeze_time(dt):
+        endpoint = get_endpoint(['http://localhost:1111', skale._endpoint])
+        assert endpoint == skale._endpoint
+    dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 15)
+    with freeze_time(dt):
+        with pytest.raises(StaleBlockchain):
+            get_endpoint(['http://localhost:1111', skale._endpoint])

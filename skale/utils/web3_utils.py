@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
 from web3 import Web3, LegacyWebSocketProvider, HTTPProvider
-from web3.exceptions import TransactionNotFound, ProviderConnectionError
+from web3.exceptions import TransactionNotFound, ProviderConnectionError, StaleBlockchain
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
 from web3.types import _Hash32, ENS, Nonce, TxReceipt
@@ -72,7 +72,7 @@ def init_web3(
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
         if not ts_diff == config.NO_SYNC_TS_DIFF:
-            stalecheck_middleware = StalecheckMiddlewareBuilder.build(config.ALLOWED_TS_DIFF)
+            stalecheck_middleware = StalecheckMiddlewareBuilder.build(ts_diff)
             middlewares = [stalecheck_middleware, AttributeDictMiddleware]
         else:
             middlewares = [AttributeDictMiddleware]
@@ -81,23 +81,32 @@ def init_web3(
     return w3
 
 
-def get_endpoint(endpoint: str | list[str]) -> str:
+def get_endpoint(
+    endpoint: str | list[str],
+    provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
+    ts_diff: int | None = None,
+) -> str:
     if isinstance(endpoint, str):
         return endpoint
     elif isinstance(endpoint, list) and len(endpoint) > 0:
-        return _get_connected_endpoint(endpoint)
+        return _get_connected_endpoint(endpoint, provider_timeout=provider_timeout, ts_diff=ts_diff)
     else:
         raise ValueError('Endpoint must be a string or a non-empty list of strings.')
 
 
-def _get_connected_endpoint(endpoints: list[str]) -> str:
+def _get_connected_endpoint(
+    endpoints: list[str], provider_timeout: int, ts_diff: int | None
+) -> str:
     for url in endpoints:
         try:
-            w3 = Web3(HTTPProvider(url))
-            if w3.is_connected():
+            w3 = init_web3(url, provider_timeout=provider_timeout, ts_diff=ts_diff)
+            if w3.eth.block_number():
                 return url
         except ProviderConnectionError as e:
             logger.warning(f'Could not connect to {url}. Error: {e}. Trying next endpoint...')
+            time.sleep(2)
+        except StaleBlockchain as e:
+            logger.warning(f'Endpoint {url} is out of sync. Error: {e}. Trying next endpoint...')
             time.sleep(2)
     raise ProviderConnectionError(f'Could not connect to any RPC endpoints: {endpoints}')
 
