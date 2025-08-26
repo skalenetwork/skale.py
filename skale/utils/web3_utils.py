@@ -100,7 +100,7 @@ def _get_connected_endpoint(
     for url in endpoints:
         try:
             w3 = init_web3(url, provider_timeout=provider_timeout, ts_diff=ts_diff)
-            if w3.eth.block_number():
+            if w3.eth.block_number:
                 return url
         except ProviderConnectionError as e:
             logger.warning(f'Could not connect to {url}. Error: {e}. Trying next endpoint...')
