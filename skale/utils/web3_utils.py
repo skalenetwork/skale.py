@@ -29,6 +29,7 @@ from web3.exceptions import TransactionNotFound, ProviderConnectionError, StaleB
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
 from web3.types import _Hash32, ENS, Nonce, TxReceipt
+from requests.exceptions import ConnectionError
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionFailedError
@@ -102,7 +103,7 @@ def _get_connected_endpoint(
             w3 = init_web3(url, provider_timeout=provider_timeout, ts_diff=ts_diff)
             if w3.eth.block_number:
                 return url
-        except ProviderConnectionError as e:
+        except (ProviderConnectionError, ConnectionError) as e:
             logger.warning(f'Could not connect to {url}. Error: {e}. Trying next endpoint...')
             time.sleep(2)
         except StaleBlockchain as e:

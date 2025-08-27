@@ -66,7 +66,7 @@ def test_get_endpoint():
         assert endpoint == 'http://localhost:1111'
 
     with pytest.raises(ProviderConnectionError):
-        get_endpoint(['invalid_endpoint'])
+        get_endpoint(['http://incorrect.endpoint'])
 
     endpoint = get_endpoint(['http://localhost:1111', ENDPOINT])
     assert endpoint == ENDPOINT
