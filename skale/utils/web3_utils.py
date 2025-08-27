@@ -35,6 +35,7 @@ import skale.config as config
 from skale.transactions.exceptions import TransactionFailedError
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.transactions.exceptions import TransactionNotMinedError
+from skale.utils.exceptions import NoSyncedEndpointError
 
 
 logger = logging.getLogger(__name__)
@@ -109,7 +110,7 @@ def _get_connected_endpoint(
         except StaleBlockchain as e:
             logger.warning(f'Endpoint {url} is out of sync. Error: {e}. Trying next endpoint...')
             time.sleep(2)
-    raise ProviderConnectionError(f'Could not connect to any RPC endpoints: {endpoints}')
+    raise NoSyncedEndpointError(f'Could not connect to any RPC endpoints: {endpoints}')
 
 
 def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
