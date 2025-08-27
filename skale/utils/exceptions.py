@@ -34,6 +34,10 @@ class SChainNotFoundException(Exception):
     """Raised when requested sChain is not found"""
 
 
+class NoSyncedEndpointError(Exception):
+    """Raised when no synced endpoint is available"""
+
+
 class InvalidNodeIdError(Exception):
     """Raised when wrong node id passed"""
 
