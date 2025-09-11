@@ -41,13 +41,16 @@ def committee_data_to_historical_representation(fair: FairManager, committee: Co
     bls_public_key = committee.common_public_key
     node_ids = committee.node_ids
     nodes = {}
+    initial_committee_index: CommitteeIndex = CommitteeIndex(0)
+    initial_committee = fair.committee.get_committee(initial_committee_index)
+
     for index_in_committee, node_id in enumerate(node_ids):
         public_key = fair.nodes.get_public_key(node_id)
-        nodes[node_id] = (
-            index_in_committee,
-            node_id,
-            public_key,
-        )
+        if node_id in initial_committee.node_ids:
+            reward_wallet_address = fair.nodes.get(node_id).address
+        else:
+            reward_wallet_address = fair.staking.get_reward_wallet(node_id)
+        nodes[node_id] = (index_in_committee, node_id, public_key, reward_wallet_address)
     committee_data = {
         'rotation': None,
         'nodes': nodes,
