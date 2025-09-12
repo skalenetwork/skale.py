@@ -22,6 +22,7 @@ import logging
 from skale import FairManager
 from skale.types.committee import Committee, CommitteeIndex
 from skale.types.dkg import G2Point
+from skale.utils.web3_utils import public_key_to_address
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +48,11 @@ def committee_data_to_historical_representation(fair: FairManager, committee: Co
     for index_in_committee, node_id in enumerate(node_ids):
         public_key = fair.nodes.get_public_key(node_id)
         if node_id in initial_committee.node_ids:
-            reward_wallet_address = fair.nodes.get(node_id).address
+            # If node is in initial committee using owner key.
+            # Using public_key since it is available for removed nodes
+            reward_wallet_address = public_key_to_address(public_key)
         else:
+            # For other nodes using reward wallet address
             reward_wallet_address = fair.staking.get_reward_wallet(node_id)
         nodes[node_id] = (index_in_committee, node_id, public_key, reward_wallet_address)
     committee_data = {
