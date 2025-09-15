@@ -136,11 +136,11 @@ def test_staking_public_methods_present(fair):
 @pytest.mark.parametrize('number_of_nodes', [1])
 def test_self_stake_requirement_update(fair, fair_active_nodes):
     staking = fair.staking
-    original = staking.get_self_stake_requirement()
+    original = staking.self_stake_requirement()
     assert isinstance(original, int)
     new_value = original + 1 if original > 0 else 2
     staking.set_self_stake_requirement(new_value)
-    updated = staking.get_self_stake_requirement()
+    updated = staking.self_stake_requirement()
     assert updated == new_value
 
 

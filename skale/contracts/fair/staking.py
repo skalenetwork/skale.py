@@ -104,7 +104,7 @@ class Staking(BaseContract):
     def get_total_in_exit_queue(self) -> int:
         return self.contract.functions.getTotalInExitQueue().call()
 
-    def get_self_stake_requirement(self) -> int:
+    def self_stake_requirement(self) -> int:
         return self.contract.functions.selfStakeRequirement().call()
 
     @transaction_method

@@ -33,12 +33,13 @@ def test_register_active_node(fair, node_wallets):
     main_wallet = fair.wallet
     fair.wallet = node_wallets[0]
     ip, _, port, _ = generate_random_node_data()
+    self_stake_requirement = fair.staking.self_stake_requirement()
 
     with pytest.raises(ContractLogicError):
         fair.nodes.get_by_address(fair.wallet.address)
 
     active_node_ids_before = fair.nodes.get_active_node_ids()
-    fair.nodes.register_active(ip=ip, port=port)
+    fair.nodes.register_active(ip=ip, port=port, value=self_stake_requirement)
     active_node_ids_after = fair.nodes.get_active_node_ids()
 
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
@@ -218,8 +219,9 @@ def test_get_by_address(fair, node_wallets):
     main_wallet = fair.wallet
     fair.wallet = node_wallets[0]
     ip, _, port, _ = generate_random_node_data()
+    self_stake_requirement = fair.staking.self_stake_requirement()
 
-    fair.nodes.register_active(ip=ip, port=port)
+    fair.nodes.register_active(ip=ip, port=port, value=self_stake_requirement)
     node = fair.nodes.get_by_address(fair.wallet.address)
 
     assert node is not None

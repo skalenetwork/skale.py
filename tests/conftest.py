@@ -112,7 +112,8 @@ def fair_active_nodes(fair, node_wallets):
     for wallet in node_wallets:
         fair.wallet = wallet
         ip, _, port, _ = generate_random_node_data()
-        fair.nodes.register_active(ip=ip, port=port)
+        self_stake_requirement = fair.staking.self_stake_requirement()
+        fair.nodes.register_active(ip=ip, port=port, value=self_stake_requirement)
 
     fair.wallet = main_wallet
     try:
