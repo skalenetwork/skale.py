@@ -115,12 +115,41 @@ def test_staking_public_methods_present(fair):
     public_attrs = [
         'add_allowed_receiver',
         'remove_allowed_receiver',
-        'send_all_fees',
-        'claim_all_fees',
+        'request_send_all_fees',
+        'request_all_fees',
         'set_fee_rate',
-        'claim_fees',
-        'send_fees',
+        'request_fees',
+        'request_send_fees',
         'get_earned_fee_amount',
+        'request_retrieve',
+        'request_retrieve_all',
+        'claim_request',
+        'set_self_stake_requirement',
+        'set_retrieving_delay',
+        'get_total_in_exit_queue',
+        'get_retrieving_delay',
     ]
     for attr in public_attrs:
         assert hasattr(staking, attr)
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_self_stake_requirement_update(fair, fair_active_nodes):
+    staking = fair.staking
+    original = staking.self_stake_requirement()
+    assert isinstance(original, int)
+    new_value = original + 1 if original > 0 else 2
+    staking.set_self_stake_requirement(new_value)
+    updated = staking.self_stake_requirement()
+    assert updated == new_value
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_exit_queue_getters_initial(fair, fair_active_nodes):
+    staking = fair.staking
+    node_id = fair.nodes.get_by_address(fair_active_nodes[0].address).id
+    assert isinstance(staking.get_retrieving_delay(), int)
+    assert isinstance(staking.get_total_in_exit_queue(), int)
+    assert isinstance(staking.is_within_stake_limit(node_id), bool)
+    assert staking.get_my_exit_requests_count() >= 0
+    assert staking.get_my_total_in_exit_queue() >= 0

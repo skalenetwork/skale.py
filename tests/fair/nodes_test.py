@@ -33,12 +33,13 @@ def test_register_active_node(fair, node_wallets):
     main_wallet = fair.wallet
     fair.wallet = node_wallets[0]
     ip, _, port, _ = generate_random_node_data()
+    self_stake_requirement = fair.staking.self_stake_requirement()
 
     with pytest.raises(ContractLogicError):
         fair.nodes.get_by_address(fair.wallet.address)
 
     active_node_ids_before = fair.nodes.get_active_node_ids()
-    fair.nodes.register_active(ip=ip, port=port)
+    fair.nodes.register_active(ip=ip, port=port, value=self_stake_requirement)
     active_node_ids_after = fair.nodes.get_active_node_ids()
 
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
@@ -218,8 +219,9 @@ def test_get_by_address(fair, node_wallets):
     main_wallet = fair.wallet
     fair.wallet = node_wallets[0]
     ip, _, port, _ = generate_random_node_data()
+    self_stake_requirement = fair.staking.self_stake_requirement()
 
-    fair.nodes.register_active(ip=ip, port=port)
+    fair.nodes.register_active(ip=ip, port=port, value=self_stake_requirement)
     node = fair.nodes.get_by_address(fair.wallet.address)
 
     assert node is not None
@@ -240,6 +242,19 @@ def test_active_node_exists(fair, fair_active_nodes):
 
     assert fair.nodes.active_node_exists(node_id) is True
     assert fair.nodes.active_node_exists(999) is False
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_passive_node_exists_and_owner_request(fair, fair_passive_nodes):
+    node_id = fair.nodes.get_passive_node_ids_for_address(fair_passive_nodes[0].address)[0]
+    assert fair.nodes.passive_node_exists(node_id) is True
+    assert (
+        fair.nodes.get_owner_change_request(node_id) == '0x0000000000000000000000000000000000000000'
+    )
+
+
+def test_committee_contract_accessor(fair):
+    assert fair.nodes.committee_contract() == fair.committee.address
 
 
 def test_decode_public_key(fair):
@@ -268,3 +283,13 @@ def test_delete_node(fair, fair_passive_nodes):
     assert len(passive_node_ids_after) == len(passive_node_ids_before) - 1
 
     fair.wallet = main_wallet
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_delete_node_by_foundation(fair, fair_passive_nodes):
+    node_id = fair.nodes.get_passive_node_ids_for_address(fair_passive_nodes[0].address)[0]
+    before = fair.nodes.get_passive_node_ids()
+    assert node_id in before
+    fair.nodes.delete_node_by_foundation(node_id)
+    after = fair.nodes.get_passive_node_ids()
+    assert node_id not in after

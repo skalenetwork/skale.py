@@ -53,6 +53,15 @@ class Nodes(BaseContract):
     def active_node_exists(self, node_id: NodeId) -> bool:
         return self.contract.functions.activeNodeExists(node_id).call()
 
+    def passive_node_exists(self, node_id: NodeId) -> bool:
+        return self.contract.functions.passiveNodeExists(node_id).call()
+
+    def get_owner_change_request(self, node_id: NodeId) -> ChecksumAddress:
+        return self.contract.functions.ownerChangeRequests(node_id).call()
+
+    def committee_contract(self) -> ChecksumAddress:
+        return self.contract.functions.committeeContract().call()
+
     def _to_node(self, untyped_node: List[Any]) -> FairNode:
         return FairNode(
             id=untyped_node[0],
@@ -103,6 +112,10 @@ class Nodes(BaseContract):
     @transaction_method
     def delete_node(self, node_id: NodeId):
         return self.contract.functions.deleteNode(node_id)
+
+    @transaction_method
+    def delete_node_by_foundation(self, node_id: NodeId):
+        return self.contract.functions.deleteNodeByFoundation(node_id)
 
     def get_public_key(self, node_id: NodeId) -> HexStr:
         raw_public_key = self.contract.functions.getPublicKey(node_id).call()

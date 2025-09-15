@@ -45,7 +45,7 @@ class Staking(BaseContract):
         return self.contract.functions.getDelegatorsToNodeCount(node).call()
 
     def get_staked_amount(self) -> int:
-        return self.contract.functions.getStakedAmount().call()
+        return self.contract.functions.getStakedAmount().call({'from': self.skale.wallet.address})
 
     def get_staked_to_node_amount(self, node: NodeId) -> int:
         return self.contract.functions.getStakedToNodeAmount(node).call(
@@ -53,7 +53,7 @@ class Staking(BaseContract):
         )
 
     def get_staked_nodes(self) -> List[NodeId]:
-        return self.contract.functions.getStakedNodes().call()
+        return self.contract.functions.getStakedNodes().call({'from': self.skale.wallet.address})
 
     def get_earned_fee_amount(self, node: NodeId) -> int:
         return self.contract.functions.getEarnedFeeAmount(node).call()
@@ -67,33 +67,81 @@ class Staking(BaseContract):
     def get_staked_to_node_amount_for(self, node: NodeId, holder: ChecksumAddress) -> int:
         return self.contract.functions.getStakedToNodeAmountFor(node, holder).call()
 
+    def get_exit_requests_count_for(self, user: ChecksumAddress) -> int:
+        return self.contract.functions.getExitRequestsCountFor(user).call()
+
+    def get_my_total_in_exit_queue(self) -> int:
+        return self.contract.functions.getMyTotalInExitQueue().call(
+            {'from': self.skale.wallet.address}
+        )
+
+    def get_my_exit_requests_count(self) -> int:
+        return self.contract.functions.getMyExitRequestsCount().call(
+            {'from': self.skale.wallet.address}
+        )
+
+    def is_within_stake_limit(self, node: NodeId) -> bool:
+        return self.contract.functions.isWithinStakeLimit(node).call()
+
+    def get_exit_request(self, request_id: int):
+        return self.contract.functions.getExitRequest(request_id).call()
+
+    def get_unlocked_exit_request_for(self, user: ChecksumAddress, from_index: int):
+        return self.contract.functions.getUnlockedExitRequestFor(user, from_index).call()
+
+    def get_exit_request_at(self, user: ChecksumAddress, index: int):
+        return self.contract.functions.getExitRequestAt(user, index).call()
+
+    def is_request_unlocked(self, request_id: int) -> bool:
+        return self.contract.functions.isRequestUnlocked(request_id).call()
+
+    def get_retrieving_delay(self) -> int:
+        return self.contract.functions.getRetrievingDelay().call()
+
+    def get_total_in_exit_queue_for(self, user: ChecksumAddress) -> int:
+        return self.contract.functions.getTotalInExitQueueFor(user).call()
+
+    def get_total_in_exit_queue(self) -> int:
+        return self.contract.functions.getTotalInExitQueue().call()
+
+    def self_stake_requirement(self) -> int:
+        return self.contract.functions.selfStakeRequirement().call()
+
     @transaction_method
     def stake(self, node: NodeId):
         return self.contract.functions.stake(node)
 
     @transaction_method
-    def retrieve(self, node: NodeId, value: int):
-        return self.contract.functions.retrieve(node, value)
+    def request_retrieve(self, node: NodeId, value: int):
+        return self.contract.functions.requestRetrieve(node, value)
+
+    @transaction_method
+    def request_retrieve_all(self, node: NodeId):
+        return self.contract.functions.requestRetrieveAll(node)
 
     @transaction_method
     def set_fee_rate(self, fee_rate: int):
         return self.contract.functions.setFeeRate(fee_rate)
 
     @transaction_method
-    def claim_fees(self, node: NodeId, amount: int):
-        return self.contract.functions.claimFees(node, amount)
+    def request_fees(self, node: NodeId, amount: int):
+        return self.contract.functions.requestFees(node, amount)
 
     @transaction_method
-    def claim_all_fees(self, node: NodeId):
-        return self.contract.functions.claimAllFees(node)
+    def request_all_fees(self, node: NodeId):
+        return self.contract.functions.requestAllFees(node)
 
     @transaction_method
-    def send_fees(self, to: ChecksumAddress, amount: int):
-        return self.contract.functions.sendFees(to, amount)
+    def request_send_fees(self, to: ChecksumAddress, amount: int):
+        return self.contract.functions.requestSendFees(to, amount)
 
     @transaction_method
-    def send_all_fees(self, to: ChecksumAddress):
-        return self.contract.functions.sendAllFees(to)
+    def request_send_all_fees(self, to: ChecksumAddress):
+        return self.contract.functions.requestSendAllFees(to)
+
+    @transaction_method
+    def claim_request(self, request_id: int):
+        return self.contract.functions.claimRequest(request_id)
 
     @transaction_method
     def disable(self, node: NodeId):
@@ -118,6 +166,14 @@ class Staking(BaseContract):
     @transaction_method
     def set_reward_wallet_reference(self, reward_wallet_reference: ChecksumAddress):
         return self.contract.functions.setRewardWalletReference(reward_wallet_reference)
+
+    @transaction_method
+    def set_self_stake_requirement(self, amount: int):
+        return self.contract.functions.setSelfStakeRequirement(amount)
+
+    @transaction_method
+    def set_retrieving_delay(self, delay: int):
+        return self.contract.functions.setRetrievingDelay(delay)
 
     def get_reward_wallet(self, node: NodeId) -> ChecksumAddress:
         return self.contract.functions.getRewardWallet(node).call()
