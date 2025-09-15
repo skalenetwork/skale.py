@@ -242,6 +242,19 @@ def test_active_node_exists(fair, fair_active_nodes):
     assert fair.nodes.active_node_exists(999) is False
 
 
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_passive_node_exists_and_owner_request(fair, fair_passive_nodes):
+    node_id = fair.nodes.get_passive_node_ids_for_address(fair_passive_nodes[0].address)[0]
+    assert fair.nodes.passive_node_exists(node_id) is True
+    assert (
+        fair.nodes.get_owner_change_request(node_id) == '0x0000000000000000000000000000000000000000'
+    )
+
+
+def test_committee_contract_accessor(fair):
+    assert fair.nodes.committee_contract() == fair.committee.address
+
+
 def test_decode_public_key(fair):
     raw_public_key = [b'\x12\x34\x56\x78', b'\x9a\xbc\xde\xf0']
     decoded = fair.nodes.decode_public_key(raw_public_key)
@@ -268,3 +281,13 @@ def test_delete_node(fair, fair_passive_nodes):
     assert len(passive_node_ids_after) == len(passive_node_ids_before) - 1
 
     fair.wallet = main_wallet
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
+def test_delete_node_by_foundation(fair, fair_passive_nodes):
+    node_id = fair.nodes.get_passive_node_ids_for_address(fair_passive_nodes[0].address)[0]
+    before = fair.nodes.get_passive_node_ids()
+    assert node_id in before
+    fair.nodes.delete_node_by_foundation(node_id)
+    after = fair.nodes.get_passive_node_ids()
+    assert node_id not in after
