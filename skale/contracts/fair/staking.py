@@ -23,6 +23,7 @@ from eth_typing import ChecksumAddress
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.types.node import NodeId
+from skale.types.exit_request import ExitRequest, exit_request_from_tuple
 
 
 class Staking(BaseContract):
@@ -70,10 +71,8 @@ class Staking(BaseContract):
     def get_exit_requests_count_for(self, user: ChecksumAddress) -> int:
         return self.contract.functions.getExitRequestsCountFor(user).call()
 
-    def get_my_total_in_exit_queue(self) -> int:
-        return self.contract.functions.getMyTotalInExitQueue().call(
-            {'from': self.skale.wallet.address}
-        )
+    def get_total_in_exit_queue(self, address: ChecksumAddress) -> int:
+        return self.contract.functions.getTotalInExitQueueFor(address).call()
 
     def get_my_exit_requests_count(self) -> int:
         return self.contract.functions.getMyExitRequestsCount().call(
@@ -83,26 +82,27 @@ class Staking(BaseContract):
     def is_within_stake_limit(self, node: NodeId) -> bool:
         return self.contract.functions.isWithinStakeLimit(node).call()
 
-    def get_exit_request(self, request_id: int):
-        return self.contract.functions.getExitRequest(request_id).call()
+    def get_exit_request(self, request_id: int) -> ExitRequest:
+        data = self.contract.functions.getExitRequest(request_id).call()
+        return exit_request_from_tuple(data)
 
-    def get_unlocked_exit_request_for(self, user: ChecksumAddress, from_index: int):
-        return self.contract.functions.getUnlockedExitRequestFor(user, from_index).call()
+    def get_unlocked_exit_request_for(self, user: ChecksumAddress, from_index: int) -> ExitRequest:
+        data = self.contract.functions.getUnlockedExitRequestFor(user, from_index).call()
+        return exit_request_from_tuple(data)
 
-    def get_exit_request_at(self, user: ChecksumAddress, index: int):
-        return self.contract.functions.getExitRequestAt(user, index).call()
+    def get_exit_request_at(self, user: ChecksumAddress, index: int) -> ExitRequest:
+        data = self.contract.functions.getExitRequestAt(user, index).call()
+        return exit_request_from_tuple(data)
+
+    def get_exit_requests_for(self, address: ChecksumAddress) -> List[ExitRequest]:
+        count = self.get_exit_requests_count_for(address)
+        return [self.get_exit_request_at(address, i) for i in range(count)]
 
     def is_request_unlocked(self, request_id: int) -> bool:
         return self.contract.functions.isRequestUnlocked(request_id).call()
 
     def get_retrieving_delay(self) -> int:
         return self.contract.functions.getRetrievingDelay().call()
-
-    def get_total_in_exit_queue_for(self, user: ChecksumAddress) -> int:
-        return self.contract.functions.getTotalInExitQueueFor(user).call()
-
-    def get_total_in_exit_queue(self) -> int:
-        return self.contract.functions.getTotalInExitQueue().call()
 
     def self_stake_requirement(self) -> int:
         return self.contract.functions.selfStakeRequirement().call()
