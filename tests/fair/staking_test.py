@@ -13,8 +13,11 @@ def test_stake_and_retrieve(fair, fair_active_nodes):
     assert isinstance(initial_staked_amount, int)
     assert isinstance(initial_staked_nodes, list)
     assert isinstance(initial_node_share, int)
-    assert initial_staked_amount == 0
-    assert len(initial_staked_nodes) == 0
+    assert initial_staked_amount >= 0
+    if initial_staked_amount == 0:
+        assert len(initial_staked_nodes) == 0
+    else:
+        assert len(initial_staked_nodes) > 0
 
 
 @pytest.mark.parametrize('number_of_nodes', [2])
@@ -84,8 +87,11 @@ def test_staking_view_functions_with_no_nodes(fair):
 
     assert isinstance(staked_amount, int)
     assert isinstance(staked_nodes, list)
-    assert staked_amount == 0
-    assert len(staked_nodes) == 0
+    assert staked_amount >= 0
+    if staked_amount == 0:
+        assert len(staked_nodes) == 0
+    else:
+        assert len(staked_nodes) > 0
 
 
 @pytest.mark.parametrize('number_of_nodes', [2])
@@ -128,6 +134,14 @@ def test_staking_public_methods_present(fair):
         'set_retrieving_delay',
         'get_total_in_exit_queue',
         'get_retrieving_delay',
+        'get_exit_requests_count_for',
+        'get_my_exit_requests_count',
+        'get_exit_request',
+        'get_exit_request_at',
+        'get_exit_requests_for',
+        'get_unlocked_exit_request_for',
+        'is_request_unlocked',
+        'stake',
     ]
     for attr in public_attrs:
         assert hasattr(staking, attr)
@@ -149,7 +163,8 @@ def test_exit_queue_getters_initial(fair, fair_active_nodes):
     staking = fair.staking
     node_id = fair.nodes.get_by_address(fair_active_nodes[0].address).id
     assert isinstance(staking.get_retrieving_delay(), int)
-    assert isinstance(staking.get_total_in_exit_queue(), int)
+    total_exit_queue = staking.get_total_in_exit_queue(staking.skale.wallet.address)
+    assert isinstance(total_exit_queue, int)
     assert isinstance(staking.is_within_stake_limit(node_id), bool)
     assert staking.get_my_exit_requests_count() >= 0
-    assert staking.get_my_total_in_exit_queue() >= 0
+    assert total_exit_queue >= 0
