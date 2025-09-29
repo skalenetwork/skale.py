@@ -20,7 +20,7 @@ extras_require = {
         'Random-Word==1.0.4',
         'twine==6.2.0',
     ],
-    'hw-wallet': ['ledgerblue==0.1.47'],
+    'hw-wallet': ['ledgerblue==0.1.55'],
 }
 
 extras_require['dev'] = (
