@@ -7,20 +7,18 @@ from setuptools import (
 
 extras_require = {
     'linter': [
-        'ruff==0.12.2',
+        'ruff==0.13.2',
         'isort>=4.2.15,<5.4.3',
         'importlib-metadata<5.0',
     ],
     'dev': [
-        'bumpversion==0.6.0',
-        'click==7.1.2',
-        'freezegun==1.2.2',
-        'mock==4.0.2',
-        'pytest==8.4.1',
-        'pytest-cov==6.2.1',
+        'click==8.3.0',
+        'freezegun==1.5.5',
+        'mock==5.2.0',
+        'pytest==8.4.2',
+        'pytest-cov==7.0.0',
         'Random-Word==1.0.4',
-        'twine==6.1.0',
-        'when-changed',
+        'twine==6.2.0',
     ],
     'hw-wallet': ['ledgerblue==0.1.47'],
 }
@@ -32,7 +30,7 @@ extras_require['dev'] = (
 
 setup(
     name='skale.py',
-    version='7.4',
+    version='7.5',
     description='SKALE client tools',
     long_description_markdown_filename='README.md',
     author='SKALE Labs',
@@ -41,9 +39,9 @@ setup(
     include_package_data=True,
     install_requires=[
         'redis==6.4.0',
-        'sgx.py==0.10dev0',
+        'sgx.py==0.11dev0',
         'skale-contracts==2.0.0a6',
-        'typing-extensions==4.14.1',
+        'typing-extensions==4.15.0',
         'web3==7.13.0',
     ],
     python_requires='>=3.11,<4',
