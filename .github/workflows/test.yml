@@ -16,21 +16,21 @@ jobs:
       FAIR_TAG: "0.0.1-develop.71"
       MINING_INTERVAL: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
         with:
           cache: "pip"
-          python-version: 3.11
+          python-version: 3.13
 
       - name: Install python dependencies
         run: bash ./scripts/install_python_dependencies.sh
 
       - name: Lint with ruff
         run: ruff check skale/
-      
+
       - name: Launch hardhat node
         working-directory: hardhat-node
         run: |
@@ -46,7 +46,7 @@ jobs:
         run: |
           bash ./helper-scripts/deploy_allocator.sh
           docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
-      
+
       - name: Bootstrap fair-boot contracts
         if: ${{ matrix.component == 'fair' }}
         run: |
@@ -61,7 +61,7 @@ jobs:
           export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
           bash ./helper-scripts/deploy_fair.sh
           docker rmi -f skalenetwork/fair-manager:${{ env.FAIR_TAG }}
-  
+
       - name: Show stats before tests
         if: always()
         run: |
