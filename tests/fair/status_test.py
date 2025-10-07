@@ -50,6 +50,23 @@ def test_node_becomes_enabled_after_whitelist_and_heartbeat(fair, fair_active_no
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
+def test_calc_alive_gas_limit(fair, fair_active_nodes):
+    node = fair.nodes.get_by_address(fair_active_nodes[0].address)
+    node_id = node.id
+    fair.status.whitelist_node(node_id)
+    fair.staking.stake(node_id, value=10000)
+
+    main_wallet = fair.wallet
+    fair.wallet = fair_active_nodes[0]
+    alive_gas_limit = fair.status.calc_alive_gas_limit()
+    res = fair.status.alive(gas_limit=alive_gas_limit)
+    fair.wallet = main_wallet
+
+    tx = fair.web3.eth.get_transaction(res.tx_hash)
+    assert tx['gas'] == alive_gas_limit
+
+
+@pytest.mark.parametrize('number_of_nodes', [1])
 def test_get_whitelisted_nodes(fair, fair_active_nodes):
     node = fair.nodes.get_by_address(fair_active_nodes[0].address)
     node_id = node.id

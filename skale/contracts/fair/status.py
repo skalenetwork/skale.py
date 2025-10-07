@@ -17,13 +17,25 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+import math
+import logging
+import functools
 from skale.contracts.base_contract import BaseContract
 from skale.contracts.base_contract import transaction_method
+from skale.contracts.fair.nodes import Nodes
 from skale.types.node import NodeId
 from skale.types.committee import Timestamp
 
 
+logger = logging.getLogger(__name__)
+
+
 class Status(BaseContract):
+    @property
+    @functools.lru_cache()
+    def nodes(self) -> 'Nodes':
+        return self.skale.nodes
+
     def last_heartbeat_timestamp(self, node_id: NodeId) -> Timestamp:
         return self.contract.functions.lastHeartbeatTimestamp(node_id).call()
 
@@ -38,6 +50,21 @@ class Status(BaseContract):
 
     def is_whitelisted(self, node_id: NodeId) -> bool:
         return self.contract.functions.isWhitelisted(node_id).call()
+
+    def active_whitelisted_node_ids(self) -> list[NodeId]:
+        active_nodes = self.nodes.get_active_node_ids()
+        whitelisted_nodes = self.get_whitelisted_nodes()
+        return [node_id for node_id in active_nodes if node_id in whitelisted_nodes]
+
+    def calc_alive_gas_limit(self) -> int:
+        active_whitelisted_nodes = len(self.active_whitelisted_node_ids())
+        alive_gas_limit = 230000 * math.log(active_whitelisted_nodes + 15) + 420000
+        logger.info(
+            'alive_gas_limit: %s, active_whitelisted_nodes: %s',
+            alive_gas_limit,
+            active_whitelisted_nodes,
+        )
+        return alive_gas_limit
 
     @transaction_method
     def alive(self):
