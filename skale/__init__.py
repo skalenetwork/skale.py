@@ -7,5 +7,6 @@ from skale.skale_manager import SkaleManager
 from skale.skale_allocator import SkaleAllocator
 from skale.skale_ima import SkaleIma
 from skale.fair_manager import FairManager
+from skale.schain_ima import SchainIma
 
-__all__ = ['SkaleManager', 'SkaleAllocator', 'SkaleIma', 'FairManager']
+__all__ = ['SkaleManager', 'SkaleAllocator', 'SkaleIma', 'FairManager', 'SchainIma']
