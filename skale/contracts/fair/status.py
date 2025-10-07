@@ -52,9 +52,7 @@ class Status(BaseContract):
         return self.contract.functions.isWhitelisted(node_id).call()
 
     def active_whitelisted_node_ids(self) -> list[NodeId]:
-        active_nodes = self.nodes.get_active_node_ids()
-        whitelisted_nodes = self.get_whitelisted_nodes()
-        return [node_id for node_id in active_nodes if node_id in whitelisted_nodes]
+        return list(set(self.nodes.get_active_node_ids()) & set(self.get_whitelisted_nodes()))
 
     def calc_alive_gas_limit(self) -> int:
         active_whitelisted_nodes = len(self.active_whitelisted_node_ids())
