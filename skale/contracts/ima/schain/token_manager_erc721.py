@@ -19,9 +19,9 @@
 
 from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from skale.types.schain import SchainName
 
 
@@ -30,22 +30,22 @@ class TokenManagerERC721(BaseContract):
         return self.contract.functions.automaticDeploy().call()
 
     @transaction_method
-    def enable_automatic_deploy(self) -> TxRes:
+    def enable_automatic_deploy(self) -> ContractFunction:
         return self.contract.functions.enableAutomaticDeploy()
 
     @transaction_method
-    def add_erc721(self, schain_name: SchainName, token_mn: int, token_sc: int) -> TxRes:
+    def add_erc721(self, schain_name: SchainName, token_mn: int, token_sc: int) -> ContractFunction:
         return self.contract.functions.addERC721TokenByOwner(schain_name, token_mn, token_sc)
 
     @transaction_method
     def transfer_to_schain_erc721(
         self, schain_name: SchainName, address: ChecksumAddress, token_id: int
-    ) -> TxRes:
+    ) -> ContractFunction:
         """address - token address on origin chain"""
         return self.contract.functions.transferToSchainERC721(schain_name, address, token_id)
 
     @transaction_method
-    def disable_automatic_deploy(self) -> TxRes:
+    def disable_automatic_deploy(self) -> ContractFunction:
         return self.contract.functions.disableAutomaticDeploy()
 
     def automatic_deploy_role(self) -> bytes:
@@ -58,11 +58,11 @@ class TokenManagerERC721(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def exit_to_main_erc721(self, address: ChecksumAddress, token_id: int) -> TxRes:
+    def exit_to_main_erc721(self, address: ChecksumAddress, token_id: int) -> ContractFunction:
         return self.contract.functions.exitToMainERC721(address, token_id)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     def get_role_member(self, role: bytes, index: int) -> bytes:

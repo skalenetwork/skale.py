@@ -24,7 +24,6 @@ from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.ima_contract import ImaContract
-from skale.transactions.result import TxRes
 from skale.types.schain import SchainName
 
 
@@ -42,5 +41,5 @@ class Linker(ImaContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)

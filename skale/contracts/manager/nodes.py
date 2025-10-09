@@ -22,7 +22,7 @@ import socket
 from typing import Any, Dict, List, Tuple, cast
 
 from Crypto.Hash import keccak
-from eth_typing import BlockNumber, ChecksumAddress
+from eth_typing import BlockNumber, ChecksumAddress, HexStr
 from web3.contract.contract import ContractFunction
 from web3.exceptions import BadFunctionCallOutput, ContractLogicError
 
@@ -210,7 +210,7 @@ class Nodes(SkaleManagerContract):
                 'finish_time': int(untyped_node['finish_time']),
                 'status': NodeStatus(untyped_node['status']),
                 'validator_id': ValidatorId(untyped_node['validator_id']),
-                'publicKey': str(untyped_node['publicKey']),
+                'publicKey': HexStr(untyped_node['publicKey']),
                 'domain_name': str(untyped_node['domain_name']),
             }
         )

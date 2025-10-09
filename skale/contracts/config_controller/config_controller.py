@@ -18,9 +18,9 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 
 
 class ConfigController(BaseContract):
@@ -67,60 +67,66 @@ class ConfigController(BaseContract):
         )
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     @transaction_method
-    def add_allowed_origin_role_admin(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def add_allowed_origin_role_admin(
+        self, role: bytes, address: ChecksumAddress
+    ) -> ContractFunction:
         return self.contract.functions.addAllowedOriginRoleAdmin(role, address)
 
     @transaction_method
-    def allow_origin(self, transaction_origin: ChecksumAddress, deployer: ChecksumAddress) -> TxRes:
+    def allow_origin(
+        self, transaction_origin: ChecksumAddress, deployer: ChecksumAddress
+    ) -> ContractFunction:
         return self.contract.functions.allowOrigin(transaction_origin, deployer)
 
     @transaction_method
-    def add_to_whitelist(self, address: ChecksumAddress) -> TxRes:
+    def add_to_whitelist(self, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.addToWhitelist(address)
 
     @transaction_method
-    def revoke_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def revoke_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.revokeRole(role, address)
 
     @transaction_method
-    def renounce_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def renounce_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.renounceRole(role, address)
 
     @transaction_method
-    def remove_allowed_origin_role_admin(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def remove_allowed_origin_role_admin(
+        self, role: bytes, address: ChecksumAddress
+    ) -> ContractFunction:
         return self.contract.functions.removeAllowedOriginRoleAdmin(role, address)
 
     @transaction_method
     def forbid_origin(
         self, transaction_origin: ChecksumAddress, deployer: ChecksumAddress
-    ) -> TxRes:
+    ) -> ContractFunction:
         return self.contract.functions.forbidOrigin(transaction_origin, deployer)
 
     @transaction_method
-    def remove_from_whitelist(self, address: ChecksumAddress) -> TxRes:
+    def remove_from_whitelist(self, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.removeFromWhitelist(address)
 
     @transaction_method
-    def enable_free_contract_deployment(self) -> TxRes:
+    def enable_free_contract_deployment(self) -> ContractFunction:
         return self.contract.functions.enableFreeContractDeployment()
 
     @transaction_method
-    def disable_free_contract_deployment(self) -> TxRes:
+    def disable_free_contract_deployment(self) -> ContractFunction:
         return self.contract.functions.disableFreeContractDeployment()
 
     def is_fcd_enabled(self) -> str:
         return self.contract.functions.isFCDEnabled().call()
 
     @transaction_method
-    def enable_mtm(self) -> TxRes:
+    def enable_mtm(self) -> ContractFunction:
         return self.contract.functions.enableMTM()
 
     @transaction_method
-    def disable_mtm(self) -> TxRes:
+    def disable_mtm(self) -> ContractFunction:
         return self.contract.functions.disableMTM()
 
     def is_mtm_enabled(self) -> str:
@@ -130,5 +136,5 @@ class ConfigController(BaseContract):
         return self.contract.functions.version().call()
 
     @transaction_method
-    def set_version(self, new_version) -> TxRes:
+    def set_version(self, new_version) -> ContractFunction:
         return self.contract.functions.setVersion(new_version)

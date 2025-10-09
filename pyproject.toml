@@ -33,7 +33,7 @@ linter = [
     "isort>=4.2.15,<5.4.3",
     "importlib-metadata<5.0",
 ]
-hw-wallet = ["ledgerblue==0.1.47"]
+hw-wallet = ["ledgerblue==0.1.55"]
 dev = [
     "skale.py[linter,hw-wallet]",
     "click==8.3.0",

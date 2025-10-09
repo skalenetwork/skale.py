@@ -18,20 +18,20 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 
 
 class TokenManagerLinker(BaseContract):
     """Linker"""
 
     @transaction_method
-    def connect_schain(self, schain_name) -> TxRes:
+    def connect_schain(self, schain_name) -> ContractFunction:
         return self.contract.functions.connectSchain(schain_name)
 
     @transaction_method
-    def disconnect_schain(self, schain_name) -> TxRes:
+    def disconnect_schain(self, schain_name) -> ContractFunction:
         return self.contract.functions.disconnectSchain(schain_name)
 
     def has_schain(self, schian_name) -> bool:
@@ -44,5 +44,5 @@ class TokenManagerLinker(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)

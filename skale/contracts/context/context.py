@@ -18,9 +18,9 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 
 
 class Context(BaseContract):
@@ -33,7 +33,7 @@ class Context(BaseContract):
         return self.contract.functions.getSchainOwnerAddress().call()
 
     @transaction_method
-    def set_schain_owner_address(self, newOwner: ChecksumAddress) -> TxRes:
+    def set_schain_owner_address(self, newOwner: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.setSchainOwnerAddress(newOwner)
 
     def get_version(self) -> str:

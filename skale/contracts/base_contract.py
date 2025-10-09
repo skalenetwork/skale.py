@@ -20,7 +20,7 @@
 
 import logging
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar, cast
 
 from skale_contracts.types import ContractName
 from web3 import Web3
@@ -146,4 +146,5 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
             tx_res.raise_for_status()
         return tx_res
 
-    return wrapper
+    # return wrapper
+    return cast(Callable[..., TxRes], wrapper)

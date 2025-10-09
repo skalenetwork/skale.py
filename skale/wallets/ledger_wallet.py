@@ -31,6 +31,7 @@ from eth_account._utils.legacy_transactions import (
 )
 from eth_account.datastructures import SignedMessage, SignedTransaction
 from eth_account.typed_transactions.typed_transaction import TypedTransaction
+from eth_account.types import TransactionDictType
 from eth_typing import ChecksumAddress, HexStr
 from eth_utils.crypto import keccak
 from hexbytes import HexBytes
@@ -130,7 +131,7 @@ class LedgerWallet(BaseWallet):
         items = {'address': self.address, 'public_key': self.public_key}
         return items[key]
 
-    def make_payload(self, data: str = '') -> bytes:
+    def make_payload(self, data='') -> bytes:
         encoded_data = cast(bytes, encode(data))
         path_prefix = derivation_path_prefix(self._bip32_path)
         return path_prefix + encoded_data
@@ -174,7 +175,7 @@ class LedgerWallet(BaseWallet):
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = self._web3.eth.get_transaction_count(self.address)
 
-        tx = tx_from_dict(tx_dict)
+        tx = tx_from_dict(cast(TransactionDictType, tx_dict))
         try:
             payload = self.make_payload(tx)
             exchange_result = self.exchange_sign_payload_by_chunks(payload)
