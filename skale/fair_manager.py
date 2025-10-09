@@ -19,16 +19,16 @@
 
 from functools import cached_property
 
-from skale.skale_base import SkaleBase
-from skale_contracts.projects.fair_manager import FairManagerContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.fair_manager import FairManagerContract
 
-from skale.contracts.fair.nodes import Nodes
+from skale.contracts.fair.access_manager import AccessManager
 from skale.contracts.fair.committee import Committee
 from skale.contracts.fair.dkg import DKG
-from skale.contracts.fair.access_manager import AccessManager
-from skale.contracts.fair.status import Status
+from skale.contracts.fair.nodes import Nodes
 from skale.contracts.fair.staking import Staking
+from skale.contracts.fair.status import Status
+from skale.skale_base import SkaleBase
 
 
 class FairManager(SkaleBase):

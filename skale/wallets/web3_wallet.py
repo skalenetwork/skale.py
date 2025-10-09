@@ -18,24 +18,25 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import cast
-from eth_keys.main import lazy_key_api as keys
-from eth_keys.datatypes import PublicKey
-from web3 import Web3
-from web3.types import _Hash32, TxParams, TxReceipt
+
 from eth_account import messages
 from eth_account.datastructures import SignedMessage, SignedTransaction
+from eth_keys.datatypes import PublicKey
+from eth_keys.main import lazy_key_api as keys
 from eth_typing import AnyAddress, ChecksumAddress, HexStr
+from web3 import Web3
 from web3.exceptions import Web3Exception
+from web3.types import TxParams, TxReceipt, _Hash32
 
 import skale.config as config
-from skale.transactions.exceptions import TransactionNotSignedError, TransactionNotSentError
+from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     MAX_WAITING_TIME,
     get_eth_nonce,
     wait_for_receipt_by_blocks,
 )
-from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
+from skale.wallets.common import BaseWallet, MessageNotSignedError, ensure_chain_id
 
 
 def private_key_to_public(pr: HexStr) -> PublicKey:

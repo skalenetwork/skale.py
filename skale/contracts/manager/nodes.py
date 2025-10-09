@@ -27,7 +27,6 @@ from web3.contract.contract import ContractFunction
 from web3.exceptions import BadFunctionCallOutput, ContractLogicError
 
 from skale.contracts.base_contract import transaction_method
-
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import Node, NodeId, NodeStatus, Port
 from skale.types.validator import ValidatorId

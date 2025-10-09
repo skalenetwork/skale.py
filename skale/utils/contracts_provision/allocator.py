@@ -19,25 +19,25 @@
 
 from time import sleep
 
+from web3._utils.filters import LogFilter
 from web3.contract.contract import ContractEvent
 from web3.types import LogReceipt, Wei
-from web3._utils.filters import LogFilter
 
 from skale.skale_allocator import SkaleAllocator
 from skale.skale_manager import SkaleManager
 from skale.utils.account_tools import send_tokens
 from skale.utils.contracts_provision import (
-    TEST_SKALE_AMOUNT,
-    TEST_VESTING_CLIFF,
-    TEST_TOTAL_VESTING_DURATION,
-    TEST_VESTING_INTERVAL_TIME_UNIT,
-    TEST_VESTING_INTERVAL,
-    TEST_CAN_DELEGATE,
-    TEST_IS_TERMINATABLE,
     POLL_INTERVAL,
-    TEST_START_MONTH,
+    TEST_CAN_DELEGATE,
     TEST_FULL_AMOUNT,
+    TEST_IS_TERMINATABLE,
     TEST_LOCKUP_AMOUNT,
+    TEST_SKALE_AMOUNT,
+    TEST_START_MONTH,
+    TEST_TOTAL_VESTING_DURATION,
+    TEST_VESTING_CLIFF,
+    TEST_VESTING_INTERVAL,
+    TEST_VESTING_INTERVAL_TIME_UNIT,
 )
 from skale.wallets.common import BaseWallet
 

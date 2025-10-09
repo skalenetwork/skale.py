@@ -2,6 +2,7 @@
 
 import os
 from decimal import Decimal
+
 from eth_typing import HexStr
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))

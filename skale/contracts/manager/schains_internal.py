@@ -30,6 +30,7 @@ from skale.types.schain import Schain, SchainHash, SchainName
 
 if TYPE_CHECKING:
     from web3.contract.contract import ContractFunction
+
     from skale.contracts.manager.schains import SChains
 
 

@@ -19,11 +19,11 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.etherbase import EtherbaseContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.etherbase import EtherbaseContract
 
-from skale.skale_base import SkaleBase
 from skale.contracts.etherbase.etherbase import Etherbase
+from skale.skale_base import SkaleBase
 
 
 class SkaleEtherbase(SkaleBase):

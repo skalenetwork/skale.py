@@ -21,23 +21,24 @@ import logging
 import struct
 from typing import Generator, Tuple, cast
 
-from eth_typing import ChecksumAddress, HexStr
-from hexbytes import HexBytes
-from eth_account.datastructures import SignedMessage, SignedTransaction
 from eth_account._utils.legacy_transactions import (
-    encode_transaction,
-    serializable_unsigned_transaction_from_dict as tx_from_dict,
     Transaction,
     UnsignedTransaction,
+    encode_transaction,
 )
+from eth_account._utils.legacy_transactions import (
+    serializable_unsigned_transaction_from_dict as tx_from_dict,
+)
+from eth_account.datastructures import SignedMessage, SignedTransaction
 from eth_account.typed_transactions.typed_transaction import TypedTransaction
-
+from eth_typing import ChecksumAddress, HexStr
 from eth_utils.crypto import keccak
+from hexbytes import HexBytes
 from rlp import encode
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.exceptions import Web3Exception
-from web3.types import _Hash32, TxParams, TxReceipt
+from web3.types import TxParams, TxReceipt, _Hash32
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError

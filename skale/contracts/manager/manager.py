@@ -27,11 +27,11 @@ from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
+from skale.dataclasses.schain_options import SchainOptions, get_default_schain_options
+from skale.transactions.result import TxRes
 from skale.types.node import NodeId, Port
 from skale.types.schain import SchainName
 from skale.utils import helper
-from skale.transactions.result import TxRes
-from skale.dataclasses.schain_options import SchainOptions, get_default_schain_options
 
 logger = logging.getLogger(__name__)
 

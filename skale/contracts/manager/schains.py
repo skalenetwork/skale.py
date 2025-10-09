@@ -33,17 +33,17 @@ from skale.contracts.base_contract import transaction_method
 from skale.contracts.manager.node_rotation import NodeRotation
 from skale.contracts.manager.schains_internal import SChainsInternal
 from skale.contracts.skale_manager_contract import SkaleManagerContract
+from skale.dataclasses.schain_options import (
+    SchainOptions,
+    get_default_schain_options,
+    parse_schain_options,
+)
 from skale.types.node import NodeId
 from skale.types.schain import (
     SchainHash,
     SchainName,
     SchainStructure,
     SchainStructureWithStatus,
-)
-from skale.dataclasses.schain_options import (
-    SchainOptions,
-    get_default_schain_options,
-    parse_schain_options,
 )
 
 

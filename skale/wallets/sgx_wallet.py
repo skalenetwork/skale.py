@@ -25,7 +25,7 @@ from eth_typing import ChecksumAddress, HexStr
 from sgx import SgxClient
 from web3 import Web3
 from web3.exceptions import Web3Exception
-from web3.types import _Hash32, TxParams, TxReceipt
+from web3.types import TxParams, TxReceipt, _Hash32
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
@@ -35,8 +35,7 @@ from skale.utils.web3_utils import (
     get_eth_nonce,
     wait_for_receipt_by_blocks,
 )
-from skale.wallets.common import BaseWallet, ensure_chain_id, MessageNotSignedError
-
+from skale.wallets.common import BaseWallet, MessageNotSignedError, ensure_chain_id
 
 logger = logging.getLogger(__name__)
 

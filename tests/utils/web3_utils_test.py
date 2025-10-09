@@ -1,16 +1,15 @@
 import importlib
 import os
 from datetime import datetime
+from unittest import mock
 
 import pytest
-from unittest import mock
 from freezegun import freeze_time
-
 from web3.exceptions import StaleBlockchain
+
+import skale.config as config
 from skale.utils.exceptions import NoSyncedEndpointError
 from skale.utils.web3_utils import get_endpoint
-import skale.config as config
-
 from tests.constants import ENDPOINT
 
 

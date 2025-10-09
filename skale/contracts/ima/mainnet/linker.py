@@ -18,12 +18,13 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import List
+
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
-from skale.transactions.result import TxRes
 from skale.contracts.ima_contract import ImaContract
+from skale.transactions.result import TxRes
 from skale.types.schain import SchainName
 
 

@@ -1,9 +1,8 @@
 """SKALE chain test"""
 
+import pytest
 from hexbytes import HexBytes
 from web3 import Web3
-
-import pytest
 
 from skale.contracts.manager.schains import SchainStructure
 from skale.dataclasses.schain_options import AllocationType, SchainOptions
@@ -11,12 +10,11 @@ from skale.utils.contracts_provision.fake_multisig_contract import (
     FAKE_MULTISIG_DATA_PATH,
 )
 from skale.utils.contracts_provision.main import (
-    generate_random_schain_data,
     create_schain,
+    generate_random_schain_data,
 )
 from skale.utils.helper import get_abi
 from skale.wallets.web3_wallet import generate_wallet
-
 from tests.constants import (
     DEFAULT_NODE_NAME,
     DEFAULT_SCHAIN_ID,

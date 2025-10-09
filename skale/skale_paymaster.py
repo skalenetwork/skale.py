@@ -19,11 +19,11 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.paymaster import PaymasterContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.paymaster import PaymasterContract
 
-from skale.skale_base import SkaleBase
 from skale.contracts.paymaster.paymaster import Paymaster
+from skale.skale_base import SkaleBase
 
 
 class SkalePaymaster(SkaleBase):

@@ -1,18 +1,18 @@
 """SKALE main test"""
 
-import pytest
-from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
 from functools import cached_property
 
+import pytest
 from skale_contracts.projects.skale_manager import SkaleManagerContract
+from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
 
 from skale import SkaleManager
-from skale.utils.helper import get_skale_manager_address
-from skale.wallets import Web3Wallet
-from skale.utils.web3_utils import init_web3
 from skale.contracts.base_contract import BaseContract
 from skale.contracts.manager.nodes import Nodes
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY
+from skale.utils.helper import get_skale_manager_address
+from skale.utils.web3_utils import init_web3
+from skale.wallets import Web3Wallet
+from tests.constants import ENDPOINT, ETH_PRIVATE_KEY, TEST_ABI_FILEPATH
 
 ALLOWED_SKIP_TIME_GAP = 10
 MANAGER_CONTRACTS_NUMBER = 21

@@ -7,4 +7,4 @@ export ENDPOINT=${ENDPOINT:-http://localhost:8545}
 export FAIR_CONTRACTS=$(bash $PROJECT_DIR/helper-scripts/helper.sh fair_address)
 
 echo "Running Fair tests with contracts at $FAIR_CONTRACTS"
-pytest $PROJECT_DIR/tests/fair
+uv run pytest $PROJECT_DIR/tests/fair

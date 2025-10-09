@@ -29,7 +29,6 @@ from skale.types.delegation import Delegation, DelegationId, DelegationStatus, F
 from skale.types.validator import ValidatorId
 from skale.utils.helper import format_fields
 
-
 FIELDS = [
     'address',
     'validator_id',

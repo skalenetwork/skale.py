@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass
+
 from skale.dataclasses.skaled_ports import SkaledPorts
 from skale.types.node import NodeId, Port
 

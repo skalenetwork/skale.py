@@ -6,10 +6,10 @@
 set -e
 
 if [ "$TEST" = 1 ]; then
-    twine upload --repository testpypi dist/*
+    uv publish --publish-url https://test.pypi.org/legacy/ dist/*
 else
     echo "Uploading to pypi"
-    twine upload -u $PIP_USERNAME -p $PIP_PASSWORD dist/*
+    uv publish --username $PIP_USERNAME --password $PIP_PASSWORD dist/*
 fi
 
 echo "==================================================================="

@@ -19,20 +19,20 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.ima import SchainImaContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.ima import SchainImaContract
 
-from skale.skale_base import SkaleBase
+from skale.contracts.ima.schain.community_locker import CommunityLocker
 from skale.contracts.ima.schain.message_proxy_for_schain import MessageProxyForSchain
-from skale.contracts.ima.schain.token_manager_linker import TokenManagerLinker
-from skale.contracts.ima.schain.token_manager_eth import TokenManagerETH
 from skale.contracts.ima.schain.token_manager_erc20 import TokenManagerERC20
 from skale.contracts.ima.schain.token_manager_erc721 import TokenManagerERC721
 from skale.contracts.ima.schain.token_manager_erc721_wmt import (
     TokenManagerERC721WithMetadata,
 )
 from skale.contracts.ima.schain.token_manager_erc1155 import TokenManagerERC1155
-from skale.contracts.ima.schain.community_locker import CommunityLocker
+from skale.contracts.ima.schain.token_manager_eth import TokenManagerETH
+from skale.contracts.ima.schain.token_manager_linker import TokenManagerLinker
+from skale.skale_base import SkaleBase
 
 
 class SchainIma(SkaleBase):

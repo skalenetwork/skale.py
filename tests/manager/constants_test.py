@@ -1,9 +1,9 @@
-import pytest
 import random
 
+import pytest
 
-from tests.constants import NEW_REWARD_PERIOD, NEW_DELTA_PERIOD
 from skale.transactions.result import DryRunRevertError
+from tests.constants import NEW_DELTA_PERIOD, NEW_REWARD_PERIOD
 
 
 def test_get_set_periods(skale):

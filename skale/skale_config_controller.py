@@ -19,11 +19,11 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.config_controller import ConfigControllerContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.config_controller import ConfigControllerContract
 
-from skale.skale_base import SkaleBase
 from skale.contracts.config_controller.config_controller import ConfigController
+from skale.skale_base import SkaleBase
 
 
 class SkaleConfigController(SkaleBase):

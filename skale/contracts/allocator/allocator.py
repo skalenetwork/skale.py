@@ -29,15 +29,14 @@ from web3.types import Wei
 from skale.contracts.allocator_contract import AllocatorContract
 from skale.contracts.base_contract import transaction_method
 from skale.types.allocation import (
-    BeneficiaryStatus,
     BeneficiaryPlan,
+    BeneficiaryStatus,
     Plan,
     PlanId,
     PlanWithId,
     TimeUnit,
 )
 from skale.utils.helper import format_fields
-
 
 PLAN_FIELDS = [
     'totalVestingDuration',

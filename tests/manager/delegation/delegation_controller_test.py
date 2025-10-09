@@ -8,15 +8,14 @@ from skale.transactions.result import DryRunRevertError
 from skale.types.delegation import DelegationStatus
 from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision.utils import generate_random_name
-
 from tests.constants import (
-    NOT_EXISTING_ID,
-    D_DELEGATION_INFO,
-    D_VALIDATOR_ID,
     D_DELEGATION_AMOUNT,
+    D_DELEGATION_INFO,
     D_DELEGATION_PERIOD,
+    D_VALIDATOR_ID,
     DELEGATION_STRUCT_LEN,
     MONTH_IN_SECONDS,
+    NOT_EXISTING_ID,
 )
 
 

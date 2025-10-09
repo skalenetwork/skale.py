@@ -1,22 +1,20 @@
 """SKALE manager test"""
 
 import random
-
 from unittest import mock
+from unittest.mock import Mock
+
 import pytest
 import web3
 from hexbytes import HexBytes
-from unittest.mock import Mock
 
-from skale.wallets.web3_wallet import generate_wallet
 from skale.transactions.result import DryRunRevertError, TransactionFailedError
-
+from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 from skale.utils.contracts_provision.main import (
     generate_random_node_data,
     generate_random_schain_data,
 )
-from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
-
+from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import TEST_GAS_LIMIT
 
 

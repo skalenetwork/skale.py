@@ -17,15 +17,14 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import math
-import logging
 import functools
-from skale.contracts.base_contract import BaseContract
-from skale.contracts.base_contract import transaction_method
-from skale.contracts.fair.nodes import Nodes
-from skale.types.node import NodeId
-from skale.types.committee import Timestamp
+import logging
+import math
 
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.fair.nodes import Nodes
+from skale.types.committee import Timestamp
+from skale.types.node import NodeId
 
 logger = logging.getLogger(__name__)
 

@@ -18,13 +18,12 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from collections import namedtuple
+from enum import Enum
 from typing import List, NamedTuple, NewType, Tuple
 
 from eth_typing import HexStr
-from enum import Enum
 
 from skale.types.node import NodeId
-
 
 Fp2Point = namedtuple('Fp2Point', ['a', 'b'])
 DkgId = NewType('DkgId', int)

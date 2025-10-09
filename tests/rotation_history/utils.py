@@ -6,8 +6,8 @@ import os
 
 from skale.contracts.manager.nodes import NodeStatus
 from skale.types.dkg import Fp2Point, G2Point, KeyShare
-from skale.utils.contracts_provision.main import _skip_evm_time
 from skale.utils.contracts_provision.fair import set_up_nodes
+from skale.utils.contracts_provision.main import _skip_evm_time
 
 logger = logging.getLogger(__name__)
 

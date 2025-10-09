@@ -1,19 +1,20 @@
 from unittest import mock
+
 import pytest
 from hexbytes import HexBytes
-from skale.wallets.sgx_wallet import (
-    SgxWallet,
-    TransactionNotSentError,
-    TransactionNotSignedError,
-    MessageNotSignedError,
-)
+
 from skale.utils.web3_utils import (
     init_web3,
     private_key_to_address,
     private_key_to_public,
     to_checksum_address,
 )
-
+from skale.wallets.sgx_wallet import (
+    MessageNotSignedError,
+    SgxWallet,
+    TransactionNotSentError,
+    TransactionNotSignedError,
+)
 from tests.constants import ENDPOINT, ETH_PRIVATE_KEY, TEST_SGX_ENDPOINT
 from tests.wallets.utils import BadSgxClient, SgxClient
 

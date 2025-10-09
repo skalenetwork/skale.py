@@ -1,22 +1,22 @@
 """Tests for contracts/delegation/validator_service.py"""
 
 import random
+
 import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
+from skale.transactions.exceptions import TransactionNotSentError
 from skale.transactions.result import DryRunRevertError
 from skale.utils.account_tools import send_eth
-from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.main import _skip_evm_time, enable_validator
-from skale.transactions.exceptions import TransactionNotSentError
-
+from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import (
     D_DELEGATION_PERIOD,
-    D_VALIDATOR_ID,
-    D_VALIDATOR_NAME,
     D_VALIDATOR_DESC,
     D_VALIDATOR_FEE,
+    D_VALIDATOR_ID,
     D_VALIDATOR_MIN_DEL,
+    D_VALIDATOR_NAME,
     MONTH_IN_SECONDS,
     NOT_EXISTING_ID,
 )

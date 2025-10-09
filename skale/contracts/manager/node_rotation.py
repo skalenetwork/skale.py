@@ -19,16 +19,16 @@
 """NodeRotation.sol functions"""
 
 from __future__ import annotations
-import logging
+
 import functools
+import logging
 from typing import TYPE_CHECKING, List
 
 from eth_typing import ChecksumAddress
-
-from skale.contracts.base_contract import transaction_method
 from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError
 
+from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.rotation import Rotation, RotationSwap

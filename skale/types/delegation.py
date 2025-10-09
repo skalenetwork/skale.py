@@ -25,7 +25,6 @@ from web3.types import Wei
 
 from skale.types.validator import ValidatorId
 
-
 DelegationId = NewType('DelegationId', int)
 
 

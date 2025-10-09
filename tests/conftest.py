@@ -1,35 +1,32 @@
 """SKALE config test"""
 
-import pytest
 from unittest import mock
+
+import pytest
 from web3.auto import w3
 
 from skale import SkaleManager
-
 from skale.utils.account_tools import generate_account, send_eth
+from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
 from skale.utils.contracts_provision.main import (
-    add_test_permissions,
     add_test2_schain_type,
+    add_test_permissions,
     cleanup_nodes,
     cleanup_schains,
     create_nodes,
     create_schain,
     link_nodes_to_validator,
-    setup_validator,
-)
-from skale.utils.contracts_provision.main import (
     set_automining,
     set_default_mining_interval,
     set_mining_interval,
+    setup_validator,
 )
-from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
+from skale.utils.contracts_provision.utils import generate_random_node_data
 from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
-
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
-from tests.helper import init_skale, init_skale_allocator, init_fair
-from skale.utils.contracts_provision.utils import generate_random_node_data
+from tests.helper import init_fair, init_skale, init_skale_allocator
 
 ETH_AMOUNT_PER_NODE = 1
 

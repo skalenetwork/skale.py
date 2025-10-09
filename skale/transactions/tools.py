@@ -21,13 +21,13 @@
 import logging
 import time
 from functools import partial, wraps
-from typing import Any, Callable, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 from eth_typing import ChecksumAddress
 from web3 import Web3
+from web3._utils.transactions import get_block_gas_limit
 from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError, Web3Exception
-from web3._utils.transactions import get_block_gas_limit
 from web3.types import Nonce, TxParams, Wei
 
 import skale.config as config
