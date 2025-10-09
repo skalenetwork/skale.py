@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION=$(python setup.py --version)
+VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
 USAGE_MSG='Usage: BRANCH=[BRANCH] calculate_version.sh'
 
 if [ -z "$BRANCH" ]
