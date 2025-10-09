@@ -7,4 +7,4 @@ PROJECT_DIR=$(dirname $DIR)
 export ENDPOINT=${ENDPOINT:-http://localhost:8545}
 export ENV=test
 
-py.test $PROJECT_DIR/tests/ima  $@
+uv run pytest $PROJECT_DIR/tests/ima  $@

@@ -18,8 +18,9 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from skale.types.schain import SchainName
 
 
@@ -27,13 +28,15 @@ class DepositBoxERC1155(BaseContract):
     """Class deposit"""
 
     @transaction_method
-    def add_erc1155_token(self, schain_name: SchainName, address: ChecksumAddress) -> TxRes:
+    def add_erc1155_token(
+        self, schain_name: SchainName, address: ChecksumAddress
+    ) -> ContractFunction:
         return self.contract.functions.addERC1155TokenByOwner(schain_name, address)
 
     @transaction_method
     def deposit_erc1155(
         self, schain_name: SchainName, address: ChecksumAddress, token_id: int, amount: int
-    ) -> TxRes:
+    ) -> ContractFunction:
         """Deposit ERC1155"""
         return self.contract.functions.depositERC1155(schain_name, address, token_id, amount)
 
@@ -45,7 +48,7 @@ class DepositBoxERC1155(BaseContract):
         token_id: int,
         amount: int,
         receiver: int,
-    ) -> TxRes:
+    ) -> ContractFunction:
         """Direct deposit ERC1155"""
         return self.contract.functions.depositERC1155Direct(
             schain_name, address, token_id, amount, receiver
@@ -54,7 +57,7 @@ class DepositBoxERC1155(BaseContract):
     @transaction_method
     def deposit_erc1155_batch(
         self, schain_name: SchainName, address: ChecksumAddress, ids: list, amount: list
-    ) -> TxRes:
+    ) -> ContractFunction:
         return self.contract.functions.depositERC1155Batch(schain_name, address, ids, amount)
 
     def get_schain_to_erc1155(

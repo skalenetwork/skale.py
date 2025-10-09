@@ -19,20 +19,20 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.ima import MainnetImaContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.ima import MainnetImaContract
 
-from skale.skale_base import SkaleBase
-from skale.contracts.ima.mainnet.message_proxy_for_mainnet import MessageProxyForMainnet
-from skale.contracts.ima.mainnet.linker import Linker
 from skale.contracts.ima.mainnet.community_pool import CommunityPool
-from skale.contracts.ima.mainnet.deposit_box_eth import DepositBoxEth
 from skale.contracts.ima.mainnet.deposit_box_erc20 import DepositBoxERC20
 from skale.contracts.ima.mainnet.deposit_box_erc721 import DepositBoxERC721
 from skale.contracts.ima.mainnet.deposit_box_erc721_wmt import (
     DepositBoxERC721WithMetadata,
 )
 from skale.contracts.ima.mainnet.deposit_box_erc1155 import DepositBoxERC1155
+from skale.contracts.ima.mainnet.deposit_box_eth import DepositBoxEth
+from skale.contracts.ima.mainnet.linker import Linker
+from skale.contracts.ima.mainnet.message_proxy_for_mainnet import MessageProxyForMainnet
+from skale.skale_base import SkaleBase
 
 
 class SkaleIma(SkaleBase):

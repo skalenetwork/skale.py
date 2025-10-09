@@ -18,11 +18,12 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 import random
+
 from skale.utils.random_names.vocabulary import (
     CONSTELLATIONS,
-    STARS,
-    SOUND_AND_APPEARANCE_ADJECTIVES,
     POSITIVE_AND_TIME_ADJECTIVES,
+    SOUND_AND_APPEARANCE_ADJECTIVES,
+    STARS,
 )
 
 

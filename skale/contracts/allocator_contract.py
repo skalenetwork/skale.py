@@ -17,9 +17,9 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from web3.constants import CHECKSUM_ADDRESSS_ZERO
-from skale_contracts.types import ContractName
 from skale_contracts.projects.skale_allocator import SkaleAllocatorContract
+from skale_contracts.types import ContractName
+from web3.constants import CHECKSUM_ADDRESSS_ZERO
 
 from skale.contracts.base_contract import BaseContract
 

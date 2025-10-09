@@ -1,11 +1,12 @@
 """SKALE Allocator test"""
 
 from functools import cached_property
+
 from skale import SkaleAllocator
 from skale.utils.helper import get_allocator_address
-from skale.wallets import Web3Wallet
 from skale.utils.web3_utils import init_web3
-from tests.constants import ENDPOINT, TEST_ALLOCATOR_ABI_FILEPATH, ETH_PRIVATE_KEY
+from skale.wallets import Web3Wallet
+from tests.constants import ENDPOINT, ETH_PRIVATE_KEY, TEST_ALLOCATOR_ABI_FILEPATH
 
 ALLOCATOR_CONTRACTS_NUMBER = 2
 

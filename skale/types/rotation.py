@@ -24,7 +24,6 @@ from typing import TypedDict
 from skale.types.node import NodeId
 from skale.types.schain import SchainHash
 
-
 RotationNodeData = namedtuple('RotationNodeData', ['index', 'node_id', 'public_key'])
 
 

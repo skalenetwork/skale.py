@@ -18,7 +18,9 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass
+
 from eth_typing import ChecksumAddress
+
 from skale.types.node import NodeId
 
 

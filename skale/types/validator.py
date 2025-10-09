@@ -22,7 +22,6 @@ from typing import NewType, TypedDict
 from eth_typing import ChecksumAddress
 from web3.types import Wei
 
-
 ValidatorId = NewType('ValidatorId', int)
 
 

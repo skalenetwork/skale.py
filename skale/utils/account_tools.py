@@ -19,9 +19,10 @@
 """Account utilities"""
 
 from __future__ import annotations
-from decimal import Decimal
+
 import logging
-from typing import Any, Dict, List, Literal, Optional, TYPE_CHECKING, Type, TypedDict
+from decimal import Decimal
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Type, TypedDict
 
 from eth_typing import ChecksumAddress, HexStr
 from web3 import Web3
@@ -30,8 +31,8 @@ from web3.types import TxReceipt, Wei
 from skale.transactions.result import TxRes
 from skale.transactions.tools import compose_eth_transfer_tx
 from skale.utils.constants import LONG_LINE
-from skale.wallets import LedgerWallet, Web3Wallet
 from skale.utils.web3_utils import check_receipt, default_gas_price, wait_for_confirmation_blocks
+from skale.wallets import LedgerWallet, Web3Wallet
 
 if TYPE_CHECKING:
     from skale.skale_manager import SkaleManager

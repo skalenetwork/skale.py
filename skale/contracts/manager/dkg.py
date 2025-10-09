@@ -18,6 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import List, Tuple
+
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 

@@ -17,26 +17,24 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import time
 import logging
+import time
 from typing import Any, Dict, Iterable
 from urllib.parse import urlparse
 
 from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
-from web3 import Web3, LegacyWebSocketProvider, HTTPProvider
-from web3.exceptions import TransactionNotFound, ProviderConnectionError, StaleBlockchain
+from requests.exceptions import ConnectionError  # type: ignore
+from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
+from web3.exceptions import ProviderConnectionError, StaleBlockchain, TransactionNotFound
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
-from web3.types import _Hash32, ENS, Nonce, TxReceipt
-from requests.exceptions import ConnectionError
+from web3.types import ENS, Nonce, TxReceipt, _Hash32
 
 import skale.config as config
-from skale.transactions.exceptions import TransactionFailedError
+from skale.transactions.exceptions import TransactionFailedError, TransactionNotMinedError
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
-from skale.transactions.exceptions import TransactionNotMinedError
 from skale.utils.exceptions import NoSyncedEndpointError
-
 
 logger = logging.getLogger(__name__)
 

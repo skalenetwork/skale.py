@@ -22,8 +22,8 @@ from typing import List
 from eth_typing import ChecksumAddress
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.types.node import NodeId
 from skale.types.exit_request import ExitRequest, exit_request_from_tuple
+from skale.types.node import NodeId
 
 
 class Staking(BaseContract):

@@ -18,16 +18,16 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from typing import Any, Dict, List
+
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.contract.contract import ContractFunction
-from web3.types import Wei, HexBytes
+from web3.types import HexBytes, Wei
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.validator import Validator, ValidatorId, ValidatorWithId
 from skale.utils.helper import format_fields
-
 
 FIELDS = [
     'name',

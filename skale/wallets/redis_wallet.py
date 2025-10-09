@@ -37,7 +37,7 @@ from skale.transactions.exceptions import (
     TransactionNotSentError,
     TransactionWaitError,
 )
-from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, get_receipt, MAX_WAITING_TIME
+from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, MAX_WAITING_TIME, get_receipt
 from skale.wallets import BaseWallet
 from skale.wallets.web3_wallet import Web3Wallet
 

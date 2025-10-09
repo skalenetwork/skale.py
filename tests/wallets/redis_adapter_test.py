@@ -1,17 +1,16 @@
 from datetime import datetime
-
 from unittest import mock
+
 import pytest
 from freezegun import freeze_time
 
 from skale.wallets.redis_wallet import (
-    RedisWalletNotSentError,
-    RedisWalletWaitError,
+    RedisWalletAdapter,
     RedisWalletDroppedError,
     RedisWalletEmptyStatusError,
-    RedisWalletAdapter,
+    RedisWalletNotSentError,
+    RedisWalletWaitError,
 )
-
 from tests.helper import in_time
 
 

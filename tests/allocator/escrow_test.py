@@ -1,20 +1,18 @@
 """Tests for skale/allocator/escrow.py"""
 
 from skale.types.delegation import DelegationStatus
-from skale.wallets.web3_wallet import generate_wallet
-from skale.utils.account_tools import send_eth, check_skale_balance
-
-from skale.utils.contracts_provision.main import _skip_evm_time
-from skale.utils.contracts_provision import MONTH_IN_SECONDS, D_PLAN_ID
+from skale.utils.account_tools import check_skale_balance, send_eth
+from skale.utils.contracts_provision import D_PLAN_ID, MONTH_IN_SECONDS
 from skale.utils.contracts_provision.allocator import connect_test_beneficiary
-
-from tests.manager.delegation.delegation_controller_test import _get_number_of_delegations
+from skale.utils.contracts_provision.main import _skip_evm_time
+from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import (
-    D_DELEGATION_INFO,
-    D_VALIDATOR_ID,
     D_DELEGATION_AMOUNT,
+    D_DELEGATION_INFO,
     D_DELEGATION_PERIOD,
+    D_VALIDATOR_ID,
 )
+from tests.manager.delegation.delegation_controller_test import _get_number_of_delegations
 
 
 def _delegate_via_escrow(skale_allocator, wallet):

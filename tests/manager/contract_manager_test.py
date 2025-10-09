@@ -1,9 +1,10 @@
 """SKALE contract manager test"""
 
+from skale_contracts.projects.skale_manager import SkaleManagerContract
 from web3 import Web3
+
 from skale.utils.constants import ZERO_ADDRESS
 from tests.constants import TEST_CONTRACT_NAME, TEST_CONTRACT_NAME_HASH
-from skale_contracts.projects.skale_manager import SkaleManagerContract
 
 
 def test_get_contract_address(skale):

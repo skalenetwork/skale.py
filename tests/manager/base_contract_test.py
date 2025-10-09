@@ -1,8 +1,10 @@
 import importlib
 import os
-
 from unittest import mock
+
 import pytest
+from web3 import Web3
+
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError
 from skale.transactions.result import TxStatus
@@ -11,7 +13,6 @@ from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.utils import generate_random_schain_data
 from skale.utils.web3_utils import wait_for_receipt_by_blocks
 from tests.constants import TEST_GAS_LIMIT
-from web3 import Web3
 
 ETH_IN_WEI = 10**18
 CUSTOM_DEFAULT_GAS_LIMIT = 2 * 10**6

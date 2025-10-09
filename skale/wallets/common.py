@@ -23,7 +23,7 @@ from typing import Optional
 from eth_account.datastructures import SignedMessage, SignedTransaction
 from eth_typing import ChecksumAddress, HexStr
 from web3 import Web3
-from web3.types import _Hash32, TxParams, TxReceipt
+from web3.types import TxParams, TxReceipt, _Hash32
 
 from skale.transactions.exceptions import ChainIdError
 from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT

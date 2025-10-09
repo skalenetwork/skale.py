@@ -17,9 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract, transaction_method
 from eth_typing import ChecksumAddress
-from skale.transactions.result import TxRes
+from web3.contract.contract import ContractFunction
+
+from skale.contracts.base_contract import BaseContract, transaction_method
 
 
 class Context(BaseContract):
@@ -32,7 +33,7 @@ class Context(BaseContract):
         return self.contract.functions.getSchainOwnerAddress().call()
 
     @transaction_method
-    def set_schain_owner_address(self, newOwner: ChecksumAddress) -> TxRes:
+    def set_schain_owner_address(self, newOwner: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.setSchainOwnerAddress(newOwner)
 
     def get_version(self) -> str:

@@ -18,8 +18,10 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING, Dict, List, TypedDict
+
 from skale.types.rotation import RotationNodeData
 
 if TYPE_CHECKING:

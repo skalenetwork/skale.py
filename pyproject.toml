@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "skale.py"
+version = "7.6"
+description = "SKALE client tools"
+readme = "README.md"
+requires-python = ">=3.11,<4"
+license = { text = "AGPL-3.0-or-later" }
+authors = [{ name = "SKALE Labs", email = "support@skalelabs.com" }]
+keywords = ["skale"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "redis==6.4.0",
+    "sgx.py==0.11dev0",
+    "skale-contracts==2.0.0a6",
+    "typing-extensions==4.15.0",
+    "web3==7.13.0",
+]
+
+[project.optional-dependencies]
+linter = [
+    "ruff==0.14.0",
+    "mypy==1.18.2",
+    "isort>=4.2.15,<5.4.3",
+    "importlib-metadata<5.0",
+]
+hw-wallet = ["ledgerblue==0.1.55"]
+dev = [
+    "skale.py[linter,hw-wallet]",
+    "click==8.3.0",
+    "codecov",
+    "freezegun==1.5.5",
+    "mock==5.2.0",
+    "pytest==8.4.2",
+    "pytest-cov==7.0.0",
+    "types-requests",
+    "types-redis",
+]
+
+[project.urls]
+Homepage = "https://github.com/skalenetwork/skale.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["skale"]
+
+[tool.pytest.ini_options]
+log_cli = false
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+exclude = ["helper-scripts", "hardhat-node"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+
+[tool.ruff.format]
+quote-style = "single"

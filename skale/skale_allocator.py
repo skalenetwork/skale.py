@@ -19,12 +19,12 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.skale_allocator import SkaleAllocatorContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.skale_allocator import SkaleAllocatorContract
 
-from skale.skale_base import SkaleBase
 from skale.contracts.allocator.allocator import Allocator
 from skale.contracts.allocator.escrow import Escrow
+from skale.skale_base import SkaleBase
 
 
 class SkaleAllocator(SkaleBase):

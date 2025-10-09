@@ -24,10 +24,9 @@ import logging
 from skale_contracts import skale_contracts
 from skale_contracts.project_factory import SkaleProject
 
-from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
-from skale.utils.web3_utils import default_gas_price, init_web3, get_endpoint
+from skale.utils.exceptions import EmptyWalletError, InvalidWalletError
+from skale.utils.web3_utils import default_gas_price, get_endpoint, init_web3
 from skale.wallets import BaseWallet
-
 
 logger = logging.getLogger(__name__)
 
