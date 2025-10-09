@@ -27,7 +27,7 @@ jobs:
         run: uv python install 3.13
 
       - name: Install python dependencies
-        run: uv sync --extra dev
+        run: uv sync --all-extras
 
       - name: Lint with ruff
         run: uv run ruff check skale/
