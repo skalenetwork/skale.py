@@ -31,7 +31,9 @@ jobs:
         run: uv run mypy skale/
 
       - name: Export env
-        run: . ./scripts/export_env.sh
+        run: |
+          . ./scripts/export_env.sh
+          printenv >> $GITHUB_ENV
 
       - name: Launch hardhat node
         run: |
@@ -57,6 +59,7 @@ jobs:
         if: ${{ matrix.component == 'fair' }}
         run: |
           . ./scripts/export_env.sh
+          printenv >> $GITHUB_ENV
           export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
           bash ./helper-scripts/deploy_fair.sh
           docker rmi -f skalenetwork/fair-manager:$FAIR_TAG
