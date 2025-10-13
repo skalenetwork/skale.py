@@ -8,7 +8,7 @@ jobs:
       matrix:
         component: [manager, allocator, fair]
     env:
-      ETH_PRIVATE_KEY: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+      ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       ENDPOINT: "http://127.0.0.1:8545"
       MANAGER_TAG: "1.12.0-develop.21"
