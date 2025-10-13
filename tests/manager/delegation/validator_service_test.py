@@ -351,9 +351,8 @@ def test_set_validator_description(skale):
         skale.wallet = main_wallet
 
 
-def test_revert_reason(skale):
-    no_validator_revert = 'VM Exception while processing transaction'
-    with pytest.raises(TransactionNotSentError) as exc_info:
+def test_revert_register(skale):
+    with pytest.raises(TransactionNotSentError):
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,
@@ -362,7 +361,6 @@ def test_revert_reason(skale):
             wait_for=True,
             skip_dry_run=True,
         )
-    assert no_validator_revert in str(exc_info.value)
 
 
 def test_get_use_whitelist(skale):

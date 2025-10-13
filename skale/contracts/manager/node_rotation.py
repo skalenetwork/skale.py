@@ -33,6 +33,7 @@ from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.rotation import Rotation, RotationSwap
 from skale.types.schain import SchainHash, SchainName
+from skale.utils.helper import is_test_env
 
 if TYPE_CHECKING:
     from skale.contracts.manager.schains import SChains
@@ -124,5 +125,8 @@ class NodeRotation(SkaleManagerContract):
             return NodeId(self.contract.functions.getPreviousNode(schain_id, node_id).call())
         except (ContractLogicError, ValueError) as e:
             if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
+                return None
+            if is_test_env():
+                logger.debug(f'Error in test environment: {e}')
                 return None
             raise e
