@@ -66,7 +66,7 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 100
-exclude = ["helper-scripts", "hardhat-node"]
+exclude = ["helper-scripts"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I"]
