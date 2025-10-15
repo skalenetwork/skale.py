@@ -45,15 +45,11 @@ jobs:
       - name: Publish to pip
         run: |
           bash ./scripts/publish.sh
-      - name: Checkout code
-        uses: actions/checkout@master
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
+          name: ${{ env.VERSION }}
           draft: false
-          prerelease: true
+          prerelease: ${{ github.base_ref != 'stable' }}
+          generate_release_notes: true

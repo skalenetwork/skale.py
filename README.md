@@ -82,6 +82,14 @@ uv run mypy skale/
 uv sync --all-extras
 ```
 
+##### Export environment variables
+
+To export environment variables for running tests locally, run:
+
+```bash
+. ./scripts/export_env.sh
+```
+
 #### Build and publish library
 
 ```bash
