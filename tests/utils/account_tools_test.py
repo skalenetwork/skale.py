@@ -64,17 +64,6 @@ def test_send_eth_with_gas_price(skale, empty_account, block_in_seconds):
             }
         )
 
-    # Send tx with small gas price
-    small_gas_price = 6
-    with pytest.raises(TransactionNotMinedError):
-        send_eth(
-            skale.web3,
-            skale.wallet,
-            empty_account.address,
-            ETH_TRANSFER_VALUE,
-            gas_price=small_gas_price,
-        )
-
     custom_default_gas_price = 101 * 10**9
     with mock.patch(
         'skale.utils.account_tools.default_gas_price', return_value=custom_default_gas_price

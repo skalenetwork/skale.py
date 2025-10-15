@@ -10,11 +10,6 @@ jobs:
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      ENDPOINT: "http://127.0.0.1:8545"
-      MANAGER_TAG: "1.12.0-develop.21"
-      ALLOCATOR_TAG: "2.2.2-develop.0"
-      FAIR_TAG: "0.0.1-develop.71"
-      MINING_INTERVAL: 10
     steps:
       - uses: actions/checkout@v5
         with:
@@ -35,21 +30,25 @@ jobs:
       - name: Type check with mypy
         run: uv run mypy skale/
 
-      - name: Launch hardhat node
-        working-directory: hardhat-node
+      - name: Export env
         run: |
-          docker compose up -d && sleep 20
+          . ./scripts/export_env.sh
+          printenv >> $GITHUB_ENV
+
+      - name: Launch hardhat node
+        run: |
+          bash ./helper-scripts/helper.sh run_hh_node
 
       - name: Deploy manager
         run: |
           bash ./helper-scripts/deploy_manager.sh
-          docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
+          docker rmi -f skalenetwork/skale-manager:$MANAGER_TAG
 
       - name: Deploy allocator
         if: ${{ matrix.component == 'allocator' }}
         run: |
           bash ./helper-scripts/deploy_allocator.sh
-          docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
+          docker rmi -f skalenetwork/skale-allocator:$ALLOCATOR_TAG
 
       - name: Bootstrap fair-boot contracts
         if: ${{ matrix.component == 'fair' }}
@@ -58,13 +57,12 @@ jobs:
 
       - name: Deploy fair
         if: ${{ matrix.component == 'fair' }}
-        env:
-          MAINNET_ENDPOINT: "http://127.0.0.1:8545"
-          CHAIN_NAME: "fair"
         run: |
+          . ./scripts/export_env.sh
+          printenv >> $GITHUB_ENV
           export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
           bash ./helper-scripts/deploy_fair.sh
-          docker rmi -f skalenetwork/fair-manager:${{ env.FAIR_TAG }}
+          docker rmi -f skalenetwork/fair-manager:$FAIR_TAG
 
       - name: Show stats before tests
         if: always()

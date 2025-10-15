@@ -31,7 +31,7 @@ linter = [
     "ruff==0.14.0",
     "mypy==1.18.2",
     "isort>=4.2.15,<5.4.3",
-    "importlib-metadata<5.0",
+    "importlib-metadata<9.0",
 ]
 hw-wallet = ["ledgerblue==0.1.55"]
 dev = [
@@ -66,7 +66,7 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 100
-exclude = ["helper-scripts", "hardhat-node"]
+exclude = ["helper-scripts"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I"]
