@@ -156,8 +156,6 @@ class RedisWalletAdapter(BaseWallet):
             'method': method,
             **tx,
         }
-        # Ensure gas will be restimated in TM
-        params['gas'] = None
         record = json.dumps(params).encode('utf-8')
         return tx_id, record
 
