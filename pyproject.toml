@@ -23,7 +23,7 @@ dependencies = [
     "sgx.py==0.11dev0",
     "skale-contracts==2.0.0a6",
     "typing-extensions==4.15.0",
-    "web3==7.13.0",
+    "web3==7.14.0",
 ]
 
 [project.optional-dependencies]
