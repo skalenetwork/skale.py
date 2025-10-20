@@ -1,6 +1,7 @@
 """SKALE chain internal test"""
 
 from dataclasses import astuple, fields
+
 from tests.constants import DEFAULT_SCHAIN_ID, EMPTY_SCHAIN_ARR, MIN_NODES_IN_SCHAIN, SCHAIN_FIELDS
 
 

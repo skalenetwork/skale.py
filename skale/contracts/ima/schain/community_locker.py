@@ -17,10 +17,11 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from eth_typing import ChecksumAddress
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from Crypto.Hash import keccak
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+
+from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.types.schain import SchainName
 
 
@@ -28,7 +29,9 @@ class CommunityLocker(BaseContract):
     """ "Community locker"""
 
     @transaction_method
-    def set_time_limit_per_message(self, schain_name: SchainName, new_time_limit: int) -> TxRes:
+    def set_time_limit_per_message(
+        self, schain_name: SchainName, new_time_limit: int
+    ) -> ContractFunction:
         """Set time limit"""
         return self.contract.functions.setTimeLimitPerMessage(schain_name, new_time_limit)
 
@@ -39,11 +42,11 @@ class CommunityLocker(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def revoke_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def revoke_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.revokeRole(role, address)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     def check_allow_to_send_msg(self, schain_name: SchainName, address: ChecksumAddress) -> int:

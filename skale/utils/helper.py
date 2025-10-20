@@ -29,10 +29,10 @@ from logging import Formatter, StreamHandler
 from random import randint
 from typing import Any, Callable, Dict, Generator, List, cast
 
-from skale.config import ENV
-from skale.types.node import Port
 from eth_typing import ChecksumAddress
 
+from skale.config import ENV
+from skale.types.node import Port
 
 logger = logging.getLogger(__name__)
 

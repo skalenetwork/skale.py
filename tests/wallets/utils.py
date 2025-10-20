@@ -1,6 +1,7 @@
+from eth_account.datastructures import SignedMessage, SignedTransaction
 from hexbytes import HexBytes
-from eth_account.datastructures import SignedTransaction, SignedMessage
 from sgx.sgx import Account
+
 from skale.utils.web3_utils import (
     private_key_to_address,
     private_key_to_public,

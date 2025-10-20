@@ -1,7 +1,7 @@
 """SKALE node test"""
 
-import socket
 import random
+import socket
 import string
 from datetime import datetime
 
@@ -11,10 +11,9 @@ from web3 import Web3
 
 import skale.utils.helper as Helper
 from skale.contracts.manager.nodes import FIELDS, NodeStatus
-from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 from skale.utils.contracts_provision.utils import generate_random_ip
-
+from skale.utils.exceptions import InvalidNodeIdError
 from tests.constants import DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
 

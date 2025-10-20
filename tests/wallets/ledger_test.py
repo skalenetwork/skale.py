@@ -1,10 +1,10 @@
-import pytest
 from unittest import mock
+
+import pytest
 
 from skale.transactions.exceptions import TransactionNotSentError
 from skale.utils.web3_utils import init_web3
 from skale.wallets.ledger_wallet import LedgerWallet
-
 from tests.constants import ENDPOINT
 
 

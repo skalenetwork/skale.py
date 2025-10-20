@@ -22,8 +22,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, NewType, TypedDict
 
+from skale_contracts.instance import ChecksumAddress
+
 from skale.types.dkg import DkgId, G2Point
-from skale.types.node import MirageNode, NodeId
+from skale.types.node import FairNodeForChainConfig, NodeId
 
 CommitteeIndex = NewType('CommitteeIndex', int)
 Timestamp = NewType('Timestamp', int)
@@ -42,7 +44,8 @@ CommitteeGroup = TypedDict(
     {
         'ts': Timestamp,
         'index': CommitteeIndex,
-        'group': List[MirageNode],
+        'staking_contract_address': ChecksumAddress,
+        'group': List[FairNodeForChainConfig],
         'committee': Committee,
     },
 )

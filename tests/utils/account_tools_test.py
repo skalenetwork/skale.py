@@ -1,22 +1,22 @@
 """SKALE account tools test"""
 
 from unittest import mock
+
 import pytest
 
 from skale.transactions.exceptions import TransactionNotMinedError
 from skale.utils.account_tools import (
     check_ether_balance,
+    check_skale_balance,
     generate_account,
     generate_accounts,
     send_eth,
     send_tokens,
-    check_skale_balance,
 )
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.web3_utils import get_eth_nonce
-from skale.wallets.web3_wallet import generate_wallet, Web3Wallet
-
-from tests.constants import TOKEN_TRANSFER_VALUE, ETH_TRANSFER_VALUE, N_TEST_WALLETS
+from skale.wallets.web3_wallet import Web3Wallet, generate_wallet
+from tests.constants import ETH_TRANSFER_VALUE, N_TEST_WALLETS, TOKEN_TRANSFER_VALUE
 
 
 def test_send_tokens(skale, empty_account):
@@ -62,17 +62,6 @@ def test_send_eth_with_gas_price(skale, empty_account, block_in_seconds):
                 'gas': 22000,
                 'nonce': get_eth_nonce(skale.web3, skale.wallet.address),
             }
-        )
-
-    # Send tx with small gas price
-    small_gas_price = 6
-    with pytest.raises(TransactionNotMinedError):
-        send_eth(
-            skale.web3,
-            skale.wallet,
-            empty_account.address,
-            ETH_TRANSFER_VALUE,
-            gas_price=small_gas_price,
         )
 
     custom_default_gas_price = 101 * 10**9

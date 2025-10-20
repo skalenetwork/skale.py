@@ -6,62 +6,64 @@ jobs:
     runs-on: blacksmith-8vcpu-ubuntu-2204
     strategy:
       matrix:
-        component: [manager, allocator, mirage]
+        component: [manager, allocator, fair]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      ENDPOINT: "http://127.0.0.1:8545"
-      MANAGER_TAG: "1.12.0-develop.21"
-      ALLOCATOR_TAG: "2.2.2-develop.0"
-      MIRAGE_TAG: "0.0.1-develop.25"
-      MINING_INTERVAL: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          cache: "pip"
-          python-version: 3.11
+          enable-cache: true
+      - name: Set up Python 3.13
+        run: uv python install 3.13
 
       - name: Install python dependencies
-        run: bash ./scripts/install_python_dependencies.sh
+        run: uv sync --all-extras
 
       - name: Lint with ruff
-        run: ruff check skale/
-      
-      - name: Launch hardhat node
-        working-directory: hardhat-node
+        run: uv run ruff check skale/
+
+      - name: Type check with mypy
+        run: uv run mypy skale/
+
+      - name: Export env
         run: |
-          docker compose up -d && sleep 20
+          . ./scripts/export_env.sh
+          printenv >> $GITHUB_ENV
+
+      - name: Launch hardhat node
+        run: |
+          bash ./helper-scripts/helper.sh run_hh_node
 
       - name: Deploy manager
         run: |
           bash ./helper-scripts/deploy_manager.sh
-          docker rmi -f skalenetwork/skale-manager:${{ env.MANAGER_TAG }}
+          docker rmi -f skalenetwork/skale-manager:$MANAGER_TAG
 
       - name: Deploy allocator
         if: ${{ matrix.component == 'allocator' }}
         run: |
           bash ./helper-scripts/deploy_allocator.sh
-          docker rmi -f skalenetwork/skale-allocator:${{ env.ALLOCATOR_TAG }}
-      
-      - name: Bootstrap mirage-boot contracts
-        if: ${{ matrix.component == 'mirage' }}
-        run: |
-          bash ./scripts/bootstrap_mirage.sh
+          docker rmi -f skalenetwork/skale-allocator:$ALLOCATOR_TAG
 
-      - name: Deploy mirage
-        if: ${{ matrix.component == 'mirage' }}
-        env:
-          MAINNET_ENDPOINT: "http://127.0.0.1:8545"
-          CHAIN_NAME: "mirage"
+      - name: Bootstrap fair-boot contracts
+        if: ${{ matrix.component == 'fair' }}
         run: |
+          bash ./scripts/bootstrap_fair.sh
+
+      - name: Deploy fair
+        if: ${{ matrix.component == 'fair' }}
+        run: |
+          . ./scripts/export_env.sh
+          printenv >> $GITHUB_ENV
           export TARGET=$(bash ./helper-scripts/helper.sh manager_address)
-          bash ./helper-scripts/deploy_mirage.sh
-          docker rmi -f skalenetwork/professional:${{ env.MIRAGE_TAG }}
-  
+          bash ./helper-scripts/deploy_fair.sh
+          docker rmi -f skalenetwork/fair-manager:$FAIR_TAG
+
       - name: Show stats before tests
         if: always()
         run: |
@@ -73,7 +75,7 @@ jobs:
 
       - name: Codecov
         run: |
-          codecov -t $CODECOV_TOKEN
+          uv run codecov -t $CODECOV_TOKEN
 
       - name: Show stats after tests
         if: always()

@@ -2,20 +2,20 @@
 
 from contextlib import contextmanager
 from timeit import default_timer as timer
+from unittest.mock import MagicMock, Mock
 
-from unittest.mock import Mock, MagicMock
-from web3 import Web3
 from eth_typing import HexStr
+from web3 import Web3
 
-from skale import SkaleManager, SkaleAllocator, MirageManager
+from skale import FairManager, SkaleAllocator, SkaleManager
 from skale.utils.helper import get_allocator_address, get_skale_manager_address
 from skale.wallets import Web3Wallet
 from tests.constants import (
     ENDPOINT,
+    ETH_PRIVATE_KEY,
+    FAIR_CONTRACTS,
     TEST_ABI_FILEPATH,
     TEST_ALLOCATOR_ABI_FILEPATH,
-    ETH_PRIVATE_KEY,
-    MIRAGE_CONTRACTS,
 )
 
 
@@ -42,11 +42,11 @@ def init_skale(
     return SkaleManager(ENDPOINT, get_skale_manager_address(test_abi_filepath), wallet)
 
 
-def init_mirage(web3: Web3, eth_private_key: HexStr = ETH_PRIVATE_KEY) -> MirageManager:
+def init_fair(web3: Web3, eth_private_key: HexStr = ETH_PRIVATE_KEY) -> FairManager:
     wallet = Web3Wallet(eth_private_key, web3)
-    if not MIRAGE_CONTRACTS:
-        raise ValueError('MIRAGE_CONTRACTS is not set')
-    return MirageManager(ENDPOINT, MIRAGE_CONTRACTS, wallet)
+    if not FAIR_CONTRACTS:
+        raise ValueError('FAIR_CONTRACTS is not set')
+    return FairManager(ENDPOINT, FAIR_CONTRACTS, wallet)
 
 
 def init_skale_allocator(

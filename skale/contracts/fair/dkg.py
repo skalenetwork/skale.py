@@ -19,16 +19,15 @@
 
 from typing import Any
 
-from skale.contracts.base_contract import BaseContract
-from skale.contracts.base_contract import transaction_method
-from skale.types.dkg import Fp2Point, G2Point, DkgId, KeyShare, VerificationVector, Status, Round
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.types.dkg import DkgId, Fp2Point, G2Point, KeyShare, Round, Status, VerificationVector
 from skale.types.node import NodeId
 
 
 class DKG(BaseContract):
     def is_node_broadcasted(self, dkg: DkgId, node: NodeId) -> bool:
         return self.contract.functions.isNodeBroadcasted(dkg, node).call()
-    
+
     def is_node_sent_alright(self, dkg: DkgId, node: NodeId) -> bool:
         round_info = self.get_round(dkg)
         return round_info.completed[node]
@@ -41,12 +40,12 @@ class DKG(BaseContract):
 
     def get_last_dkg_id(self) -> DkgId:
         return DkgId(self.contract.functions.lastDkgId().call())
-    
+
     def get_starting_block_number(self, dkg: DkgId) -> int:
         return self.contract.functions.getStartingBlockNumber(dkg).call()
 
     def __get_raw_round(self, dkg: DkgId) -> list[Any]:
-        return list(self.contract.functions.rounds(dkg).call())
+        return list(self.contract.functions.getRound(dkg).call())
 
     def get_round(self, dkg: DkgId) -> Round:
         return self._to_round(self.__get_raw_round(dkg))
@@ -66,6 +65,13 @@ class DKG(BaseContract):
             numberOfCompleted=untyped_round[7],
             completed=untyped_round[8],
         )
+
+    def is_last_dkg_successful(self) -> bool:
+        last_dkg_id = self.get_last_dkg_id()
+        if last_dkg_id == DkgId(0):
+            return True
+        round_info = self.get_round(last_dkg_id)
+        return round_info.status == Status.SUCCESS
 
     @transaction_method
     def alright(self, dkg: DkgId):

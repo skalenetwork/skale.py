@@ -20,8 +20,8 @@
 from web3.types import Wei
 
 from skale.types.allocation import TimeUnit
-from skale.types.validator import ValidatorId
 from skale.types.schain import SchainName
+from skale.types.validator import ValidatorId
 
 # manager test constants
 

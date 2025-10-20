@@ -1,17 +1,16 @@
 from datetime import datetime
-
 from unittest import mock
+
 import pytest
 from freezegun import freeze_time
 
 from skale.wallets.redis_wallet import (
-    RedisWalletNotSentError,
-    RedisWalletWaitError,
+    RedisWalletAdapter,
     RedisWalletDroppedError,
     RedisWalletEmptyStatusError,
-    RedisWalletAdapter,
+    RedisWalletNotSentError,
+    RedisWalletWaitError,
 )
-
 from tests.helper import in_time
 
 
@@ -53,7 +52,7 @@ def test_make_record():
     assert tx_id.startswith(b'tx-') and len(tx_id) == 19
     assert (
         r
-        == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": null, "nonce": 1, "chainId": 1}'
+        == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": 22000, "nonce": 1, "chainId": 1}'
     )  # noqa
 
 

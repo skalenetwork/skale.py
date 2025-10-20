@@ -2,13 +2,11 @@
 
 set -e
 
-CURRENT_VERSION="$(python setup.py --version)"
-sed -i "s/version='${CURRENT_VERSION}/version='${VERSION}/g" setup.py
+sed -i "s/version = \".*\"/version = \"${VERSION}\"/g" pyproject.toml
 
 rm -rf ./dist/*
 
-python setup.py sdist
-python setup.py bdist_wheel
+uv build
 
 echo "==================================================================="
 echo "Done build: skale.py $VERSION/"

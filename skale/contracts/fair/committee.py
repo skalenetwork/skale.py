@@ -21,9 +21,9 @@ from typing import Any
 
 from eth_typing import ChecksumAddress
 
-from skale.contracts.base_contract import BaseContract
-from skale.contracts.base_contract import transaction_method
-from skale.types.committee import Committee as CommitteeStruct, CommitteeIndex
+from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.types.committee import Committee as CommitteeStruct
+from skale.types.committee import CommitteeIndex
 from skale.types.node import NodeId
 
 
@@ -47,6 +47,20 @@ class Committee(BaseContract):
 
     def get_active_committee_index(self) -> CommitteeIndex:
         return CommitteeIndex(self.contract.functions.getActiveCommitteeIndex().call())
+
+    def last_committee_index(self) -> CommitteeIndex:
+        return CommitteeIndex(self.contract.functions.lastCommitteeIndex().call())
+
+    def skale_rng(self) -> ChecksumAddress:
+        return self.contract.functions.skaleRng().call()
+
+    @transaction_method
+    def set_rng(self, address: ChecksumAddress):
+        return self.contract.functions.setRNG(address)
+
+    @transaction_method
+    def disableRNG(self):
+        return self.contract.functions.disableRNG()
 
     @transaction_method
     def select(self):

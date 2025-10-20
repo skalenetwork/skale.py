@@ -5,7 +5,7 @@ import threading
 from skale import SkaleManager
 from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, DEFAULT_NODE_NAME
+from tests.constants import DEFAULT_NODE_NAME, ENDPOINT, TEST_ABI_FILEPATH
 
 
 def get_node_data():

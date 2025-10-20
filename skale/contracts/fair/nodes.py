@@ -23,7 +23,7 @@ from typing import Any, List
 from eth_typing import ChecksumAddress, HexStr
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.types.node import MirageNode, NodeId, Port
+from skale.types.node import FairNode, NodeId, Port
 from skale.utils import helper
 
 
@@ -31,13 +31,13 @@ class Nodes(BaseContract):
     def __get_raw(self, node_id: NodeId) -> List[Any]:
         return list(self.contract.functions.getNode(node_id).call())
 
-    def get(self, node_id: NodeId) -> MirageNode:
+    def get(self, node_id: NodeId) -> FairNode:
         return self._to_node(self.__get_raw(node_id))
 
     def get_id(self, address: ChecksumAddress) -> NodeId:
         return self.contract.functions.getNodeId(address).call()
 
-    def get_by_address(self, address: ChecksumAddress) -> MirageNode:
+    def get_by_address(self, address: ChecksumAddress) -> FairNode:
         node_id = self.get_id(address)
         return self.get(node_id)
 
@@ -53,15 +53,23 @@ class Nodes(BaseContract):
     def active_node_exists(self, node_id: NodeId) -> bool:
         return self.contract.functions.activeNodeExists(node_id).call()
 
-    def _to_node(self, untyped_node: List[Any]) -> MirageNode:
-        return MirageNode(
+    def passive_node_exists(self, node_id: NodeId) -> bool:
+        return self.contract.functions.passiveNodeExists(node_id).call()
+
+    def get_owner_change_request(self, node_id: NodeId) -> ChecksumAddress:
+        return self.contract.functions.ownerChangeRequests(node_id).call()
+
+    def committee_contract(self) -> ChecksumAddress:
+        return self.contract.functions.committeeContract().call()
+
+    def _to_node(self, untyped_node: List[Any]) -> FairNode:
+        return FairNode(
             id=untyped_node[0],
-            public_key=self.decode_public_key(untyped_node[1]),
-            ip=bytes(untyped_node[2]),
-            ip_str=socket.inet_ntoa(untyped_node[2]),
-            domain_name=untyped_node[3],
-            address=ChecksumAddress(untyped_node[4]),
-            port=Port(untyped_node[5]),
+            ip=bytes(untyped_node[1]),
+            ip_str=socket.inet_ntoa(untyped_node[1]),
+            domain_name=untyped_node[2],
+            address=ChecksumAddress(untyped_node[3]),
+            port=Port(untyped_node[4]),
             name=f'node-{untyped_node[0]}',
         )
 
@@ -100,3 +108,15 @@ class Nodes(BaseContract):
     @transaction_method
     def set_committee(self, committee_address: ChecksumAddress):
         return self.contract.functions.setCommittee(committee_address)
+
+    @transaction_method
+    def delete_node(self, node_id: NodeId):
+        return self.contract.functions.deleteNode(node_id)
+
+    @transaction_method
+    def delete_node_by_foundation(self, node_id: NodeId):
+        return self.contract.functions.deleteNodeByFoundation(node_id)
+
+    def get_public_key(self, node_id: NodeId) -> HexStr:
+        raw_public_key = self.contract.functions.getPublicKey(node_id).call()
+        return self.decode_public_key(raw_public_key)

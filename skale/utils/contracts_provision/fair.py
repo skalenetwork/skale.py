@@ -26,7 +26,6 @@ from skale import SkaleManager
 from skale.types.schain import SchainName
 from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.main import (
-    DEFAULT_DOMAIN_NAME,
     add_test2_schain_type,
     add_test4_schain_type,
     add_test_permissions,
@@ -42,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 TEST_ETH_AMOUNT = 1
 NODES_IN_SCHAIN = 4
-CHAIN_NAME = SchainName('mirage')
+CHAIN_NAME = SchainName('fair')
 
 
 def transfer_eth_to_wallets(skale, wallets):
@@ -85,7 +84,7 @@ def register_node(skale):
         port=port,
         name=name,
         public_ip=public_ip,
-        domain_name=DEFAULT_DOMAIN_NAME,
+        domain_name=f'{name}.com',
         wait_for=True,
     )
     node_id = skale.nodes.node_name_to_index(name)
@@ -117,7 +116,7 @@ def init_skale_manager(
     return SkaleManager(endpoint, alias_or_address, wallet)
 
 
-def bootstrap_mirage(endpoint: str, alias_or_address: str, eth_private_key: HexStr) -> None:
+def bootstrap_fair(endpoint: str, alias_or_address: str, eth_private_key: HexStr) -> None:
     skale = init_skale_manager(endpoint, alias_or_address, eth_private_key)
     add_test_permissions(skale)
     setup_validator(skale)
@@ -136,4 +135,4 @@ if __name__ == '__main__':
     ENDPOINT = os.environ['ENDPOINT']
     ETH_PRIVATE_KEY = os.environ['ETH_PRIVATE_KEY']
     MANAGER_CONTRACTS = os.environ['MANAGER_CONTRACTS']
-    bootstrap_mirage(ENDPOINT, MANAGER_CONTRACTS, HexStr(ETH_PRIVATE_KEY))
+    bootstrap_fair(ENDPOINT, MANAGER_CONTRACTS, HexStr(ETH_PRIVATE_KEY))

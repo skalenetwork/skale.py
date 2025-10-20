@@ -18,28 +18,30 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from Crypto.Hash import keccak
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
-from eth_typing import ChecksumAddress
 from skale.types.schain import SchainName
 
 
 class CommunityPool(BaseContract):
     @transaction_method
-    def recharge_user_wallet(self, schain_name: SchainName, address: ChecksumAddress) -> TxRes:
+    def recharge_user_wallet(
+        self, schain_name: SchainName, address: ChecksumAddress
+    ) -> ContractFunction:
         return self.contract.functions.rechargeUserWallet(schain_name, address)
 
     @transaction_method
-    def withdraw_funds(self, schain_name: SchainName, amount: int) -> TxRes:
+    def withdraw_funds(self, schain_name: SchainName, amount: int) -> ContractFunction:
         return self.contract.functions.withdrawFunds(schain_name, amount)
 
     @transaction_method
-    def set_min_transaction_gas(self, min_gas_value: int) -> TxRes:
+    def set_min_transaction_gas(self, min_gas_value: int) -> ContractFunction:
         return self.contract.functions.setMinTransactionGas(min_gas_value)
 
     @transaction_method
-    def set_multiplier(self, new_numerator: int, new_divider: int) -> TxRes:
+    def set_multiplier(self, new_numerator: int, new_divider: int) -> ContractFunction:
         return self.contract.functions.setMultiplier(new_numerator, new_divider)
 
     def get_balance(self, address: ChecksumAddress, schain_name: SchainName) -> int:
@@ -65,7 +67,7 @@ class CommunityPool(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     def get_role_member(self, role: bytes, index: int) -> bytes:

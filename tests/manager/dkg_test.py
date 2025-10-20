@@ -1,6 +1,7 @@
 from unittest import mock
-import web3
 from unittest.mock import Mock
+
+import web3
 from hexbytes import HexBytes
 
 from skale.contracts.manager.dkg import G2Point, KeyShare

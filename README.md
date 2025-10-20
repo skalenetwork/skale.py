@@ -24,11 +24,11 @@ pip install skale.py
 * Ledger Wallet (works with Ledger Nano S and other models)
 * RPC Wallet (works with [SKALE Transactions Manager](https://github.com/skalenetwork/transactions-manager))
 * SGX Wallet (works with [SKALE SGX Wallet](https://github.com/skalenetwork/sgxwallet))
-* Web3 Wallet (works with `web3.py` embeded functions)
+* Web3 Wallet (works with `web3.py` providers and private keys in memory)
 
 #### Library initialization
 
-With embeded Web3Wallet
+With Web3Wallet (private key in memory):
 
 ```python
 from skale import SkaleManager
@@ -63,10 +63,6 @@ schains = skale.schains.get_schains_for_owner('0x...')
 Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.\
 Take a look on the `tests/multithreading_test.py` for the reference.
 
-#### Code samples
-
-You can find usage examples [here](https://github.com/skalenetwork/skale.py-examples).
-
 ### Development
 
 ##### Add pre-commit hook:
@@ -75,16 +71,23 @@ You can find usage examples [here](https://github.com/skalenetwork/skale.py-exam
 nano .git/hooks/pre-commit
 ```
 
-```
-ruff check .
+```bash
+uv run ruff check skale/
+uv run mypy skale/
 ```
 
-##### Install local version (with hot reload)
+##### Install local version
 
 ```bash
-virtualenv venv
-. venv/bin/activate 
-pip install -e .[dev]
+uv sync --all-extras
+```
+
+##### Export environment variables
+
+To export environment variables for running tests locally, run:
+
+```bash
+. ./scripts/export_env.sh
 ```
 
 #### Build and publish library
@@ -103,24 +106,6 @@ bash build_and_publish.sh major/minor/patch
 
 The version scheme for this repo is `{major}.{minor}.{patch}`
 For more details see: <https://semver.org/>
-
-#### Testing
-
-Run local ganache and deploy SKALE Manager:
-
-```bash
-MANAGER_TAG=... ETH_PRIVATE_KEY=... bash scripts/deploy_manager.sh
-```
-
-Running full test suite:
-
-```bash
-bash scripts/run_tests.sh
-```
-
-Running test suite manually:
-
-See `tests/README.md`
 
 ### License
 

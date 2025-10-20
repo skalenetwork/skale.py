@@ -25,7 +25,6 @@ from web3.types import Wei
 
 from skale.dataclasses.schain_options import SchainOptions
 
-
 SchainName = NewType('SchainName', str)
 SchainHash = NewType('SchainHash', bytes)
 SchainOption = tuple[str, bytes]

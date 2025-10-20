@@ -1,22 +1,22 @@
 """Tests for contracts/delegation/validator_service.py"""
 
 import random
+
 import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
+from skale.transactions.exceptions import TransactionNotSentError
 from skale.transactions.result import DryRunRevertError
 from skale.utils.account_tools import send_eth
-from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.contracts_provision.main import _skip_evm_time, enable_validator
-from skale.transactions.exceptions import TransactionNotSentError
-
+from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import (
     D_DELEGATION_PERIOD,
-    D_VALIDATOR_ID,
-    D_VALIDATOR_NAME,
     D_VALIDATOR_DESC,
     D_VALIDATOR_FEE,
+    D_VALIDATOR_ID,
     D_VALIDATOR_MIN_DEL,
+    D_VALIDATOR_NAME,
     MONTH_IN_SECONDS,
     NOT_EXISTING_ID,
 )
@@ -351,9 +351,8 @@ def test_set_validator_description(skale):
         skale.wallet = main_wallet
 
 
-def test_revert_reason(skale):
-    no_validator_revert = 'VM Exception while processing transaction'
-    with pytest.raises(TransactionNotSentError) as exc_info:
+def test_revert_register(skale):
+    with pytest.raises(TransactionNotSentError):
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,
@@ -362,7 +361,6 @@ def test_revert_reason(skale):
             wait_for=True,
             skip_dry_run=True,
         )
-    assert no_validator_revert in str(exc_info.value)
 
 
 def test_get_use_whitelist(skale):

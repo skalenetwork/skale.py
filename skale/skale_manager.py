@@ -19,10 +19,8 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.skale_manager import SkaleManagerContract
 from skale_contracts.project_factory import SkaleProject
-
-from skale.skale_base import SkaleBase
+from skale_contracts.projects.skale_manager import SkaleManagerContract
 
 from skale.contracts.manager.bounty_v2 import BountyV2
 from skale.contracts.manager.constants_holder import ConstantsHolder
@@ -45,6 +43,7 @@ from skale.contracts.manager.sync_manager import SyncManager
 from skale.contracts.manager.test.time_helpers_with_debug import TimeHelpersWithDebug
 from skale.contracts.manager.token import Token
 from skale.contracts.manager.wallets import Wallets
+from skale.skale_base import SkaleBase
 
 
 class SkaleManager(SkaleBase):

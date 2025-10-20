@@ -17,14 +17,15 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+
+from skale.contracts.base_contract import BaseContract, transaction_method
 
 
 class MessageProxyForSchain(BaseContract):
     @transaction_method
-    def set_minimum_receiver_balance(self, amount: int) -> TxRes:
+    def set_minimum_receiver_balance(self, amount: int) -> ContractFunction:
         return self.contract.functions.setMinimumReceiverBalance(amount)
 
     def get_minimum_receiver_balance(self) -> int:
@@ -37,5 +38,5 @@ class MessageProxyForSchain(BaseContract):
         return self.contract.functions.hasRole(role, address).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)

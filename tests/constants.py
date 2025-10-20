@@ -2,6 +2,7 @@
 
 import os
 from decimal import Decimal
+
 from eth_typing import HexStr
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -14,7 +15,6 @@ DEFAULT_NODE_PORT = 3000
 
 TEST_CONTRACT_NAME = 'Nodes'
 TEST_CONTRACT_NAME_HASH = '51468465ffcfb67cf19598bf6dc259b983b35a0ddf02294ef9b1ce0087c47953'
-ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 TOKEN_TRANSFER_VALUE = 100
 ETH_TRANSFER_VALUE = Decimal('0.05')
@@ -57,7 +57,7 @@ TEST_ALLOCATOR_ABI_FILEPATH = os.getenv('TEST_ALLOCATOR_ABI_FILEPATH') or os.pat
 IMA_DATA_FILEPATH = os.path.join(DIR_PATH, 'ima_data_sample.json')
 ETH_PRIVATE_KEY = HexStr(os.environ['ETH_PRIVATE_KEY'])
 
-MIRAGE_CONTRACTS = os.getenv('MIRAGE_CONTRACTS')
+FAIR_CONTRACTS = os.getenv('FAIR_CONTRACTS')
 
 # constants contract
 NEW_REWARD_PERIOD = 600

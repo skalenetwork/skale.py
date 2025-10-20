@@ -17,8 +17,36 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract
+from dataclasses import dataclass
+
+from eth_typing import ChecksumAddress
+
+from skale.types.node import NodeId
 
 
-class Staking(BaseContract):
-    pass
+@dataclass
+class ExitRequest:
+    request_id: int
+    user: ChecksumAddress
+    node_id: NodeId
+    amount: int
+    unlock_date: int
+
+    def to_dict(self) -> dict:
+        return {
+            'request_id': self.request_id,
+            'user': self.user,
+            'node_id': self.node_id,
+            'amount': self.amount,
+            'unlock_date': self.unlock_date,
+        }
+
+
+def exit_request_from_tuple(data: tuple) -> ExitRequest:
+    return ExitRequest(
+        request_id=data[0],
+        user=data[1],
+        node_id=data[2],
+        amount=data[3],
+        unlock_date=data[4],
+    )

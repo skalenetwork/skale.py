@@ -1,14 +1,15 @@
 from unittest import mock
+
 import pytest
 from web3 import Web3
 
-from skale.transactions.exceptions import DryRunFailedError, TransactionFailedError
 from skale import SkaleManager
+from skale.transactions.exceptions import DryRunFailedError, TransactionFailedError
 from skale.transactions.tools import (
-    get_block_gas_limit,
-    estimate_gas,
     TxCallResult,
     TxStatus,
+    estimate_gas,
+    get_block_gas_limit,
     run_tx_with_retry,
 )
 from skale.utils.account_tools import generate_account
@@ -16,13 +17,13 @@ from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallet
-
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 from tests.constants import (
-    D_VALIDATOR_NAME,
     D_VALIDATOR_DESC,
     D_VALIDATOR_FEE,
     D_VALIDATOR_MIN_DEL,
+    D_VALIDATOR_NAME,
+    ENDPOINT,
+    TEST_ABI_FILEPATH,
 )
 
 ETH_IN_WEI = 10**18

@@ -20,24 +20,24 @@
 
 import logging
 from functools import wraps
-from typing import Any, Callable, TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar, cast
 
+from skale_contracts.types import ContractName
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.types import Nonce, Wei
 
-from skale_contracts.types import ContractName
 import skale.config as config
+from skale.skale_base import SkaleBase
 from skale.transactions.result import TxRes, TxStatus
 from skale.transactions.tools import make_dry_run_call, transaction_from_method
+from skale.utils.helper import to_camel_case
 from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
-    get_eth_nonce,
     MAX_WAITING_TIME,
+    get_eth_nonce,
     wait_for_confirmation_blocks,
 )
-from skale.skale_base import SkaleBase
-from skale.utils.helper import to_camel_case
 
 if TYPE_CHECKING:
     pass
@@ -146,4 +146,5 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
             tx_res.raise_for_status()
         return tx_res
 
-    return wrapper
+    # return wrapper
+    return cast(Callable[..., TxRes], wrapper)

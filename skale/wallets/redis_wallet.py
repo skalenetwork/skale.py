@@ -37,7 +37,7 @@ from skale.transactions.exceptions import (
     TransactionNotSentError,
     TransactionWaitError,
 )
-from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, get_receipt, MAX_WAITING_TIME
+from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, MAX_WAITING_TIME, get_receipt
 from skale.wallets import BaseWallet
 from skale.wallets.web3_wallet import Web3Wallet
 
@@ -156,8 +156,6 @@ class RedisWalletAdapter(BaseWallet):
             'method': method,
             **tx,
         }
-        # Ensure gas will be restimated in TM
-        params['gas'] = None
         record = json.dumps(params).encode('utf-8')
         return tx_id, record
 

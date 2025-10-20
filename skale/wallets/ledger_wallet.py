@@ -21,23 +21,25 @@ import logging
 import struct
 from typing import Generator, Tuple, cast
 
-from eth_typing import ChecksumAddress, HexStr
-from hexbytes import HexBytes
-from eth_account.datastructures import SignedMessage, SignedTransaction
 from eth_account._utils.legacy_transactions import (
-    encode_transaction,
-    serializable_unsigned_transaction_from_dict as tx_from_dict,
     Transaction,
     UnsignedTransaction,
+    encode_transaction,
 )
+from eth_account._utils.legacy_transactions import (
+    serializable_unsigned_transaction_from_dict as tx_from_dict,
+)
+from eth_account.datastructures import SignedMessage, SignedTransaction
 from eth_account.typed_transactions.typed_transaction import TypedTransaction
-
+from eth_account.types import TransactionDictType
+from eth_typing import ChecksumAddress, HexStr
 from eth_utils.crypto import keccak
+from hexbytes import HexBytes
 from rlp import encode
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.exceptions import Web3Exception
-from web3.types import _Hash32, TxParams, TxReceipt
+from web3.types import TxParams, TxReceipt, _Hash32
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
@@ -129,7 +131,7 @@ class LedgerWallet(BaseWallet):
         items = {'address': self.address, 'public_key': self.public_key}
         return items[key]
 
-    def make_payload(self, data: str = '') -> bytes:
+    def make_payload(self, data='') -> bytes:
         encoded_data = cast(bytes, encode(data))
         path_prefix = derivation_path_prefix(self._bip32_path)
         return path_prefix + encoded_data
@@ -173,7 +175,7 @@ class LedgerWallet(BaseWallet):
         if tx_dict.get('nonce') is None:
             tx_dict['nonce'] = self._web3.eth.get_transaction_count(self.address)
 
-        tx = tx_from_dict(tx_dict)
+        tx = tx_from_dict(cast(TransactionDictType, tx_dict))
         try:
             payload = self.make_payload(tx)
             exchange_result = self.exchange_sign_payload_by_chunks(payload)

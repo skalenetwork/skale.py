@@ -19,11 +19,11 @@
 
 from functools import cached_property
 
-from skale_contracts.projects.context import ContextContract
 from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.context import ContextContract
 
-from skale.skale_base import SkaleBase
 from skale.contracts.context.context import Context
+from skale.skale_base import SkaleBase
 
 
 class SkaleContext(SkaleBase):

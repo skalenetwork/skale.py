@@ -7,4 +7,4 @@ PROJECT_DIR=$(dirname $DIR)
 export ENDPOINT=${ENDPOINT:-http://localhost:8545}
 export ENV=test
 
-py.test --cov=$PROJECT_DIR/ $PROJECT_DIR/tests/ --ignore $PROJECT_DIR/tests/allocator --ignore $PROJECT_DIR/tests/mirage $@
+uv run pytest --cov=$PROJECT_DIR/ $PROJECT_DIR/tests/ --ignore $PROJECT_DIR/tests/allocator --ignore $PROJECT_DIR/tests/fair $@

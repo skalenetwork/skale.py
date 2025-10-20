@@ -2,7 +2,6 @@ from skale.utils.account_tools import send_eth
 from skale.wallets.web3_wallet import generate_wallet
 from tests.manager.delegation.validator_service_test import _generate_new_validator
 
-
 TEST_RECHARGE_VALUE = 1000
 ETH_AMOUNT = 1
 

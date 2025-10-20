@@ -17,9 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract, transaction_method
 from eth_typing import ChecksumAddress
-from skale.transactions.result import TxRes
+from web3.contract.contract import ContractFunction
+
+from skale.contracts.base_contract import BaseContract, transaction_method
 
 
 class Etherbase(BaseContract):
@@ -32,11 +33,11 @@ class Etherbase(BaseContract):
         return self.contract.functions.ETHER_MANAGER_ROLE().call()
 
     @transaction_method
-    def retrieve(self, address: ChecksumAddress) -> TxRes:
+    def retrieve(self, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.retrieve(address)
 
     @transaction_method
-    def partially_retrieve(self, address: ChecksumAddress, amount: int) -> TxRes:
+    def partially_retrieve(self, address: ChecksumAddress, amount: int) -> ContractFunction:
         return self.contract.functions.partiallyRetrieve(address, amount)
 
     def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
@@ -52,20 +53,20 @@ class Etherbase(BaseContract):
         return self.contract.functions.getRoleMemberCount(role).call()
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)
 
     @transaction_method
-    def revoke_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def revoke_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.revokeRole(role, address)
 
     @transaction_method
-    def renounce_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def renounce_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.renounceRole(role, address)
 
     def get_version(self) -> str:
         return self.contract.functions.version().call()
 
     @transaction_method
-    def set_version(self, new_version) -> TxRes:
+    def set_version(self, new_version) -> ContractFunction:
         return self.contract.functions.setVersion(new_version)

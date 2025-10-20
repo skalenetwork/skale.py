@@ -2,12 +2,10 @@
 
 import pytest
 
-from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.account_tools import send_eth
-
 from skale.utils.contracts_provision import D_PLAN_ID
 from skale.utils.contracts_provision.allocator import add_test_plan, connect_test_beneficiary
-
+from skale.wallets.web3_wallet import generate_wallet
 
 TEST_PLAN_PARAMS = {
     'totalVestingDuration': 36,

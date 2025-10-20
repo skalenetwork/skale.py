@@ -20,8 +20,8 @@
 import enum
 from typing import Mapping, NamedTuple
 
-from web3.types import TxReceipt
 from eth_typing import HexStr
+from web3.types import TxReceipt
 
 from skale.transactions.exceptions import (
     DryRunFailedError,

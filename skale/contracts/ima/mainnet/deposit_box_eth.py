@@ -17,28 +17,29 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+
+from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.types.schain import SchainName
 
 
 class DepositBoxEth(BaseContract):
     @transaction_method
-    def deposit(self, schain_name: SchainName) -> TxRes:
+    def deposit(self, schain_name: SchainName) -> ContractFunction:
         return self.contract.functions.deposit(schain_name)
 
     @transaction_method
-    def deposit_direct(self, schain_name: SchainName, receiver: int) -> TxRes:
+    def deposit_direct(self, schain_name: SchainName, receiver: int) -> ContractFunction:
         return self.contract.functions.depositDirect(schain_name, receiver)
 
     @transaction_method
-    def get_my_eth(self) -> TxRes:
+    def get_my_eth(self) -> ContractFunction:
         return self.contract.functions.getMyEth()
 
     @transaction_method
-    def enable_active_eth_transfers(self, schain_name: SchainName) -> TxRes:
+    def enable_active_eth_transfers(self, schain_name: SchainName) -> ContractFunction:
         return self.contract.functions.enableActiveEthTransfers(schain_name)
 
     def approve_transfers(self, address) -> int:
@@ -50,9 +51,9 @@ class DepositBoxEth(BaseContract):
         return self.contract.functions.activeEthTransfers(hash).call()
 
     @transaction_method
-    def disable_active_eth_transfers(self, schain_name: SchainName) -> TxRes:
+    def disable_active_eth_transfers(self, schain_name: SchainName) -> ContractFunction:
         return self.contract.functions.disableActiveEthTransfers(schain_name)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.grantRole(role, address)

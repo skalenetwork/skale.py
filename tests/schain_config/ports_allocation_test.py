@@ -1,12 +1,12 @@
 import pytest
 
+from skale.schain_config import PORTS_PER_SCHAIN
 from skale.schain_config.ports_allocation import (
-    get_schain_base_port_on_node,
     calc_schain_base_port,
+    get_schain_base_port_on_node,
     get_schain_index_in_node,
 )
 from skale.utils.exceptions import SChainNotFoundException
-from skale.schain_config import PORTS_PER_SCHAIN
 from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_PORT, DEFAULT_SCHAIN_INDEX
 
 
