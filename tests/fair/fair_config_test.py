@@ -74,6 +74,8 @@ def test_get_nodes_from_last_two_committees_first_committee():
 def test_get_nodes_from_last_two_committees_multiple_committees():
     fair = Mock()
     fair.committee.last_committee_index.return_value = 2
+    fair.nodes.active_node_exists.return_value = True
+    fair.web3.eth.get_block = Mock(return_value={'timestamp': 1018})
 
     node_ids_1 = [NodeId(1)]
     node_ids_2 = [NodeId(2)]
