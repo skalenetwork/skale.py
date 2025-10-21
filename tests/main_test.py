@@ -77,3 +77,11 @@ def test_get_attr(skale):
     skale_py_nodes_contract = skale.nodes
     assert issubclass(type(skale_py_nodes_contract), BaseContract)
     assert isinstance(skale_py_nodes_contract, Nodes)
+
+
+def test_legacy_abi_generation(skale):
+    abi_dict = skale._generate_legacy_abi()
+    assert 'nodes_abi' in abi_dict
+    assert 'nodes_address' in abi_dict
+    assert isinstance(abi_dict['nodes_abi'], list)
+    assert Web3.is_checksum_address(abi_dict['nodes_address'])

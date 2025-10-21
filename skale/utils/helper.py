@@ -22,6 +22,7 @@ import ipaddress
 import json
 import logging
 import random
+import re
 import socket
 import string
 import sys
@@ -196,6 +197,10 @@ def split_public_key(public_key: str) -> list[bytes]:
 def to_camel_case(snake_str: str) -> str:
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])
+
+
+def camel_to_snake_case(name: str) -> str:
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
 
 def is_test_env() -> bool:
