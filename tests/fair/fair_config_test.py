@@ -1,7 +1,7 @@
 import socket
 from unittest.mock import Mock
 
-from skale.fair_config.committee_nodes import get_nodes_from_last_two_committees
+from skale.fair_config.committee_nodes import get_nodes_from_two_operational_committees
 from skale.types.committee import Committee, CommitteeIndex, Timestamp
 from skale.types.dkg import DkgId, Fp2Point, G2Point
 from skale.types.node import FairNode, NodeId
@@ -60,7 +60,7 @@ def test_get_nodes_from_last_two_committees_first_committee():
     fair.staking.get_reward_wallet.side_effect = lambda node_id: f'0xreward{node_id}'
     fair.node.get_public_key.side_effect = lambda node_id: f'0xpublickey{node_id}'
 
-    result = get_nodes_from_last_two_committees(fair)
+    result = get_nodes_from_two_operational_committees(fair)
 
     assert len(result) == 2
     assert result[0]['index'] == 0
@@ -100,7 +100,7 @@ def test_get_nodes_from_last_two_committees_multiple_committees():
     fair.staking.get_reward_wallet.return_value = '0xreward'
     fair.node.get_public_key.side_effect = lambda node_id: f'0xpublickey{node_id}'
 
-    result = get_nodes_from_last_two_committees(fair)
+    result = get_nodes_from_two_operational_committees(fair)
 
     assert len(result) == 2
     assert result[0]['index'] == 1
@@ -127,7 +127,7 @@ def test_get_nodes_from_last_two_committees_structure():
     fair.staking.get_reward_wallet.return_value = '0xreward'
     fair.node.get_public_key.side_effect = lambda node_id: f'0xpublickey{node_id}'
 
-    result = get_nodes_from_last_two_committees(fair)
+    result = get_nodes_from_two_operational_committees(fair)
 
     for group in result:
         assert 'index' in group

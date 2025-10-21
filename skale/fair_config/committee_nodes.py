@@ -21,7 +21,7 @@ from eth_utils.address import to_checksum_address
 
 from skale.fair_config.utils import convert_to_node_for_chain_config
 from skale.fair_manager import FairManager
-from skale.types.committee import Committee, CommitteeGroup, CommitteeIndex
+from skale.types.committee import Committee, CommitteeGroup, CommitteeIndex, Timestamp
 from skale.types.node import FairNodeForChainConfig, NodeId, get_ghost_fair_node
 from skale.utils.constants import ZERO_ADDRESS
 
@@ -42,56 +42,54 @@ def get_committee_nodes(fair: FairManager, committee_index: int) -> list[FairNod
 
 
 def create_committee_group(
-    fair: FairManager, committee_index: int, committee: Committee, timestamp: int
+    fair: FairManager, committee_index: CommitteeIndex, committee: Committee, timestamp: Timestamp
 ) -> CommitteeGroup:
     staking_contract_address = to_checksum_address(ZERO_ADDRESS)
     if committee_index > 0:
         staking_contract_address = to_checksum_address(fair.staking.contract.address)
-
-    committee = fair.committee.get_committee(CommitteeIndex(committee_index))
     return {
-        'index': CommitteeIndex(committee_index),
-        'ts': committee.starting_timestamp,  # todod: remove, use from committee structure
+        'index': committee_index,
+        'ts': timestamp,  # todod: remove, use from committee structure
         'staking_contract_address': staking_contract_address,
         'group': get_committee_nodes(fair, committee_index),
-        'committee': fair.committee.get_committee(CommitteeIndex(committee_index)),
+        'committee': committee,
     }
 
 
-def get_nodes_from_last_two_committees(fair: FairManager) -> list[CommitteeGroup]:
+def get_nodes_from_two_operational_committees(fair: FairManager) -> list[CommitteeGroup]:
     """
-    Compose a dictionary with nodes from the last two committees.
+    Compose a dictionary with nodes from the two operational committees.
     If it is the first committee, it will be saved both
     as first and second committee with first timestamp equal to 0
+    If there are committee with timestamp in the future two latest committee will be saved.
+    Otherwise latest committee will be saved twice.
     """
     latest_committee_index = fair.committee.last_committee_index()
+    latest_committee = fair.committee.get_committee(CommitteeIndex(latest_committee_index))
 
     if latest_committee_index == 0:
+        first_index = CommitteeIndex(0)
         first_committee = fair.committee.get_committee(CommitteeIndex(0))
-        return [
-            create_committee_group(fair, 0, first_committee, 0),
-            create_committee_group(fair, 0, first_committee, first_committee.starting_timestamp),
-        ]
-
-    latest_ts = fair.web3.eth.get_block('latest').get('timestamp', 0)
-    previous_committee_index = latest_committee_index - 1
-    previous_committee = fair.committee.get_committee(CommitteeIndex(previous_committee_index))
-
-    if latest_ts < previous_committee.starting_timestamp:
-        first_index = previous_committee_index
-        first_committee = previous_committee
+        first_timestamp = Timestamp(0)
     else:
-        first_index = latest_committee_index
-        first_committee = fair.committee.get_committee(CommitteeIndex(latest_committee_index))
+        previous_committee_index = CommitteeIndex(latest_committee_index - 1)
+        previous_committee = fair.committee.get_committee(CommitteeIndex(previous_committee_index))
 
-    second_committee_index = latest_committee_index
-    second_committee = fair.committee.get_committee(CommitteeIndex(second_committee_index))
+        latest_ts = fair.web3.eth.get_block('latest').get('timestamp', 0)
+        first_index = latest_committee_index
+        first_committee = latest_committee
+
+        if latest_ts < previous_committee.starting_timestamp:
+            first_index = previous_committee_index
+            first_committee = previous_committee
+
+        first_timestamp = first_committee.starting_timestamp
+
+    second_index = latest_committee_index
+    second_committee = latest_committee
+    second_timestamp = second_committee.starting_timestamp
 
     return [
-        create_committee_group(
-            fair, first_index, first_committee, first_committee.starting_timestamp
-        ),
-        create_committee_group(
-            fair, second_committee_index, second_committee, second_committee.starting_timestamp
-        ),
+        create_committee_group(fair, first_index, first_committee, first_timestamp),
+        create_committee_group(fair, second_index, second_committee, second_timestamp),
     ]
