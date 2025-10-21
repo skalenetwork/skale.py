@@ -23,8 +23,10 @@ import logging
 
 from skale_contracts import skale_contracts
 from skale_contracts.project_factory import SkaleProject
+from web3 import Web3
 
 from skale.utils.exceptions import EmptyWalletError, InvalidWalletError
+from skale.utils.helper import camel_to_snake_case
 from skale.utils.web3_utils import default_gas_price, get_endpoint, init_web3
 from skale.wallets import BaseWallet
 
@@ -93,3 +95,14 @@ class SkaleBase:
                 f'Wrong wallet class: {type(wallet).__name__}. \
                 Must be one of the BaseWallet subclasses'
             )
+
+    def _generate_legacy_abi(self) -> dict:
+        abi = {}
+        for contract_name in self.instance.abi.keys():
+            if contract_name == 'RewardWallet':  # RewardWallet requires node id to get address
+                continue
+            address = Web3.to_checksum_address(self.instance.get_contract_address(contract_name))
+            name = camel_to_snake_case(contract_name)
+            abi[f'{name}_abi'] = self.instance.abi[contract_name]
+            abi[f'{name}_address'] = address
+        return abi
