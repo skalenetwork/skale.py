@@ -19,7 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "redis==6.4.0",
+    "redis==7.0.0",
     "sgx.py==0.11dev0",
     "skale-contracts==2.0.0a6",
     "typing-extensions==4.15.0",
