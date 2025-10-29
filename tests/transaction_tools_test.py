@@ -66,7 +66,7 @@ def test_run_tx_with_retry_dry_run_failed(skale):
     )
     account = generate_account(skale.web3)
     token_amount = 10 * ETH_IN_WEI
-    with mock.patch('skale.contracts.base_contract.make_dry_run_call', dry_run_call_mock):
+    with mock.patch('skale.contracts.abstract_contract.make_dry_run_call', dry_run_call_mock):
         tx_res = run_tx_with_retry(
             skale.token.transfer,
             account['address'],

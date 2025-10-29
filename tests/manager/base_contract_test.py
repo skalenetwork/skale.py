@@ -55,7 +55,7 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
     account = generate_account(skale.web3)
     address_to = account['address']
     amount = 10 * ETH_IN_WEI
-    with mock.patch('skale.contracts.base_contract.make_dry_run_call') as dry_run_mock:
+    with mock.patch('skale.contracts.abstract_contract.make_dry_run_call') as dry_run_mock:
         skale.token.transfer(address_to, amount)
         dry_run_mock.assert_not_called()
 

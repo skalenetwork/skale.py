@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -ea
 
 export ENDPOINT=http://127.0.0.1:8545
 export MANAGER_TAG=1.12.0-develop.23

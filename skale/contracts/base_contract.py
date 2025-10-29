@@ -24,6 +24,7 @@ from skale_contracts.types import ContractName
 
 from skale.contracts.abstract_contract import AbstractContract
 from skale.skale_base import SkaleBase
+from skale.wallets import BaseWallet
 
 if TYPE_CHECKING:
     pass
@@ -45,3 +46,11 @@ class BaseContract(AbstractContract, Generic[SkaleType]):
             abi=skale.instance.abi[name],
             wallet=skale.wallet,
         )
+
+    @property
+    def wallet(self) -> BaseWallet:
+        return self.skale.wallet
+
+    @wallet.setter
+    def wallet(self, value: BaseWallet) -> None:
+        self.skale.wallet = value
