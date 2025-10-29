@@ -21,7 +21,8 @@ import functools
 import logging
 import math
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.abstract_contract import transaction_method
+from skale.contracts.base_contract import BaseContract
 from skale.contracts.fair.nodes import Nodes
 from skale.types.committee import Timestamp
 from skale.types.node import NodeId

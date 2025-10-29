@@ -19,7 +19,8 @@
 
 from typing import Any
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.abstract_contract import transaction_method
+from skale.contracts.base_contract import BaseContract
 from skale.types.dkg import DkgId, Fp2Point, G2Point, KeyShare, Round, Status, VerificationVector
 from skale.types.node import NodeId
 

@@ -19,7 +19,7 @@
 
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import transaction_method
+from skale.contracts.abstract_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 
 

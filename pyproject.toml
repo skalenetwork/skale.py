@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skale.py"
-version = "7.6"
+version = "7.7"
 description = "SKALE client tools"
 readme = "README.md"
 requires-python = ">=3.11,<4"
@@ -19,7 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "redis==6.4.0",
+    "redis>=7.0.1",
     "sgx.py==0.11dev0",
     "skale-contracts==2.0.0a6",
     "typing-extensions==4.15.0",
@@ -28,7 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 linter = [
-    "ruff==0.14.0",
+    "ruff==0.14.2",
     "mypy==1.18.2",
     "isort>=4.2.15,<5.4.3",
     "importlib-metadata<9.0",
@@ -36,7 +36,6 @@ linter = [
 hw-wallet = ["ledgerblue==0.1.55"]
 dev = [
     "skale.py[linter,hw-wallet]",
-    "click==8.3.0",
     "codecov",
     "freezegun==1.5.5",
     "mock==5.2.0",

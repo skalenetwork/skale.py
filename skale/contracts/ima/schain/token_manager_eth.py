@@ -19,7 +19,8 @@
 
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.abstract_contract import transaction_method
+from skale.contracts.base_contract import BaseContract
 
 
 class TokenManagerETH(BaseContract):

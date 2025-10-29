@@ -22,7 +22,8 @@ from typing import Any, List
 
 from eth_typing import ChecksumAddress, HexStr
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.abstract_contract import transaction_method
+from skale.contracts.base_contract import BaseContract
 from skale.types.node import FairNode, NodeId, Port
 from skale.utils import helper
 

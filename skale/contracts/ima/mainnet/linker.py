@@ -22,7 +22,7 @@ from typing import List
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import transaction_method
+from skale.contracts.abstract_contract import transaction_method
 from skale.contracts.ima_contract import ImaContract
 from skale.types.schain import SchainName
 

@@ -17,25 +17,33 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from eth_typing import ChecksumAddress
-from web3.contract.contract import ContractFunction
+from time import sleep
 
-from skale.contracts.abstract_contract import transaction_method
+from eth_typing import ChecksumAddress
+from web3.types import Wei
+
 from skale.contracts.base_contract import BaseContract
 
 
-class Context(BaseContract):
-    """Context contract"""
+class EthErc20(BaseContract):
+    def balance_of(self, address: ChecksumAddress) -> Wei:
+        return Wei(self.contract.functions.balanceOf(address).call())
 
-    def get_schain_name(self) -> str:
-        return self.contract.functions.getSchainName().call()
+    def wait_for_balance_change(
+        self,
+        address: ChecksumAddress,
+        initial_balance: Wei,
+        timeout: int = 120,
+        poll_interval: int = 5,
+        raise_on_timeout: bool = False,
+    ) -> bool:
+        iterations = timeout // poll_interval
+        for _ in range(iterations):
+            current_balance = self.balance_of(address)
+            if current_balance != initial_balance:
+                return True
+            sleep(poll_interval)
 
-    def get_schain_owner_address(self) -> bytes:
-        return self.contract.functions.getSchainOwnerAddress().call()
-
-    @transaction_method
-    def set_schain_owner_address(self, newOwner: ChecksumAddress) -> ContractFunction:
-        return self.contract.functions.setSchainOwnerAddress(newOwner)
-
-    def get_version(self) -> str:
-        return self.contract.functions.version().call()
+        if raise_on_timeout:
+            raise TimeoutError(f'Balance did not change for {address} within {timeout} seconds')
+        return False
