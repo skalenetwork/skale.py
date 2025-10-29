@@ -50,10 +50,13 @@ class AbstractContract:
         abi: dict[str, Any],
         wallet: BaseWallet | None = None,
     ):
-        self.address = Web3.to_checksum_address(address)
-        self.contract = web3.eth.contract(address=self.address, abi=abi)
         self.wallet = wallet
         self.web3 = web3
+        self._init_contract(address, abi)
+
+    def _init_contract(self, address: ChecksumAddress, abi: dict[str, Any]) -> None:
+        self.address = Web3.to_checksum_address(address)
+        self.contract = self.web3.eth.contract(address=self.address, abi=abi)
 
     def __getattr__(self, attr: str) -> Callable[..., Any]:
         """Fallback for contract calls"""

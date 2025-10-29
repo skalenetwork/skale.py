@@ -50,9 +50,6 @@ class Escrow(AllocatorContract):
     def allocator(self) -> Allocator:
         return self.skale.allocator
 
-    def init_contract(self, *args: Any) -> None:
-        self.contract = self.allocator.contract
-
     @beneficiary_escrow
     @transaction_method
     def retrieve(self) -> 'ContractFunction':

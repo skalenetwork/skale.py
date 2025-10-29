@@ -40,12 +40,14 @@ class BaseContract(AbstractContract, Generic[SkaleType]):
     def __init__(self, skale: SkaleType, name: ContractName):
         self.skale = skale
         self.name = name
-        super().__init__(
-            web3=skale.web3,
-            address=skale.instance.get_contract_address(name),
-            abi=skale.instance.abi[name],
-            wallet=skale.wallet,
-        )
+        self.wallet = skale.wallet
+        self.web3 = skale.web3
+        self.init_contract(contract_name=name)
+
+    def init_contract(self, contract_name: ContractName) -> None:
+        address = self.skale.instance.get_contract_address(contract_name)
+        abi = self.skale.instance.abi[contract_name]
+        self._init_contract(address, abi)
 
     @property
     def wallet(self) -> BaseWallet:
