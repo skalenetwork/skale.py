@@ -21,11 +21,12 @@ from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
 
 
-class TokenManagerERC20(BaseContract):
+class TokenManagerERC20(SkaleContract):
     """Token manager ERC20"""
 
     def automatic_deploy(self) -> bool:

@@ -21,7 +21,7 @@ from eth_utils.address import to_checksum_address
 
 from skale.fair_config.utils import convert_to_node_for_chain_config
 from skale.fair_manager import FairManager
-from skale.types.committee import CommitteeGroup, CommitteeIndex, Timestamp
+from skale.types.committee import Committee, CommitteeGroup, CommitteeIndex, Timestamp
 from skale.types.node import FairNodeForChainConfig, NodeId, get_ghost_fair_node
 from skale.utils.constants import ZERO_ADDRESS
 
@@ -41,50 +41,56 @@ def get_committee_nodes(fair: FairManager, committee_index: int) -> list[FairNod
     return committee_nodes
 
 
-def get_nodes_from_last_two_committees(fair: FairManager) -> list[CommitteeGroup]:
+def create_committee_group(
+    fair: FairManager, committee_index: CommitteeIndex, committee: Committee, timestamp: Timestamp
+) -> CommitteeGroup:
+    staking_contract_address = to_checksum_address(ZERO_ADDRESS)
+    if committee_index > 0:
+        staking_contract_address = to_checksum_address(fair.staking.contract.address)
+    return {
+        'index': committee_index,
+        'ts': timestamp,  # todod: remove, use from committee structure
+        'staking_contract_address': staking_contract_address,
+        'group': get_committee_nodes(fair, committee_index),
+        'committee': committee,
+    }
+
+
+def get_nodes_from_two_operational_committees(fair: FairManager) -> list[CommitteeGroup]:
     """
-    Compose a dictionary with nodes from the last two committees.
+    Compose a dictionary with nodes from the two operational committees.
     If it is the first committee, it will be saved both
     as first and second committee with first timestamp equal to 0
+    If there are committee with timestamp in the future two latest committee will be saved.
+    Otherwise latest committee will be saved twice.
     """
+    latest_committee_index = fair.committee.last_committee_index()
+    latest_committee = fair.committee.get_committee(CommitteeIndex(latest_committee_index))
 
-    latest_committee_index: int = fair.committee.last_committee_index()
     if latest_committee_index == 0:
-        committee_a_index: CommitteeIndex = CommitteeIndex(0)
-        committee_a = fair.committee.get_committee(CommitteeIndex(0))
-        ts_a = 0
+        first_index = CommitteeIndex(0)
+        first_committee = fair.committee.get_committee(CommitteeIndex(0))
+        first_timestamp = Timestamp(0)
     else:
-        committee_a_index: CommitteeIndex = CommitteeIndex(latest_committee_index - 1)  # type: ignore
-        committee_a = fair.committee.get_committee(CommitteeIndex(committee_a_index))
-        ts_a = committee_a.starting_timestamp
+        latest_ts = fair.web3.eth.get_block('latest').get('timestamp', 0)
+        first_index = latest_committee_index
+        first_committee = latest_committee
+        first_timestamp = Timestamp(0)
 
-    staking_contract_address = to_checksum_address(ZERO_ADDRESS)
-    if committee_a_index > 0:
-        staking_contract_address = to_checksum_address(fair.staking.contract.address)
+        if latest_ts < latest_committee.starting_timestamp:
+            previous_committee_index = CommitteeIndex(latest_committee_index - 1)
+            previous_committee = fair.committee.get_committee(
+                CommitteeIndex(previous_committee_index)
+            )
+            first_index = previous_committee_index
+            first_committee = previous_committee
+            first_timestamp = first_committee.starting_timestamp
 
-    committee_a_nodes_data: CommitteeGroup = {
-        'index': committee_a_index,
-        'ts': Timestamp(ts_a),  # todod: remove, use from committee structure
-        'staking_contract_address': staking_contract_address,
-        'group': get_committee_nodes(fair, committee_a_index),
-        'committee': committee_a,
-    }
+    second_index = latest_committee_index
+    second_committee = latest_committee
+    second_timestamp = second_committee.starting_timestamp
 
-    committee_b_index = latest_committee_index
-
-    staking_contract_address = to_checksum_address(ZERO_ADDRESS)
-    if committee_b_index > 0:
-        staking_contract_address = to_checksum_address(fair.staking.contract.address)
-
-    committee_b = fair.committee.get_committee(CommitteeIndex(committee_b_index))
-    committee_b_nodes_data: CommitteeGroup = {
-        'index': CommitteeIndex(committee_b_index),
-        'ts': committee_b.starting_timestamp,  # todod: remove, use from committee structure
-        'staking_contract_address': staking_contract_address,
-        'group': get_committee_nodes(fair, committee_b_index),
-        'committee': fair.committee.get_committee(CommitteeIndex(committee_b_index)),
-    }
-
-    committee_nodes_data = [committee_a_nodes_data, committee_b_nodes_data]
-
-    return committee_nodes_data
+    return [
+        create_committee_group(fair, first_index, first_committee, first_timestamp),
+        create_committee_group(fair, second_index, second_committee, second_timestamp),
+    ]

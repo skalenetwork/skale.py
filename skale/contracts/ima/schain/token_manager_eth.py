@@ -19,10 +19,11 @@
 
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 
 
-class TokenManagerETH(BaseContract):
+class TokenManagerETH(SkaleContract):
     @transaction_method
     def exit_to_main(self, amount: int) -> ContractFunction:
         return self.contract.functions.exitToMain(amount)

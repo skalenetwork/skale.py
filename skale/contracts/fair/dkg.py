@@ -19,12 +19,13 @@
 
 from typing import Any
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 from skale.types.dkg import DkgId, Fp2Point, G2Point, KeyShare, Round, Status, VerificationVector
 from skale.types.node import NodeId
 
 
-class DKG(BaseContract):
+class DKG(SkaleContract):
     def is_node_broadcasted(self, dkg: DkgId, node: NodeId) -> bool:
         return self.contract.functions.isNodeBroadcasted(dkg, node).call()
 

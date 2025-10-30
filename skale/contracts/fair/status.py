@@ -21,15 +21,16 @@ import functools
 import logging
 import math
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
 from skale.contracts.fair.nodes import Nodes
+from skale.contracts.skale_contract import SkaleContract
 from skale.types.committee import Timestamp
 from skale.types.node import NodeId
 
 logger = logging.getLogger(__name__)
 
 
-class Status(BaseContract):
+class Status(SkaleContract):
     @property
     @functools.lru_cache()
     def nodes(self) -> 'Nodes':

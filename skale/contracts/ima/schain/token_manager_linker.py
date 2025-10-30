@@ -20,10 +20,11 @@
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 
 
-class TokenManagerLinker(BaseContract):
+class TokenManagerLinker(SkaleContract):
     """Linker"""
 
     @transaction_method

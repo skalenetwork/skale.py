@@ -21,10 +21,10 @@ from skale_contracts.projects.skale_allocator import SkaleAllocatorContract
 from skale_contracts.types import ContractName
 from web3.constants import CHECKSUM_ADDRESSS_ZERO
 
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.skale_contract import SkaleContract
 
 
-class AllocatorContract(BaseContract):
+class AllocatorContract(SkaleContract):
     def init_contract(self, contract_name: ContractName) -> None:
         if contract_name == SkaleAllocatorContract.ESCROW:
             self.address = CHECKSUM_ADDRESSS_ZERO

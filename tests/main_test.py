@@ -7,7 +7,7 @@ from skale_contracts.projects.skale_manager import SkaleManagerContract
 from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
 
 from skale import SkaleManager
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.skale_contract import SkaleContract
 from skale.contracts.manager.nodes import Nodes
 from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
@@ -34,8 +34,8 @@ def test_lib_init():
     for prop in cached_properties:
         value = getattr(skale, prop)
         assert value is not None, f'Cached property {prop} returned None'
-        assert issubclass(type(value), BaseContract), (
-            f'Cached property {prop} is not a subclass of BaseContract'
+        assert issubclass(type(value), SkaleContract), (
+            f'Cached property {prop} is not a subclass of SkaleContract'
         )
 
     isinstance(skale.web3.provider, HTTPProvider)
@@ -75,7 +75,7 @@ def test_get_attr(skale):
     with pytest.raises(AttributeError):
         skale.t123_random_attr
     skale_py_nodes_contract = skale.nodes
-    assert issubclass(type(skale_py_nodes_contract), BaseContract)
+    assert issubclass(type(skale_py_nodes_contract), SkaleContract)
     assert isinstance(skale_py_nodes_contract, Nodes)
 
 
