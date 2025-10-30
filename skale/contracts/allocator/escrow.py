@@ -25,9 +25,9 @@ from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
-from skale.contracts.base_contract import transaction_method
 from skale.contracts.allocator.allocator import Allocator
 from skale.contracts.allocator_contract import AllocatorContract
+from skale.contracts.base_contract import transaction_method
 from skale.transactions.result import TxRes
 from skale.types.delegation import DelegationId
 from skale.types.validator import ValidatorId

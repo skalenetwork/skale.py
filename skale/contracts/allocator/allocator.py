@@ -26,8 +26,8 @@ from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError
 from web3.types import Wei
 
-from skale.contracts.base_contract import transaction_method
 from skale.contracts.allocator_contract import AllocatorContract
+from skale.contracts.base_contract import transaction_method
 from skale.types.allocation import (
     BeneficiaryPlan,
     BeneficiaryStatus,
