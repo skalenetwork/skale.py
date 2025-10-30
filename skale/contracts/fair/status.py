@@ -55,7 +55,7 @@ class Status(BaseContract):
 
     def calc_alive_gas_limit(self) -> int:
         active_whitelisted_nodes = len(self.active_whitelisted_node_ids())
-        alive_gas_limit_float = (230000 * math.log10(active_whitelisted_nodes + 15) + 420000) * 1.2
+        alive_gas_limit_float = (230000 * math.log10(active_whitelisted_nodes + 15) + 720000) * 1.2
         alive_gas_limit = int(alive_gas_limit_float)
         logger.info(
             'alive_gas_limit: %s, active_whitelisted_nodes: %s',
