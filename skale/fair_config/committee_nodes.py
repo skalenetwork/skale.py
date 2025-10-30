@@ -75,6 +75,7 @@ def get_nodes_from_two_operational_committees(fair: FairManager) -> list[Committ
         latest_ts = fair.web3.eth.get_block('latest').get('timestamp', 0)
         first_index = latest_committee_index
         first_committee = latest_committee
+        first_timestamp = Timestamp(0)
 
         if latest_ts < latest_committee.starting_timestamp:
             previous_committee_index = CommitteeIndex(latest_committee_index - 1)
@@ -83,8 +84,7 @@ def get_nodes_from_two_operational_committees(fair: FairManager) -> list[Committ
             )
             first_index = previous_committee_index
             first_committee = previous_committee
-
-        first_timestamp = first_committee.starting_timestamp
+            first_timestamp = first_committee.starting_timestamp
 
     second_index = latest_committee_index
     second_committee = latest_committee
