@@ -20,11 +20,11 @@
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.abstract_contract import transaction_method
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 
 
-class MessageProxyForSchain(BaseContract):
+class MessageProxyForSchain(SkaleContract):
     @transaction_method
     def set_minimum_receiver_balance(self, amount: int) -> ContractFunction:
         return self.contract.functions.setMinimumReceiverBalance(amount)

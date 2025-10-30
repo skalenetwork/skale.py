@@ -20,12 +20,12 @@
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.abstract_contract import transaction_method
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
 
 
-class DepositBoxERC721(BaseContract):
+class DepositBoxERC721(SkaleContract):
     @transaction_method
     def deposit_erc721(
         self, schain_name: SchainName, address: ChecksumAddress, tokenID: int

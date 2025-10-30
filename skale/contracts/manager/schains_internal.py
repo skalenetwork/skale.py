@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, List
 
 from eth_typing import ChecksumAddress
 
-from skale.contracts.abstract_contract import transaction_method
+from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.schain import Schain, SchainHash, SchainName

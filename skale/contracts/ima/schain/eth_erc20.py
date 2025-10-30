@@ -22,10 +22,10 @@ from time import sleep
 from eth_typing import ChecksumAddress
 from web3.types import Wei
 
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.skale_contract import SkaleContract
 
 
-class EthErc20(BaseContract):
+class EthErc20(SkaleContract):
     def balance_of(self, address: ChecksumAddress) -> Wei:
         return Wei(self.contract.functions.balanceOf(address).call())
 

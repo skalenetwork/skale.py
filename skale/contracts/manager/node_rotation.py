@@ -28,7 +28,7 @@ from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError
 
-from skale.contracts.abstract_contract import transaction_method
+from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.rotation import Rotation, RotationSwap
