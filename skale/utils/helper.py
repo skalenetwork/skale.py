@@ -199,7 +199,9 @@ def to_camel_case(snake_str: str) -> str:
     return components[0] + ''.join(x.title() for x in components[1:])
 
 
-def camel_to_snake_case(name: str) -> str:
+def contract_name_to_snake_case(name: str) -> str:
+    name = name.replace('ERC', 'Erc')
+    name = re.sub(r'ForMainnet$', 'Mainnet', name)
     return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
 

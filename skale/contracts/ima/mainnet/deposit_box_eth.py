@@ -21,11 +21,12 @@ from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
 
 
-class DepositBoxEth(BaseContract):
+class DepositBoxEth(SkaleContract):
     @transaction_method
     def deposit(self, schain_name: SchainName) -> ContractFunction:
         return self.contract.functions.deposit(schain_name)

@@ -21,13 +21,14 @@ from typing import Any
 
 from eth_typing import ChecksumAddress
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 from skale.types.committee import Committee as CommitteeStruct
 from skale.types.committee import CommitteeIndex
 from skale.types.node import NodeId
 
 
-class Committee(BaseContract):
+class Committee(SkaleContract):
     def __get_raw(self, committee_index: CommitteeIndex) -> list[Any]:
         return list(self.contract.functions.getCommittee(committee_index).call())
 
