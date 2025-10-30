@@ -1,7 +1,7 @@
-""" SKALE node test """
+"""SKALE node test"""
 
-import socket
 import random
+import socket
 import string
 from datetime import datetime
 
@@ -11,10 +11,9 @@ from web3 import Web3
 
 import skale.utils.helper as Helper
 from skale.contracts.manager.nodes import FIELDS, NodeStatus
-from skale.utils.exceptions import InvalidNodeIdError
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 from skale.utils.contracts_provision.utils import generate_random_ip
-
+from skale.utils.exceptions import InvalidNodeIdError
 from tests.constants import DEFAULT_NODE_NAME, NOT_EXISTING_ID
 
 
@@ -75,8 +74,7 @@ def test_get_active_node_ids(skale, nodes):
     assert list(node.keys()) == FIELDS
 
     # 0 is active status
-    assert all([skale.nodes.get_node_status(node_id) == 0
-                for node_id in active_node_ids])
+    assert all([skale.nodes.get_node_status(node_id) == 0 for node_id in active_node_ids])
 
 
 def test_get_active_node_ips(skale, nodes):
@@ -87,8 +85,7 @@ def test_get_active_node_ips(skale, nodes):
 
     assert isinstance(active_node_ips, list)
 
-    assert all([Helper.is_valid_ipv4_address(node_ip)
-               for node_ip in active_node_ips])
+    assert all([Helper.is_valid_ipv4_address(node_ip) for node_ip in active_node_ips])
 
 
 def test_is_node_name_available(skale, nodes):

@@ -10,7 +10,7 @@ def test_get_nodes_for_schain(skale, schain):
     fields_with_id.append('id')
 
     assert len(schain_nodes) >= MIN_NODES_IN_SCHAIN
-    assert list(schain_nodes[0].keys()) == fields_with_id
+    assert set(schain_nodes[0].keys()) == set(fields_with_id)
 
 
 def test_get_schain_nodes_with_schains(skale, schain):

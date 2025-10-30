@@ -17,34 +17,44 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from web3 import Web3
+from typing import Any, Dict, List
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from eth_typing import ChecksumAddress
+from web3 import Web3
+from web3.contract.contract import ContractFunction
+from web3.types import HexBytes, Wei
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
+from skale.types.validator import Validator, ValidatorId, ValidatorWithId
 from skale.utils.helper import format_fields
 
-from skale.transactions.result import TxRes
-
-
 FIELDS = [
-    'name', 'validator_address', 'requested_address', 'description', 'fee_rate',
-    'registration_time', 'minimum_delegation_amount', 'accept_new_requests',
-    'trusted'
+    'name',
+    'validator_address',
+    'requested_address',
+    'description',
+    'fee_rate',
+    'registration_time',
+    'minimum_delegation_amount',
+    'accept_new_requests',
+    'trusted',
 ]
 
 
-class ValidatorService(BaseContract):
+class ValidatorService(SkaleManagerContract):
     """Wrapper for ValidatorService.sol functions"""
 
-    def __get_raw(self, _id) -> list:
+    def __get_raw(self, _id: ValidatorId) -> List[Any]:
         """Returns raw validator info.
 
         :returns: Raw validator info
         :rtype: list
         """
-        return self.contract.functions.validators(_id).call()
+        return list(self.contract.functions.validators(_id).call())
 
     @format_fields(FIELDS)
-    def get(self, _id) -> dict:
+    def untyped_get(self, _id: ValidatorId) -> List[Any]:
         """Returns validator info.
 
         :returns: Validator info
@@ -55,59 +65,77 @@ class ValidatorService(BaseContract):
         validator.append(trusted)
         return validator
 
-    def get_with_id(self, _id) -> dict:
+    def get(self, _id: ValidatorId) -> Validator:
+        untyped_validator = self.untyped_get(_id)
+        if untyped_validator is None:
+            raise ValueError('Validator with id ', _id, ' is missing')
+        if isinstance(untyped_validator, dict):
+            return self._to_validator(untyped_validator)
+        if isinstance(untyped_validator, list):
+            return self._to_validator(untyped_validator[0])
+        raise TypeError(_id)
+
+    def get_with_id(self, _id: ValidatorId) -> ValidatorWithId:
         """Returns validator info with ID.
 
         :returns: Validator info with ID
         :rtype: dict
         """
         validator = self.get(_id)
-        validator['id'] = _id
-        return validator
+        return ValidatorWithId({'id': _id, **validator})
 
-    def number_of_validators(self):
+    def number_of_validators(self) -> int:
         """Returns number of registered validators.
 
         :returns: List of validators
         :rtype: int
         """
-        return self.contract.functions.numberOfValidators().call()
+        return int(self.contract.functions.numberOfValidators().call())
 
-    def ls(self, trusted_only=False):
+    def ls(self, trusted_only: bool = False) -> List[ValidatorWithId]:
         """Returns list of registered validators.
 
         :returns: List of validators
         :rtype: list
         """
         number_of_validators = self.number_of_validators()
-        validators = [
-            self.get_with_id(val_id)
-            for val_id in self.get_trusted_validator_ids()
-        ] if trusted_only else [
-            self.get_with_id(val_id)
-            for val_id in range(1, number_of_validators + 1)
-        ]
+        validators = (
+            [self.get_with_id(val_id) for val_id in self.get_trusted_validator_ids()]
+            if trusted_only
+            else [
+                self.get_with_id(ValidatorId(val_id))
+                for val_id in range(1, number_of_validators + 1)
+            ]
+        )
         return validators
 
-    def get_linked_addresses_by_validator_address(self, address: str) -> list:
+    def get_linked_addresses_by_validator_address(
+        self, address: ChecksumAddress
+    ) -> List[ChecksumAddress]:
         """Returns list of node addresses linked to the validator address.
 
         :returns: List of node addresses
         :rtype: list
         """
-        return self.contract.functions.getMyNodesAddresses().call({
-            'from': address
-        })
+        return [
+            Web3.to_checksum_address(address)
+            for address in self.contract.functions.getMyNodesAddresses().call({'from': address})
+        ]
 
-    def get_linked_addresses_by_validator_id(self, validator_id: int) -> list:
+    def get_linked_addresses_by_validator_id(
+        self, validator_id: ValidatorId
+    ) -> List[ChecksumAddress]:
         """Returns list of node addresses linked to the validator ID.
 
         :returns: List of node addresses
         :rtype: list
         """
-        return self.contract.functions.getNodeAddresses(validator_id).call()
+        return [
+            Web3.to_checksum_address(address)
+            for address in self.contract.functions.getNodeAddresses(validator_id).call()
+        ]
 
-    def is_main_address(self, validator_address: str) -> bool:
+    def is_main_address(self, validator_address: ChecksumAddress) -> bool:
         """Checks if provided address is the main validator address
 
         :returns: True if provided address is the main validator address, otherwise False
@@ -125,59 +153,60 @@ class ValidatorService(BaseContract):
 
         return validator_address == validator['validator_address']
 
-    def validator_address_exists(self, validator_address: str) -> bool:
+    def validator_address_exists(self, validator_address: ChecksumAddress) -> bool:
         """Checks if there is a validator with provided address
 
         :returns: True if validator exists, otherwise False
         :rtype: bool
         """
-        return self.contract.functions.validatorAddressExists(validator_address).call()
+        return bool(self.contract.functions.validatorAddressExists(validator_address).call())
 
-    def validator_exists(self, validator_id: str) -> bool:
+    def validator_exists(self, validator_id: ValidatorId) -> bool:
         """Checks if there is a validator with provided ID
 
         :returns: True if validator exists, otherwise False
         :rtype: bool
         """
-        return self.contract.functions.validatorExists(validator_id).call()
+        return bool(self.contract.functions.validatorExists(validator_id).call())
 
-    def validator_id_by_address(self, validator_address: str) -> int:
+    def validator_id_by_address(self, validator_address: ChecksumAddress) -> ValidatorId:
         """Returns validator ID by validator address
 
         :returns: Validator ID
         :rtype: int
         """
-        return self.contract.functions.getValidatorId(validator_address).call()
+        return ValidatorId(self.contract.functions.getValidatorId(validator_address).call())
 
-    def get_trusted_validator_ids(self) -> list:
+    def get_trusted_validator_ids(self) -> List[ValidatorId]:
         """Returns list of trusted validators id.
 
         :returns: List of trusted validators id
         :rtype: list
         """
-        return self.contract.functions.getTrustedValidators().call()
+        return [ValidatorId(id) for id in self.contract.functions.getTrustedValidators().call()]
 
     @transaction_method
-    def _enable_validator(self, validator_id: int) -> TxRes:
+    def _enable_validator(self, validator_id: ValidatorId) -> 'ContractFunction':
         """For internal usage only"""
         return self.contract.functions.enableValidator(validator_id)
 
     @transaction_method
-    def _disable_validator(self, validator_id: int) -> TxRes:
+    def _disable_validator(self, validator_id: ValidatorId) -> 'ContractFunction':
         """For internal usage only"""
         return self.contract.functions.disableValidator(validator_id)
 
-    def _is_authorized_validator(self, validator_id: int) -> bool:
+    def _is_authorized_validator(self, validator_id: ValidatorId) -> bool:
         """For internal usage only"""
-        return self.contract.functions.isAuthorizedValidator(validator_id).call()
+        return bool(self.contract.functions.isAuthorizedValidator(validator_id).call())
 
-    def is_accepting_new_requests(self, validator_id: int) -> bool:
+    def is_accepting_new_requests(self, validator_id: ValidatorId) -> bool:
         """For internal usage only"""
-        return self.contract.functions.isAcceptingNewRequests(validator_id).call()
+        return bool(self.contract.functions.isAcceptingNewRequests(validator_id).call())
 
     @transaction_method
-    def register_validator(self, name: str, description: str, fee_rate: int,
-                           min_delegation_amount: int) -> TxRes:
+    def register_validator(
+        self, name: str, description: str, fee_rate: int, min_delegation_amount: int
+    ) -> 'ContractFunction':
         """Registers a new validator in the SKALE Manager contracts.
 
         :param name: Validator name
@@ -192,28 +221,31 @@ class ValidatorService(BaseContract):
         :rtype: TxRes
         """
         return self.contract.functions.registerValidator(
-            name, description, fee_rate, min_delegation_amount)
+            name, description, fee_rate, min_delegation_amount
+        )
 
-    def get_link_node_signature(self, validator_id: int) -> str:
+    def get_link_node_signature(self, validator_id: ValidatorId) -> HexBytes:
         unsigned_hash = Web3.solidity_keccak(['uint256'], [validator_id])
         signed_hash = self.skale.wallet.sign_hash(unsigned_hash.hex())
-        return signed_hash.signature.hex()
+        return signed_hash.signature
 
     @transaction_method
-    def link_node_address(self, node_address: str, signature: str) -> TxRes:
+    def link_node_address(
+        self, node_address: ChecksumAddress, signature: HexBytes
+    ) -> 'ContractFunction':
         """Link node address to your validator account.
 
         :param node_address: Address of the node to link
         :type node_address: str
-        :param signature: Signature - reuslt of the get_link_node_signature function
-        :type signature: str
+        :param signature: Signature - result of the get_link_node_signature function
+        :type signature: HexBytes
         :returns: Transaction results
         :rtype: TxRes
         """
         return self.contract.functions.linkNodeAddress(node_address, signature)
 
     @transaction_method
-    def unlink_node_address(self, node_address: str) -> TxRes:
+    def unlink_node_address(self, node_address: ChecksumAddress) -> 'ContractFunction':
         """Unlink node address from your validator account.
 
         :param node_address: Address of the node to unlink
@@ -224,31 +256,31 @@ class ValidatorService(BaseContract):
         return self.contract.functions.unlinkNodeAddress(node_address)
 
     @transaction_method
-    def disable_whitelist(self) -> TxRes:
-        """ Disable validator whitelist. Master key only transaction.
+    def disable_whitelist(self) -> 'ContractFunction':
+        """Disable validator whitelist. Master key only transaction.
         :returns: Transaction results
         :rtype: TxRes
         """
         return self.contract.functions.disableWhitelist()
 
     def get_use_whitelist(self) -> bool:
-        """ Return useWhitelist contract variable
+        """Return useWhitelist contract variable
         :returns: useWhitelist value
         :rtype: bool
         """
-        return self.contract.functions.useWhitelist().call()
+        return bool(self.contract.functions.useWhitelist().call())
 
-    def get_and_update_bond_amount(self, validator_id: int) -> int:
+    def get_and_update_bond_amount(self, validator_id: ValidatorId) -> int:
         """Return amount of token that validator delegated to himself
-           :param validator_id: id of the validator
-           :returns:
-           :rtype: int
+        :param validator_id: id of the validator
+        :returns:
+        :rtype: int
         """
-        return self.contract.functions.getAndUpdateBondAmount(validator_id).call()
+        return int(self.contract.functions.getAndUpdateBondAmount(validator_id).call())
 
     @transaction_method
-    def set_validator_mda(self, minimum_delegation_amount: int) -> TxRes:
-        """ Allows a validator to set the minimum delegation amount.
+    def set_validator_mda(self, minimum_delegation_amount: Wei) -> 'ContractFunction':
+        """Allows a validator to set the minimum delegation amount.
 
         :param new_minimum_delegation_amount: Minimum delegation amount
         :type new_minimum_delegation_amount: int
@@ -258,8 +290,8 @@ class ValidatorService(BaseContract):
         return self.contract.functions.setValidatorMDA(minimum_delegation_amount)
 
     @transaction_method
-    def request_for_new_address(self, new_validator_address: str) -> TxRes:
-        """ Allows a validator to request a new address.
+    def request_for_new_address(self, new_validator_address: ChecksumAddress) -> 'ContractFunction':
+        """Allows a validator to request a new address.
 
         :param new_validator_address: New validator address
         :type new_validator_address: str
@@ -269,8 +301,8 @@ class ValidatorService(BaseContract):
         return self.contract.functions.requestForNewAddress(new_validator_address)
 
     @transaction_method
-    def confirm_new_address(self, validator_id: int) -> TxRes:
-        """  Confirm change of the address.
+    def confirm_new_address(self, validator_id: ValidatorId) -> 'ContractFunction':
+        """Confirm change of the address.
 
         :param validator_id: ID of the validator
         :type validator_id: int
@@ -280,8 +312,8 @@ class ValidatorService(BaseContract):
         return self.contract.functions.confirmNewAddress(validator_id)
 
     @transaction_method
-    def set_validator_name(self, new_name: str) -> TxRes:
-        """ Allows a validator to change the name.
+    def set_validator_name(self, new_name: str) -> 'ContractFunction':
+        """Allows a validator to change the name.
 
         :param new_name: New validator name
         :type new_name: str
@@ -291,8 +323,8 @@ class ValidatorService(BaseContract):
         return self.contract.functions.setValidatorName(new_name)
 
     @transaction_method
-    def set_validator_description(self, new_description: str) -> TxRes:
-        """ Allows a validator to change the name.
+    def set_validator_description(self, new_description: str) -> 'ContractFunction':
+        """Allows a validator to change the name.
 
         :param new_description: New validator description
         :type new_name: str
@@ -302,11 +334,26 @@ class ValidatorService(BaseContract):
         return self.contract.functions.setValidatorDescription(new_description)
 
     @transaction_method
-    def grant_role(self, role: bytes, address: str) -> TxRes:
+    def grant_role(self, role: bytes, address: ChecksumAddress) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, address)
 
     def validator_manager_role(self) -> bytes:
-        return self.contract.functions.VALIDATOR_MANAGER_ROLE().call()
+        return bytes(self.contract.functions.VALIDATOR_MANAGER_ROLE().call())
 
-    def has_role(self, role: bytes, address: str) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.hasRole(role, address).call())
+
+    def _to_validator(self, untyped_validator: Dict[str, Any]) -> Validator:
+        return Validator(
+            {
+                'name': str(untyped_validator['name']),
+                'validator_address': ChecksumAddress(untyped_validator['validator_address']),
+                'requested_address': ChecksumAddress(untyped_validator['requested_address']),
+                'description': str(untyped_validator['description']),
+                'fee_rate': int(untyped_validator['fee_rate']),
+                'registration_time': int(untyped_validator['registration_time']),
+                'minimum_delegation_amount': Wei(untyped_validator['minimum_delegation_amount']),
+                'accept_new_requests': bool(untyped_validator['accept_new_requests']),
+                'trusted': bool(untyped_validator['trusted']),
+            }
+        )

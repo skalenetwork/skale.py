@@ -1,0 +1,16 @@
+- always keep the changes minimal and purposeful
+- focus on fixing the exact problem or implementing the exact feature
+- keep the code simple, do not write defensive code
+- do not describe your changes in details after you made changes, focus on writing code
+- do not generate any documentation, the code should be self-explanatory
+- do not generate any in-line comments
+- for the new files, always add a license header, same format as in the existing files
+- no commented out code
+- no console logs in production code
+- no unused imports
+- no redundant code - move repeated logic into helper functions
+- use type hints to specify the expected types of function arguments and return values
+
+- check `ruff.toml` for formatting rules
+- always lint changes using `ruff check`
+- tests should be placed in `tests/` directory, follow the existing structure and code style

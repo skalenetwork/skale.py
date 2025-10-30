@@ -1,22 +1,19 @@
-""" SKALE chain internal test """
+"""SKALE chain internal test"""
 
-from skale.contracts.manager.schains import FIELDS
-from tests.constants import (
-    DEFAULT_SCHAIN_ID,
-    EMPTY_SCHAIN_ARR,
-    MIN_NODES_IN_SCHAIN
-)
+from dataclasses import astuple, fields
+
+from tests.constants import DEFAULT_SCHAIN_ID, EMPTY_SCHAIN_ARR, MIN_NODES_IN_SCHAIN, SCHAIN_FIELDS
 
 
 def test_get_raw(skale):
-    schain_arr = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
-    assert len(FIELDS) == len(schain_arr) + 4  # +1 for chainId + options
+    schain = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
+    assert len(SCHAIN_FIELDS) == len(fields(schain)) + 2  # +2 for chainId + options
 
 
 def test_get_raw_not_exist(skale):
     not_exist_schain_id = skale.schains.name_to_id('unused_hash')
     schain_arr = skale.schains_internal.get_raw(not_exist_schain_id)
-    assert schain_arr == EMPTY_SCHAIN_ARR
+    assert list(astuple(schain_arr)) == EMPTY_SCHAIN_ARR
 
 
 def test_get_schains_number(skale, schain):
@@ -32,9 +29,7 @@ def test_get_schain_list_size(skale, schain, empty_account):
 
 
 def test_get_schain_id_by_index_for_owner(skale, schain):
-    schain_id = skale.schains_internal.get_schain_id_by_index_for_owner(
-        skale.wallet.address, 0
-    )
+    schain_id = skale.schains_internal.get_schain_id_by_index_for_owner(skale.wallet.address, 0)
     schain = skale.schains.get(schain_id)
     assert schain.mainnet_owner == skale.wallet.address
 

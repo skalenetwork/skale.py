@@ -1,11 +1,12 @@
 from unittest import mock
-import web3
+
 import pytest
-from skale.wallets import Web3Wallet
-from skale.wallets.common import ensure_chain_id
+import web3
 
 from skale.transactions.exceptions import ChainIdError
 from skale.utils.web3_utils import init_web3
+from skale.wallets import Web3Wallet
+from skale.wallets.common import ensure_chain_id
 from tests.constants import ENDPOINT, ETH_PRIVATE_KEY
 
 
@@ -15,7 +16,7 @@ def get_tx_dict():
         'value': 0,
         'gasPrice': 1,
         'gas': 22000,
-        'nonce': 0
+        'nonce': 0,
     }
 
 

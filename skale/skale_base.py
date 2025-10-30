@@ -17,17 +17,18 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+
 import abc
 import logging
 
+from skale_contracts import skale_contracts
+from skale_contracts.project_factory import SkaleProject
+from web3 import Web3
+
+from skale.utils.exceptions import EmptyWalletError, InvalidWalletError
+from skale.utils.helper import camel_to_snake_case
+from skale.utils.web3_utils import default_gas_price, get_endpoint, init_web3
 from skale.wallets import BaseWallet
-from skale.utils.abi_utils import get_contract_address_by_name, get_contract_abi_by_name
-from skale.utils.exceptions import InvalidWalletError, EmptyWalletError
-from skale.utils.web3_utils import default_gas_price, init_web3
-
-from skale.utils.helper import get_abi
-from skale.contracts.contract_manager import ContractManager
-
 
 logger = logging.getLogger(__name__)
 
@@ -39,89 +40,69 @@ class EmptyPrivateKey(Exception):
 class SkaleBase:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, endpoint, abi_filepath,
-                 wallet=None, state_path=None,
-                 ts_diff=None, provider_timeout=30):
-        logger.info(f'Initing skale.py, endpoint: {endpoint}, '
-                    f'wallet: {type(wallet).__name__}')
-        self._abi_filepath = abi_filepath
-        self._endpoint = endpoint
-        self.web3 = init_web3(endpoint,
-                              state_path=state_path,
-                              ts_diff=ts_diff,
-                              provider_timeout=provider_timeout)
-        self.__contracts = {}
-        self.__contracts_info = {}
-        self.set_contracts_info()
+    def __init__(
+        self,
+        endpoint: str | list[str],
+        alias_or_address: str,
+        wallet: BaseWallet | None = None,
+        state_path: str | None = None,
+        ts_diff: int | None = None,
+        provider_timeout: int = 30,
+        debug: bool = False,
+    ):
+        logger.info(
+            'Initializing %s, endpoint: %s, alias_or_address: %s, wallet: %s',
+            self.__class__.__name__,
+            endpoint,
+            alias_or_address,
+            type(wallet).__name__,
+        )
+        if state_path:
+            logger.warning(
+                'state_path is deprecated and will be ignored. This option will be removed in v8.'
+            )
+        self._endpoint = get_endpoint(endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
+        self._alias_or_address = alias_or_address
+        self.web3 = init_web3(self._endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
+        self.network = skale_contracts.get_network_by_provider(self.web3.provider)
+        self.project = self.network.get_project(self.project_name)
+        self.instance = self.project.get_instance(alias_or_address)
+        self.debug = debug
         if wallet:
             self.wallet = wallet
 
     @property
-    def gas_price(self):
+    @abc.abstractmethod
+    def project_name(self) -> SkaleProject:
+        """Name of smart contracts project"""
+
+    @property
+    def gas_price(self) -> int:
         return default_gas_price(self.web3)
 
     @property
-    def wallet(self):
+    def wallet(self) -> BaseWallet:
         if not self._wallet:
             raise EmptyWalletError('No wallet provided')
         return self._wallet
 
     @wallet.setter
-    def wallet(self, wallet):
+    def wallet(self, wallet: BaseWallet) -> None:
         if issubclass(type(wallet), BaseWallet):
             self._wallet = wallet
         else:
-            raise InvalidWalletError(f'Wrong wallet class: {type(wallet).__name__}. \
-                                       Must be one of the BaseWallet subclasses')
+            raise InvalidWalletError(
+                f'Wrong wallet class: {type(wallet).__name__}. \
+                Must be one of the BaseWallet subclasses'
+            )
 
-    def __is_debug_contracts(self, abi):
-        return abi.get('time_helpers_with_debug_address', None)
-
-    @abc.abstractmethod
-    def set_contracts_info(self):
-        return
-
-    def init_contract_manager(self):
-        abi = get_abi(self._abi_filepath)
-        self.add_lib_contract('contract_manager', ContractManager, abi)
-
-    def __init_contract_from_info(self, abi, contract_info):
-        if contract_info.upgradeable:
-            self.init_upgradeable_contract(contract_info, abi)
-        else:
-            self.add_lib_contract(contract_info.name, contract_info.contract_class,
-                                  abi)
-
-    def init_upgradeable_contract(self, contract_info, abi):
-        address = self.get_contract_address(contract_info.contract_name)
-        self.add_lib_contract(contract_info.name, contract_info.contract_class,
-                              abi, address)
-
-    def add_lib_contract(self, name, contract_class,
-                         abi, contract_address=None):
-        address = contract_address or get_contract_address_by_name(
-            abi, name)
-        logger.debug(f'Fetching abi for {name}, address {address}')
-        contract_abi = get_contract_abi_by_name(abi, name)
-        self.add_contract(name, contract_class(
-            self, name, address, contract_abi))
-
-    def add_contract(self, name, contract):
-        self.__contracts[name] = contract
-
-    def get_contract_address(self, name):
-        return self.contract_manager.get_contract_address(name)
-
-    def __get_contract_by_name(self, name):
-        return self.__contracts[name]
-
-    def __getattr__(self, name):
-        if name not in self.__contracts:
-            if not self.__contracts_info.get(name):
-                logger.warning(f'{name} method/contract wasn\'t found')
-                return None
-            logger.debug(f'Contract {name} wasn\'t inited, creating now')
-            contract_info = self.__contracts_info[name]
-            abi = get_abi(self._abi_filepath)
-            self.__init_contract_from_info(abi, contract_info)
-        return self.__get_contract_by_name(name)
+    def _generate_legacy_abi(self) -> dict:
+        abi = {}
+        for contract_name in self.instance.abi.keys():
+            if contract_name == 'RewardWallet':  # RewardWallet requires node id to get address
+                continue
+            address = Web3.to_checksum_address(self.instance.get_contract_address(contract_name))
+            name = camel_to_snake_case(contract_name)
+            abi[f'{name}_abi'] = self.instance.abi[contract_name]
+            abi[f'{name}_address'] = address
+        return abi

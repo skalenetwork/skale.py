@@ -17,14 +17,13 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
 import json
+import os
 
-from skale.transactions.tools import transaction_from_method
-from skale.utils.web3_utils import (
-    get_eth_nonce,
-    wait_for_receipt_by_blocks
-)
+from web3 import Web3
+
+from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
+from skale.wallets.common import BaseWallet
 
 # Usage note: to change this contract update the code, compile it and put the new bytecode and
 # new ABI below
@@ -51,22 +50,15 @@ contract FakeMultiSigWallet {
 FAKE_MULTISIG_BYTECODE = '608060405234801561001057600080fd5b5060bc8061001f6000396000f3fe608060405260043610601f5760003560e01c80632e64cec114602a576025565b36602557005b600080fd5b348015603557600080fd5b50603c603e565b005b3373ffffffffffffffffffffffffffffffffffffffff166108fc479081150290604051600060405180830381858888f193505050501580156083573d6000803e3d6000fd5b5056fea26469706673582212205da5b248ec5ba69f49e730c2861325b8ad733be642688b5377ec25fc6da7e4fc64736f6c63430008070033'  # noqa
 
 FAKE_MULTISIG_ABI = [
+    {'inputs': [], 'stateMutability': 'nonpayable', 'type': 'constructor'},
     {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
+        'inputs': [],
+        'name': 'retrieve',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
     },
-    {
-        "inputs": [],
-        "name": "retrieve",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "stateMutability": "payable",
-        "type": "receive"
-    }
+    {'stateMutability': 'payable', 'type': 'receive'},
 ]
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -76,24 +68,21 @@ FAKE_MULTISIG_DATA_PATH = os.getenv('FAKE_MULTISIG_DATA_PATH') or FAKE_MULTISIG_
 FAKE_MULTISIG_CONSTRUCTOR_GAS = 1000000
 
 
-def deploy_fake_multisig_contract(web3, wallet):
+def deploy_fake_multisig_contract(web3: Web3, wallet: BaseWallet) -> None:
     print('Going to deploy simple payable contract')
     FakeMultisigContract = web3.eth.contract(abi=FAKE_MULTISIG_ABI, bytecode=FAKE_MULTISIG_BYTECODE)
     constructor = FakeMultisigContract.constructor()
-    constructor.fn_name = 'fake_multisig_constructor'
-    tx = transaction_from_method(
-        constructor,
-        nonce=get_eth_nonce(web3, wallet.address),
-        gas_price=3 * 10 ** 9,
-        gas_limit=FAKE_MULTISIG_CONSTRUCTOR_GAS
+    tx = constructor.build_transaction(
+        {
+            'nonce': get_eth_nonce(web3, wallet.address),
+            'gasPrice': 3 * 10**9,
+            'gas': FAKE_MULTISIG_CONSTRUCTOR_GAS,
+        }
     )
     tx_hash = wallet.sign_and_send(tx)
     receipt = wait_for_receipt_by_blocks(web3, tx_hash)
-    print(f'Sample contract successfully deployed: {receipt.contractAddress}')
-    content = {
-        'address': receipt.contractAddress,
-        'abi': FAKE_MULTISIG_ABI
-    }
+    print(f'Sample contract successfully deployed: {receipt["contractAddress"]}')
+    content = {'address': receipt['contractAddress'], 'abi': FAKE_MULTISIG_ABI}
     with open(FAKE_MULTISIG_DATA_PATH, 'w') as outfile:
         json.dump(content, outfile, indent=4)
     print(f'Sample contract data successfully saved to {FAKE_MULTISIG_DATA_PATH}')

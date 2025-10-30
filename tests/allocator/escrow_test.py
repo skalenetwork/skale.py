@@ -1,15 +1,18 @@
-""" Tests for skale/allocator/escrow.py """
+"""Tests for skale/allocator/escrow.py"""
 
-from skale.wallets.web3_wallet import generate_wallet
-from skale.utils.account_tools import send_eth, check_skale_balance
-
-from skale.utils.contracts_provision.main import _skip_evm_time
-from skale.utils.contracts_provision import MONTH_IN_SECONDS, D_PLAN_ID
+from skale.types.delegation import DelegationStatus
+from skale.utils.account_tools import check_skale_balance, send_eth
+from skale.utils.contracts_provision import D_PLAN_ID, MONTH_IN_SECONDS
 from skale.utils.contracts_provision.allocator import connect_test_beneficiary
-
+from skale.utils.contracts_provision.main import _skip_evm_time
+from skale.wallets.web3_wallet import generate_wallet
+from tests.constants import (
+    D_DELEGATION_AMOUNT,
+    D_DELEGATION_INFO,
+    D_DELEGATION_PERIOD,
+    D_VALIDATOR_ID,
+)
 from tests.manager.delegation.delegation_controller_test import _get_number_of_delegations
-from tests.constants import (D_DELEGATION_INFO, D_VALIDATOR_ID,
-                             D_DELEGATION_AMOUNT, D_DELEGATION_PERIOD)
 
 
 def _delegate_via_escrow(skale_allocator, wallet):
@@ -26,7 +29,7 @@ def _delegate_via_escrow(skale_allocator, wallet):
         delegation_period=D_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
         beneficiary_address=skale_allocator.wallet.address,
-        wait_for=True
+        wait_for=True,
     )
     skale_allocator.wallet = main_wallet
 
@@ -50,7 +53,7 @@ def test_delegate(skale, skale_allocator):
         delegation_period=D_DELEGATION_PERIOD,
         info=D_DELEGATION_INFO,
         beneficiary_address=skale_allocator.wallet.address,
-        wait_for=True
+        wait_for=True,
     )
     num_of_delegations_after = _get_number_of_delegations(skale)
     assert num_of_delegations_after == num_of_delegations_before + 1
@@ -68,18 +71,13 @@ def test_request_undelegate(skale, skale_allocator):
         validator_id=D_VALIDATOR_ID
     )
     delegation_id = delegations[-1]['id']
-    skale.delegation_controller.accept_pending_delegation(
-        delegation_id,
-        wait_for=True
-    )
+    skale.delegation_controller.accept_pending_delegation(delegation_id, wait_for=True)
 
     _skip_evm_time(skale.web3, MONTH_IN_SECONDS * (D_DELEGATION_PERIOD + 1))
 
     skale_allocator.wallet = wallet
     skale_allocator.escrow.request_undelegation(
-        delegation_id,
-        beneficiary_address=skale_allocator.wallet.address,
-        wait_for=True
+        delegation_id, beneficiary_address=skale_allocator.wallet.address, wait_for=True
     )
     skale_allocator.wallet = main_wallet
 
@@ -87,7 +85,7 @@ def test_request_undelegate(skale, skale_allocator):
         validator_id=D_VALIDATOR_ID
     )
     assert delegations[-1]['id'] == delegation_id
-    assert delegations[-1]['status'] == 'UNDELEGATION_REQUESTED'
+    assert delegations[-1]['status'] == DelegationStatus.UNDELEGATION_REQUESTED
 
 
 def test_retrieve(skale, skale_allocator):
@@ -100,17 +98,13 @@ def test_retrieve(skale, skale_allocator):
         validator_id=D_VALIDATOR_ID
     )
     delegation_id = delegations[-1]['id']
-    skale.delegation_controller.accept_pending_delegation(
-        delegation_id,
-        wait_for=True
-    )
+    skale.delegation_controller.accept_pending_delegation(delegation_id, wait_for=True)
 
     _skip_evm_time(skale.web3, MONTH_IN_SECONDS * (D_DELEGATION_PERIOD + 1))
 
     skale_allocator.wallet = wallet
     skale_allocator.escrow.retrieve(
-        beneficiary_address=skale_allocator.wallet.address,
-        wait_for=True
+        beneficiary_address=skale_allocator.wallet.address, wait_for=True
     )
     skale_allocator.wallet = main_wallet
     # todo: improve test
@@ -126,10 +120,7 @@ def test_withdraw_bounty(skale, skale_allocator):
         validator_id=D_VALIDATOR_ID
     )
     delegation_id = delegations[-1]['id']
-    skale.delegation_controller.accept_pending_delegation(
-        delegation_id,
-        wait_for=True
-    )
+    skale.delegation_controller.accept_pending_delegation(delegation_id, wait_for=True)
 
     _skip_evm_time(skale.web3, MONTH_IN_SECONDS * (D_DELEGATION_PERIOD + 1))
 
@@ -140,7 +131,7 @@ def test_withdraw_bounty(skale, skale_allocator):
         D_VALIDATOR_ID,
         wallet.address,
         beneficiary_address=skale_allocator.wallet.address,
-        wait_for=True
+        wait_for=True,
     )
     skale_allocator.wallet = main_wallet
     # todo: improve test
@@ -161,7 +152,7 @@ def test_cancel_pending_delegation(skale_allocator, skale):
     skale_allocator.escrow.cancel_pending_delegation(
         delegation_id=delegation_id,
         beneficiary_address=skale_allocator.wallet.address,
-        wait_for=True
+        wait_for=True,
     )
     skale_allocator.wallet = main_wallet
 
@@ -169,4 +160,4 @@ def test_cancel_pending_delegation(skale_allocator, skale):
         validator_id=D_VALIDATOR_ID
     )
     assert delegations[-1]['id'] == delegation_id
-    assert delegations[-1]['status'] == 'CANCELED'
+    assert delegations[-1]['status'] == DelegationStatus.CANCELED

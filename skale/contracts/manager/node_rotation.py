@@ -16,16 +16,27 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" NodeRotation.sol functions """
+"""NodeRotation.sol functions"""
 
-import logging
+from __future__ import annotations
+
 import functools
-import warnings
-from dataclasses import dataclass
+import logging
+from typing import TYPE_CHECKING, List
 
-from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
 from web3.exceptions import ContractLogicError
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_manager_contract import SkaleManagerContract
+from skale.types.node import NodeId
+from skale.types.rotation import Rotation, RotationSwap
+from skale.types.schain import SchainHash, SchainName
+from skale.utils.helper import is_test_env
+
+if TYPE_CHECKING:
+    from skale.contracts.manager.schains import SChains
 
 
 logger = logging.getLogger(__name__)
@@ -34,67 +45,46 @@ logger = logging.getLogger(__name__)
 NO_PREVIOUS_NODE_EXCEPTION_TEXT = 'No previous node'
 
 
-@dataclass
-class Rotation:
-    leaving_node_id: int
-    new_node_id: int
-    freeze_until: int
-    rotation_counter: int
-
-
-class NodeRotation(BaseContract):
+class NodeRotation(SkaleManagerContract):
     """Wrapper for NodeRotation.sol functions"""
 
     @property
     @functools.lru_cache()
-    def schains(self):
+    def schains(self) -> SChains:
         return self.skale.schains
 
-    def get_rotation_obj(self, schain_name) -> Rotation:
+    def get_rotation(self, schain_name: SchainName) -> Rotation:
         schain_id = self.schains.name_to_id(schain_name)
         rotation_data = self.contract.functions.getRotation(schain_id).call()
         return Rotation(*rotation_data)
 
-    def get_rotation(self, schain_name):
-        warnings.warn('Deprecated, will be removed in v6', DeprecationWarning)
-        schain_id = self.schains.name_to_id(schain_name)
-        rotation_data = self.contract.functions.getRotation(schain_id).call()
-        return {
-            'leaving_node': rotation_data[0],
-            'new_node': rotation_data[1],
-            'freeze_until': rotation_data[2],
-            'rotation_id': rotation_data[3]
-        }
-
-    def get_leaving_history(self, node_id):
+    def get_leaving_history(self, node_id: NodeId) -> List[RotationSwap]:
         raw_history = self.contract.functions.getLeavingHistory(node_id).call()
         history = [
-            {
-                'schain_id': schain[0],
-                'finished_rotation': schain[1]
-            }
+            RotationSwap({'schain_id': SchainHash(schain[0]), 'finished_rotation': int(schain[1])})
             for schain in raw_history
         ]
         return history
 
-    def get_schain_finish_ts(self, node_id: int, schain_name: str) -> int:
-        raw_history = self.contract.functions.getLeavingHistory(node_id).call()
+    def get_schain_finish_ts(self, node_id: NodeId, schain_name: SchainName) -> int | None:
+        history = self.get_leaving_history(node_id)
         schain_id = self.skale.schains.name_to_id(schain_name)
         finish_ts = next(
-            (schain[1] for schain in raw_history if '0x' + schain[0].hex() == schain_id), None)
+            (swap['finished_rotation'] for swap in history if swap['schain_id'] == schain_id), None
+        )
         if not finish_ts:
             return None
-        return finish_ts
+        return int(finish_ts)
 
-    def is_rotation_in_progress(self, schain_name) -> bool:
+    def is_rotation_in_progress(self, schain_name: SchainName) -> bool:
         schain_id = self.schains.name_to_id(schain_name)
-        return self.contract.functions.isRotationInProgress(schain_id).call()
+        return bool(self.contract.functions.isRotationInProgress(schain_id).call())
 
-    def is_new_node_found(self, schain_name) -> bool:
+    def is_new_node_found(self, schain_name: SchainName) -> bool:
         schain_id = self.schains.name_to_id(schain_name)
-        return self.contract.functions.isNewNodeFound(schain_id).call()
+        return bool(self.contract.functions.isNewNodeFound(schain_id).call())
 
-    def is_rotation_active(self, schain_name) -> bool:
+    def is_rotation_active(self, schain_name: SchainName) -> bool:
         """
         The public function that tells whether rotation is in the active phase - the new group is
         already generated
@@ -102,8 +92,8 @@ class NodeRotation(BaseContract):
         finish_ts_reached = self.is_finish_ts_reached(schain_name)
         return self.is_rotation_in_progress(schain_name) and not finish_ts_reached
 
-    def is_finish_ts_reached(self, schain_name) -> bool:
-        rotation = self.skale.node_rotation.get_rotation_obj(schain_name)
+    def is_finish_ts_reached(self, schain_name: SchainName) -> bool:
+        rotation = self.skale.node_rotation.get_rotation(schain_name)
         schain_finish_ts = self.get_schain_finish_ts(rotation.leaving_node_id, schain_name)
 
         if not schain_finish_ts:
@@ -115,25 +105,28 @@ class NodeRotation(BaseContract):
         logger.info(f'current_ts: {current_ts}, schain_finish_ts: {schain_finish_ts}')
         return current_ts > schain_finish_ts
 
-    def wait_for_new_node(self, schain_name):
+    def wait_for_new_node(self, schain_name: SchainName) -> bool:
         schain_id = self.schains.name_to_id(schain_name)
-        return self.contract.functions.waitForNewNode(schain_id).call()
+        return bool(self.contract.functions.waitForNewNode(schain_id).call())
 
     @transaction_method
-    def grant_role(self, role: bytes, owner: str) -> TxRes:
+    def grant_role(self, role: bytes, owner: str) -> 'ContractFunction':
         return self.contract.functions.grantRole(role, owner)
 
-    def has_role(self, role: bytes, address: str) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
+    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
+        return bool(self.contract.functions.hasRole(role, address).call())
 
-    def debugger_role(self):
-        return self.contract.functions.DEBUGGER_ROLE().call()
+    def debugger_role(self) -> bytes:
+        return bytes(self.contract.functions.DEBUGGER_ROLE().call())
 
-    def get_previous_node(self, schain_name: str, node_id: int) -> int:
+    def get_previous_node(self, schain_name: SchainName, node_id: NodeId) -> NodeId | None:
         schain_id = self.schains.name_to_id(schain_name)
         try:
-            return self.contract.functions.getPreviousNode(schain_id, node_id).call()
+            return NodeId(self.contract.functions.getPreviousNode(schain_id, node_id).call())
         except (ContractLogicError, ValueError) as e:
             if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
+                return None
+            if is_test_env():
+                logger.debug(f'Error in test environment: {e}')
                 return None
             raise e

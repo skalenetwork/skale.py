@@ -17,29 +17,62 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import logging
+from functools import cached_property
 
+from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.ima import MainnetImaContract
+
+from skale.contracts.ima.mainnet.community_pool import CommunityPool
+from skale.contracts.ima.mainnet.deposit_box_erc20 import DepositBoxERC20
+from skale.contracts.ima.mainnet.deposit_box_erc721 import DepositBoxERC721
+from skale.contracts.ima.mainnet.deposit_box_erc721_wmt import (
+    DepositBoxERC721WithMetadata,
+)
+from skale.contracts.ima.mainnet.deposit_box_erc1155 import DepositBoxERC1155
+from skale.contracts.ima.mainnet.deposit_box_eth import DepositBoxEth
+from skale.contracts.ima.mainnet.linker import Linker
+from skale.contracts.ima.mainnet.message_proxy_for_mainnet import MessageProxyForMainnet
 from skale.skale_base import SkaleBase
-import skale.contracts.ima as contracts
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-
-logger = logging.getLogger(__name__)
-
-
-CONTRACTS_INFO = [
-    ContractInfo('linker', 'Linker',
-                 contracts.Linker, ContractTypes.API, False)
-]
-
-
-def spawn_skale_ima_lib(skale_ima):
-    """ Clone skale ima object with the same wallet """
-    return SkaleIma(skale_ima._endpoint, skale_ima._abi_filepath, skale_ima.wallet)
 
 
 class SkaleIma(SkaleBase):
-    def set_contracts_info(self):
-        self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
+    @property
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.MAINNET_IMA
+
+    @cached_property
+    def message_proxy_for_mainnet(self) -> MessageProxyForMainnet:
+        return MessageProxyForMainnet(self, MainnetImaContract.MESSAGE_PROXY_FOR_MAINNET)
+
+    @cached_property
+    def linker(self) -> Linker:
+        return Linker(self, MainnetImaContract.LINKER)
+
+    @cached_property
+    def community_pool(self) -> CommunityPool:
+        return CommunityPool(self, MainnetImaContract.COMMUNITY_POOL)
+
+    @cached_property
+    def deposit_box_eth(self) -> DepositBoxEth:
+        return DepositBoxEth(self, MainnetImaContract.DEPOSIT_BOX_ETH)
+
+    @cached_property
+    def deposit_box_erc20(self) -> DepositBoxERC20:
+        return DepositBoxERC20(self, MainnetImaContract.DEPOSIT_BOX_ERC20)
+
+    @cached_property
+    def deposit_box_erc721(self) -> DepositBoxERC721:
+        return DepositBoxERC721(self, MainnetImaContract.DEPOSIT_BOX_ERC721)
+
+    @cached_property
+    def deposit_box_erc721_wmt(self) -> DepositBoxERC721WithMetadata:
+        return DepositBoxERC721WithMetadata(self, MainnetImaContract.DEPOSIT_BOX_ERC721_WMT)
+
+    @cached_property
+    def deposit_box_erc1155(self) -> DepositBoxERC1155:
+        return DepositBoxERC1155(self, MainnetImaContract.DEPOSIT_BOX_ERC1155)
+
+
+def spawn_skale_ima_lib(skale_ima: SkaleIma) -> SkaleIma:
+    """Clone skale ima object with the same wallet"""
+    return SkaleIma(skale_ima._endpoint, skale_ima.instance.address, skale_ima.wallet)

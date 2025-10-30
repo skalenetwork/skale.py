@@ -17,34 +17,31 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import logging
+from functools import cached_property
 
+from skale_contracts.project_factory import SkaleProject
+from skale_contracts.projects.skale_allocator import SkaleAllocatorContract
+
+from skale.contracts.allocator.allocator import Allocator
+from skale.contracts.allocator.escrow import Escrow
 from skale.skale_base import SkaleBase
-import skale.contracts.allocator as contracts
-from skale.contracts.contract_manager import ContractManager
-from skale.utils.contract_info import ContractInfo
-from skale.utils.contract_types import ContractTypes
-from skale.utils.helper import get_contracts_info
-
-
-logger = logging.getLogger(__name__)
-
-
-CONTRACTS_INFO = [
-    ContractInfo('contract_manager', 'ContractManager',
-                 ContractManager, ContractTypes.API, False),
-    ContractInfo('escrow', 'Escrow', contracts.Escrow,
-                 ContractTypes.API, True),
-    ContractInfo('allocator', 'Allocator', contracts.Allocator,
-                 ContractTypes.API, True)
-]
-
-
-def spawn_skale_allocator_lib(skale):
-    return SkaleAllocator(skale._endpoint, skale._abi_filepath, skale.wallet)
 
 
 class SkaleAllocator(SkaleBase):
-    def set_contracts_info(self):
-        self.init_contract_manager()
-        self._SkaleBase__contracts_info = get_contracts_info(CONTRACTS_INFO)
+    """Represents skale-allocator smart contracts"""
+
+    @property
+    def project_name(self) -> SkaleProject:
+        return SkaleProject.SKALE_ALLOCATOR
+
+    @cached_property
+    def allocator(self) -> Allocator:
+        return Allocator(self, SkaleAllocatorContract.ALLOCATOR)
+
+    @cached_property
+    def escrow(self) -> Escrow:
+        return Escrow(self, SkaleAllocatorContract.ESCROW)
+
+
+def spawn_skale_allocator_lib(skale: SkaleAllocator) -> SkaleAllocator:
+    return SkaleAllocator(skale._endpoint, skale.instance.address, skale.wallet)

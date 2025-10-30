@@ -18,29 +18,31 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass
+
 from skale.dataclasses.skaled_ports import SkaledPorts
+from skale.types.node import NodeId, Port
 
 
 @dataclass
-class NodeInfo():
+class NodeInfo:
     """Dataclass that represents base info about the node"""
-    node_id: int
-    name: str
-    base_port: int
 
-    def calc_ports(self):
+    node_id: NodeId
+    name: str
+    base_port: Port
+
+    def calc_ports(self) -> dict[str, Port]:
         return {
-            'httpRpcPort': self.base_port + SkaledPorts.HTTP_JSON.value,
-            'httpsRpcPort': self.base_port + SkaledPorts.HTTPS_JSON.value,
-            'wsRpcPort': self.base_port + SkaledPorts.WS_JSON.value,
-            'wssRpcPort': self.base_port + SkaledPorts.WSS_JSON.value,
-            'infoHttpRpcPort': self.base_port + SkaledPorts.INFO_HTTP_JSON.value
+            'httpRpcPort': Port(self.base_port + SkaledPorts.HTTP_JSON.value),
+            'httpsRpcPort': Port(self.base_port + SkaledPorts.HTTPS_JSON.value),
+            'wsRpcPort': Port(self.base_port + SkaledPorts.WS_JSON.value),
+            'wssRpcPort': Port(self.base_port + SkaledPorts.WSS_JSON.value),
         }
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, NodeId | str | Port]:
         return {
             'nodeID': self.node_id,
             'nodeName': self.name,
             'basePort': self.base_port,
-            **self.calc_ports()
+            **self.calc_ports(),
         }

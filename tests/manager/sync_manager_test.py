@@ -1,8 +1,7 @@
+import pytest
 from web3.exceptions import ContractLogicError
 
 from skale.transactions.exceptions import DryRunRevertError
-
-import pytest
 
 START_IP = '0.0.0.1'
 END_IP = '255.255.255.254'

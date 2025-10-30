@@ -16,36 +16,46 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-""" SKALE Allocator Core Escrow methods """
+"""SKALE Allocator Core Escrow methods"""
 
 import functools
+from typing import Any, Callable
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+from web3.types import Wei
+
+from skale.contracts.allocator.allocator import Allocator
+from skale.contracts.allocator_contract import AllocatorContract
+from skale.contracts.base_contract import transaction_method
 from skale.transactions.result import TxRes
+from skale.types.delegation import DelegationId
+from skale.types.validator import ValidatorId
 
 
-def beneficiary_escrow(transaction):
+def beneficiary_escrow(transaction: Callable[..., TxRes]) -> Callable[..., TxRes]:
     @functools.wraps(transaction)
-    def wrapper(self, *args, beneficiary_address, **kwargs):
-        self.contract = self.init_beneficiary_contract(beneficiary_address)
+    def wrapper(
+        self: AllocatorContract, *args: Any, beneficiary_address: ChecksumAddress, **kwargs: Any
+    ) -> TxRes:
+        self.contract = self.skale.instance.get_contract('Escrow', beneficiary_address)
         return transaction(self, *args, **kwargs)
+
     return wrapper
 
 
-class Escrow(BaseContract):
+class Escrow(AllocatorContract):
     @property
     @functools.lru_cache()
-    def allocator(self):
+    def allocator(self) -> Allocator:
         return self.skale.allocator
 
-    def init_beneficiary_contract(self, beneficiary_address: str):
-        beneficiary_escrow_address = self.allocator.get_escrow_address(beneficiary_address)
-        return Escrow(self.skale, f'escrow_{beneficiary_address}', beneficiary_escrow_address,
-                      self.contract.abi).contract
+    def init_contract(self, *args: Any) -> None:
+        self.contract = self.allocator.contract
 
     @beneficiary_escrow
     @transaction_method
-    def retrieve(self) -> TxRes:
+    def retrieve(self) -> 'ContractFunction':
         """Allows Holder to retrieve vested tokens from the Escrow contract
 
         :returns: Transaction results
@@ -55,7 +65,7 @@ class Escrow(BaseContract):
 
     @beneficiary_escrow
     @transaction_method
-    def retrieve_after_termination(self, address: str) -> TxRes:
+    def retrieve_after_termination(self, address: ChecksumAddress) -> 'ContractFunction':
         """Allows Core Owner to retrieve remaining transferrable escrow balance
         after Core holder termination. Slashed tokens are non-transferable
 
@@ -66,7 +76,9 @@ class Escrow(BaseContract):
 
     @beneficiary_escrow
     @transaction_method
-    def delegate(self, validator_id: int, amount: int, delegation_period: int, info: str) -> TxRes:
+    def delegate(
+        self, validator_id: ValidatorId, amount: Wei, delegation_period: int, info: str
+    ) -> 'ContractFunction':
         """Allows Core holder to propose a delegation to a validator
 
         :param validator_id: ID of the validator to delegate tokens
@@ -84,7 +96,7 @@ class Escrow(BaseContract):
 
     @beneficiary_escrow
     @transaction_method
-    def request_undelegation(self, delegation_id: int) -> TxRes:
+    def request_undelegation(self, delegation_id: DelegationId) -> 'ContractFunction':
         """Allows Holder and Owner to request undelegation. Only Owner can
         request undelegation after Core holder is deactivated (upon holder termination)
 
@@ -97,7 +109,7 @@ class Escrow(BaseContract):
 
     @beneficiary_escrow
     @transaction_method
-    def withdraw_bounty(self, validator_id: int, to: str) -> TxRes:
+    def withdraw_bounty(self, validator_id: ValidatorId, to: ChecksumAddress) -> 'ContractFunction':
         """Allows Beneficiary and Vesting Owner to withdraw earned bounty.
 
         :param validator_id: ID of the validator
@@ -111,7 +123,7 @@ class Escrow(BaseContract):
 
     @beneficiary_escrow
     @transaction_method
-    def cancel_pending_delegation(self, delegation_id: int) -> TxRes:
+    def cancel_pending_delegation(self, delegation_id: DelegationId) -> 'ContractFunction':
         """Cancel pending delegation request.
 
         :param delegation_id: ID of the delegation to cancel

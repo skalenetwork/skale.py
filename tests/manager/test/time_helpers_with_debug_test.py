@@ -1,4 +1,5 @@
 import pytest
+
 from tests.constants import MONTH_IN_SECONDS
 
 
@@ -14,4 +15,6 @@ def test_skip_time(skale):
     skale.time_helpers_with_debug.skip_time(MONTH_IN_SECONDS + 1, wait_for=True)
     current_month_after = skale.time_helpers_with_debug.get_current_month()
     assert current_month_after == current_month_before + 1, (
-        current_month_after, current_month_before)
+        current_month_after,
+        current_month_before,
+    )

@@ -1,14 +1,15 @@
-""" SKALE test multithreading """
+"""SKALE test multithreading"""
 
 import threading
 
-from skale import Skale
+from skale import SkaleManager
+from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
-from tests.constants import ENDPOINT, TEST_ABI_FILEPATH, DEFAULT_NODE_NAME
+from tests.constants import DEFAULT_NODE_NAME, ENDPOINT, TEST_ABI_FILEPATH
 
 
 def get_node_data():
-    skale = Skale(ENDPOINT, TEST_ABI_FILEPATH)
+    skale = SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH))
     for _ in range(0, 30):
         skale.nodes.get_by_name(DEFAULT_NODE_NAME)
 

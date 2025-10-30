@@ -1,20 +1,26 @@
-""" Provision Allocator contracts for testing """
+"""Provision Allocator contracts for testing"""
 
 from skale import SkaleAllocator, SkaleManager
-from skale.wallets import Web3Wallet
+from skale.utils.contracts_provision.allocator import add_test_plan, transfer_tokens_to_allocator
+from skale.utils.contracts_provision.main import add_test_permissions, setup_validator
+from skale.utils.helper import get_allocator_address, get_skale_manager_address, init_default_logger
 from skale.utils.web3_utils import init_web3
-from skale.utils.helper import init_default_logger
-from skale.utils.contracts_provision.allocator import transfer_tokens_to_allocator, add_test_plan
-from skale.utils.contracts_provision.main import setup_validator, add_test_permissions
-from tests.constants import (ENDPOINT, TEST_ABI_FILEPATH, ETH_PRIVATE_KEY,
-                             TEST_ALLOCATOR_ABI_FILEPATH)
+from skale.wallets import Web3Wallet
+from tests.constants import (
+    ENDPOINT,
+    ETH_PRIVATE_KEY,
+    TEST_ABI_FILEPATH,
+    TEST_ALLOCATOR_ABI_FILEPATH,
+)
 
 
 def init_libs():
     web3 = init_web3(ENDPOINT)
     wallet = Web3Wallet(ETH_PRIVATE_KEY, web3)
-    return (SkaleManager(ENDPOINT, TEST_ABI_FILEPATH, wallet),
-            SkaleAllocator(ENDPOINT, TEST_ALLOCATOR_ABI_FILEPATH, wallet))
+    return (
+        SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet),
+        SkaleAllocator(ENDPOINT, get_allocator_address(TEST_ALLOCATOR_ABI_FILEPATH), wallet),
+    )
 
 
 def provision_contracts():
@@ -33,5 +39,5 @@ def provision_contracts():
     add_test_plan(skale_allocator)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     provision_contracts()

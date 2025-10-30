@@ -1,21 +1,20 @@
-""" Tests for skale/allocator/allocator.py """
+"""Tests for skale/allocator/allocator.py"""
+
 import pytest
 
-from skale.wallets.web3_wallet import generate_wallet
 from skale.utils.account_tools import send_eth
-
 from skale.utils.contracts_provision import D_PLAN_ID
 from skale.utils.contracts_provision.allocator import add_test_plan, connect_test_beneficiary
-
+from skale.wallets.web3_wallet import generate_wallet
 
 TEST_PLAN_PARAMS = {
-        'totalVestingDuration': 36,
-        'vestingCliff': 6,
-        'vestingIntervalTimeUnit': 1,
-        'vestingInterval': 6,
-        'isDelegationAllowed': True,
-        'isTerminatable': True
-    }
+    'totalVestingDuration': 36,
+    'vestingCliff': 6,
+    'vestingIntervalTimeUnit': 1,
+    'vestingInterval': 6,
+    'isDelegationAllowed': True,
+    'isTerminatable': True,
+}
 
 D_END_TIMESTAMP = 1693526400
 D_END_LOCKUP_TIMESTAMP = 1614556800

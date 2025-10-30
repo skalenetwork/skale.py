@@ -16,8 +16,8 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -44,7 +44,7 @@ class SchainOptions:
         return [
             ('multitr', bool_to_bytes(self.multitransaction_mode)),
             ('encrypt', bool_to_bytes(self.threshold_encryption)),
-            ('alloc', int_to_bytes(self.allocation_type.value))
+            ('alloc', int_to_bytes(self.allocation_type.value)),
         ]
 
 
@@ -67,7 +67,7 @@ def parse_schain_options(raw_options: list[SchainOption]) -> SchainOptions:
     return SchainOptions(
         multitransaction_mode=multitransaction_mode,
         threshold_encryption=threshold_encryption,
-        allocation_type=allocation_type
+        allocation_type=allocation_type,
     )
 
 
@@ -75,7 +75,7 @@ def get_default_schain_options() -> SchainOptions:
     return SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
-        allocation_type=AllocationType.DEFAULT
+        allocation_type=AllocationType.DEFAULT,
     )
 
 

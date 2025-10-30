@@ -23,19 +23,23 @@ import logging
 import os
 import time
 from enum import Enum
-from typing import Dict, Optional, Tuple
+from typing import Optional, Tuple, TypedDict
 
+from eth_account.datastructures import SignedMessage, SignedTransaction
+from eth_typing import ChecksumAddress, HexStr
 from redis import Redis
+from web3.types import TxParams, TxReceipt
 
 import skale.config as config
 from skale.transactions.exceptions import (
     TransactionError,
     TransactionNotMinedError,
     TransactionNotSentError,
-    TransactionWaitError
+    TransactionWaitError,
 )
-from skale.utils.web3_utils import get_receipt, MAX_WAITING_TIME
+from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, MAX_WAITING_TIME, get_receipt
 from skale.wallets import BaseWallet
+from skale.wallets.web3_wallet import Web3Wallet
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +73,34 @@ class TxRecordStatus(str, Enum):
         return str.__str__(self)
 
 
+TxRecord = TypedDict(
+    'TxRecord',
+    {
+        'status': TxRecordStatus,
+        'score': int,
+        'multiplier': Optional[float],
+        'tx_hash': HexStr,
+        'tx_id': str | None,
+        'method': Optional[str],
+        'value': int,
+        'chainId': int | None,
+        'gas': int | None,
+        'gasPrice': int | None,
+        'from': ChecksumAddress | None,
+        'to': ChecksumAddress,
+        'maxFeePerGas': int | None,
+        'maxPriorityFeePerGas': int | None,
+        'hashes': list | None,
+        'attempts': int | None,
+        'source': str | None,
+        'nonce': int | None,
+        'data': dict | None,
+        'meta': dict | None,
+        'sent_ts': int | None,
+    },
+)
+
+
 class RedisWalletAdapter(BaseWallet):
     ID_SIZE = 16
 
@@ -76,20 +108,20 @@ class RedisWalletAdapter(BaseWallet):
         self,
         rs: Redis,
         pool: str,
-        base_wallet: BaseWallet,
+        web3_wallet: Web3Wallet,
     ) -> None:
         self.rs = rs
         self.pool = pool
-        self.wallet = base_wallet
+        self.wallet = web3_wallet
 
-    def sign(self, tx: Dict) -> Dict:
+    def sign(self, tx: TxParams) -> SignedTransaction:
         return self.wallet.sign(tx)
 
-    def sign_hash(self, unsigned_hash: str) -> str:
+    def sign_hash(self, unsigned_hash: str) -> SignedMessage:
         return self.wallet.sign_hash(unsigned_hash)
 
     @property
-    def address(self) -> str:
+    def address(self) -> ChecksumAddress:
         return self.wallet.address
 
     @property
@@ -105,16 +137,15 @@ class RedisWalletAdapter(BaseWallet):
     @classmethod
     def _make_score(cls, priority: int) -> int:
         ts = int(time.time())
-        return priority * 10 ** len(str(ts)) + ts
+        return priority * int(10 ** len(str(ts))) + ts
 
     @classmethod
     def _make_record(
         cls,
-        tx: Dict,
+        tx: TxParams,
         score: int,
-        multiplier: int = config.DEFAULT_GAS_MULTIPLIER,
+        multiplier: float = config.DEFAULT_GAS_MULTIPLIER,
         method: Optional[str] = None,
-        meta: Optional[Dict] = None
     ) -> Tuple[bytes, bytes]:
         tx_id = cls._make_raw_id()
         params = {
@@ -123,11 +154,8 @@ class RedisWalletAdapter(BaseWallet):
             'multiplier': multiplier,
             'tx_hash': None,
             'method': method,
-            'meta': meta,
-            **tx
+            **tx,
         }
-        # Ensure gas will be restimated in TM
-        params['gas'] = None
         record = json.dumps(params).encode('utf-8')
         return tx_id, record
 
@@ -135,27 +163,23 @@ class RedisWalletAdapter(BaseWallet):
     def _to_raw_id(cls, tx_id: str) -> bytes:
         return tx_id.encode('utf-8')
 
-    def _to_id(cls, raw_id: str) -> str:
+    @classmethod
+    def _to_id(cls, raw_id: bytes) -> str:
         return raw_id.decode('utf-8')
 
     def sign_and_send(
         self,
-        tx: Dict,
+        tx: TxParams,
         multiplier: Optional[float] = None,
         priority: Optional[int] = None,
         method: Optional[str] = None,
-        meta: Optional[Dict] = None
-    ) -> str:
+    ):
         priority = priority or config.DEFAULT_PRIORITY
         try:
             logger.info('Sending %s to redis pool, method: %s', tx, method)
             score = self._make_score(priority)
             raw_id, tx_record = self._make_record(
-                tx,
-                score,
-                multiplier=multiplier,
-                method=method,
-                meta=meta
+                tx, score, multiplier=multiplier or config.DEFAULT_GAS_MULTIPLIER, method=method
             )
             pipe = self.rs.pipeline()
             logger.info('Adding tx %s to the pool', raw_id)
@@ -171,23 +195,50 @@ class RedisWalletAdapter(BaseWallet):
     def get_status(self, tx_id: str) -> str:
         return self.get_record(tx_id)['status']
 
-    def get_record(self, tx_id: str) -> Dict:
+    def get_record(self, tx_id: str) -> TxRecord:
         rid = self._to_raw_id(tx_id)
-        return json.loads(self.rs.get(rid).decode('utf-8'))
+        response = self.rs.get(rid)
+        if isinstance(response, bytes):
+            parsed_json = json.loads(response.decode('utf-8'))
+            return TxRecord(
+                {
+                    'tx_id': parsed_json.get('tx_id'),
+                    'status': parsed_json['status'],
+                    'score': parsed_json['score'],
+                    'multiplier': parsed_json.get('multiplier'),
+                    'tx_hash': parsed_json['tx_hash'],
+                    'method': parsed_json.get('method'),
+                    'value': parsed_json['value'],
+                    'chainId': parsed_json.get('chainId'),
+                    'gas': parsed_json.get('gas'),
+                    'gasPrice': parsed_json.get('gasPrice'),
+                    'from': parsed_json.get('from'),
+                    'to': parsed_json['to'],
+                    'maxFeePerGas': parsed_json.get('maxFeePerGas'),
+                    'maxPriorityFeePerGas': parsed_json.get('maxPriorityFeePerGas'),
+                    'hashes': parsed_json.get('hashes'),
+                    'attempts': parsed_json.get('attempts'),
+                    'source': parsed_json.get('source'),
+                    'nonce': parsed_json.get('nonce'),
+                    'data': parsed_json.get('data'),
+                    'meta': parsed_json.get('meta'),
+                    'sent_ts': parsed_json.get('sent_ts'),
+                }
+            )
+        raise ValueError('Unknown value was returned from get() call', response)
 
     def wait(
         self,
-        tx_id: str,
-        blocks_to_wait: Optional[int] = None,
-        timeout: int = MAX_WAITING_TIME
-    ) -> Dict:
+        tx_id,
+        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
+        timeout: int = MAX_WAITING_TIME,
+    ) -> TxReceipt:
         start_ts = time.time()
         status, result = None, None
-        while status not in [
-            TxRecordStatus.DROPPED,
-            TxRecordStatus.SUCCESS,
-            TxRecordStatus.FAILED
-        ] and time.time() - start_ts < timeout:
+        while (
+            status not in [TxRecordStatus.DROPPED, TxRecordStatus.SUCCESS, TxRecordStatus.FAILED]
+            and time.time() - start_ts < timeout
+        ):
             try:
                 record = self.get_record(tx_id)
                 if record is not None:

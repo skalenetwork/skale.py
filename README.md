@@ -1,15 +1,15 @@
 # skale.py
 
 [![PyPI version](https://badge.fury.io/py/skale.py.svg)](https://badge.fury.io/py/skale.py)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/skalenetwork/skale.py/Test) 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/skalenetwork/skale.py/Test)
 [![codecov](https://codecov.io/gh/skalenetwork/skale.py/branch/develop/graph/badge.svg?token=XHiZ15ijpa)](https://codecov.io/gh/skalenetwork/skale.py)
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/skalenetwork/skale.py)
 [![Discord](https://img.shields.io/discord/534485763354787851.svg)](https://discord.gg/vvUtWJB)
 
 Python client library used in SKALE network components.
 
-- Python 3.7+ support
-- Compatibility with `web3.py` v6
+* Python 3.11+ support
+* Compatibility with `web3.py` v7
 
 ### Installation
 
@@ -21,14 +21,14 @@ pip install skale.py
 
 #### Supported wallets
 
-- Ledger Wallet (works with Ledger Nano S and other models)
-- RPC Wallet (works with [SKALE Transactions Manager](https://github.com/skalenetwork/transactions-manager))
-- SGX Wallet (works with [SKALE SGX Wallet](https://github.com/skalenetwork/sgxwallet))
-- Web3 Wallet (works with `web3.py` embeded functions)
+* Ledger Wallet (works with Ledger Nano S and other models)
+* RPC Wallet (works with [SKALE Transactions Manager](https://github.com/skalenetwork/transactions-manager))
+* SGX Wallet (works with [SKALE SGX Wallet](https://github.com/skalenetwork/sgxwallet))
+* Web3 Wallet (works with `web3.py` providers and private keys in memory)
 
 #### Library initialization
 
-With embeded Web3Wallet
+With Web3Wallet (private key in memory):
 
 ```python
 from skale import SkaleManager
@@ -60,21 +60,34 @@ schains = skale.schains.get_schains_for_owner('0x...')
 
 #### Working in multiple threads
 
-Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.  
+Due to the web3.py v5 limitations you have to create separate instances of the skale.py for the each thread.\
 Take a look on the `tests/multithreading_test.py` for the reference.
-
-#### Code samples
-
-You can find usage examples [here](https://github.com/skalenetwork/skale.py-examples).
 
 ### Development
 
-##### Install local version (with hot reload)
+##### Add pre-commit hook:
 
 ```bash
-virtualenv venv
-. venv/bin/activate 
-pip install -e .[dev]
+nano .git/hooks/pre-commit
+```
+
+```bash
+uv run ruff check skale/
+uv run mypy skale/
+```
+
+##### Install local version
+
+```bash
+uv sync --all-extras
+```
+
+##### Export environment variables
+
+To export environment variables for running tests locally, run:
+
+```bash
+. ./scripts/export_env.sh
 ```
 
 #### Build and publish library
@@ -89,43 +102,10 @@ bash build_and_publish.sh major/minor/patch
  export $(cat .env | xargs) && bash build_and_publish.sh major/minor/patch
 ```
 
-##### Format your code before commit
-
-Show flake8 errors on file change:
-
-```bash
-# Test flake8
-WHEN_CHANGED_EVENT=file_modified when-changed -v -s -r -1 skale/ tests/ examples/ -c "clear; flake8 web3 tests ens && echo 'flake8 success' || echo 'error'"
-```
-
-Install `when-changed`:
-
-```bash
- pip install https://github.com/joh/when-changed/archive/master.zip
-```
-
 #### Versioning
 
 The version scheme for this repo is `{major}.{minor}.{patch}`
 For more details see: <https://semver.org/>
-
-#### Testing
-
-Run local ganache and deploy SKALE Manager:
-
-```bash
-MANAGER_TAG=... ETH_PRIVATE_KEY=... bash scripts/deploy_manager.sh
-```
-
-Running full test suite:
-
-```bash
-bash scripts/run_tests.sh
-```
-
-Running test suite manually:
-
-See `tests/README.md`
 
 ### License
 
