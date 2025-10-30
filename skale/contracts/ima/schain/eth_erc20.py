@@ -37,7 +37,7 @@ class EthErc20(BaseContract):
         poll_interval: int = 5,
         raise_on_timeout: bool = False,
     ) -> bool:
-        iterations = timeout // poll_interval
+        iterations = timeout // poll_interval + 1
         for _ in range(iterations):
             current_balance = self.balance_of(address)
             if current_balance != initial_balance:
