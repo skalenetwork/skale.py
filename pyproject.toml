@@ -48,6 +48,10 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/skalenetwork/skale.py"
 
+
+[tool.uv]
+prerelease = "allow"
+
 [tool.hatch.build.targets.wheel]
 packages = ["skale"]
 
