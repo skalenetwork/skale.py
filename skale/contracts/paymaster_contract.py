@@ -17,9 +17,9 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale.contracts.base_contract import BaseContract
+from skale.contracts.skale_contract import SkaleContract
 from skale.skale_paymaster import SkalePaymaster
 
 
-class PaymasterContract(BaseContract[SkalePaymaster]):
+class PaymasterContract(SkaleContract[SkalePaymaster]):
     pass

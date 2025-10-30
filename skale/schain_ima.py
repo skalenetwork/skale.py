@@ -23,6 +23,7 @@ from skale_contracts.project_factory import SkaleProject
 from skale_contracts.projects.ima import SchainImaContract
 
 from skale.contracts.ima.schain.community_locker import CommunityLocker
+from skale.contracts.ima.schain.eth_erc20 import EthErc20
 from skale.contracts.ima.schain.message_proxy_for_schain import MessageProxyForSchain
 from skale.contracts.ima.schain.token_manager_erc20 import TokenManagerERC20
 from skale.contracts.ima.schain.token_manager_erc721 import TokenManagerERC721
@@ -73,6 +74,10 @@ class SchainIma(SkaleBase):
     @cached_property
     def token_manager_linker(self) -> TokenManagerLinker:
         return TokenManagerLinker(self, SchainImaContract.TOKEN_MANAGER_LINKER)
+
+    @cached_property
+    def eth_erc20(self) -> EthErc20:
+        return EthErc20(self, SchainImaContract.ETH_ERC20)
 
 
 def spawn_skale_ima_lib(schain_ima: SchainIma) -> SchainIma:

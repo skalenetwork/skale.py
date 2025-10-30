@@ -21,11 +21,12 @@ from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
-from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainHash, SchainName
 
 
-class Paymaster(BaseContract):
+class Paymaster(SkaleContract):
     """Paymaster contract"""
 
     def name_to_id(self, schain_name: SchainName) -> SchainHash:
