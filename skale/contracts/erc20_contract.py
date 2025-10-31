@@ -115,6 +115,10 @@ class Erc20Contract(BaseContract):
     def transfer(self, to: ChecksumAddress, amount: Wei) -> ContractFunction:
         return self.contract.functions.transfer(to, amount)
 
+    @transaction_method
+    def approve(self, spender: ChecksumAddress, amount: Wei) -> ContractFunction:
+        return self.contract.functions.approve(spender, amount)
+
     def wait_for_balance_change(
         self,
         address: ChecksumAddress,
