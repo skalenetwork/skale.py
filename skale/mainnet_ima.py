@@ -35,7 +35,7 @@ from skale.contracts.ima.mainnet.message_proxy_for_mainnet import MessageProxyFo
 from skale.skale_base import SkaleBase
 
 
-class SkaleIma(SkaleBase):
+class MainnetIma(SkaleBase):
     @property
     def project_name(self) -> SkaleProject:
         return SkaleProject.MAINNET_IMA
@@ -53,26 +53,26 @@ class SkaleIma(SkaleBase):
         return CommunityPool(self, MainnetImaContract.COMMUNITY_POOL)
 
     @cached_property
-    def deposit_box_eth(self) -> DepositBoxEth:
+    def eth(self) -> DepositBoxEth:
         return DepositBoxEth(self, MainnetImaContract.DEPOSIT_BOX_ETH)
 
     @cached_property
-    def deposit_box_erc20(self) -> DepositBoxERC20:
+    def erc20(self) -> DepositBoxERC20:
         return DepositBoxERC20(self, MainnetImaContract.DEPOSIT_BOX_ERC20)
 
     @cached_property
-    def deposit_box_erc721(self) -> DepositBoxERC721:
+    def erc721(self) -> DepositBoxERC721:
         return DepositBoxERC721(self, MainnetImaContract.DEPOSIT_BOX_ERC721)
 
     @cached_property
-    def deposit_box_erc721_wmt(self) -> DepositBoxERC721WithMetadata:
+    def erc721_wmt(self) -> DepositBoxERC721WithMetadata:
         return DepositBoxERC721WithMetadata(self, MainnetImaContract.DEPOSIT_BOX_ERC721_WMT)
 
     @cached_property
-    def deposit_box_erc1155(self) -> DepositBoxERC1155:
+    def erc1155(self) -> DepositBoxERC1155:
         return DepositBoxERC1155(self, MainnetImaContract.DEPOSIT_BOX_ERC1155)
 
 
-def spawn_skale_ima_lib(skale_ima: SkaleIma) -> SkaleIma:
+def spawn_skale_ima_lib(skale_ima: MainnetIma) -> MainnetIma:
     """Clone skale ima object with the same wallet"""
-    return SkaleIma(skale_ima._endpoint, skale_ima.instance.address, skale_ima.wallet)
+    return MainnetIma(skale_ima._endpoint, skale_ima.instance.address, skale_ima.wallet)

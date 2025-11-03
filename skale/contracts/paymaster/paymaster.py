@@ -17,21 +17,17 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
-from skale.types.schain import SchainHash, SchainName
+from skale.types.schain import SchainName
+from skale.utils.helper import schain_hash
 
 
 class Paymaster(SkaleContract):
     """Paymaster contract"""
-
-    def name_to_id(self, schain_name: SchainName) -> SchainHash:
-        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
-        return SchainHash(keccak_hash.digest())
 
     @transaction_method
     def add_schain(self, schain_name: SchainName) -> ContractFunction:
@@ -39,8 +35,7 @@ class Paymaster(SkaleContract):
 
     @transaction_method
     def remove_schain(self, schain_name: SchainName) -> ContractFunction:
-        schain_id = self.name_to_id(schain_name)
-        return self.contract.functions.removeSchain(schain_id)
+        return self.contract.functions.removeSchain(schain_hash(schain_name))
 
     @transaction_method
     def add_validator(
@@ -88,8 +83,7 @@ class Paymaster(SkaleContract):
 
     @transaction_method
     def pay(self, schain_name: SchainName, month: int) -> ContractFunction:
-        schain_id = self.name_to_id(schain_name)
-        return self.contract.functions.pay(schain_id, month)
+        return self.contract.functions.pay(schain_hash(schain_name), month)
 
     @transaction_method
     def claim(self, to_address: ChecksumAddress) -> ContractFunction:
@@ -100,8 +94,7 @@ class Paymaster(SkaleContract):
         return self.contract.functions.setVersion(new_version)
 
     def get_schain_expiration_timestamp(self, schain_name: SchainName) -> ContractFunction:
-        schain_id = self.name_to_id(schain_name)
-        return self.contract.functions.getSchainExpirationTimestamp(schain_id).call()
+        return self.contract.functions.getSchainExpirationTimestamp(schain_hash(schain_name)).call()
 
     def get_reward_amount(self, validator_id: int) -> int:
         return self.contract.functions.getRewardAmount(validator_id).call()
@@ -138,8 +131,7 @@ class Paymaster(SkaleContract):
         return self.contract.functions.getSchainsNumber().call()
 
     def get_schain(self, schain_name: SchainName) -> list:
-        schain_id = self.name_to_id(schain_name)
-        return self.contract.functions.schains(schain_id).call()
+        return self.contract.functions.schains(schain_hash(schain_name)).call()
 
     def get_max_replenishment_period(self) -> int:
         return self.contract.functions.maxReplenishmentPeriod().call()

@@ -30,10 +30,12 @@ from logging import Formatter, StreamHandler
 from random import randint
 from typing import Any, Callable, Dict, Generator, List, cast
 
+from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 
 from skale.config import ENV
 from skale.types.node import Port
+from skale.types.schain import SchainHash, SchainName
 
 logger = logging.getLogger(__name__)
 
@@ -207,3 +209,8 @@ def contract_name_to_snake_case(name: str) -> str:
 
 def is_test_env() -> bool:
     return 'pytest' in sys.modules or ENV == 'test'
+
+
+def schain_hash(schain_name: SchainName) -> SchainHash:
+    keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
+    return SchainHash(keccak_hash.digest())

@@ -23,41 +23,19 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
 
 
-class CommunityPool(SkaleContract):
-    @transaction_method
-    def recharge_user_wallet(
-        self, schain_name: SchainName, address: ChecksumAddress
-    ) -> ContractFunction:
-        return self.contract.functions.rechargeUserWallet(schain_name, address)
+class BaseDepositBox(SkaleContract):
+    def is_whitelisted(self, schain_name: SchainName) -> bool:
+        return self.contract.functions.isWhitelisted(schain_name).call()
 
     @transaction_method
-    def withdraw_funds(self, schain_name: SchainName, amount: int) -> ContractFunction:
-        return self.contract.functions.withdrawFunds(schain_name, amount)
+    def enable_whitelist(self, schain_name: SchainName) -> ContractFunction:
+        return self.contract.functions.enableWhitelist(schain_name)
 
     @transaction_method
-    def set_min_transaction_gas(self, min_gas_value: int) -> ContractFunction:
-        return self.contract.functions.setMinTransactionGas(min_gas_value)
-
-    @transaction_method
-    def set_multiplier(self, new_numerator: int, new_divider: int) -> ContractFunction:
-        return self.contract.functions.setMultiplier(new_numerator, new_divider)
-
-    def get_balance(self, address: ChecksumAddress, schain_name: SchainName) -> int:
-        return self.contract.functions.getBalance(address, schain_name).call()
-
-    def check_user_balance(self, schain_name: SchainName, receiver: int) -> bool:
-        return self.contract.functions.checkUserBalance(schain_hash(schain_name), receiver).call()
-
-    def get_recommended_recharge_amount(self, schain_name: SchainName, receiver: int) -> int:
-        return self.contract.functions.getRecommendedRechargeAmount(
-            schain_hash(schain_name), receiver
-        ).call()
-
-    def constant_setter_role(self) -> bool:
-        return self.contract.functions.CONSTANT_SETTER_ROLE().call()
+    def disable_whitelist(self, schain_name: SchainName) -> ContractFunction:
+        return self.contract.functions.disableWhitelist(schain_name)
 
     def admin_role(self) -> bytes:
         return self.contract.functions.DEFAULT_ADMIN_ROLE().call()

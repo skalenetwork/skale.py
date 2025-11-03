@@ -17,16 +17,16 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
-from skale.contracts.skale_contract import SkaleContract
+from skale.contracts.ima.schain.base_token_manager import BaseTokenManager
 from skale.types.schain import SchainName
+from skale.utils.helper import schain_hash
 
 
-class TokenManagerERC1155(SkaleContract):
+class TokenManagerERC1155(BaseTokenManager):
     @transaction_method
     def add_erc1155_token(
         self, schain_name: SchainName, token_mn: int, token_sc: int
@@ -66,29 +66,4 @@ class TokenManagerERC1155(SkaleContract):
         )
 
     def get_clones_erc1155(self, schain_name: SchainName, address: ChecksumAddress) -> int:
-        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
-        hash = keccak_hash.digest()
-        return self.contract.functions.clonesErc1155(hash, address).call()
-
-    def enable_automatic_deploy(self) -> ContractFunction:
-        return self.contract.functions.enableAutomaticDeploy()
-
-    @transaction_method
-    def disable_automatic_deploy(self) -> ContractFunction:
-        return self.contract.functions.disableAutomaticDeploy()
-
-    def automatic_deploy_role(self) -> bytes:
-        return self.contract.functions.AUTOMATIC_DEPLOY_ROLE().call()
-
-    def token_registrar_role(self) -> bytes:
-        return self.contract.functions.TOKEN_REGISTRAR_ROLE().call()
-
-    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
-
-    @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
-        return self.contract.functions.grantRole(role, address)
-
-    def get_role_member(self, role: bytes, index: int) -> bytes:
-        return self.contract.functions.getRoleMember(role, index).call()
+        return self.contract.functions.clonesErc1155(schain_hash(schain_name), address).call()

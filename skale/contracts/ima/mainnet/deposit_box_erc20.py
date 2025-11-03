@@ -17,29 +17,16 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
-from skale.contracts.skale_contract import SkaleContract
+from skale.contracts.ima.mainnet.base_deposit_box import BaseDepositBox
 from skale.types.schain import SchainName
+from skale.utils.helper import schain_hash
 
 
-class DepositBoxERC20(SkaleContract):
-    """Deposit Box"""
-
-    def is_whitelisted(self, schain_name: SchainName) -> bool:
-        return self.contract.functions.isWhitelisted(schain_name).call()
-
-    @transaction_method
-    def enable_whitelist(self, schain_name: SchainName) -> ContractFunction:
-        return self.contract.functions.enableWhitelist(schain_name)
-
-    @transaction_method
-    def disable_whitelist(self, schain_name: SchainName) -> ContractFunction:
-        return self.contract.functions.disableWhitelist(schain_name)
-
+class DepositBoxERC20(BaseDepositBox):
     @transaction_method
     def add_erc20_token(
         self, schain_name: SchainName, address: ChecksumAddress
@@ -77,22 +64,10 @@ class DepositBoxERC20(SkaleContract):
         return self.contract.functions.trustReceiver(schain_name, address)
 
     def is_receiver_trusted(self, schain_name: SchainName, address: ChecksumAddress) -> bool:
-        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
-        schain_id = keccak_hash.digest()
-        return self.contract.functions.isReceiverTrusted(schain_id, address).call()
+        return self.contract.functions.isReceiverTrusted(schain_hash(schain_name), address).call()
 
     def arbiter_role(self) -> bytes:
         return self.contract.functions.ARBITER_ROLE().call()
 
-    def admin_role(self) -> bytes:
-        return self.contract.functions.DEFAULT_ADMIN_ROLE().call()
-
-    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
-
-    @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
-        return self.contract.functions.grantRole(role, address)
-
-    def get_role_member(self, role: bytes, index: int) -> bytes:
-        return self.contract.functions.getRoleMember(role, index).call()
+    def is_token_added(self, schain_name: SchainName, erc20_on_mainnet: ChecksumAddress) -> bool:
+        return self.contract.functions.getSchainToERC20(schain_name, erc20_on_mainnet).call()
