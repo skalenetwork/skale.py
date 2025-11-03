@@ -30,7 +30,7 @@ dependencies = [
 linter = [
     "ruff==0.14.2",
     "mypy==1.18.2",
-    "isort>=4.2.15,<5.4.3",
+    "isort>=4.2.15,<7.0.1",
     "importlib-metadata<9.0",
 ]
 hw-wallet = ["ledgerblue==0.1.55"]
