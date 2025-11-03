@@ -17,21 +17,16 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
-from skale.contracts.skale_contract import SkaleContract
+from skale.contracts.ima.schain.base_token_manager import BaseTokenManager
 from skale.types.schain import SchainName
+from skale.utils.helper import schain_hash
 
 
-class TokenManagerERC20(SkaleContract):
-    """Token manager ERC20"""
-
-    def automatic_deploy(self) -> bool:
-        return self.contract.functions.automaticDeploy().call()
-
+class TokenManagerERC20(BaseTokenManager):
     @transaction_method
     def exit_to_main_erc20(self, token_address: ChecksumAddress, amount: int) -> ContractFunction:
         return self.contract.functions.exitToMainERC20(token_address, amount)
@@ -60,36 +55,14 @@ class TokenManagerERC20(SkaleContract):
 
     @transaction_method
     def add_erc20_token(
-        self, schain_name: SchainName, token_mn: int, token_sc: int
+        self,
+        origin_chain_name: SchainName,
+        origin_address: ChecksumAddress,
+        clone_address: ChecksumAddress,
     ) -> ContractFunction:
-        return self.contract.functions.addERC20TokenByOwner(schain_name, token_mn, token_sc)
+        return self.contract.functions.addERC20TokenByOwner(
+            origin_chain_name, origin_address, clone_address
+        )
 
-    @transaction_method
-    def enable_automatic_deploy(self) -> ContractFunction:
-        return self.contract.functions.enableAutomaticDeploy()
-
-    @transaction_method
-    def disable_automatic_deploy(self) -> ContractFunction:
-        return self.contract.functions.disableAutomaticDeploy()
-
-    def automatic_deploy_role(self) -> bytes:
-        return self.contract.functions.AUTOMATIC_DEPLOY_ROLE().call()
-
-    def token_registrar_role(self) -> bytes:
-        return self.contract.functions.TOKEN_REGISTRAR_ROLE().call()
-
-    def has_role(self, role: bytes, address: ChecksumAddress) -> bool:
-        return self.contract.functions.hasRole(role, address).call()
-
-    @transaction_method
-    def grant_role(self, role: bytes, address: ChecksumAddress) -> ContractFunction:
-        return self.contract.functions.grantRole(role, address)
-
-    def get_role_member(self, role: bytes, index: int) -> bytes:
-        return self.contract.functions.getRoleMember(role, index).call()
-
-    def get_clones_erc20(self, schain_name: SchainName, address: ChecksumAddress) -> int:
-        """schan_hash - origin chain, address - origin token address"""
-        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
-        hash = keccak_hash.digest()
-        return self.contract.functions.clonesErc20(hash, address).call()
+    def get_clone(self, schain_name: SchainName, origin_address: ChecksumAddress) -> int:
+        return self.contract.functions.clonesErc20(schain_hash(schain_name), origin_address).call()

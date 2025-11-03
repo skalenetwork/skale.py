@@ -17,13 +17,13 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
+from skale.utils.helper import schain_hash
 
 
 class CommunityLocker(SkaleContract):
@@ -51,9 +51,9 @@ class CommunityLocker(SkaleContract):
         return self.contract.functions.grantRole(role, address)
 
     def check_allow_to_send_msg(self, schain_name: SchainName, address: ChecksumAddress) -> int:
-        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
-        hash = keccak_hash.digest()
-        return self.contract.functions.checkAllowedToSendMessage(hash, address).call()
+        return self.contract.functions.checkAllowedToSendMessage(
+            schain_hash(schain_name), address
+        ).call()
 
     def schain_hash(self) -> bytes:
         return self.contract.functions.schainHash().call()
@@ -68,6 +68,4 @@ class CommunityLocker(SkaleContract):
         return self.contract.functions.lastMessageTimeStamp(address).call()
 
     def time_limit_per_msg(self, schain_name: SchainName) -> int:
-        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
-        hash = keccak_hash.digest()
-        return self.contract.functions.timeLimitPerMessage(hash).call()
+        return self.contract.functions.timeLimitPerMessage(schain_hash(schain_name)).call()

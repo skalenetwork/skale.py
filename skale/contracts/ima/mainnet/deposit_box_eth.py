@@ -17,16 +17,16 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from Crypto.Hash import keccak
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import transaction_method
-from skale.contracts.skale_contract import SkaleContract
+from skale.contracts.ima.mainnet.base_deposit_box import BaseDepositBox
 from skale.types.schain import SchainName
+from skale.utils.helper import schain_hash
 
 
-class DepositBoxEth(SkaleContract):
+class DepositBoxEth(BaseDepositBox):
     @transaction_method
     def deposit(self, schain_name: SchainName) -> ContractFunction:
         return self.contract.functions.deposit(schain_name)
@@ -47,9 +47,7 @@ class DepositBoxEth(SkaleContract):
         return self.contract.functions.approveTransfers(address).call()
 
     def is_active_transfers(self, schain_name: SchainName) -> bool:
-        keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
-        hash = keccak_hash.digest()
-        return self.contract.functions.activeEthTransfers(hash).call()
+        return self.contract.functions.activeEthTransfers(schain_hash(schain_name)).call()
 
     @transaction_method
     def disable_active_eth_transfers(self, schain_name: SchainName) -> ContractFunction:

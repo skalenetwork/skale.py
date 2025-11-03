@@ -2,9 +2,6 @@
 
 from unittest import mock
 
-import pytest
-
-from skale.transactions.exceptions import TransactionNotMinedError
 from skale.utils.account_tools import (
     check_ether_balance,
     check_skale_balance,

@@ -50,25 +50,25 @@ class SchainIma(SkaleBase):
         return CommunityLocker(self, SchainImaContract.COMMUNITY_LOCKER)
 
     @cached_property
-    def token_manager_eth(self) -> TokenManagerETH:
+    def eth(self) -> TokenManagerETH:
         return TokenManagerETH(self, SchainImaContract.TOKEN_MANAGER_ETH)
 
     @cached_property
-    def token_manager_erc20(self) -> TokenManagerERC20:
+    def erc20(self) -> TokenManagerERC20:
         return TokenManagerERC20(self, SchainImaContract.TOKEN_MANAGER_ERC20)
 
     @cached_property
-    def token_manager_erc721(self) -> TokenManagerERC721:
+    def erc721(self) -> TokenManagerERC721:
         return TokenManagerERC721(self, SchainImaContract.TOKEN_MANAGER_ERC721)
 
     @cached_property
-    def token_manager_erc721_wmt(self) -> TokenManagerERC721WithMetadata:
+    def erc721_wmt(self) -> TokenManagerERC721WithMetadata:
         return TokenManagerERC721WithMetadata(
             self, SchainImaContract.TOKEN_MANAGER_ERC721_WITH_META
         )
 
     @cached_property
-    def token_manager_erc1155(self) -> TokenManagerERC1155:
+    def erc1155(self) -> TokenManagerERC1155:
         return TokenManagerERC1155(self, SchainImaContract.TOKEN_MANAGER_ERC1155)
 
     @cached_property

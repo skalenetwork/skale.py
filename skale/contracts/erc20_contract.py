@@ -108,12 +108,16 @@ class Erc20Contract(BaseContract):
     ):
         super().__init__(web3, address, ERC20_ABI, wallet)
 
-    def balance_of(self, account: ChecksumAddress) -> int:
-        return self.contract.functions.balanceOf(account).call()
+    def balance_of(self, account: ChecksumAddress) -> Wei:
+        return Wei(self.contract.functions.balanceOf(account).call())
 
     @transaction_method
-    def transfer(self, to: ChecksumAddress, amount: int) -> ContractFunction:
+    def transfer(self, to: ChecksumAddress, amount: Wei) -> ContractFunction:
         return self.contract.functions.transfer(to, amount)
+
+    @transaction_method
+    def approve(self, spender: ChecksumAddress, amount: Wei) -> ContractFunction:
+        return self.contract.functions.approve(spender, amount)
 
     def wait_for_balance_change(
         self,

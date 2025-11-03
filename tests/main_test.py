@@ -7,8 +7,8 @@ from skale_contracts.projects.skale_manager import SkaleManagerContract
 from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
 
 from skale import SkaleManager
-from skale.contracts.skale_contract import SkaleContract
 from skale.contracts.manager.nodes import Nodes
+from skale.contracts.skale_contract import SkaleContract
 from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
