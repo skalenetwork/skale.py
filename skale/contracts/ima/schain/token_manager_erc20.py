@@ -55,9 +55,14 @@ class TokenManagerERC20(BaseTokenManager):
 
     @transaction_method
     def add_erc20_token(
-        self, schain_name: SchainName, token_mn: int, token_sc: int
+        self,
+        origin_chain_name: SchainName,
+        origin_address: ChecksumAddress,
+        clone_address: ChecksumAddress,
     ) -> ContractFunction:
-        return self.contract.functions.addERC20TokenByOwner(schain_name, token_mn, token_sc)
+        return self.contract.functions.addERC20TokenByOwner(
+            origin_chain_name, origin_address, clone_address
+        )
 
     def get_clone(self, schain_name: SchainName, origin_address: ChecksumAddress) -> int:
         return self.contract.functions.clonesErc20(schain_hash(schain_name), origin_address).call()
