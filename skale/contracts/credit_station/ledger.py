@@ -1,0 +1,35 @@
+#   -*- coding: utf-8 -*-
+#
+#   This file is part of SKALE.py
+#
+#   Copyright (C) 2025-Present SKALE Labs
+#
+#   SKALE.py is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU Affero General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   SKALE.py is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU Affero General Public License for more details.
+#
+#   You should have received a copy of the GNU Affero General Public License
+#   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
+
+from eth_typing import ChecksumAddress
+from web3.contract.contract import ContractFunction
+from web3.types import Wei
+
+from skale.contracts.base_contract import transaction_method
+from skale.contracts.skale_contract import SkaleContract
+from skale.types.credit_station import PaymentId
+
+
+class Ledger(SkaleContract):
+    @transaction_method
+    def fulfill(self, payment: PaymentId, purchaser: ChecksumAddress) -> ContractFunction:
+        return self.contract.functions.fulfill(payment, purchaser)
+
+    def is_fulfilled(self, payment: PaymentId) -> Wei:
+        return self.contract.functions.isFulfilled(payment).call()
