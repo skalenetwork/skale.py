@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skale.py"
-version = "7.8"
+version = "7.92"
 description = "SKALE client tools"
 readme = "README.md"
 requires-python = ">=3.11,<4"
@@ -21,7 +21,7 @@ classifiers = [
 dependencies = [
     "redis>=7.0.1",
     "sgx.py==0.11dev0",
-    "skale-contracts==2.0.0a6",
+    "skale-contracts==2.0.0a10",
     "typing-extensions==4.15.0",
     "web3==7.14.0",
 ]
@@ -54,6 +54,10 @@ prerelease = "allow"
 
 [tool.hatch.build.targets.wheel]
 packages = ["skale"]
+only-include = ["skale"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"skale/py.typed" = "skale/py.typed"
 
 [tool.pytest.ini_options]
 log_cli = false
