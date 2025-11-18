@@ -43,6 +43,7 @@ from skale.types.schain import (
     SchainStructure,
     SchainStructureWithStatus,
 )
+from skale.utils.helper import schain_name_to_hash
 
 
 class SChains(SkaleManagerContract):
@@ -64,10 +65,12 @@ class SChains(SkaleManagerContract):
     def get(self, id_: SchainHash) -> SchainStructure:
         res = self.schains_internal.get_raw(id_)
         options = self.get_options(id_)
-        return SchainStructure(**asdict(res), chain_id=self.name_to_id(res.name), options=options)
+        return SchainStructure(
+            **asdict(res), chain_id=schain_name_to_hash(res.name), options=options
+        )
 
     def get_by_name(self, name: SchainName) -> SchainStructure:
-        id_ = self.name_to_id(name)
+        id_ = schain_name_to_hash(name)
         return self.get(id_)
 
     def get_schains_for_owner(self, account: ChecksumAddress) -> List[SchainStructure]:
@@ -157,8 +160,8 @@ class SChains(SkaleManagerContract):
         return parse_schain_options(raw_options=self.__raw_get_options(schain_hash))
 
     def get_options_by_name(self, name: SchainName) -> SchainOptions:
-        id_ = self.name_to_id(name)
-        return self.get_options(id_)
+        schain_hash = schain_name_to_hash(name)
+        return self.get_options(schain_hash)
 
     def restart_schain_creation(self, name: SchainName) -> 'ContractFunction':
         return self.contract.functions.restartSchainCreation(name)

@@ -93,7 +93,7 @@ def test_get_schains_for_node(skale, schain):
     assert node_id in schain_node_ids
 
 
-def test_name_to_id(skale):
+def test_schain_name_to_hash():
     schain_hash = schain_name_to_hash(DEFAULT_SCHAIN_NAME)
     assert schain_hash == Web3.to_bytes(hexstr=DEFAULT_SCHAIN_HASH)
 

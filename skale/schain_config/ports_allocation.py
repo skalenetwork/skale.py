@@ -19,7 +19,7 @@
 
 from skale.schain_config import PORTS_PER_SCHAIN
 from skale.types.node import Port
-from skale.types.schain import SchainName, SchainStructure
+from skale.types.schain import SchainHash
 from skale.utils.exceptions import SChainNotFoundException
 
 
@@ -27,15 +27,19 @@ def calc_schain_base_port(node_base_port: Port, schain_index: int) -> Port:
     return Port(node_base_port + schain_index * PORTS_PER_SCHAIN)
 
 
-def get_schain_index_in_node(schain_name: SchainName, node_schains: list[SchainStructure]) -> int:
-    for index, schain in enumerate(node_schains):
-        if schain_name == schain.name:
+def get_schain_index_in_node(
+    schain_hash: SchainHash, schain_hashes_on_node: list[SchainHash]
+) -> int:
+    for index, schain_hash in enumerate(schain_hashes_on_node):
+        if schain_hash == schain_hash:
             return index
-    raise SChainNotFoundException(f'sChain {schain_name} is not found in the list: {node_schains}')
+    raise SChainNotFoundException(
+        f'sChain {str(schain_hash)} is not found in the list: {str(schain_hashes_on_node)}'
+    )
 
 
 def get_schain_base_port_on_node(
-    schains_on_node: list[SchainStructure], schain_name: SchainName, node_base_port: Port
+    schain_hashes_on_node: list[SchainHash], schain_hash: SchainHash, node_base_port: Port
 ) -> Port:
-    schain_index = get_schain_index_in_node(schain_name, schains_on_node)
+    schain_index = get_schain_index_in_node(schain_hash, schain_hashes_on_node)
     return calc_schain_base_port(node_base_port, schain_index)
