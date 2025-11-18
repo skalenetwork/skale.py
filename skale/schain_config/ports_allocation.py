@@ -30,12 +30,12 @@ def calc_schain_base_port(node_base_port: Port, schain_index: int) -> Port:
 def get_schain_index_in_node(
     schain_hash: SchainHash, schain_hashes_on_node: list[SchainHash]
 ) -> int:
-    for index, schain_hash in enumerate(schain_hashes_on_node):
-        if schain_hash == schain_hash:
-            return index
-    raise SChainNotFoundException(
-        f'sChain {str(schain_hash)} is not found in the list: {str(schain_hashes_on_node)}'
-    )
+    try:
+        return schain_hashes_on_node.index(schain_hash)
+    except ValueError:
+        raise SChainNotFoundException(
+            f'sChain {str(schain_hash)} is not found in the list: {str(schain_hashes_on_node)}'
+        )
 
 
 def get_schain_base_port_on_node(
