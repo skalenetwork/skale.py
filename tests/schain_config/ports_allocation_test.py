@@ -28,7 +28,7 @@ def test_get_schain_index_in_node(skale, schain):
     index = get_schain_index_in_node(schain_hash, schain_hashes)
     assert isinstance(index, int)
 
-    wrong_schain_hash = schain_name_to_hash('ABCabc')
+    wrong_schain_hash = schain_name_to_hash('ABCabcd')
     with pytest.raises(SChainNotFoundException):
         get_schain_index_in_node(wrong_schain_hash, schain_hashes)
 
