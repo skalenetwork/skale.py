@@ -12,11 +12,11 @@ from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_PORT, DEFAULT_SCHAIN
 
 
 def test_get_schain_base_port_on_node(skale, schain):
-    schain_name = schain
+    schain_hash = schain_name_to_hash(schain)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     schain_hashes = skale.schains_internal.get_schain_hashes_for_node(node_id)
     schain_port_on_node = get_schain_base_port_on_node(
-        schain_hashes, schain_name, DEFAULT_NODE_PORT
+        schain_hashes, schain_hash, DEFAULT_NODE_PORT
     )
     assert schain_port_on_node == DEFAULT_NODE_PORT
 
