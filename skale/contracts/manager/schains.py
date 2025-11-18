@@ -22,10 +22,8 @@ import functools
 from dataclasses import asdict
 from typing import Any, List
 
-from Crypto.Hash import keccak
-from eth_typing import ChecksumAddress, HexStr
+from eth_typing import ChecksumAddress
 from hexbytes import HexBytes
-from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
 
