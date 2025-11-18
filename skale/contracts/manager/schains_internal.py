@@ -57,7 +57,9 @@ class SChainsInternal(SkaleManagerContract):
     def get_schain_list_size(self, account: ChecksumAddress) -> int:
         return int(self.contract.functions.getSchainListSize(account).call({'from': account}))
 
-    def get_schain_id_by_index_for_owner(self, account: ChecksumAddress, index: int) -> SchainHash:
+    def get_schain_hash_by_index_for_owner(
+        self, account: ChecksumAddress, index: int
+    ) -> SchainHash:
         return SchainHash(self.contract.functions.schainIndexes(account, index).call())
 
     def get_node_ids_for_schain(self, name: SchainName) -> List[NodeId]:

@@ -34,8 +34,8 @@ def test_get_schain_list_size(skale, schain, empty_account):
     assert empty_list_size == 0
 
 
-def test_get_schain_id_by_index_for_owner(skale, schain):
-    schain_id = skale.schains_internal.get_schain_id_by_index_for_owner(skale.wallet.address, 0)
+def test_get_schain_hash_by_index_for_owner(skale, schain):
+    schain_id = skale.schains_internal.get_schain_hash_by_index_for_owner(skale.wallet.address, 0)
     schain = skale.schains.get(schain_id)
     assert schain.mainnet_owner == skale.wallet.address
 

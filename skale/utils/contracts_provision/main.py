@@ -169,8 +169,8 @@ def cleanup_nodes(skale: SkaleManager, ids: list[NodeId] | None = None) -> None:
 
 
 def cleanup_schains(skale: SkaleManager) -> None:
-    for schain_id in skale.schains_internal.get_all_schains_hashes():
-        schain_data = skale.schains.get(schain_id)
+    for schain_hash in skale.schains_internal.get_all_schains_hashes():
+        schain_data = skale.schains.get(schain_hash)
         schain_name = schain_data.name
         if schain_name is not None:
             skale.manager.delete_schain_by_root(schain_name, wait_for=True)

@@ -75,7 +75,7 @@ class SChains(SkaleManagerContract):
         list_size = self.schains_internal.get_schain_list_size(account)
 
         for i in range(0, list_size):
-            id_ = self.schains_internal.get_schain_id_by_index_for_owner(account, i)
+            id_ = self.schains_internal.get_schain_hash_by_index_for_owner(account, i)
             schain = self.get(id_)
             schains.append(schain)
         return schains
@@ -150,11 +150,11 @@ class SChains(SkaleManagerContract):
     def schain_creator_role(self) -> bytes:
         return bytes(self.contract.functions.SCHAIN_CREATOR_ROLE().call())
 
-    def __raw_get_options(self, schain_id: SchainHash) -> List[Any]:
-        return list(self.contract.functions.getOptions(schain_id).call())
+    def __raw_get_options(self, schain_hash: SchainHash) -> List[Any]:
+        return list(self.contract.functions.getOptions(schain_hash).call())
 
-    def get_options(self, schain_id: SchainHash) -> SchainOptions:
-        return parse_schain_options(raw_options=self.__raw_get_options(schain_id))
+    def get_options(self, schain_hash: SchainHash) -> SchainOptions:
+        return parse_schain_options(raw_options=self.__raw_get_options(schain_hash))
 
     def get_options_by_name(self, name: SchainName) -> SchainOptions:
         id_ = self.name_to_id(name)
