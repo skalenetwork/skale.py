@@ -5,7 +5,7 @@ import web3
 from hexbytes import HexBytes
 
 from skale.contracts.manager.dkg import G2Point, KeyShare
-from skale.utils.helper import split_public_key
+from skale.utils.helper import schain_name_to_hash, split_public_key
 
 SCHAIN_NAME = 'pointed-asellus-australis'
 PUBLIC_KEY = '0xfcb3765bdb954ab0672fce731583ad8a94cf05fe63c147f881f8feea18e072d4cad3ec142a65de66a1d50e4fc34a7841c5488ccb55d02cf86013208c17517d64'  # noqa
@@ -33,7 +33,7 @@ def test_response(skale):
         ),
     }
     from_node_index = 0
-    group_index = skale.schains.name_to_id(SCHAIN_NAME)
+    group_index = schain_name_to_hash(SCHAIN_NAME)
     share = group_index  # not an invariant, only a mock
     secret_number = 1
     multiplied_share = G2Point((1, 2), (3, 4))
@@ -105,7 +105,7 @@ def test_alright(skale):
             '0xb9799682e332bac19e758fe13db6129827da76846b8c6d26f1e70385d3f0afc0299e3db90000000000000000000000000000000000000000000000000000000000000000'  # noqa
         ),
     }
-    group_index = skale.schains.name_to_id(SCHAIN_NAME)
+    group_index = schain_name_to_hash(SCHAIN_NAME)
     from_node_index = 0
 
     with mock.patch.object(skale.dkg.contract.functions.alright, 'call', new=Mock(return_value=[])):
@@ -132,7 +132,7 @@ def test_complaint(skale):
             '0xd76c2c4fe332bac19e758fe13db6129827da76846b8c6d26f1e70385d3f0afc0299e3db900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'  # noqa
         ),
     }
-    group_index = skale.schains.name_to_id(SCHAIN_NAME)
+    group_index = schain_name_to_hash(SCHAIN_NAME)
     from_node_index = 0
     to_node_index = 0
 
@@ -164,7 +164,7 @@ def test_complaint_bad_data(skale):
             '0xd76c2c4fe332bac19e758fe13db6129827da76846b8c6d26f1e70385d3f0afc0299e3db900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'  # noqa
         ),
     }
-    group_index = skale.schains.name_to_id(SCHAIN_NAME)
+    group_index = schain_name_to_hash(SCHAIN_NAME)
     from_node_index = 0
     to_node_index = 0
 

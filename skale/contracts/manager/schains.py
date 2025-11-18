@@ -84,9 +84,9 @@ class SChains(SkaleManagerContract):
 
     def get_schains_for_node(self, node_id: NodeId) -> list[SchainStructureWithStatus]:
         schains = []
-        schain_ids = self.schains_internal.get_schain_ids_for_node(node_id)
-        for schain_id in schain_ids:
-            simple_schain = self.get(schain_id)
+        schain_hashes = self.schains_internal.get_schain_hashes_for_node(node_id)
+        for schain_hash in schain_hashes:
+            simple_schain = self.get(schain_hash)
             schain = SchainStructureWithStatus(
                 **asdict(simple_schain), active=self.schain_active(simple_schain)
             )
@@ -95,16 +95,12 @@ class SChains(SkaleManagerContract):
 
     def get_active_schains_for_node(self, node_id: NodeId) -> List[SchainStructureWithStatus]:
         schains = []
-        schain_ids = self.schains_internal.get_active_schain_ids_for_node(node_id)
-        for schain_id in schain_ids:
-            simple_schain = self.get(schain_id)
+        schain_hashes = self.schains_internal.get_active_schain_hashes_for_node(node_id)
+        for schain_hash in schain_hashes:
+            simple_schain = self.get(schain_hash)
             schain = SchainStructureWithStatus(**asdict(simple_schain), active=True)
             schains.append(schain)
         return schains
-
-    def name_to_id(self, name: SchainName) -> SchainHash:
-        keccak_hash = keccak.new(data=name.encode('utf8'), digest_bits=256)
-        return SchainHash(Web3.to_bytes(hexstr=Web3.to_hex(hexstr=HexStr(keccak_hash.hexdigest()))))
 
     def get_last_rotation_id(self, schain_name: SchainName) -> int:
         rotation_data = self.node_rotation.get_rotation(schain_name)

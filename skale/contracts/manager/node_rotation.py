@@ -33,7 +33,7 @@ from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.rotation import Rotation, RotationSwap
 from skale.types.schain import SchainHash, SchainName
-from skale.utils.helper import is_test_env
+from skale.utils.helper import is_test_env, schain_name_to_hash
 
 if TYPE_CHECKING:
     from skale.contracts.manager.schains import SChains
@@ -54,8 +54,8 @@ class NodeRotation(SkaleManagerContract):
         return self.skale.schains
 
     def get_rotation(self, schain_name: SchainName) -> Rotation:
-        schain_id = self.schains.name_to_id(schain_name)
-        rotation_data = self.contract.functions.getRotation(schain_id).call()
+        schain_hash = schain_name_to_hash(schain_name)
+        rotation_data = self.contract.functions.getRotation(schain_hash).call()
         return Rotation(*rotation_data)
 
     def get_leaving_history(self, node_id: NodeId) -> List[RotationSwap]:
@@ -68,21 +68,22 @@ class NodeRotation(SkaleManagerContract):
 
     def get_schain_finish_ts(self, node_id: NodeId, schain_name: SchainName) -> int | None:
         history = self.get_leaving_history(node_id)
-        schain_id = self.skale.schains.name_to_id(schain_name)
+        schain_hash = schain_name_to_hash(schain_name)
         finish_ts = next(
-            (swap['finished_rotation'] for swap in history if swap['schain_id'] == schain_id), None
+            (swap['finished_rotation'] for swap in history if swap['schain_id'] == schain_hash),
+            None,
         )
         if not finish_ts:
             return None
         return int(finish_ts)
 
     def is_rotation_in_progress(self, schain_name: SchainName) -> bool:
-        schain_id = self.schains.name_to_id(schain_name)
-        return bool(self.contract.functions.isRotationInProgress(schain_id).call())
+        schain_hash = schain_name_to_hash(schain_name)
+        return bool(self.contract.functions.isRotationInProgress(schain_hash).call())
 
     def is_new_node_found(self, schain_name: SchainName) -> bool:
-        schain_id = self.schains.name_to_id(schain_name)
-        return bool(self.contract.functions.isNewNodeFound(schain_id).call())
+        schain_hash = schain_name_to_hash(schain_name)
+        return bool(self.contract.functions.isNewNodeFound(schain_hash).call())
 
     def is_rotation_active(self, schain_name: SchainName) -> bool:
         """
@@ -106,8 +107,8 @@ class NodeRotation(SkaleManagerContract):
         return current_ts > schain_finish_ts
 
     def wait_for_new_node(self, schain_name: SchainName) -> bool:
-        schain_id = self.schains.name_to_id(schain_name)
-        return bool(self.contract.functions.waitForNewNode(schain_id).call())
+        schain_hash = schain_name_to_hash(schain_name)
+        return bool(self.contract.functions.waitForNewNode(schain_hash).call())
 
     @transaction_method
     def grant_role(self, role: bytes, owner: str) -> 'ContractFunction':
@@ -120,9 +121,9 @@ class NodeRotation(SkaleManagerContract):
         return bytes(self.contract.functions.DEBUGGER_ROLE().call())
 
     def get_previous_node(self, schain_name: SchainName, node_id: NodeId) -> NodeId | None:
-        schain_id = self.schains.name_to_id(schain_name)
+        schain_hash = schain_name_to_hash(schain_name)
         try:
-            return NodeId(self.contract.functions.getPreviousNode(schain_id, node_id).call())
+            return NodeId(self.contract.functions.getPreviousNode(schain_hash, node_id).call())
         except (ContractLogicError, ValueError) as e:
             if NO_PREVIOUS_NODE_EXCEPTION_TEXT in str(e):
                 return None

@@ -1,4 +1,4 @@
-from tests.constants import DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_NAME
+from tests.constants import DEFAULT_SCHAIN_HASH, DEFAULT_SCHAIN_NAME
 
 
 def test_get_previous_groups_public_key(skale):
@@ -18,4 +18,4 @@ def test_get_all_previous_groups_public_keys(skale):
 
 
 def test_get_group_public_key(skale):
-    assert skale.key_storage.get_common_public_key(DEFAULT_SCHAIN_ID) == ((0, 0), (0, 0))
+    assert skale.key_storage.get_common_public_key(DEFAULT_SCHAIN_HASH) == ((0, 0), (0, 0))

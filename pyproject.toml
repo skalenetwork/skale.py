@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skale.py"
-version = "7.9"
+version = "7.10"
 description = "SKALE client tools"
 readme = "README.md"
 requires-python = ">=3.11,<4"

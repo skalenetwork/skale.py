@@ -27,6 +27,7 @@ from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
 from skale.types.node import NodeId
 from skale.types.schain import Schain, SchainHash, SchainName
+from skale.utils.helper import schain_name_to_hash
 
 if TYPE_CHECKING:
     from web3.contract.contract import ContractFunction
@@ -45,7 +46,7 @@ class SChainsInternal(SkaleManagerContract):
     def get_raw(self, name: SchainHash) -> Schain:
         return Schain(*self.contract.functions.schains(name).call())
 
-    def get_all_schains_ids(self) -> List[SchainHash]:
+    def get_all_schains_hashes(self) -> List[SchainHash]:
         return [
             SchainHash(schain_hash) for schain_hash in self.contract.functions.getSchains().call()
         ]
@@ -60,20 +61,22 @@ class SChainsInternal(SkaleManagerContract):
         return SchainHash(self.contract.functions.schainIndexes(account, index).call())
 
     def get_node_ids_for_schain(self, name: SchainName) -> List[NodeId]:
-        id_ = self.schains.name_to_id(name)
-        return [NodeId(node) for node in self.contract.functions.getNodesInGroup(id_).call()]
+        schain_hash = schain_name_to_hash(name)
+        return [
+            NodeId(node) for node in self.contract.functions.getNodesInGroup(schain_hash).call()
+        ]
 
-    def get_schain_ids_for_node(self, node_id: NodeId) -> List[SchainHash]:
+    def get_schain_hashes_for_node(self, node_id: NodeId) -> List[SchainHash]:
         return [
             SchainHash(schain)
             for schain in self.contract.functions.getSchainHashesForNode(node_id).call()
         ]
 
     def is_schain_exist(self, name: SchainName) -> bool:
-        id_ = self.schains.name_to_id(name)
-        return bool(self.contract.functions.isSchainExist(id_).call())
+        schain_hash = schain_name_to_hash(name)
+        return bool(self.contract.functions.isSchainExist(schain_hash).call())
 
-    def get_active_schain_ids_for_node(self, node_id: NodeId) -> List[SchainHash]:
+    def get_active_schain_hashes_for_node(self, node_id: NodeId) -> List[SchainHash]:
         return [
             SchainHash(schain)
             for schain in self.contract.functions.getActiveSchains(node_id).call()
@@ -110,5 +113,5 @@ class SChainsInternal(SkaleManagerContract):
         return self.contract.functions.newGeneration()
 
     def check_exception(self, schain_name: SchainName, node_id: NodeId) -> bool:
-        id_ = self.schains.name_to_id(schain_name)
-        return bool(self.contract.functions.checkException(id_, node_id).call())
+        schain_hash = schain_name_to_hash(schain_name)
+        return bool(self.contract.functions.checkException(schain_hash, node_id).call())

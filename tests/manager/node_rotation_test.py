@@ -10,7 +10,7 @@ from skale.utils.contracts_provision.main import (
     cleanup_nodes_schains,
     create_schain,
 )
-from tests.constants import DEFAULT_SCHAIN_ID, DEFAULT_SCHAIN_INDEX, DEFAULT_SCHAIN_NAME
+from tests.constants import DEFAULT_SCHAIN_HASH, DEFAULT_SCHAIN_INDEX, DEFAULT_SCHAIN_NAME
 from tests.rotation_history.utils import TEST_ROTATION_DELAY, _skip_evm_time, run_dkg, set_up_nodes
 
 
@@ -26,12 +26,12 @@ def test_get_leaving_history(skale):
     with mock.patch.object(
         skale.node_rotation.contract.functions.getLeavingHistory, 'call'
     ) as call_mock:
-        call_mock.return_value = [(DEFAULT_SCHAIN_ID, 1000), (DEFAULT_SCHAIN_ID, 2000)]
+        call_mock.return_value = [(DEFAULT_SCHAIN_HASH, 1000), (DEFAULT_SCHAIN_HASH, 2000)]
         history = skale.node_rotation.get_leaving_history(DEFAULT_SCHAIN_INDEX)
         assert isinstance(history, list)
         assert history == [
-            {'schain_id': DEFAULT_SCHAIN_ID, 'finished_rotation': 1000},
-            {'schain_id': DEFAULT_SCHAIN_ID, 'finished_rotation': 2000},
+            {'schain_id': DEFAULT_SCHAIN_HASH, 'finished_rotation': 1000},
+            {'schain_id': DEFAULT_SCHAIN_HASH, 'finished_rotation': 2000},
         ]
 
 

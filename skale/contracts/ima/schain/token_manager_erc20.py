@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.ima.schain.base_token_manager import BaseTokenManager
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class TokenManagerERC20(BaseTokenManager):
@@ -65,4 +65,6 @@ class TokenManagerERC20(BaseTokenManager):
         )
 
     def get_clone(self, schain_name: SchainName, origin_address: ChecksumAddress) -> int:
-        return self.contract.functions.clonesErc20(schain_hash(schain_name), origin_address).call()
+        return self.contract.functions.clonesErc20(
+            schain_name_to_hash(schain_name), origin_address
+        ).call()

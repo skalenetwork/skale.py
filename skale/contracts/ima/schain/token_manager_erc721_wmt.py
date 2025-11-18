@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.ima.schain.base_token_manager import BaseTokenManager
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class TokenManagerERC721WithMetadata(BaseTokenManager):
@@ -43,4 +43,6 @@ class TokenManagerERC721WithMetadata(BaseTokenManager):
         return self.contract.functions.exitToMainERC721(address, token_id)
 
     def get_clones_erc721(self, schain_name: SchainName, address: ChecksumAddress) -> int:
-        return self.contract.functions.clonesErc721(schain_hash(schain_name), address).call()
+        return self.contract.functions.clonesErc721(
+            schain_name_to_hash(schain_name), address
+        ).call()

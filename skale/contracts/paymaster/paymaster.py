@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class Paymaster(SkaleContract):
@@ -35,7 +35,7 @@ class Paymaster(SkaleContract):
 
     @transaction_method
     def remove_schain(self, schain_name: SchainName) -> ContractFunction:
-        return self.contract.functions.removeSchain(schain_hash(schain_name))
+        return self.contract.functions.removeSchain(schain_name_to_hash(schain_name))
 
     @transaction_method
     def add_validator(
@@ -83,7 +83,7 @@ class Paymaster(SkaleContract):
 
     @transaction_method
     def pay(self, schain_name: SchainName, month: int) -> ContractFunction:
-        return self.contract.functions.pay(schain_hash(schain_name), month)
+        return self.contract.functions.pay(schain_name_to_hash(schain_name), month)
 
     @transaction_method
     def claim(self, to_address: ChecksumAddress) -> ContractFunction:
@@ -94,7 +94,9 @@ class Paymaster(SkaleContract):
         return self.contract.functions.setVersion(new_version)
 
     def get_schain_expiration_timestamp(self, schain_name: SchainName) -> ContractFunction:
-        return self.contract.functions.getSchainExpirationTimestamp(schain_hash(schain_name)).call()
+        return self.contract.functions.getSchainExpirationTimestamp(
+            schain_name_to_hash(schain_name)
+        ).call()
 
     def get_reward_amount(self, validator_id: int) -> int:
         return self.contract.functions.getRewardAmount(validator_id).call()
@@ -131,7 +133,7 @@ class Paymaster(SkaleContract):
         return self.contract.functions.getSchainsNumber().call()
 
     def get_schain(self, schain_name: SchainName) -> list:
-        return self.contract.functions.schains(schain_hash(schain_name)).call()
+        return self.contract.functions.schains(schain_name_to_hash(schain_name)).call()
 
     def get_max_replenishment_period(self) -> int:
         return self.contract.functions.maxReplenishmentPeriod().call()
