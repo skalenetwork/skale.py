@@ -27,7 +27,7 @@ from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
 from skale.types.credit_station import PaymentReceivedEvent
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 logger = logging.getLogger(__name__)
 
@@ -91,8 +91,8 @@ class CreditStation(SkaleContract):
     ) -> list[PaymentReceivedEvent]:
         filter_args = {}
         if schain_name is not None:
-            _schain_hash = schain_hash(schain_name)
-            filter_args['schainHash'] = _schain_hash
+            schain_hash = schain_name_to_hash(schain_name)
+            filter_args['schainHash'] = schain_hash
 
         events = get_events_in_chunks(
             self.contract.events.PaymentReceived, from_block, to_block, chunk_size, **filter_args

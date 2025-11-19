@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skale.py"
-version = "7.9"
+version = "7.10"
 description = "SKALE client tools"
 readme = "README.md"
 requires-python = ">=3.11,<4"
@@ -39,7 +39,7 @@ dev = [
     "codecov",
     "freezegun==1.5.5",
     "mock==5.2.0",
-    "pytest==8.4.2",
+    "pytest==9.0.1",
     "pytest-cov==7.0.0",
     "types-requests",
     "types-redis",

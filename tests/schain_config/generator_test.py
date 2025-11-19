@@ -1,5 +1,5 @@
 import skale.contracts.manager.nodes as nodes
-from skale.schain_config.generator import get_nodes_for_schain, get_schain_nodes_with_schains
+from skale.schain_config.generator import get_nodes_for_schain, get_schain_nodes_with_schain_hashes
 from tests.constants import MIN_NODES_IN_SCHAIN
 
 
@@ -13,8 +13,7 @@ def test_get_nodes_for_schain(skale, schain):
     assert set(schain_nodes[0].keys()) == set(fields_with_id)
 
 
-def test_get_schain_nodes_with_schains(skale, schain):
+def test_get_schain_nodes_with_schain_hashes(skale, schain):
     schain_name = schain
-    nodes_with_schains = get_schain_nodes_with_schains(skale, schain_name)
-    assert isinstance(nodes_with_schains[0]['schains'], list)
-    assert nodes_with_schains[0]['schains'][0].mainnet_owner == skale.wallet.address
+    nodes_with_schain_hashes = get_schain_nodes_with_schain_hashes(skale, schain_name)
+    assert isinstance(nodes_with_schain_hashes[0]['schain_hashes'], list)

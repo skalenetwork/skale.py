@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class CommunityPool(SkaleContract):
@@ -49,11 +49,13 @@ class CommunityPool(SkaleContract):
         return self.contract.functions.getBalance(address, schain_name).call()
 
     def check_user_balance(self, schain_name: SchainName, receiver: int) -> bool:
-        return self.contract.functions.checkUserBalance(schain_hash(schain_name), receiver).call()
+        return self.contract.functions.checkUserBalance(
+            schain_name_to_hash(schain_name), receiver
+        ).call()
 
     def get_recommended_recharge_amount(self, schain_name: SchainName, receiver: int) -> int:
         return self.contract.functions.getRecommendedRechargeAmount(
-            schain_hash(schain_name), receiver
+            schain_name_to_hash(schain_name), receiver
         ).call()
 
     def constant_setter_role(self) -> bool:

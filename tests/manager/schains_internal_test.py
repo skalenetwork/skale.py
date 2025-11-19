@@ -2,16 +2,22 @@
 
 from dataclasses import astuple, fields
 
-from tests.constants import DEFAULT_SCHAIN_ID, EMPTY_SCHAIN_ARR, MIN_NODES_IN_SCHAIN, SCHAIN_FIELDS
+from skale.utils.helper import schain_name_to_hash
+from tests.constants import (
+    DEFAULT_SCHAIN_HASH,
+    EMPTY_SCHAIN_ARR,
+    MIN_NODES_IN_SCHAIN,
+    SCHAIN_FIELDS,
+)
 
 
 def test_get_raw(skale):
-    schain = skale.schains_internal.get_raw(DEFAULT_SCHAIN_ID)
+    schain = skale.schains_internal.get_raw(DEFAULT_SCHAIN_HASH)
     assert len(SCHAIN_FIELDS) == len(fields(schain)) + 2  # +2 for chainId + options
 
 
 def test_get_raw_not_exist(skale):
-    not_exist_schain_id = skale.schains.name_to_id('unused_hash')
+    not_exist_schain_id = schain_name_to_hash('unused_hash')
     schain_arr = skale.schains_internal.get_raw(not_exist_schain_id)
     assert list(astuple(schain_arr)) == EMPTY_SCHAIN_ARR
 
@@ -28,8 +34,8 @@ def test_get_schain_list_size(skale, schain, empty_account):
     assert empty_list_size == 0
 
 
-def test_get_schain_id_by_index_for_owner(skale, schain):
-    schain_id = skale.schains_internal.get_schain_id_by_index_for_owner(skale.wallet.address, 0)
+def test_get_schain_hash_by_index_for_owner(skale, schain):
+    schain_id = skale.schains_internal.get_schain_hash_by_index_for_owner(skale.wallet.address, 0)
     schain = skale.schains.get(schain_id)
     assert schain.mainnet_owner == skale.wallet.address
 
@@ -41,12 +47,12 @@ def test_get_node_ids_for_schain(skale, schain):
     assert len(schain_node_ids) >= MIN_NODES_IN_SCHAIN
 
 
-def test_get_schain_ids_for_node(skale, nodes, schain):
+def test_get_schain_hashes_for_node(skale, nodes, schain):
     node_id = nodes[0]
-    schain_ids_for_node = skale.schains_internal.get_schain_ids_for_node(node_id)
+    schain_hashes_for_node = skale.schains_internal.get_schain_hashes_for_node(node_id)
 
-    assert isinstance(schain_ids_for_node, list)
-    assert len(schain_ids_for_node) > 0
+    assert isinstance(schain_hashes_for_node, list)
+    assert len(schain_hashes_for_node) > 0
 
 
 def test_is_schain_exist(skale, schain):
@@ -55,9 +61,9 @@ def test_is_schain_exist(skale, schain):
     assert not skale.schains_internal.is_schain_exist(non_exitent_chain)
 
 
-def test_get_active_schain_ids(skale, nodes, schain):
+def test_get_active_schain_hashes(skale, nodes, schain):
     node_id = nodes[0]
-    active_schains = skale.schains_internal.get_active_schain_ids_for_node(node_id)
+    active_schains = skale.schains_internal.get_active_schain_hashes_for_node(node_id)
 
     assert isinstance(active_schains, list)
     assert len(active_schains) > 0

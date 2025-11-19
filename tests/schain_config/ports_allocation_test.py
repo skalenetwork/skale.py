@@ -7,27 +7,30 @@ from skale.schain_config.ports_allocation import (
     get_schain_index_in_node,
 )
 from skale.utils.exceptions import SChainNotFoundException
+from skale.utils.helper import schain_name_to_hash
 from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_PORT, DEFAULT_SCHAIN_INDEX
 
 
 def test_get_schain_base_port_on_node(skale, schain):
-    schain_name = schain
+    schain_hash = schain_name_to_hash(schain)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
-    schains_on_node = skale.schains.get_schains_for_node(node_id)
+    schain_hashes = skale.schains_internal.get_schain_hashes_for_node(node_id)
     schain_port_on_node = get_schain_base_port_on_node(
-        schains_on_node, schain_name, DEFAULT_NODE_PORT
+        schain_hashes, schain_hash, DEFAULT_NODE_PORT
     )
     assert schain_port_on_node == DEFAULT_NODE_PORT
 
 
 def test_get_schain_index_in_node(skale, schain):
-    schain_name = schain
+    schain_hash = schain_name_to_hash(schain)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
-    schains_on_node = skale.schains.get_schains_for_node(node_id)
-    index = get_schain_index_in_node(schain_name, schains_on_node)
+    schain_hashes = skale.schains_internal.get_schain_hashes_for_node(node_id)
+    index = get_schain_index_in_node(schain_hash, schain_hashes)
     assert isinstance(index, int)
+
+    wrong_schain_hash = schain_name_to_hash('ABCabcd')
     with pytest.raises(SChainNotFoundException):
-        get_schain_index_in_node('ABCabc', schains_on_node)
+        get_schain_index_in_node(wrong_schain_hash, schain_hashes)
 
 
 def test_calc_schain_base_port():

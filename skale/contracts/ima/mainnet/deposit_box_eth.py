@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.ima.mainnet.base_deposit_box import BaseDepositBox
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class DepositBoxEth(BaseDepositBox):
@@ -47,7 +47,7 @@ class DepositBoxEth(BaseDepositBox):
         return self.contract.functions.approveTransfers(address).call()
 
     def is_active_transfers(self, schain_name: SchainName) -> bool:
-        return self.contract.functions.activeEthTransfers(schain_hash(schain_name)).call()
+        return self.contract.functions.activeEthTransfers(schain_name_to_hash(schain_name)).call()
 
     @transaction_method
     def disable_active_eth_transfers(self, schain_name: SchainName) -> ContractFunction:

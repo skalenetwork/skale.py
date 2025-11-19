@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.ima.mainnet.base_deposit_box import BaseDepositBox
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class DepositBoxERC20(BaseDepositBox):
@@ -64,7 +64,9 @@ class DepositBoxERC20(BaseDepositBox):
         return self.contract.functions.trustReceiver(schain_name, address)
 
     def is_receiver_trusted(self, schain_name: SchainName, address: ChecksumAddress) -> bool:
-        return self.contract.functions.isReceiverTrusted(schain_hash(schain_name), address).call()
+        return self.contract.functions.isReceiverTrusted(
+            schain_name_to_hash(schain_name), address
+        ).call()
 
     def arbiter_role(self) -> bytes:
         return self.contract.functions.ARBITER_ROLE().call()

@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class CommunityLocker(SkaleContract):
@@ -52,10 +52,10 @@ class CommunityLocker(SkaleContract):
 
     def check_allow_to_send_msg(self, schain_name: SchainName, address: ChecksumAddress) -> int:
         return self.contract.functions.checkAllowedToSendMessage(
-            schain_hash(schain_name), address
+            schain_name_to_hash(schain_name), address
         ).call()
 
-    def schain_hash(self) -> bytes:
+    def schain_name_to_hash(self) -> bytes:
         return self.contract.functions.schainHash().call()
 
     def mainnet_hash(self) -> bytes:
@@ -68,4 +68,4 @@ class CommunityLocker(SkaleContract):
         return self.contract.functions.lastMessageTimeStamp(address).call()
 
     def time_limit_per_msg(self, schain_name: SchainName) -> int:
-        return self.contract.functions.timeLimitPerMessage(schain_hash(schain_name)).call()
+        return self.contract.functions.timeLimitPerMessage(schain_name_to_hash(schain_name)).call()

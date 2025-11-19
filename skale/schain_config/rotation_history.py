@@ -23,6 +23,7 @@ import logging
 from typing import TYPE_CHECKING, Dict, List, TypedDict
 
 from skale.types.rotation import RotationNodeData
+from skale.utils.helper import schain_name_to_hash
 
 if TYPE_CHECKING:
     from skale.skale_manager import SkaleManager
@@ -51,7 +52,7 @@ def get_previous_schain_groups(
     logger.info(f'Collecting rotation history for {schain_name}...')
     node_groups: dict[int, NodesGroup] = {}
 
-    group_id = skale.schains.name_to_id(schain_name)
+    group_id = schain_name_to_hash(schain_name)
 
     previous_public_keys = skale.key_storage.get_all_previous_public_keys(group_id)
     current_public_key = skale.key_storage.get_common_public_key(group_id)

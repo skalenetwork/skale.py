@@ -23,7 +23,7 @@ from web3.contract.contract import ContractFunction
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.ima.schain.base_token_manager import BaseTokenManager
 from skale.types.schain import SchainName
-from skale.utils.helper import schain_hash
+from skale.utils.helper import schain_name_to_hash
 
 
 class TokenManagerERC1155(BaseTokenManager):
@@ -66,4 +66,6 @@ class TokenManagerERC1155(BaseTokenManager):
         )
 
     def get_clones_erc1155(self, schain_name: SchainName, address: ChecksumAddress) -> int:
-        return self.contract.functions.clonesErc1155(schain_hash(schain_name), address).call()
+        return self.contract.functions.clonesErc1155(
+            schain_name_to_hash(schain_name), address
+        ).call()

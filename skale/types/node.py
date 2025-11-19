@@ -25,7 +25,7 @@ from typing import List, NewType, TypedDict, TypeVar
 from eth_typing import BlockNumber, ChecksumAddress, HexStr
 from eth_utils.address import to_checksum_address
 
-from skale.types.schain import SchainStructureWithStatus
+from skale.types.schain import SchainHash
 from skale.types.validator import ValidatorId
 from skale.utils.constants import ZERO_ADDRESS
 
@@ -111,5 +111,5 @@ class NodeWithId(Node):
     id: NodeId
 
 
-class NodeWithSchains(NodeWithId):
-    schains: List[SchainStructureWithStatus]
+class NodeWithSchainHashes(NodeWithId):
+    schain_hashes: List[SchainHash]

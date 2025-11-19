@@ -211,6 +211,6 @@ def is_test_env() -> bool:
     return 'pytest' in sys.modules or ENV == 'test'
 
 
-def schain_hash(schain_name: SchainName) -> SchainHash:
+def schain_name_to_hash(schain_name: SchainName) -> SchainHash:
     keccak_hash = keccak.new(data=schain_name.encode('utf8'), digest_bits=256)
     return SchainHash(keccak_hash.digest())
