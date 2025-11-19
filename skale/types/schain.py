@@ -62,13 +62,13 @@ class Schain:
 
 @dataclass
 class SchainStructure(Schain):
-    chain_hash: SchainHash
+    schain_hash: SchainHash
     options: SchainOptions
 
     def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
-            'chain_hash': self.chain_hash.hex(),
+            'schain_hash': self.schain_hash.hex(),
             'options': {
                 'multitransaction_mode': self.options.multitransaction_mode,
                 'threshold_encryption': self.options.threshold_encryption,

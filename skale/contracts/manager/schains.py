@@ -66,7 +66,7 @@ class SChains(SkaleManagerContract):
         res = self.schains_internal.get_raw(id_)
         options = self.get_options(id_)
         return SchainStructure(
-            **asdict(res), chain_hash=schain_name_to_hash(res.name), options=options
+            **asdict(res), schain_hash=schain_name_to_hash(res.name), options=options
         )
 
     def get_by_name(self, name: SchainName) -> SchainStructure:

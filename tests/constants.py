@@ -107,6 +107,6 @@ SCHAIN_FIELDS = [
     'index',
     'generation',
     'originator',
-    'chain_id',
+    'schain_hash',
     'options',
 ]
