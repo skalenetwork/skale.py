@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass
-from typing import NewType
+from typing import Any, NewType
 
 from eth_typing import ChecksumAddress
 from web3.types import Wei
@@ -44,13 +44,45 @@ class Schain:
     generation: int
     originator: ChecksumAddress
 
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            'name': self.name,
+            'mainnet_owner': self.mainnet_owner,
+            'index_in_owner_list': self.index_in_owner_list,
+            'part_of_node': self.part_of_node,
+            'lifetime': self.lifetime,
+            'start_date': self.start_date,
+            'start_block': self.start_block,
+            'deposit': int(self.deposit),
+            'index': self.index,
+            'generation': self.generation,
+            'originator': self.originator,
+        }
+
 
 @dataclass
 class SchainStructure(Schain):
     chain_id: SchainHash
     options: SchainOptions
 
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            **super().to_dict(),
+            'chain_id': self.chain_id.hex(),
+            'options': {
+                'multitransaction_mode': self.options.multitransaction_mode,
+                'threshold_encryption': self.options.threshold_encryption,
+                'allocation_type': self.options.allocation_type.value,
+            },
+        }
+
 
 @dataclass
 class SchainStructureWithStatus(SchainStructure):
     active: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            **super().to_dict(),
+            'active': self.active,
+        }
