@@ -104,6 +104,9 @@ class Nodes(SkaleManagerContract):
             if self.get_node_status(NodeId(node_id)) == NodeStatus.ACTIVE
         ]
 
+    def get_public_keys(self, node_ids: list[NodeId]) -> list[tuple[NodeId, str]]:
+        return [(node_id, self.get_node_public_key(node_id)) for node_id in node_ids]
+
     def name_to_id(self, name: str) -> bytes:
         keccak_hash = keccak.new(data=name.encode('utf8'), digest_bits=256)
         return keccak_hash.digest()
