@@ -5,7 +5,6 @@ from hexbytes import HexBytes
 
 from skale.skale_manager import SkaleManager
 from skale.utils.web3_utils import (
-    init_web3,
     private_key_to_address,
     private_key_to_public,
     to_checksum_address,
@@ -20,11 +19,6 @@ from tests.constants import ENDPOINT, ETH_PRIVATE_KEY, TEST_SGX_ENDPOINT
 from tests.wallets.utils import BadSgxClient, SgxClient
 
 ADDRESS = to_checksum_address(private_key_to_address(ETH_PRIVATE_KEY))
-
-
-@pytest.fixture
-def web3():
-    return init_web3(ENDPOINT)
 
 
 @pytest.fixture
