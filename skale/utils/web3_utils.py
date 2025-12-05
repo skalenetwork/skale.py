@@ -77,7 +77,7 @@ def init_web3(
         timeout=provider_timeout,
         session=session,
     )
-    # provider.cache_allowed_requests = True
+    provider.cache_allowed_requests = True
     w3 = Web3(provider)
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
