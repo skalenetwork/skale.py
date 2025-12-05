@@ -3,6 +3,7 @@ from unittest import mock
 import pytest
 from hexbytes import HexBytes
 
+from skale.skale_manager import SkaleManager
 from skale.utils.web3_utils import (
     init_web3,
     private_key_to_address,
@@ -133,3 +134,14 @@ def test_sign_hash_error(web3):
     wallet = SgxWallet(TEST_SGX_ENDPOINT, web3, 'TEST_KEY')
     with pytest.raises(MessageNotSignedError):
         wallet.sign_hash('0x')
+
+
+def test_print_stats_and_fail(skale: SkaleManager):
+    print('-------------')
+    print(
+        skale.stats.http_posts,
+        skale.stats.rpc_objects,
+        skale.stats.by_method.most_common(10),
+    )
+    print('-------------')
+    assert False

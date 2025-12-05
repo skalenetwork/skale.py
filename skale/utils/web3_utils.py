@@ -22,6 +22,7 @@ import time
 from typing import Any, Dict, Iterable
 from urllib.parse import urlparse
 
+import requests
 from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
 from requests.exceptions import ConnectionError  # type: ignore
@@ -47,7 +48,10 @@ DEFAULT_BLOCKS_TO_WAIT = 50
 
 
 def get_provider(
-    endpoint: str, timeout: int = DEFAULT_HTTP_TIMEOUT, request_kwargs: Dict[str, Any] | None = None
+    endpoint: str,
+    timeout: int = DEFAULT_HTTP_TIMEOUT,
+    request_kwargs: Dict[str, Any] | None = None,
+    session: Any = None,
 ) -> JSONBaseProvider:
     scheme = urlparse(endpoint).scheme
     if scheme == 'ws' or scheme == 'wss':
@@ -56,7 +60,7 @@ def get_provider(
 
     if scheme == 'http' or scheme == 'https':
         kwargs = {'timeout': timeout, **(request_kwargs or {})}
-        return HTTPProvider(endpoint, request_kwargs=kwargs)
+        return HTTPProvider(endpoint, session=session, request_kwargs=kwargs)
 
     raise Exception('Wrong endpoint option.Supported endpoint schemes: http/https/ws/wss')
 
@@ -66,8 +70,14 @@ def init_web3(
     provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
     middlewares: Iterable[Middleware] | None = None,
     ts_diff: int | None = None,
+    session: requests.Session | None = None,
 ) -> Web3:
-    provider = get_provider(endpoint, timeout=provider_timeout)
+    provider = get_provider(
+        endpoint,
+        timeout=provider_timeout,
+        session=session,
+    )
+    # provider.cache_allowed_requests = True
     w3 = Web3(provider)
     if not middlewares:
         ts_diff = ts_diff or config.ALLOWED_TS_DIFF
