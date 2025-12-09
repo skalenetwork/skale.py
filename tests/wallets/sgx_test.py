@@ -4,6 +4,7 @@ import pytest
 from hexbytes import HexBytes
 
 from skale.utils.web3_utils import (
+    init_web3,
     private_key_to_address,
     private_key_to_public,
     to_checksum_address,
@@ -14,7 +15,7 @@ from skale.wallets.sgx_wallet import (
     TransactionNotSentError,
     TransactionNotSignedError,
 )
-from tests.constants import ETH_PRIVATE_KEY, TEST_SGX_ENDPOINT
+from tests.constants import ENDPOINT, ETH_PRIVATE_KEY, TEST_SGX_ENDPOINT
 from tests.wallets.utils import BadSgxClient, SgxClient
 
 ADDRESS = to_checksum_address(private_key_to_address(ETH_PRIVATE_KEY))
@@ -90,8 +91,9 @@ def test_sgx_key_init(web3):
 
 
 @mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
-def test_not_sent_error(web3):
-    wallet = SgxWallet(TEST_SGX_ENDPOINT, web3, 'TEST_KEY')
+def test_not_sent_error():
+    w3 = init_web3(ENDPOINT)
+    wallet = SgxWallet(TEST_SGX_ENDPOINT, w3, 'TEST_KEY')
     tx_dict = {
         'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
         'value': 9,
