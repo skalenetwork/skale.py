@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from skale.skale_manager import SkaleManager
     from skale.types.dkg import G2Point
     from skale.types.node import NodeId
-    from skale.types.rotation import BlsPublicKey, NodesGroup, Rotation
+    from skale.types.rotation import BlsPublicKey, NodeGroups, Rotation
     from skale.types.schain import SchainName
 
 logger = logging.getLogger(__name__)
@@ -38,9 +38,6 @@ logger = logging.getLogger(__name__)
 class PreviousNodeData(TypedDict):
     finish_ts: int
     previous_node_id: NodeId
-
-
-NodeGroups = Dict[int, NodesGroup]
 
 
 def get_previous_schain_groups(
