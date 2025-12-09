@@ -39,7 +39,9 @@ def init_skale(
     test_abi_filepath: str = TEST_ABI_FILEPATH,
 ) -> SkaleManager:
     wallet = Web3Wallet(eth_private_key, web3)
-    return SkaleManager(ENDPOINT, get_skale_manager_address(test_abi_filepath), wallet)
+    return SkaleManager(
+        ENDPOINT, get_skale_manager_address(test_abi_filepath), wallet, enable_stats=True
+    )
 
 
 def init_fair(web3: Web3, eth_private_key: HexStr = ETH_PRIVATE_KEY) -> FairManager:

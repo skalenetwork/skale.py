@@ -52,6 +52,7 @@ class SkaleBase:
         provider_timeout: int = 30,
         debug: bool = False,
         session: requests.Session | None = None,
+        enable_stats: bool = False,
     ):
         logger.info(
             'Initializing %s, endpoint: %s, alias_or_address: %s, wallet: %s',
@@ -65,7 +66,7 @@ class SkaleBase:
                 'state_path is deprecated and will be ignored. This option will be removed in v8.'
             )
         self.stats = RpcHttpStats()
-        if session is None:
+        if session is None and enable_stats:
             session = CountingSession(self.stats)
         self._endpoint = get_endpoint(endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
         self._alias_or_address = alias_or_address
