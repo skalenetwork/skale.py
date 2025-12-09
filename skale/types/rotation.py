@@ -46,6 +46,9 @@ class NodesGroup(TypedDict):
     bls_public_key: BlsPublicKey | None
 
 
+NodeGroups = dict[int, NodesGroup]
+
+
 @dataclass
 class Rotation:
     leaving_node_id: NodeId
