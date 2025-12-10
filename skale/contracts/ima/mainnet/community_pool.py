@@ -20,7 +20,7 @@
 
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
-from web3.types import  TxParams
+from web3.types import TxParams
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
