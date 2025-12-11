@@ -64,6 +64,7 @@ class Schain:
 class SchainStructure(Schain):
     schain_hash: SchainHash
     options: SchainOptions
+    active: bool
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -74,15 +75,5 @@ class SchainStructure(Schain):
                 'threshold_encryption': self.options.threshold_encryption,
                 'allocation_type': self.options.allocation_type.value,
             },
-        }
-
-
-@dataclass
-class SchainStructureWithStatus(SchainStructure):
-    active: bool
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            **super().to_dict(),
             'active': self.active,
         }
