@@ -37,7 +37,8 @@ class MultiSigContract(BaseContract):
     ):
         multisigwallet_generator = MultiSigWalletGenerator()
         abi = multisigwallet_generator.get_abi()
-        super().__init__(web3, MULTISIGWALLET_ADDRESS, abi, wallet)
+        multisig_address = Web3.to_checksum_address(MULTISIGWALLET_ADDRESS)
+        super().__init__(web3, multisig_address, abi, wallet)
 
     def confirmations(self, transaction_id: int, owner_address: ChecksumAddress) -> bool:
         return self.contract.functions.confirmations(transaction_id, owner_address).call()
