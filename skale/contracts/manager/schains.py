@@ -38,10 +38,10 @@ from skale.dataclasses.schain_options import (
 )
 from skale.types.node import NodeId
 from skale.types.schain import (
+    Schain,
     SchainHash,
     SchainName,
     SchainStructure,
-    SchainStructureWithStatus,
 )
 from skale.utils.helper import schain_name_to_hash
 
@@ -66,7 +66,10 @@ class SChains(SkaleManagerContract):
         res = self.schains_internal.get_raw(id_)
         options = self.get_options(id_)
         return SchainStructure(
-            **asdict(res), schain_hash=schain_name_to_hash(res.name), options=options
+            **asdict(res),
+            schain_hash=schain_name_to_hash(res.name),
+            options=options,
+            active=self.schain_active(res),
         )
 
     def get_by_name(self, name: SchainName) -> SchainStructure:
@@ -83,31 +86,19 @@ class SChains(SkaleManagerContract):
             schains.append(schain)
         return schains
 
-    def get_schains_for_node(self, node_id: NodeId) -> list[SchainStructureWithStatus]:
-        schains = []
+    def get_schains_for_node(self, node_id: NodeId) -> list[SchainStructure]:
         schain_hashes = self.schains_internal.get_schain_hashes_for_node(node_id)
-        for schain_hash in schain_hashes:
-            simple_schain = self.get(schain_hash)
-            schain = SchainStructureWithStatus(
-                **asdict(simple_schain), active=self.schain_active(simple_schain)
-            )
-            schains.append(schain)
-        return schains
+        return [self.get(schain_hash) for schain_hash in schain_hashes]
 
-    def get_active_schains_for_node(self, node_id: NodeId) -> List[SchainStructureWithStatus]:
-        schains = []
+    def get_active_schains_for_node(self, node_id: NodeId) -> List[SchainStructure]:
         schain_hashes = self.schains_internal.get_active_schain_hashes_for_node(node_id)
-        for schain_hash in schain_hashes:
-            simple_schain = self.get(schain_hash)
-            schain = SchainStructureWithStatus(**asdict(simple_schain), active=True)
-            schains.append(schain)
-        return schains
+        return [self.get(schain_hash) for schain_hash in schain_hashes]
 
     def get_last_rotation_id(self, schain_name: SchainName) -> int:
         rotation_data = self.node_rotation.get_rotation(schain_name)
         return rotation_data.rotation_counter
 
-    def schain_active(self, schain: SchainStructure) -> bool:
+    def schain_active(self, schain: Schain) -> bool:
         if (
             schain.name != ''
             and schain.mainnet_owner != '0x0000000000000000000000000000000000000000'

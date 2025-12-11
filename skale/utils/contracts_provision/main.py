@@ -51,7 +51,7 @@ from skale.utils.contracts_provision.utils import (
 )
 
 DEFAULT_MINING_INTERVAL = 1000
-TEST_SRW_FUND_VALUE = 3000000000000000000
+TEST_SRW_FUND_VALUE = 1000000000000000000
 
 
 def _skip_evm_time(web3: Web3, seconds: int, mine: bool = True) -> int:
