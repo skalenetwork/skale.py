@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 from eth_abi import encode
 from eth_typing import ChecksumAddress
@@ -133,8 +133,12 @@ class MultiSigContract(BaseContract):
         )
 
     def _encode_transaction_data(self, contract_function: ContractFunction) -> bytes:
-        tx = contract_function.build_transaction({'gas': 0, 'gasPrice': 0})
-        return bytes.fromhex(tx['data'][2:])
+        tx_params: dict[str, Any] = {'gas': 0, 'gasPrice': 0}
+        tx = contract_function.build_transaction(tx_params)
+        data = tx['data']
+        if isinstance(data, str):
+            return bytes.fromhex(data[2:])
+        return data
 
     def _submit_self_transaction(self, contract_function: ContractFunction) -> TxRes:
         calldata = self._encode_transaction_data(contract_function)
