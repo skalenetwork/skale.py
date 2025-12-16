@@ -17,8 +17,6 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import annotations
-
 import hashlib
 import json
 import logging
@@ -47,8 +45,6 @@ def ttl_policy(
     default_ttl_seconds: int,
     method_ttl_policy: Mapping[str, int] | None = None,
 ) -> int:
-    print('----->>')
-    print('----->>')
     method_default_ttl = (
         method_ttl_policy[method]
         if method_ttl_policy is not None and method in method_ttl_policy
