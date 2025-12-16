@@ -18,7 +18,7 @@
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from typing import Any, List, Tuple
+from typing import List, Tuple
 
 from eth_abi import encode
 from eth_typing import ChecksumAddress
