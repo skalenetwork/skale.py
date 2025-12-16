@@ -20,6 +20,7 @@
 import hashlib
 import json
 import logging
+from collections.abc import Mapping as ABCMapping
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -126,14 +127,17 @@ def redis_cache_middleware(config: RedisCacheConfig) -> type[Web3Middleware]:
                 if cached:
                     try:
                         return json.loads(cached)
-                    except (UnicodeDecodeError, json.JSONDecodeError):
+                    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
                         pass
 
                 response = make_request(method, params)
                 if isinstance(response, dict) and 'error' not in response and 'result' in response:
                     try:
                         payload = json.dumps(
-                            response, separators=(',', ':'), sort_keys=True
+                            response,
+                            separators=(',', ':'),
+                            sort_keys=True,
+                            default=_json_default,
                         ).encode('utf-8')
                         redis.setex(key, ttl_seconds, payload)
                     except (RedisError, ValueError, UnicodeEncodeError):
@@ -158,6 +162,8 @@ def _cache_key(prefix: str, endpoint_hash: str, method: str, params: list[Any]) 
 
 
 def _json_default(value: Any) -> Any:
+    if isinstance(value, ABCMapping):
+        return dict(value)
     if isinstance(value, (bytes, bytearray, memoryview)):
         return '0x' + bytes(value).hex()
     if hasattr(value, 'hex'):
