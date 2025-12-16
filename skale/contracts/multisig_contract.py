@@ -20,12 +20,16 @@
 
 from typing import List, Tuple
 
+from eth_abi import encode
 from eth_typing import ChecksumAddress
+from eth_utils import function_signature_to_4byte_selector
 from multisigwallet_predeployed import MULTISIGWALLET_ADDRESS, MultiSigWalletGenerator
+from skale_contracts.projects.marionette import MarionetteInstance
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 
 from skale.contracts.base_contract import BaseContract, transaction_method
+from skale.transactions.result import TxRes
 from skale.wallets import BaseWallet
 
 
@@ -69,7 +73,7 @@ class MultiSigContract(BaseContract):
             executed
         ).call()
 
-    def is_corfirmed(self, transaction_id: int) -> bool:
+    def is_confirmed(self, transaction_id: int) -> bool:
         return self.contract.functions.isConfirmed(transaction_id).call()
 
     def is_owner(self, address: ChecksumAddress) -> bool:
@@ -87,13 +91,21 @@ class MultiSigContract(BaseContract):
     def transactions(self, index: int) -> Tuple[ChecksumAddress, int, bytes, bool]:
         return self.contract.functions.transactions(index).call()
 
-    @transaction_method
-    def add_owner(self, owner: ChecksumAddress) -> ContractFunction:
-        return self.contract.functions.addOwner(owner)
+    def add_owner(self, owner: ChecksumAddress) -> TxRes:
+        func_name = self.contract.functions.addOwner(owner)
+        return self._submit_self_transaction(func_name)
 
-    @transaction_method
-    def change_requirement(self, required: int) -> ContractFunction:
-        return self.contract.functions.changeRequirement(required)
+    def change_requirement(self, required: int) -> TxRes:
+        func_name = self.contract.functions.changeRequirement(required)
+        return self._submit_self_transaction(func_name)
+
+    def remove_owner(self, owner: ChecksumAddress) -> TxRes:
+        func_name = self.contract.functions.removeOwner(owner)
+        return self._submit_self_transaction(func_name)
+
+    def replace_owner(self, owner: ChecksumAddress, new_owner: ChecksumAddress) -> TxRes:
+        func_name = self.contract.functions.replaceOwner(owner, new_owner)
+        return self._submit_self_transaction(func_name)
 
     @transaction_method
     def confirm_transaction(self, transaction_id: int) -> ContractFunction:
@@ -102,18 +114,6 @@ class MultiSigContract(BaseContract):
     @transaction_method
     def execute_transaction(self, transaction_id: int) -> ContractFunction:
         return self.contract.functions.executeTransaction(transaction_id)
-
-    @transaction_method
-    def remove_owner(self, owner: ChecksumAddress) -> ContractFunction:
-        return self.contract.functions.removeOwner(owner)
-
-    @transaction_method
-    def replace_owner(
-        self,
-        owner: ChecksumAddress,
-        new_owner: ChecksumAddress,
-    ) -> ContractFunction:
-        return self.contract.functions.replaceOwner(owner, new_owner)
 
     @transaction_method
     def revoke_confirmation(self, transaction_id: int) -> ContractFunction:
@@ -131,3 +131,38 @@ class MultiSigContract(BaseContract):
             value,
             data,
         )
+
+    def _encode_transaction_data(self, contract_function: ContractFunction) -> bytes:
+        tx = contract_function.build_transaction({'gas': 0, 'gasPrice': 0})
+        return bytes.fromhex(tx['data'][2:])
+
+    def _submit_self_transaction(self, contract_function: ContractFunction) -> TxRes:
+        calldata = self._encode_transaction_data(contract_function)
+        return self.submit_transaction(self.address, 0, calldata)
+
+    def _encode_marionette_execute(
+        self,
+        destination: ChecksumAddress,
+        data: bytes
+    ) -> bytes:
+        function_selector = function_signature_to_4byte_selector('execute(address,uint256,bytes)')
+
+        encoded_params = encode(
+            ['address', 'uint256', 'bytes'],
+            [destination, 0, data]
+        )
+        return function_selector + encoded_params
+
+    def execute_via_marionette(
+        self,
+        destination: ChecksumAddress,
+        contract_function: ContractFunction,
+    ) -> TxRes:
+        marionette_address = MarionetteInstance.PREDEPLOYED['Marionette']
+        target_calldata = self._encode_transaction_data(contract_function)
+
+        marionette_calldata = self._encode_marionette_execute(
+            destination,
+            target_calldata
+        )
+        return self.submit_transaction(marionette_address, 0, marionette_calldata)
