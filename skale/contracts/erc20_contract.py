@@ -19,12 +19,12 @@
 
 
 from time import sleep
+from typing import Any
 
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.types import Wei
-from typing import Any
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.wallets import BaseWallet
