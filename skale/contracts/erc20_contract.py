@@ -105,8 +105,10 @@ class Erc20Contract(BaseContract):
         web3: Web3,
         address: ChecksumAddress,
         wallet: BaseWallet | None = None,
+        erc20_abi: list[str] | None = ERC20_ABI,
+
     ):
-        super().__init__(web3, address, ERC20_ABI, wallet)
+        super().__init__(web3, address, erc20_abi, wallet)
 
     def balance_of(self, account: ChecksumAddress) -> Wei:
         return Wei(self.contract.functions.balanceOf(account).call())
