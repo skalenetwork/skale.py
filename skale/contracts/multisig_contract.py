@@ -27,6 +27,7 @@ from multisigwallet_predeployed import MULTISIGWALLET_ADDRESS, MultiSigWalletGen
 from skale_contracts.projects.marionette import MarionetteInstance
 from web3 import Web3
 from web3.contract.contract import ContractFunction
+from web3.types import TxParams, Wei
 
 from skale.contracts.base_contract import BaseContract, transaction_method
 from skale.transactions.result import TxRes
@@ -133,7 +134,7 @@ class MultiSigContract(BaseContract):
         )
 
     def _encode_transaction_data(self, contract_function: ContractFunction) -> bytes:
-        tx_params: dict[str, Any] = {'gas': 0, 'gasPrice': 0}
+        tx_params: TxParams = {'gas': Wei(0), 'gasPrice': Wei(0)}
         tx = contract_function.build_transaction(tx_params)
         data = tx['data']
         if isinstance(data, str):
