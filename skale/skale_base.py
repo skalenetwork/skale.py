@@ -27,6 +27,7 @@ from skale_contracts.project_factory import SkaleProject
 from web3 import Web3
 
 from skale.rpc_session import CountingSession, RpcHttpStats
+from skale.utils.cache import RedisCacheConfig
 from skale.utils.exceptions import EmptyWalletError, InvalidWalletError
 from skale.utils.helper import contract_name_to_snake_case
 from skale.utils.web3_utils import default_gas_price, get_endpoint, init_web3
@@ -42,6 +43,16 @@ class EmptyPrivateKey(Exception):
 class SkaleBase:
     __metaclass__ = abc.ABCMeta
 
+    DEFAULT_RPC_CACHE_TTL_POLICY: dict[str, int] = {
+        'eth_call': 10,
+        'eth_getCode': 30,
+        'eth_getStorageAt': 30,
+        'eth_chainId': 600,
+        'eth_getBlockByNumber': 60,
+        'eth_gasPrice': 5,
+        'web3_clientVersion': 600,
+    }
+
     def __init__(
         self,
         endpoint: str | list[str],
@@ -50,9 +61,12 @@ class SkaleBase:
         state_path: str | None = None,
         ts_diff: int | None = None,
         provider_timeout: int = 30,
-        debug: bool = False,
         session: requests.Session | None = None,
         enable_stats: bool = False,
+        redis_cache_url: str | None = None,
+        rpc_cache_methods: list[str] | None = None,
+        rpc_cache_bypass_addresses: list[str] | None = None,
+        rpc_cache_ttl_policy: dict[str, int] | None = None,
     ):
         logger.info(
             'Initializing %s, endpoint: %s, alias_or_address: %s, wallet: %s',
@@ -70,16 +84,36 @@ class SkaleBase:
             session = CountingSession(self.stats)
         self._endpoint = get_endpoint(endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
         self._alias_or_address = alias_or_address
+
+        cache_config = None
+        if redis_cache_url is not None:
+            cache_methods = rpc_cache_methods or [
+                'eth_call',
+                'eth_getCode',
+                'eth_getStorageAt',
+                'eth_chainId',
+                'eth_getBlockByNumber',
+                'eth_gasPrice',
+                'web3_clientVersion',
+            ]
+            cache_ttl_policy = rpc_cache_ttl_policy or self.DEFAULT_RPC_CACHE_TTL_POLICY
+            cache_config = RedisCacheConfig(
+                redis_url=redis_cache_url,
+                cache_methods=frozenset(cache_methods),
+                bypass_addresses=frozenset(rpc_cache_bypass_addresses or []),
+                default_ttl_seconds=0,
+                method_ttl_policy=cache_ttl_policy,
+            )
         self.web3 = init_web3(
             self._endpoint,
             ts_diff=ts_diff,
             provider_timeout=provider_timeout,
             session=session,
+            cache_config=cache_config,
         )
         self.network = skale_contracts.get_network_by_provider(self.web3.provider)
         self.project = self.network.get_project(self.project_name)
         self.instance = self.project.get_instance(alias_or_address)
-        self.debug = debug
         if wallet:
             self.wallet = wallet
 
