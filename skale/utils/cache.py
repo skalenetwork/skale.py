@@ -126,7 +126,7 @@ def redis_cache_middleware(config: RedisCacheConfig) -> type[Web3Middleware]:
                 if cached:
                     try:
                         return json.loads(cached)
-                    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+                    except (UnicodeDecodeError, json.JSONDecodeError):
                         pass
 
                 response = make_request(method, params)
@@ -136,7 +136,7 @@ def redis_cache_middleware(config: RedisCacheConfig) -> type[Web3Middleware]:
                             response, separators=(',', ':'), sort_keys=True
                         ).encode('utf-8')
                         redis.setex(key, ttl_seconds, payload)
-                    except (OSError, RedisError, TypeError, ValueError, UnicodeEncodeError):
+                    except (RedisError, ValueError, UnicodeEncodeError):
                         pass
 
                 return response
