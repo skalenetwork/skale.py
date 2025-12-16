@@ -24,6 +24,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from redis import Redis
+from redis.exceptions import RedisError
 from web3.middleware.base import Web3Middleware
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ class RedisCacheConfig:
     cache_methods: frozenset[str]
     bypass_addresses: frozenset[str] = frozenset()
     default_ttl_seconds: int = 2
-    key_prefix: str = 'skale:rpc-cache:v1'
+    key_prefix: str = 'rpc-cache:v1'
     method_ttl_policy: Mapping[str, int] | None = None
 
 
@@ -119,13 +120,13 @@ def redis_cache_middleware(config: RedisCacheConfig) -> type[Web3Middleware]:
 
                 try:
                     cached = redis.get(key)
-                except Exception:
+                except (OSError, RedisError):
                     cached = None
 
                 if cached:
                     try:
                         return json.loads(cached)
-                    except Exception:
+                    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
                         pass
 
                 response = make_request(method, params)
@@ -135,7 +136,7 @@ def redis_cache_middleware(config: RedisCacheConfig) -> type[Web3Middleware]:
                             response, separators=(',', ':'), sort_keys=True
                         ).encode('utf-8')
                         redis.setex(key, ttl_seconds, payload)
-                    except Exception:
+                    except (OSError, RedisError, TypeError, ValueError, UnicodeEncodeError):
                         pass
 
                 return response
@@ -162,7 +163,7 @@ def _json_default(value: Any) -> Any:
     if hasattr(value, 'hex'):
         try:
             return value.hex()
-        except Exception:
+        except (TypeError, ValueError):
             return str(value)
     return str(value)
 
