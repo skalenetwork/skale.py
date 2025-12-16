@@ -93,20 +93,20 @@ class MultiSigContract(BaseContract):
         return self.contract.functions.transactions(index).call()
 
     def add_owner(self, owner: ChecksumAddress) -> TxRes:
-        func_name = self.contract.functions.addOwner(owner)
-        return self._submit_self_transaction(func_name)
+        func = self.contract.functions.addOwner(owner)
+        return self._submit_self_transaction(func)
 
     def change_requirement(self, required: int) -> TxRes:
-        func_name = self.contract.functions.changeRequirement(required)
-        return self._submit_self_transaction(func_name)
+        func = self.contract.functions.changeRequirement(required)
+        return self._submit_self_transaction(func)
 
     def remove_owner(self, owner: ChecksumAddress) -> TxRes:
-        func_name = self.contract.functions.removeOwner(owner)
-        return self._submit_self_transaction(func_name)
+        func = self.contract.functions.removeOwner(owner)
+        return self._submit_self_transaction(func)
 
     def replace_owner(self, owner: ChecksumAddress, new_owner: ChecksumAddress) -> TxRes:
-        func_name = self.contract.functions.replaceOwner(owner, new_owner)
-        return self._submit_self_transaction(func_name)
+        func = self.contract.functions.replaceOwner(owner, new_owner)
+        return self._submit_self_transaction(func)
 
     @transaction_method
     def confirm_transaction(self, transaction_id: int) -> ContractFunction:
