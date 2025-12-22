@@ -22,11 +22,6 @@ ADDRESS = to_checksum_address(private_key_to_address(ETH_PRIVATE_KEY))
 
 
 @pytest.fixture
-def web3():
-    return init_web3(ENDPOINT)
-
-
-@pytest.fixture
 @mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
 def wallet(web3):
     return SgxWallet(TEST_SGX_ENDPOINT, web3)
@@ -96,8 +91,9 @@ def test_sgx_key_init(web3):
 
 
 @mock.patch('skale.wallets.sgx_wallet.SgxClient', new=SgxClient)
-def test_not_sent_error(web3):
-    wallet = SgxWallet(TEST_SGX_ENDPOINT, web3, 'TEST_KEY')
+def test_not_sent_error():
+    w3 = init_web3(ENDPOINT)
+    wallet = SgxWallet(TEST_SGX_ENDPOINT, w3, 'TEST_KEY')
     tx_dict = {
         'to': '0x1057dc7277a319927D3eB43e05680B75a00eb5f4',
         'value': 9,

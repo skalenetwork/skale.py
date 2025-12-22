@@ -101,7 +101,7 @@ class Paymaster(SkaleContract):
     def get_reward_amount(self, validator_id: int) -> int:
         return self.contract.functions.getRewardAmount(validator_id).call()
 
-    def get_nodes_number(self, validator_id: int) -> int:
+    def nodes_number(self, validator_id: int) -> int:
         return self.contract.functions.getNodesNumber(validator_id).call()
 
     def get_historical_active_nodes_number(self, validator_id: int, time_when: int) -> int:
@@ -138,7 +138,7 @@ class Paymaster(SkaleContract):
     def get_max_replenishment_period(self) -> int:
         return self.contract.functions.maxReplenishmentPeriod().call()
 
-    def get_schain_price_per_month(self) -> int:
+    def schain_price_per_month(self) -> int:
         return self.contract.functions.schainPricePerMonth().call()
 
     def get_one_skl_price(self) -> int:

@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from skale.skale_manager import SkaleManager
     from skale.types.dkg import G2Point
     from skale.types.node import NodeId
-    from skale.types.rotation import BlsPublicKey, NodesGroup, Rotation
+    from skale.types.rotation import BlsPublicKey, NodeGroups, Rotation
     from skale.types.schain import SchainName
 
 logger = logging.getLogger(__name__)
@@ -44,13 +44,13 @@ def get_previous_schain_groups(
     skale: SkaleManager,
     schain_name: SchainName,
     leaving_node_id: NodeId | None = None,
-) -> Dict[int, NodesGroup]:
+) -> NodeGroups:
     """
     Returns all previous node groups with public keys and finish timestamps.
     In case of no rotations returns the current state.
     """
     logger.info(f'Collecting rotation history for {schain_name}...')
-    node_groups: dict[int, NodesGroup] = {}
+    node_groups: NodeGroups = {}
 
     group_id = schain_name_to_hash(schain_name)
 
@@ -79,7 +79,7 @@ def get_previous_schain_groups(
 
 def _add_current_schain_state(
     skale: SkaleManager,
-    node_groups: dict[int, NodesGroup],
+    node_groups: NodeGroups,
     rotation: Rotation,
     schain_name: SchainName,
     current_public_key: G2Point,
@@ -89,9 +89,9 @@ def _add_current_schain_state(
     node_groups dictionary
     """
     current_nodes = {}
-    ids = skale.schains_internal.get_node_ids_for_schain(schain_name)
+    ids = skale.schains_internal.node_ids_for_schain(schain_name)
     for index, node_id in enumerate(ids):
-        public_key = skale.nodes.get_node_public_key(node_id)
+        public_key = skale.nodes.node_public_key(node_id)
         current_nodes[node_id] = RotationNodeData(index, node_id, public_key)
 
     node_groups[rotation.rotation_counter] = {
@@ -104,7 +104,7 @@ def _add_current_schain_state(
 
 def _add_previous_schain_rotations_state(
     skale: SkaleManager,
-    node_groups: dict[int, NodesGroup],
+    node_groups: NodeGroups,
     rotation: Rotation,
     schain_name: SchainName,
     previous_public_keys: list[G2Point],
@@ -131,7 +131,7 @@ def _add_previous_schain_rotations_state(
 
         new_node_id = max(previous_nodes.items(), key=lambda x: x[1]['finish_ts'])[0]
         previous_node_id = previous_nodes[new_node_id]['previous_node_id']
-        public_key = skale.nodes.get_node_public_key(previous_node_id)
+        public_key = skale.nodes.node_public_key(previous_node_id)
 
         current_finish_ts = previous_nodes[new_node_id]['finish_ts']
         next_dkg_is_failed = current_finish_ts + 1 == node_groups[rotation_id + 1]['finish_ts']

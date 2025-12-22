@@ -1,5 +1,6 @@
 """SKALE config test"""
 
+import logging
 from unittest import mock
 
 import pytest
@@ -29,6 +30,9 @@ from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 from tests.helper import init_fair, init_skale, init_skale_allocator
 
 ETH_AMOUNT_PER_NODE = 1
+logger = logging.getLogger(__name__)
+
+_last_finished_test_name: str | None = None
 
 
 @pytest.fixture(scope='session')
@@ -50,6 +54,37 @@ def skale(web3, request):
         deploy_fake_multisig_contract(skale_obj.web3, skale_obj.wallet)
         request.config._cached_skale = skale_obj
     return request.config._cached_skale
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    if report.when == 'call' and report.outcome in {'passed', 'failed', 'skipped'}:
+        item.config._last_finished_test_name = item.name
+
+
+@pytest.fixture(scope='session')
+def _skale_stats_logger(skale):
+    def _log(test_name: str) -> None:
+        logger.warning(
+            test_name
+            + ' '
+            + str(skale.stats.http_posts)
+            + ' '
+            + str(skale.stats.by_method.most_common(10))
+        )
+
+    return _log
+
+
+@pytest.fixture(autouse=True)
+def log_prev_test_stats(request, _skale_stats_logger):
+    global _last_finished_test_name
+    prev_name = getattr(request.config, '_last_finished_test_name', None)
+    if prev_name is not None:
+        _skale_stats_logger(prev_name)
+    _last_finished_test_name = request.node.name
 
 
 @pytest.fixture(scope='session')

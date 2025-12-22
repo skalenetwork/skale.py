@@ -5,9 +5,11 @@ from decimal import Decimal
 
 from eth_typing import HexStr
 
+from skale.types.node import NodeId
+
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
-DEFAULT_NODE_INDEX = 1
+DEFAULT_NODE_ID = NodeId(1)
 DEFAULT_NODE_NAME = 'test_node'
 SECOND_NODE_NAME = 'test_node_2'
 DEFAULT_NODE_HASH = '23bdf46c41fa300e431425baff124dc31625b34ec09b829f61aa16ab0102ca8d'
@@ -85,7 +87,7 @@ D_DELEGATION_AMOUNT = 55000000
 D_DELEGATION_PERIOD = 2
 D_DELEGATION_INFO = 'test'
 
-NOT_EXISTING_ID = 123123
+NOT_EXISTING_ID = NodeId(123123)
 
 MONTH_IN_SECONDS = 60 * 60 * 24 * 31
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skale.py"
-version = "7.10"
+version = "7.11"
 description = "SKALE client tools"
 readme = "README.md"
 requires-python = ">=3.11,<4"
@@ -19,7 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "redis>=7.0.1",
+    "redis>=7.1.0",
     "sgx.py==0.11dev0",
     "skale-contracts==2.0.0a10",
     "typing-extensions==4.15.0",
@@ -60,8 +60,8 @@ only-include = ["skale"]
 "skale/py.typed" = "skale/py.typed"
 
 [tool.pytest.ini_options]
-log_cli = false
-log_cli_level = "INFO"
+log_cli = true
+log_cli_level = "WARNING"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 filterwarnings = ["ignore::DeprecationWarning"]
