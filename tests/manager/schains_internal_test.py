@@ -57,8 +57,8 @@ def test_schain_hashes_for_node(skale: SkaleManager, nodes, schain):
 
 def test_is_schain_exist(skale: SkaleManager, schain):
     assert skale.schains_internal.is_schain_exist(schain)
-    random_chain_name = SchainName('sfdgodifjgodsaf')
-    assert not skale.schains_internal.is_schain_exist(random_chain_name)
+    nonexistent_chain_name = SchainName('sfdgodifjgodsaf')
+    assert not skale.schains_internal.is_schain_exist(nonexistent_chain_name)
 
 
 def test_get_active_schain_hashes(skale: SkaleManager, nodes, schain):
