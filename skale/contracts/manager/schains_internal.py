@@ -69,7 +69,13 @@ class SChainsInternal(SkaleManagerContract):
             NodeId(node) for node in self.contract.functions.getNodesInGroup(schain_hash).call()
         ]
 
-    def unique_node_ids_for_schains_on_node(self, node_id: NodeId) -> list[NodeId]:
+    def connected_node_ids(self, node_id: NodeId) -> list[NodeId]:
+        """Gets all schain hashes for node, retrieves node ids for each schain and returns a list
+        with unique node ids for all schains on the node.
+
+        :returns: List of unique node ids
+        :rtype: list[NodeId]
+        """
         schains = self.schain_hashes_for_node(node_id)
         unique_node_ids: set[NodeId] = set()
         for schain_hash in schains:

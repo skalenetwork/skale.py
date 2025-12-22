@@ -69,9 +69,9 @@ def test_get_active_schain_hashes(skale: SkaleManager, nodes, schain):
     assert len(active_schains) > 0
 
 
-def test_unique_node_ids_for_schains_on_node(skale: SkaleManager, nodes, schain):
+def test_connected_node_ids(skale: SkaleManager, nodes, schain):
     node_id = nodes[0]
-    node_ids = skale.schains_internal.unique_node_ids_for_schains_on_node(node_id)
+    node_ids = skale.schains_internal.connected_node_ids(node_id)
     assert isinstance(node_ids, list)
     assert len(node_ids) >= 1
 
