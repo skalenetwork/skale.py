@@ -14,7 +14,7 @@ from tests.constants import DEFAULT_NODE_NAME, DEFAULT_NODE_PORT, DEFAULT_SCHAIN
 def test_get_schain_base_port_on_node(skale, schain):
     schain_hash = schain_name_to_hash(schain)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
-    schain_hashes = skale.schains_internal.get_schain_hashes_for_node(node_id)
+    schain_hashes = skale.schains_internal.schain_hashes_for_node(node_id)
     schain_port_on_node = get_schain_base_port_on_node(
         schain_hashes, schain_hash, DEFAULT_NODE_PORT
     )
@@ -24,7 +24,7 @@ def test_get_schain_base_port_on_node(skale, schain):
 def test_get_schain_index_in_node(skale, schain):
     schain_hash = schain_name_to_hash(schain)
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
-    schain_hashes = skale.schains_internal.get_schain_hashes_for_node(node_id)
+    schain_hashes = skale.schains_internal.schain_hashes_for_node(node_id)
     index = get_schain_index_in_node(schain_hash, schain_hashes)
     assert isinstance(index, int)
 

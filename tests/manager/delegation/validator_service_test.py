@@ -143,9 +143,9 @@ def test_validator_exists(skale, validator):
     assert not validator_exists
 
 
-def test_get_validator_node_indices(skale, validator):  # todo: improve test
-    node_indices = skale.nodes.get_validator_node_indices(validator_id=validator)
-    all_active_node_ids = skale.nodes.get_active_node_ids()
+def test_validator_node_indices(skale, validator):  # todo: improve test
+    node_indices = skale.nodes.validator_node_indices(validator_id=validator)
+    all_active_node_ids = skale.nodes.active_node_ids()
     assert set(all_active_node_ids).issubset(node_indices)
 
 

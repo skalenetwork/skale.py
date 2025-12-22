@@ -38,10 +38,10 @@ from skale.dataclasses.schain_options import (
 )
 from skale.types.node import NodeId
 from skale.types.schain import (
+    Schain,
     SchainHash,
     SchainName,
     SchainStructure,
-    SchainStructureWithStatus,
 )
 from skale.utils.helper import schain_name_to_hash
 
@@ -64,50 +64,41 @@ class SChains(SkaleManagerContract):
 
     def get(self, id_: SchainHash) -> SchainStructure:
         res = self.schains_internal.get_raw(id_)
-        options = self.get_options(id_)
+        options = self.options(id_)
         return SchainStructure(
-            **asdict(res), schain_hash=schain_name_to_hash(res.name), options=options
+            **asdict(res),
+            schain_hash=schain_name_to_hash(res.name),
+            options=options,
+            active=self.schain_active(res),
         )
 
     def get_by_name(self, name: SchainName) -> SchainStructure:
         id_ = schain_name_to_hash(name)
         return self.get(id_)
 
-    def get_schains_for_owner(self, account: ChecksumAddress) -> List[SchainStructure]:
+    def schains_for_owner(self, account: ChecksumAddress) -> List[SchainStructure]:
         schains = []
-        list_size = self.schains_internal.get_schain_list_size(account)
+        list_size = self.schains_internal.schain_list_size(account)
 
         for i in range(0, list_size):
-            id_ = self.schains_internal.get_schain_hash_by_index_for_owner(account, i)
+            id_ = self.schains_internal.schain_hash_by_index_for_owner(account, i)
             schain = self.get(id_)
             schains.append(schain)
         return schains
 
-    def get_schains_for_node(self, node_id: NodeId) -> list[SchainStructureWithStatus]:
-        schains = []
-        schain_hashes = self.schains_internal.get_schain_hashes_for_node(node_id)
-        for schain_hash in schain_hashes:
-            simple_schain = self.get(schain_hash)
-            schain = SchainStructureWithStatus(
-                **asdict(simple_schain), active=self.schain_active(simple_schain)
-            )
-            schains.append(schain)
-        return schains
+    def schains_for_node(self, node_id: NodeId) -> list[SchainStructure]:
+        schain_hashes = self.schains_internal.schain_hashes_for_node(node_id)
+        return [self.get(schain_hash) for schain_hash in schain_hashes]
 
-    def get_active_schains_for_node(self, node_id: NodeId) -> List[SchainStructureWithStatus]:
-        schains = []
-        schain_hashes = self.schains_internal.get_active_schain_hashes_for_node(node_id)
-        for schain_hash in schain_hashes:
-            simple_schain = self.get(schain_hash)
-            schain = SchainStructureWithStatus(**asdict(simple_schain), active=True)
-            schains.append(schain)
-        return schains
+    def active_schains_for_node(self, node_id: NodeId) -> List[SchainStructure]:
+        schain_hashes = self.schains_internal.active_schain_hashes_for_node(node_id)
+        return [self.get(schain_hash) for schain_hash in schain_hashes]
 
-    def get_last_rotation_id(self, schain_name: SchainName) -> int:
+    def last_rotation_id(self, schain_name: SchainName) -> int:
         rotation_data = self.node_rotation.get_rotation(schain_name)
         return rotation_data.rotation_counter
 
-    def schain_active(self, schain: SchainStructure) -> bool:
+    def schain_active(self, schain: Schain) -> bool:
         if (
             schain.name != ''
             and schain.mainnet_owner != '0x0000000000000000000000000000000000000000'
@@ -115,7 +106,7 @@ class SChains(SkaleManagerContract):
             return True
         return False
 
-    def get_schain_price(self, index_of_type: int, lifetime: int) -> Wei:
+    def schain_price(self, index_of_type: int, lifetime: int) -> Wei:
         return Wei(self.contract.functions.getSchainPrice(index_of_type, lifetime).call())
 
     @transaction_method
@@ -153,15 +144,15 @@ class SChains(SkaleManagerContract):
     def schain_creator_role(self) -> bytes:
         return bytes(self.contract.functions.SCHAIN_CREATOR_ROLE().call())
 
-    def __raw_get_options(self, schain_hash: SchainHash) -> List[Any]:
+    def __raw_options(self, schain_hash: SchainHash) -> List[Any]:
         return list(self.contract.functions.getOptions(schain_hash).call())
 
-    def get_options(self, schain_hash: SchainHash) -> SchainOptions:
-        return parse_schain_options(raw_options=self.__raw_get_options(schain_hash))
+    def options(self, schain_hash: SchainHash) -> SchainOptions:
+        return parse_schain_options(raw_options=self.__raw_options(schain_hash))
 
-    def get_options_by_name(self, name: SchainName) -> SchainOptions:
+    def options_by_name(self, name: SchainName) -> SchainOptions:
         schain_hash = schain_name_to_hash(name)
-        return self.get_options(schain_hash)
+        return self.options(schain_hash)
 
     def restart_schain_creation(self, name: SchainName) -> 'ContractFunction':
         return self.contract.functions.restartSchainCreation(name)

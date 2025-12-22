@@ -34,6 +34,7 @@ from web3.types import ENS, Nonce, TxReceipt, _Hash32
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionFailedError, TransactionNotMinedError
+from skale.utils.cache import RedisCacheConfig, redis_cache_middleware
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.exceptions import NoSyncedEndpointError
 
@@ -69,6 +70,7 @@ def init_web3(
     endpoint: str,
     provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
     middlewares: Iterable[Middleware] | None = None,
+    cache_config: RedisCacheConfig | None = None,
     ts_diff: int | None = None,
     session: requests.Session | None = None,
 ) -> Web3:
@@ -86,6 +88,17 @@ def init_web3(
             middlewares = [stalecheck_middleware, AttributeDictMiddleware]
         else:
             middlewares = [AttributeDictMiddleware]
+
+    if cache_config is not None:
+        caching_middleware = redis_cache_middleware(cache_config)
+        middlewares_list = list(middlewares)
+        try:
+            attribute_index = middlewares_list.index(AttributeDictMiddleware)
+        except ValueError:
+            attribute_index = len(middlewares_list)
+        middlewares_list.insert(attribute_index, caching_middleware)
+        middlewares = middlewares_list
+
     for middleware in middlewares:
         w3.middleware_onion.add(middleware)
     return w3
