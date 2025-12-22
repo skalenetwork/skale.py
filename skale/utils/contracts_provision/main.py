@@ -159,8 +159,8 @@ def add_test4_schain_type(skale: SkaleManager) -> TxRes:
 
 def cleanup_nodes(skale: SkaleManager, ids: list[NodeId] | None = None) -> None:
     active_ids = filter(
-        lambda i: skale.nodes.get_node_status(i) == NodeStatus.ACTIVE,
-        ids or skale.nodes.get_active_node_ids(),
+        lambda i: skale.nodes.node_status(i) == NodeStatus.ACTIVE,
+        ids or skale.nodes.active_node_ids(),
     )
     for node_id in active_ids:
         if skale.nodes.get(node_id):
@@ -169,7 +169,7 @@ def cleanup_nodes(skale: SkaleManager, ids: list[NodeId] | None = None) -> None:
 
 
 def cleanup_schains(skale: SkaleManager) -> None:
-    for schain_hash in skale.schains_internal.get_all_schains_hashes():
+    for schain_hash in skale.schains_internal.all_schain_hashes():
         schain_data = skale.schains.get(schain_hash)
         schain_name = schain_data.name
         if schain_name is not None:
@@ -308,7 +308,7 @@ def create_validator(skale: SkaleManager) -> None:
     )
 
 
-def create_nodes(skales: List[SkaleManager], names: List[str] | None = None) -> list[int]:
+def create_nodes(skales: List[SkaleManager], names: List[str] | None = None) -> list[NodeId]:
     # create couple of nodes
     print('Creating two nodes')
     node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)

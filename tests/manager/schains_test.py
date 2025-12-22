@@ -70,25 +70,25 @@ def test_schain_get_object(skale, schain):
     )
 
 
-def test_get_schains_for_owner(skale, schain, empty_account):
-    schains = skale.schains.get_schains_for_owner(skale.wallet.address)
+def test_schains_for_owner(skale, schain, empty_account):
+    schains = skale.schains.schains_for_owner(skale.wallet.address)
     assert isinstance(schains, list)
     assert schains[-1].mainnet_owner == skale.wallet.address
 
-    schains = skale.schains.get_schains_for_owner(empty_account.address)
+    schains = skale.schains.schains_for_owner(empty_account.address)
     assert schains == []
 
 
-def test_get_schains_for_node(skale, schain):
+def test_schains_for_node(skale, schain):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
-    schains_for_node = skale.schains.get_schains_for_node(node_id)
-    schain_hashes_for_node = skale.schains_internal.get_schain_hashes_for_node(node_id)
+    schains_for_node = skale.schains.schains_for_node(node_id)
+    schain_hashes_for_node = skale.schains_internal.schain_hashes_for_node(node_id)
 
     assert isinstance(schains_for_node, list)
     assert len(schains_for_node) > 0
     assert len(schains_for_node) == len(schain_hashes_for_node)
     test_schain = schains_for_node[0]
-    schain_node_ids = skale.schains_internal.get_node_ids_for_schain(test_schain.name)
+    schain_node_ids = skale.schains_internal.node_ids_for_schain(test_schain.name)
 
     assert node_id in schain_node_ids
 
@@ -98,8 +98,8 @@ def test_schain_name_to_hash():
     assert schain_hash == Web3.to_bytes(hexstr=DEFAULT_SCHAIN_HASH)
 
 
-def test_get_all_schains_hashes(skale, schain):
-    schains_ids = skale.schains_internal.get_all_schains_hashes()
+def test_all_schain_hashes(skale, schain):
+    schains_ids = skale.schains_internal.all_schain_hashes()
     schain_struct = skale.schains.get(schains_ids[-1])
     assert schain_struct.name == schain
     assert schain_struct.index_in_owner_list == 0
@@ -114,8 +114,8 @@ def test_get_all_schains_hashes(skale, schain):
     )
 
 
-def test_get_schain_price(skale):
-    schain_price = skale.schains.get_schain_price(1, LIFETIME_SECONDS)
+def test_schain_price(skale):
+    schain_price = skale.schains.schain_price(1, LIFETIME_SECONDS)
     assert schain_price > 0
     assert isinstance(schain_price, int)
 
@@ -126,7 +126,7 @@ def test_add_schain_by_foundation(skale, nodes):
     type_of_nodes = 1  # test2 schain
     try:
         skale.schains.add_schain_by_foundation(lifetime_seconds, type_of_nodes, 0, name)
-        schains_ids_after = skale.schains_internal.get_all_schains_hashes()
+        schains_ids_after = skale.schains_internal.all_schain_hashes()
         schains_names = [skale.schains.get(sid).name for sid in schains_ids_after]
         assert name in schains_names
         new_schain = skale.schains.get_by_name(name)
@@ -139,7 +139,7 @@ def test_add_schain_by_foundation(skale, nodes):
     finally:
         skale.manager.delete_schain(name, wait_for=True)
 
-    schains_ids_after = skale.schains_internal.get_all_schains_hashes()
+    schains_ids_after = skale.schains_internal.all_schain_hashes()
 
     schains_names = [skale.schains.get(sid).name for sid in schains_ids_after]
     assert name not in schains_names
@@ -203,7 +203,7 @@ def test_add_schain_by_foundation_custom_owner(skale, nodes):
         skale.wallet = main_wallet
         skale.manager.delete_schain_by_root(name, wait_for=True)
 
-    schains_ids_after = skale.schains_internal.get_all_schains_hashes()
+    schains_ids_after = skale.schains_internal.all_schain_hashes()
 
     schains_names = [skale.schains.get(sid).name for sid in schains_ids_after]
     assert name not in schains_names
@@ -236,19 +236,19 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
         if name:
             skale.manager.delete_schain_by_root(name)
 
-        schains_ids_after = skale.schains_internal.get_all_schains_hashes()
+        schains_ids_after = skale.schains_internal.all_schain_hashes()
 
     schains_names = [skale.schains.get(sid)['name'] for sid in schains_ids_after]
     assert name not in schains_names
 
 
-def test_get_active_schains_for_node(skale, nodes, schain):
+def test_active_schains_for_node(skale, nodes, schain):
     name = None
     try:
         name = create_schain(skale, random_name=True)
         node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
-        active_schains = skale.schains.get_active_schains_for_node(node_id)
-        all_schains = skale.schains.get_schains_for_node(node_id)
+        active_schains = skale.schains.active_schains_for_node(node_id)
+        all_schains = skale.schains.schains_for_node(node_id)
         all_active_schains = [schain for schain in all_schains if schain.active]
         for active_schain in all_active_schains:
             assert active_schain in active_schains
@@ -263,7 +263,7 @@ def test_name_to_group_id(skale):
     assert gid == HexBytes('0x852daa74cc3c31fe64542bb9b8764cfb91cc30f9acf9389071ffb44a9eefde46')  # noqa
 
 
-def test_get_options(skale, nodes):
+def test_options(skale, nodes):
     schain_options = SchainOptions(
         multitransaction_mode=True,
         threshold_encryption=False,
@@ -273,11 +273,11 @@ def test_get_options(skale, nodes):
     try:
         name = create_schain(skale, random_name=True, schain_options=schain_options)
         schain_hash = schain_name_to_hash(name)
-        options = skale.schains.get_options(schain_hash)
+        options = skale.schains.options(schain_hash)
         assert options == schain_options
-        options = skale.schains.get_options_by_name(name)
+        options = skale.schains.options_by_name(name)
         assert options == schain_options
-        raw_options = skale.schains._SChains__raw_get_options(schain_hash)
+        raw_options = skale.schains._SChains__raw_options(schain_hash)
         assert raw_options == [
             ('multitr', b'\x01'),
             ('encrypt', b'\x00'),
