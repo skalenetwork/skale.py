@@ -64,6 +64,9 @@ class SChainsInternal(SkaleManagerContract):
 
     def get_node_ids_for_schain(self, name: SchainName) -> List[NodeId]:
         schain_hash = schain_name_to_hash(name)
+        return self.get_node_ids_for_schain_hash(schain_hash)
+
+    def get_node_ids_for_schain_hash(self, schain_hash: SchainHash) -> List[NodeId]:
         return [
             NodeId(node) for node in self.contract.functions.getNodesInGroup(schain_hash).call()
         ]
@@ -77,6 +80,9 @@ class SChainsInternal(SkaleManagerContract):
     def is_schain_exist(self, name: SchainName) -> bool:
         schain_hash = schain_name_to_hash(name)
         return bool(self.contract.functions.isSchainExist(schain_hash).call())
+
+    def is_empty_schain_hash(self, schain_hash: SchainHash) -> bool:
+        return all(b == 0 for b in schain_hash)
 
     def get_active_schain_hashes_for_node(self, node_id: NodeId) -> List[SchainHash]:
         return [
