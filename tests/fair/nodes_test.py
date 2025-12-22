@@ -38,9 +38,9 @@ def test_register_active_node(fair, node_wallets):
     with pytest.raises(ContractLogicError):
         fair.nodes.get_by_address(fair.wallet.address)
 
-    active_node_ids_before = fair.nodes.get_active_node_ids()
+    active_node_ids_before = fair.nodes.active_node_ids()
     fair.nodes.register_active(ip=ip, port=port, value=self_stake_requirement)
-    active_node_ids_after = fair.nodes.get_active_node_ids()
+    active_node_ids_after = fair.nodes.active_node_ids()
 
     assert len(active_node_ids_after) == len(active_node_ids_before) + 1
 
@@ -208,8 +208,8 @@ def test_get_passive_node_ids(fair, fair_passive_nodes):
 
 
 @pytest.mark.parametrize('number_of_nodes', [1])
-def test_get_active_node_ids(fair, fair_active_nodes):
-    active_node_ids = fair.nodes.get_active_node_ids()
+def test_active_node_ids(fair, fair_active_nodes):
+    active_node_ids = fair.nodes.active_node_ids()
 
     assert len(active_node_ids) >= 1
     assert all(node_id > 0 for node_id in active_node_ids)

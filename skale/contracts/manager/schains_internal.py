@@ -19,7 +19,7 @@
 """SchainsInternal.sol functions"""
 
 import functools
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from eth_typing import ChecksumAddress
 
@@ -46,32 +46,40 @@ class SChainsInternal(SkaleManagerContract):
     def get_raw(self, name: SchainHash) -> Schain:
         return Schain(*self.contract.functions.schains(name).call())
 
-    def get_all_schains_hashes(self) -> List[SchainHash]:
+    def all_schain_hashes(self) -> list[SchainHash]:
         return [
             SchainHash(schain_hash) for schain_hash in self.contract.functions.getSchains().call()
         ]
 
-    def get_schains_number(self) -> int:
+    def number_of_schains(self) -> int:
         return int(self.contract.functions.numberOfSchains().call())
 
-    def get_schain_list_size(self, account: ChecksumAddress) -> int:
-        return int(self.contract.functions.getSchainListSize(account).call({'from': account}))
+    def schain_list_size(self, account: ChecksumAddress) -> int:
+        return int(self.contract.functions.getSchainlistSize(account).call({'from': account}))
 
-    def get_schain_hash_by_index_for_owner(
-        self, account: ChecksumAddress, index: int
-    ) -> SchainHash:
+    def schain_hash_by_index_for_owner(self, account: ChecksumAddress, index: int) -> SchainHash:
         return SchainHash(self.contract.functions.schainIndexes(account, index).call())
 
-    def get_node_ids_for_schain(self, name: SchainName) -> List[NodeId]:
+    def node_ids_for_schain(self, name: SchainName) -> list[NodeId]:
         schain_hash = schain_name_to_hash(name)
-        return self.get_node_ids_for_schain_hash(schain_hash)
+        return self.node_ids_for_schain_hash(schain_hash)
 
-    def get_node_ids_for_schain_hash(self, schain_hash: SchainHash) -> List[NodeId]:
+    def node_ids_for_schain_hash(self, schain_hash: SchainHash) -> list[NodeId]:
         return [
             NodeId(node) for node in self.contract.functions.getNodesInGroup(schain_hash).call()
         ]
 
-    def get_schain_hashes_for_node(self, node_id: NodeId) -> List[SchainHash]:
+    def unique_node_ids_for_schains_on_node(self, node_id: NodeId) -> list[NodeId]:
+        schains = self.schain_hashes_for_node(node_id)
+        unique_node_ids: set[NodeId] = set()
+        for schain_hash in schains:
+            if self.is_empty_schain_hash(schain_hash):
+                continue
+            group_node_ids = self.node_ids_for_schain_hash(schain_hash)
+            unique_node_ids.update(group_node_ids)
+        return list(unique_node_ids)
+
+    def schain_hashes_for_node(self, node_id: NodeId) -> list[SchainHash]:
         return [
             SchainHash(schain)
             for schain in self.contract.functions.getSchainHashesForNode(node_id).call()
@@ -84,7 +92,7 @@ class SChainsInternal(SkaleManagerContract):
     def is_empty_schain_hash(self, schain_hash: SchainHash) -> bool:
         return all(b == 0 for b in schain_hash)
 
-    def get_active_schain_hashes_for_node(self, node_id: NodeId) -> List[SchainHash]:
+    def active_schain_hashes_for_node(self, node_id: NodeId) -> list[SchainHash]:
         return [
             SchainHash(schain)
             for schain in self.contract.functions.getActiveSchains(node_id).call()

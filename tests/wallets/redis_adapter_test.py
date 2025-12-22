@@ -52,8 +52,8 @@ def test_make_record():
     assert tx_id.startswith(b'tx-') and len(tx_id) == 19
     assert (
         r
-        == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": 22000, "nonce": 1, "chainId": 1}'
-    )  # noqa
+        == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": 22000, "nonce": 1, "chainId": 1}'  # noqa
+    )
 
 
 def test_sign_and_send(rdp):
