@@ -21,7 +21,7 @@ import hashlib
 import json
 import logging
 from collections.abc import Mapping as ABCMapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 from redis import Redis
@@ -31,14 +31,35 @@ from web3.middleware.base import Web3Middleware
 logger = logging.getLogger(__name__)
 
 
+RPC_CACHE_METHODS: tuple[str, ...] = (
+    'eth_call',
+    'eth_getCode',
+    'eth_getStorageAt',
+    'eth_chainId',
+    'eth_getBlockByNumber',
+    'eth_gasPrice',
+    'web3_clientVersion',
+)
+
+METHOD_TTL_POLICY: dict[str, int] = {
+    'eth_call': 5,
+    'eth_getCode': 30,
+    'eth_getStorageAt': 30,
+    'eth_chainId': 600,
+    'eth_getBlockByNumber': 60,
+    'eth_gasPrice': 5,
+    'web3_clientVersion': 600,
+}
+
+
 @dataclass(frozen=True, slots=True)
 class RedisCacheConfig:
     redis_url: str
-    cache_methods: frozenset[str]
+    cache_methods: frozenset[str] = field(default_factory=lambda: frozenset(RPC_CACHE_METHODS))
     bypass_addresses: frozenset[str] = frozenset()
-    default_ttl_seconds: int = 2
+    default_ttl_seconds: int = 1
     key_prefix: str = 'rpc-cache:v1'
-    method_ttl_policy: Mapping[str, int] | None = None
+    method_ttl_policy: Mapping[str, int] = field(default_factory=lambda: METHOD_TTL_POLICY)
 
 
 def ttl_policy(
