@@ -61,18 +61,9 @@ class MultiSigContract(BaseContract):
         return self.contract.functions.getTransactionCount(pending, executed).call()
 
     def get_transaction_ids(
-            self,
-            from_tx: int,
-            to_tx: int,
-            pending: bool,
-            executed: bool
+        self, from_tx: int, to_tx: int, pending: bool, executed: bool
     ) -> List[int]:
-        return self.contract.functions.getTransactionIds(
-            from_tx,
-            to_tx,
-            pending,
-            executed
-        ).call()
+        return self.contract.functions.getTransactionIds(from_tx, to_tx, pending, executed).call()
 
     def is_confirmed(self, transaction_id: int) -> bool:
         return self.contract.functions.isConfirmed(transaction_id).call()
@@ -92,19 +83,23 @@ class MultiSigContract(BaseContract):
     def transactions(self, index: int) -> Tuple[ChecksumAddress, int, bytes, bool]:
         return self.contract.functions.transactions(index).call()
 
-    def add_owner(self, owner: ChecksumAddress) -> TxRes:
+    @transaction_method
+    def add_owner(self, owner: ChecksumAddress) -> ContractFunction:
         func = self.contract.functions.addOwner(owner)
         return self._submit_self_transaction(func)
 
-    def change_requirement(self, required: int) -> TxRes:
+    @transaction_method
+    def change_requirement(self, required: int) -> ContractFunction:
         func = self.contract.functions.changeRequirement(required)
         return self._submit_self_transaction(func)
 
-    def remove_owner(self, owner: ChecksumAddress) -> TxRes:
+    @transaction_method
+    def remove_owner(self, owner: ChecksumAddress) -> ContractFunction:
         func = self.contract.functions.removeOwner(owner)
         return self._submit_self_transaction(func)
 
-    def replace_owner(self, owner: ChecksumAddress, new_owner: ChecksumAddress) -> TxRes:
+    @transaction_method
+    def replace_owner(self, owner: ChecksumAddress, new_owner: ChecksumAddress) -> ContractFunction:
         func = self.contract.functions.replaceOwner(owner, new_owner)
         return self._submit_self_transaction(func)
 
@@ -120,7 +115,6 @@ class MultiSigContract(BaseContract):
     def revoke_confirmation(self, transaction_id: int) -> ContractFunction:
         return self.contract.functions.revokeConfirmation(transaction_id)
 
-    @transaction_method
     def submit_transaction(
         self,
         destination: ChecksumAddress,
@@ -141,33 +135,24 @@ class MultiSigContract(BaseContract):
             return bytes.fromhex(data[2:])
         return data
 
-    def _submit_self_transaction(self, contract_function: ContractFunction) -> TxRes:
+    def _submit_self_transaction(self, contract_function: ContractFunction) -> ContractFunction:
         calldata = self._encode_transaction_data(contract_function)
         return self.submit_transaction(self.address, 0, calldata)
 
-    def _encode_marionette_execute(
-        self,
-        destination: ChecksumAddress,
-        data: bytes
-    ) -> bytes:
+    def _encode_marionette_execute(self, destination: ChecksumAddress, data: bytes) -> bytes:
         function_selector = function_signature_to_4byte_selector('execute(address,uint256,bytes)')
 
-        encoded_params = encode(
-            ['address', 'uint256', 'bytes'],
-            [destination, 0, data]
-        )
+        encoded_params = encode(['address', 'uint256', 'bytes'], [destination, 0, data])
         return function_selector + encoded_params
 
+    @transaction_method
     def execute_via_marionette(
         self,
         destination: ChecksumAddress,
         contract_function: ContractFunction,
-    ) -> TxRes:
+    ) -> ContractFunction:
         marionette_address = MarionetteInstance.PREDEPLOYED['Marionette']
         target_calldata = self._encode_transaction_data(contract_function)
 
-        marionette_calldata = self._encode_marionette_execute(
-            destination,
-            target_calldata
-        )
+        marionette_calldata = self._encode_marionette_execute(destination, target_calldata)
         return self.submit_transaction(marionette_address, 0, marionette_calldata)
