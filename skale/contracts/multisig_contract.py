@@ -30,7 +30,6 @@ from web3.contract.contract import ContractFunction
 from web3.types import TxParams, Wei
 
 from skale.contracts.base_contract import BaseContract, transaction_method
-from skale.transactions.result import TxRes
 from skale.wallets import BaseWallet
 
 
