@@ -33,7 +33,7 @@ from skale.utils.web3_utils import (
     DEFAULT_BLOCKS_TO_WAIT,
     MAX_WAITING_TIME,
     get_eth_nonce,
-    wait_for_receipt_by_blocks,
+    wait_for_receipt,
 )
 from skale.wallets.common import BaseWallet, MessageNotSignedError, ensure_chain_id
 
@@ -120,6 +120,4 @@ class SgxWallet(BaseWallet):
         blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
         timeout: int = MAX_WAITING_TIME,
     ) -> TxReceipt:
-        return wait_for_receipt_by_blocks(
-            self._web3, tx_hash, blocks_to_wait=blocks_to_wait, timeout=timeout
-        )
+        return wait_for_receipt(self._web3, tx_hash, timeout=timeout)

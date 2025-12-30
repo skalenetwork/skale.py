@@ -27,7 +27,12 @@ from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
 from requests.exceptions import ConnectionError  # type: ignore
 from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
-from web3.exceptions import ProviderConnectionError, StaleBlockchain, TransactionNotFound
+from web3.exceptions import (
+    ProviderConnectionError,
+    StaleBlockchain,
+    TimeExhausted,
+    TransactionNotFound,
+)
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
 from web3.types import ENS, Nonce, TxReceipt, _Hash32
@@ -137,14 +142,24 @@ def _get_connected_endpoint(
     raise NoSyncedEndpointError(f'Could not connect to any RPC endpoints: {endpoints}')
 
 
-def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
-    return web3.eth.get_transaction_receipt(tx)
-
-
 def get_eth_nonce(web3: Web3, address: Address | ChecksumAddress | ENS) -> Nonce:
     return web3.eth.get_transaction_count(address)
 
 
+def wait_for_receipt(
+    web3: Web3,
+    tx: _Hash32,
+    timeout: int = MAX_WAITING_TIME,
+) -> TxReceipt:
+    try:
+        return web3.eth.wait_for_transaction_receipt(tx, timeout=timeout)
+    except TimeExhausted:
+        raise TransactionNotMinedError(
+            f'Transaction with hash: {str(tx)} not found within {timeout} seconds.'
+        )
+
+
+# deprecated
 def wait_for_receipt_by_blocks(
     web3: Web3,
     tx: _Hash32,
@@ -165,7 +180,7 @@ def wait_for_receipt_by_blocks(
 
     while time.monotonic() < deadline and current_block <= max_block:
         try:
-            return get_receipt(web3, tx)
+            return web3.eth.get_transaction_receipt(tx)
         except TransactionNotFound:
             pass
 
@@ -188,7 +203,7 @@ def wait_for_receipt_by_blocks(
 def wait_receipt(web3: Web3, tx: _Hash32, retries: int = 30, timeout: int = 5) -> TxReceipt:
     for _ in range(0, retries):
         try:
-            receipt = get_receipt(web3, tx)
+            receipt = web3.eth.get_transaction_receipt(tx)
         except TransactionNotFound:
             receipt = None
         if receipt is not None:

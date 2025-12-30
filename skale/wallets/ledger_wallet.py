@@ -49,7 +49,7 @@ from skale.utils.web3_utils import (
     get_eth_nonce,
     public_key_to_address,
     to_checksum_address,
-    wait_for_receipt_by_blocks,
+    wait_for_receipt,
 )
 from skale.wallets.common import BaseWallet, ensure_chain_id
 
@@ -226,9 +226,7 @@ class LedgerWallet(BaseWallet):
         blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
         timeout: int = MAX_WAITING_TIME,
     ) -> TxReceipt:
-        return wait_for_receipt_by_blocks(
-            self._web3, tx_hash, blocks_to_wait=blocks_to_wait, timeout=timeout
-        )
+        return wait_for_receipt(self._web3, tx_hash, timeout=timeout)
 
 
 def hardware_sign_and_send(
