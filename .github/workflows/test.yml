@@ -39,6 +39,7 @@ jobs:
         run: |
           mkdir -p ./helper-scripts/anvil_state
           cp ./anvil_state/state.json ./helper-scripts/anvil_state/state.json
+          cp ./anvil_state/manager.json ./helper-scripts/contracts_data/manager.json
           bash ./helper-scripts/helper.sh run_anvil
 
       # - name: Deploy manager
