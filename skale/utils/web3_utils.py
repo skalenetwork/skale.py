@@ -47,6 +47,9 @@ BLOCK_WAITING_TIMEOUT = 1
 DEFAULT_HTTP_TIMEOUT = 120
 DEFAULT_BLOCKS_TO_WAIT = 50
 
+RECEIPT_POLL_INITIAL_SLEEP_SECONDS = 0.2
+RECEIPT_POLL_MAX_SLEEP_SECONDS = 3.0
+
 
 def get_provider(
     endpoint: str,
@@ -150,20 +153,33 @@ def wait_for_receipt_by_blocks(
 ) -> TxReceipt:
     blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
     timeout = timeout or MAX_WAITING_TIME
-    previous_block = web3.eth.block_number
-    current_block = previous_block
-    wait_start_time = time.time()
-    while (
-        time.time() - wait_start_time < timeout and current_block <= previous_block + blocks_to_wait
-    ):
+    start_block = web3.eth.block_number
+    max_block = start_block + blocks_to_wait
+    current_block = start_block
+
+    start_time = time.monotonic()
+    deadline = start_time + timeout
+    next_block_check = start_time + BLOCK_WAITING_TIMEOUT
+
+    sleep_seconds = RECEIPT_POLL_INITIAL_SLEEP_SECONDS
+
+    while time.monotonic() < deadline and current_block <= max_block:
         try:
-            receipt = get_receipt(web3, tx)
+            return get_receipt(web3, tx)
         except TransactionNotFound:
-            receipt = None
-        if receipt is not None:
-            return receipt
-        current_block = web3.eth.block_number
-        time.sleep(3)
+            pass
+
+        now = time.monotonic()
+        if now >= next_block_check:
+            current_block = web3.eth.block_number
+            next_block_check = now + BLOCK_WAITING_TIMEOUT
+
+        time_left = deadline - now
+        if time_left <= 0:
+            break
+
+        time.sleep(min(sleep_seconds, time_left))
+        sleep_seconds = min(sleep_seconds * 1.5, RECEIPT_POLL_MAX_SLEEP_SECONDS)
     raise TransactionNotMinedError(
         f'Transaction with hash: {str(tx)} not found in {blocks_to_wait} blocks.'
     )
