@@ -102,7 +102,7 @@ def number_of_nodes():
     return 2
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def node_wallets(skale, number_of_nodes):
     wallets = []
     for i in range(number_of_nodes):
@@ -119,7 +119,7 @@ def node_wallets(skale, number_of_nodes):
     return wallets
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def node_skales(skale, node_wallets):
     return [
         SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
@@ -127,14 +127,11 @@ def node_skales(skale, node_wallets):
     ]
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def nodes(skale, node_skales, validator):
     link_nodes_to_validator(skale, validator, node_skales)
     ids = create_nodes(node_skales)
-    try:
-        yield ids
-    finally:
-        cleanup_nodes(skale, ids)
+    return ids
 
 
 @pytest.fixture
@@ -170,19 +167,23 @@ def fair_passive_nodes(fair, node_wallets):
         """TODO: Remove the node from the fair instance."""
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def schain(skale, nodes):
-    try:
-        yield create_schain(
-            skale,
-            schain_type=1,  # test2 should have 1 index
-            random_name=True,
-        )
-    finally:
-        cleanup_schains(skale)
+    return create_schain(
+        skale,
+        schain_type=1,  # test2 should have 1 index
+        random_name=True,
+    )
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
+def isolation(web3):
+    snapshot_id = web3.provider.make_request('evm_snapshot', [])['result']
+    yield
+    web3.provider.make_request('evm_revert', [snapshot_id])
+
+
+@pytest.fixture(scope='session')
 def skale_allocator(web3):
     """Returns a SKALE Allocator instance with provider from config"""
     return init_skale_allocator(web3)
