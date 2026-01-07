@@ -62,9 +62,8 @@ def _skip_evm_time(web3: Web3, seconds: int, mine: bool = True) -> int:
     return int(res['result'])
 
 
-def set_automining(web3: Web3, value: bool) -> int:
-    res = web3.provider.make_request(RPCEndpoint('evm_setAutomine'), [value])
-    return int(res['result'])
+def set_automining(web3: Web3, value: bool) -> None:
+    web3.provider.make_request(RPCEndpoint('evm_setAutomine'), [value])
 
 
 def set_mining_interval(web3: Web3, ms: int) -> None:
