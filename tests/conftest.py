@@ -208,10 +208,11 @@ def failed_skale(skale):
 def block_in_seconds(skale):
     # Mine block every three seconds without automine
     # Makes web3.py throw exception in a same way as for geth
-    try:
-        set_automining(skale.web3, False)
-        set_mining_interval(skale.web3, 3)
-        yield
-    finally:
-        set_automining(skale.web3, True)
-        set_default_mining_interval(skale.web3)
+    yield
+    # try:
+    #     set_automining(skale.web3, False)
+    #     set_mining_interval(skale.web3, 3)
+    #     yield
+    # finally:
+    #     set_automining(skale.web3, True)
+    #     set_default_mining_interval(skale.web3)
