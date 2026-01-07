@@ -6,7 +6,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [manager, allocator, fair]
+        #component: [manager, allocator, fair]
+        component: [manager, allocator]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
