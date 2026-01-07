@@ -177,8 +177,10 @@ def schain(skale, nodes):
 @pytest.fixture(autouse=True)
 def isolation(web3):
     snapshot_id = web3.provider.make_request('evm_snapshot', [])['result']
-    yield
-    web3.provider.make_request('evm_revert', [snapshot_id])
+    try:
+        yield
+    finally:
+        web3.provider.make_request('evm_revert', [snapshot_id])
 
 
 @pytest.fixture(scope='session')

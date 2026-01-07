@@ -38,7 +38,7 @@ def test_get_by_name(skale, schain):
     assert schain_by_name.part_of_node == 1
     assert schain_by_name.lifetime == 3600
     assert schain_by_name.deposit == 0
-    assert schain_by_name.generation == 1
+    assert schain_by_name.generation == 0
     assert schain_by_name.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
@@ -62,7 +62,7 @@ def test_schain_get_object(skale, schain):
     assert schain_struct.part_of_node == 1
     assert schain_struct.lifetime == 3600
     assert schain_struct.deposit == 0
-    assert schain_struct.generation == 1
+    assert schain_struct.generation == 0
     assert schain_struct.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
@@ -106,7 +106,7 @@ def test_all_schain_hashes(skale, schain):
     assert schain_struct.part_of_node == 1
     assert schain_struct.lifetime == 3600
     assert schain_struct.deposit == 0
-    assert schain_struct.generation == 1
+    assert schain_struct.generation == 0
     assert schain_struct.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
