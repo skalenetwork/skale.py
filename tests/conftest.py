@@ -12,8 +12,6 @@ from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_m
 from skale.utils.contracts_provision.main import (
     add_test2_schain_type,
     add_test_permissions,
-    cleanup_nodes,
-    cleanup_schains,
     create_nodes,
     create_schain,
     link_nodes_to_validator,
