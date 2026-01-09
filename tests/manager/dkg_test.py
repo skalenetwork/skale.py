@@ -161,7 +161,7 @@ def test_complaint_bad_data(skale):
         'to': contract_address,
         'type': 1,
         'data': (
-            '0xd76c2c4fe332bac19e758fe13db6129827da76846b8c6d26f1e70385d3f0afc0299e3db900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'  # noqa
+            '0x84b2d05e00837a120094fd471836031dc5108809d173a067e8486b9047a380b8642fce1ddfe332bac19e758fe13db6129827da76846b8c6d26f1e70385d3f0afc0299e3db900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'  # noqa
         ),
     }
     group_index = schain_name_to_hash(SCHAIN_NAME)
@@ -173,7 +173,7 @@ def test_complaint_bad_data(skale):
     ):
         with mock.patch.object(web3.eth.Eth, 'send_raw_transaction') as send_tx_mock:
             send_tx_mock.return_value = b'hexstring'
-            skale.dkg.complaint(
+            skale.dkg.complaint_bad_data(
                 group_index, from_node_index, to_node_index, wait_for=False, gas_limit=gas_limit
             )
             assert_transaction_data_in_mock(expected_txn, send_tx_mock)

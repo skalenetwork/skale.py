@@ -100,7 +100,7 @@ def number_of_nodes():
     return 2
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def node_wallets(skale: SkaleManager, number_of_nodes: int):
     wallets = []
     for _ in range(number_of_nodes):
@@ -115,7 +115,7 @@ def node_wallets(skale: SkaleManager, number_of_nodes: int):
     return wallets
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def node_skales(skale, node_wallets):
     return [
         SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
@@ -123,14 +123,14 @@ def node_skales(skale, node_wallets):
     ]
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def nodes(skale, node_skales, validator):
     link_nodes_to_validator(skale, validator, node_skales)
     ids = create_nodes(node_skales)
     return ids
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def node(skale: SkaleManager, validator: ValidatorId) -> tuple[NodeId, Web3Wallet]:
     wallet = generate_wallet(skale.web3)
     send_eth(
@@ -179,7 +179,7 @@ def fair_passive_nodes(fair, node_wallets):
         """TODO: Remove the node from the fair instance."""
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def schain(skale, nodes):
     return create_schain(
         skale,
@@ -190,7 +190,11 @@ def schain(skale, nodes):
 
 @pytest.fixture(autouse=True)
 def isolation(web3):
-    snapshot_id = web3.provider.make_request('evm_snapshot', [])['result']
+    response = web3.provider.make_request('evm_snapshot', [])
+    if 'result' not in response:
+        yield
+        return
+    snapshot_id = response['result']
     try:
         yield
     finally:
