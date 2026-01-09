@@ -7,7 +7,9 @@ import pytest
 from web3.auto import w3
 
 from skale import SkaleManager
-from skale.utils.account_tools import generate_account, send_eth
+from skale.types.node import NodeId
+from skale.types.validator import ValidatorId
+from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
 from skale.utils.contracts_provision.main import (
     add_test2_schain_type,
@@ -15,15 +17,13 @@ from skale.utils.contracts_provision.main import (
     create_nodes,
     create_schain,
     link_nodes_to_validator,
-    set_automining,
-    set_default_mining_interval,
-    set_mining_interval,
     setup_validator,
 )
-from skale.utils.contracts_provision.utils import generate_random_node_data
+from skale.utils.contracts_provision.utils import generate_random_name, generate_random_node_data
 from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
+from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 from tests.helper import init_fair, init_skale, init_skale_allocator
 
@@ -91,7 +91,7 @@ def fair(web3):
 
 
 @pytest.fixture(scope='session')
-def validator(skale):
+def validator(skale) -> ValidatorId:
     return setup_validator(skale)
 
 
@@ -101,12 +101,10 @@ def number_of_nodes():
 
 
 @pytest.fixture(scope='session')
-def node_wallets(skale, number_of_nodes):
+def node_wallets(skale: SkaleManager, number_of_nodes: int):
     wallets = []
-    for i in range(number_of_nodes):
-        acc = generate_account(skale.web3)
-        pk = acc['private_key']
-        wallet = Web3Wallet(pk, skale.web3)
+    for _ in range(number_of_nodes):
+        wallet = generate_wallet(skale.web3)
         send_eth(
             web3=skale.web3,
             wallet=skale.wallet,
@@ -130,6 +128,22 @@ def nodes(skale, node_skales, validator):
     link_nodes_to_validator(skale, validator, node_skales)
     ids = create_nodes(node_skales)
     return ids
+
+
+@pytest.fixture(scope='session')
+def node(skale: SkaleManager, validator: ValidatorId) -> tuple[NodeId, Web3Wallet]:
+    wallet = generate_wallet(skale.web3)
+    send_eth(
+        web3=skale.web3,
+        wallet=skale.wallet,
+        receiver_address=wallet.address,
+        amount=ETH_AMOUNT_PER_NODE,
+    )
+    node_skales = (SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet),)
+    link_nodes_to_validator(skale, validator, node_skales)
+    ids = create_nodes(node_skales, names=[generate_random_name()])
+    node_id = ids[0]
+    return node_id, wallet
 
 
 @pytest.fixture

@@ -72,7 +72,7 @@ def send_eth(
     web3: Web3,
     wallet: BaseWallet,
     receiver_address: ChecksumAddress,
-    amount: Wei,
+    amount: int | Decimal,
     *args: Any,
     gas_price: Optional[int] = None,
     wait_for: bool = True,
