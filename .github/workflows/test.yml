@@ -6,8 +6,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        #component: [manager, allocator, fair]
-        component: [manager, allocator]
+        component: [manager, allocator, fair]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -35,14 +34,6 @@ jobs:
         run: |
           . ./scripts/export_env.sh
           printenv >> $GITHUB_ENV
-
-      # - name: Run anvil with skale-manager state
-      #   run: |
-      #     mkdir -p ./helper-scripts/anvil_state
-      #     mkdir -p ./helper-scripts/contracts_data
-      #     cp ./anvil_state/state.json ./helper-scripts/anvil_state/state.json
-      #     cp ./anvil_state/manager.json ./helper-scripts/contracts_data/manager.json
-      #     bash ./helper-scripts/helper.sh run_anvil
 
       - name: Deploy manager
         run: |
