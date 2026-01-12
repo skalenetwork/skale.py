@@ -224,17 +224,3 @@ def failed_skale(skale):
     finally:
         skale.wallet.sign_and_send = tmp_sign_and_send
         skale.wallet.wait = tmp_wait
-
-
-@pytest.fixture
-def block_in_seconds(skale):
-    # Mine block every three seconds without automine
-    # Makes web3.py throw exception in a same way as for geth
-    yield
-    # try:
-    #     set_automining(skale.web3, False)
-    #     set_mining_interval(skale.web3, 3)
-    #     yield
-    # finally:
-    #     set_automining(skale.web3, True)
-    #     set_default_mining_interval(skale.web3)

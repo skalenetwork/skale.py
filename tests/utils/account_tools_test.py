@@ -48,7 +48,7 @@ def test_send_eth(skale, empty_account):
     )
 
 
-def test_send_eth_with_gas_price(skale, empty_account, block_in_seconds):
+def test_send_eth_with_gas_price(skale, empty_account):
     def get_signed_tx_with_custom_gas_price(gas_price):
         wei_amount = skale.web3.to_wei(ETH_TRANSFER_VALUE, 'ether')
         return skale.wallet.sign(
