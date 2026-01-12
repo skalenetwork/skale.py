@@ -76,7 +76,7 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 100
-exclude = ["helper-scripts"]
+exclude = ["helper-scripts", ".git"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I"]

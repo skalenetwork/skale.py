@@ -331,7 +331,7 @@ def create_schain(
     schain_type: int = 1,
     random_name: bool = False,
     schain_options: SchainOptions | None = None,
-) -> str:
+) -> SchainName:
     print('Creating schain')
     # create 1 s-chain
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)

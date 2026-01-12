@@ -8,6 +8,7 @@ from web3.auto import w3
 
 from skale import SkaleManager
 from skale.types.node import NodeId
+from skale.types.schain import SchainName
 from skale.types.validator import ValidatorId
 from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
@@ -124,7 +125,7 @@ def node_skales(skale, node_wallets):
 
 
 @pytest.fixture
-def nodes(skale, node_skales, validator):
+def nodes(skale: SkaleManager, node_skales, validator: ValidatorId) -> list[NodeId]:
     link_nodes_to_validator(skale, validator, node_skales)
     ids = create_nodes(node_skales)
     return ids
@@ -180,7 +181,7 @@ def fair_passive_nodes(fair, node_wallets):
 
 
 @pytest.fixture
-def schain(skale, nodes):
+def schain(skale: SkaleManager, nodes: list[NodeId]) -> SchainName:
     return create_schain(
         skale,
         schain_type=1,  # test2 should have 1 index
@@ -192,6 +193,7 @@ def schain(skale, nodes):
 def isolation(web3):
     response = web3.provider.make_request('evm_snapshot', [])
     if 'result' not in response:
+        logger.warning('EVM snapshot not supported by the provider')
         yield
         return
     snapshot_id = response['result']
