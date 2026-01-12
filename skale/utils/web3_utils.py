@@ -31,7 +31,6 @@ from web3.exceptions import (
     ProviderConnectionError,
     StaleBlockchain,
     TimeExhausted,
-    TransactionNotFound,
 )
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
