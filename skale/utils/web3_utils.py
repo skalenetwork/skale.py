@@ -159,61 +159,6 @@ def wait_for_receipt(
         )
 
 
-# deprecated
-def wait_for_receipt_by_blocks(
-    web3: Web3,
-    tx: _Hash32,
-    blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-    timeout: int = MAX_WAITING_TIME,
-) -> TxReceipt:
-    blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
-    timeout = timeout or MAX_WAITING_TIME
-    start_block = web3.eth.block_number
-    max_block = start_block + blocks_to_wait
-    current_block = start_block
-
-    start_time = time.monotonic()
-    deadline = start_time + timeout
-    next_block_check = start_time + BLOCK_WAITING_TIMEOUT
-
-    sleep_seconds = RECEIPT_POLL_INITIAL_SLEEP_SECONDS
-
-    while time.monotonic() < deadline and current_block <= max_block:
-        try:
-            return web3.eth.get_transaction_receipt(tx)
-        except TransactionNotFound:
-            pass
-
-        now = time.monotonic()
-        if now >= next_block_check:
-            current_block = web3.eth.block_number
-            next_block_check = now + BLOCK_WAITING_TIMEOUT
-
-        time_left = deadline - now
-        if time_left <= 0:
-            break
-
-        time.sleep(min(sleep_seconds, time_left))
-        sleep_seconds = min(sleep_seconds * 1.5, RECEIPT_POLL_MAX_SLEEP_SECONDS)
-    raise TransactionNotMinedError(
-        f'Transaction with hash: {str(tx)} not found in {blocks_to_wait} blocks.'
-    )
-
-
-def wait_receipt(web3: Web3, tx: _Hash32, retries: int = 30, timeout: int = 5) -> TxReceipt:
-    for _ in range(0, retries):
-        try:
-            receipt = web3.eth.get_transaction_receipt(tx)
-        except TransactionNotFound:
-            receipt = None
-        if receipt is not None:
-            return receipt
-        time.sleep(timeout)  # pragma: no cover
-    raise TransactionNotMinedError(
-        f'Transaction with hash: {str(tx)} not mined after {retries} retries.'
-    )
-
-
 def check_receipt(receipt: TxReceipt, raise_error: bool = True) -> bool:
     if receipt['status'] != 1:  # pragma: no cover
         if raise_error:
