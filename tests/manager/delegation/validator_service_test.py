@@ -5,7 +5,7 @@ import random
 import pytest
 
 from skale.contracts.manager.delegation.validator_service import FIELDS
-from skale.transactions.exceptions import TransactionNotSentError
+from skale.transactions.exceptions import TransactionFailedError
 from skale.transactions.result import DryRunRevertError
 from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.main import _skip_evm_time, enable_validator
@@ -352,7 +352,7 @@ def test_set_validator_description(skale):
 
 
 def test_revert_register(skale):
-    with pytest.raises(TransactionNotSentError):
+    with pytest.raises(TransactionFailedError):
         skale.validator_service.register_validator(
             name=D_VALIDATOR_NAME,
             description=D_VALIDATOR_DESC,

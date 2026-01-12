@@ -37,7 +37,7 @@ from skale.transactions.exceptions import (
     TransactionNotSentError,
     TransactionWaitError,
 )
-from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, MAX_WAITING_TIME, get_receipt
+from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, MAX_WAITING_TIME
 from skale.wallets import BaseWallet
 from skale.wallets.web3_wallet import Web3Wallet
 
@@ -244,7 +244,7 @@ class RedisWalletAdapter(BaseWallet):
                 if record is not None:
                     status = record.get('status')
                     if status in (TxRecordStatus.SUCCESS, TxRecordStatus.FAILED):
-                        result = get_receipt(self.wallet._web3, record['tx_hash'])
+                        result = self.wallet._web3.eth.get_transaction_receipt(record['tx_hash'])
             except Exception as e:
                 logger.exception('Waiting for tx %s errored', tx_id)
                 raise RedisWalletWaitError(e)

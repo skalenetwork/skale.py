@@ -93,6 +93,10 @@ def test_rdp_wait(rdp):
 
     rdp.get_record = mock.Mock(return_value={'tx_hash': 'test', 'status': 'SUCCESS'})
     fake_receipt = {'test': 'test'}
-    with mock.patch('skale.wallets.redis_wallet.get_receipt', return_value=fake_receipt):
+    with mock.patch.object(
+        rdp.wallet._web3.eth,
+        'get_transaction_receipt',
+        return_value=fake_receipt,
+    ):
         with in_time(2):
             assert rdp.wait(tx_id, timeout=100) == fake_receipt

@@ -42,6 +42,7 @@ dev = [
     "mock==5.2.0",
     "pytest==9.0.1",
     "pytest-cov==7.0.0",
+    "pytest-timeout==2.4.0",
     "types-requests",
     "types-redis",
 ]
@@ -61,7 +62,8 @@ only-include = ["skale"]
 "skale/py.typed" = "skale/py.typed"
 
 [tool.pytest.ini_options]
-log_cli = true
+addopts = ["--timeout=30", "--timeout-method=thread"]
+log_cli = false
 log_cli_level = "WARNING"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
@@ -74,7 +76,7 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 100
-exclude = ["helper-scripts"]
+exclude = ["helper-scripts", ".git"]
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I"]

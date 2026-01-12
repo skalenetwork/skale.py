@@ -6,6 +6,7 @@ from web3 import Web3
 
 from skale.contracts.manager.schains import SchainStructure
 from skale.dataclasses.schain_options import AllocationType, SchainOptions
+from skale.skale_manager import SkaleManager
 from skale.utils.contracts_provision.fake_multisig_contract import (
     FAKE_MULTISIG_DATA_PATH,
 )
@@ -38,7 +39,7 @@ def test_get_by_name(skale, schain):
     assert schain_by_name.part_of_node == 1
     assert schain_by_name.lifetime == 3600
     assert schain_by_name.deposit == 0
-    assert schain_by_name.generation == 1
+    assert schain_by_name.generation == 0
     assert schain_by_name.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
@@ -62,7 +63,7 @@ def test_schain_get_object(skale, schain):
     assert schain_struct.part_of_node == 1
     assert schain_struct.lifetime == 3600
     assert schain_struct.deposit == 0
-    assert schain_struct.generation == 1
+    assert schain_struct.generation == 0
     assert schain_struct.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
@@ -106,7 +107,7 @@ def test_all_schain_hashes(skale, schain):
     assert schain_struct.part_of_node == 1
     assert schain_struct.lifetime == 3600
     assert schain_struct.deposit == 0
-    assert schain_struct.generation == 1
+    assert schain_struct.generation == 0
     assert schain_struct.options == SchainOptions(
         multitransaction_mode=False,
         threshold_encryption=False,
@@ -209,7 +210,7 @@ def test_add_schain_by_foundation_custom_owner(skale, nodes):
     assert name not in schains_names
 
 
-def test_add_schain_by_foundation_custom_originator(skale, nodes):
+def test_add_schain_by_foundation_custom_originator(skale: SkaleManager, nodes):
     skale.schains.grant_role(skale.schains.schain_creator_role(), skale.wallet.address)
     _, lifetime_seconds, name = generate_random_schain_data(skale)
     type_of_nodes = 1  # test2 schain
@@ -238,7 +239,7 @@ def test_add_schain_by_foundation_custom_originator(skale, nodes):
 
         schains_ids_after = skale.schains_internal.all_schain_hashes()
 
-    schains_names = [skale.schains.get(sid)['name'] for sid in schains_ids_after]
+    schains_names = [skale.schains.get(sid).name for sid in schains_ids_after]
     assert name not in schains_names
 
 

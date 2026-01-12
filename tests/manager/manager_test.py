@@ -8,12 +8,15 @@ import pytest
 import web3
 from hexbytes import HexBytes
 
+from skale.skale_manager import SkaleManager
 from skale.transactions.result import DryRunRevertError, TransactionFailedError
+from skale.types.node import NodeId
 from skale.utils.contracts_provision import DEFAULT_DOMAIN_NAME
 from skale.utils.contracts_provision.main import (
     generate_random_node_data,
     generate_random_schain_data,
 )
+from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import TEST_GAS_LIMIT
 
@@ -131,16 +134,15 @@ def test_create_node_status_0(failed_skale):
         tx_res.raise_for_status()
 
 
-def test_node_exit_with_no_schains(skale, nodes):
-    node_id, *_ = nodes
+def test_node_exit_with_no_schains(skale: SkaleManager, node: tuple[NodeId, Web3Wallet]):
+    node_id = node[0]
     skale.nodes.init_exit(node_id, wait_for=True)
     tx_res = skale.manager.node_exit(node_id, wait_for=True)
     assert tx_res.receipt['status'] == 1
     assert skale.nodes.node_status(node_id) == 2
 
 
-def test_failed_node_exit(skale, block_in_seconds):
-    # block_in_seconds fixture to return transaction revert in a same way as geth does
+def test_failed_node_exit(skale):
     not_existed_node_id = 1
     with pytest.raises(DryRunRevertError):
         skale.manager.node_exit(not_existed_node_id, wait_for=True, gas_limit=TEST_GAS_LIMIT)

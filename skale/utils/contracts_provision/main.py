@@ -62,9 +62,8 @@ def _skip_evm_time(web3: Web3, seconds: int, mine: bool = True) -> int:
     return int(res['result'])
 
 
-def set_automining(web3: Web3, value: bool) -> int:
-    res = web3.provider.make_request(RPCEndpoint('evm_setAutomine'), [value])
-    return int(res['result'])
+def set_automining(web3: Web3, value: bool) -> None:
+    web3.provider.make_request(RPCEndpoint('evm_setAutomine'), [value])
 
 
 def set_mining_interval(web3: Web3, ms: int) -> None:
@@ -184,7 +183,7 @@ def cleanup_nodes_schains(skale: SkaleManager) -> None:
 
 def create_clean_schain(skale: SkaleManager) -> str:
     cleanup_nodes_schains(skale)
-    create_nodes([skale])
+    create_nodes((skale,))
     return create_schain(skale, random_name=True)
 
 
@@ -214,7 +213,7 @@ def add_delegation_period(skale: SkaleManager) -> None:
         )
 
 
-def setup_validator(skale: SkaleManager) -> int:
+def setup_validator(skale: SkaleManager) -> ValidatorId:
     """Create and activate a validator"""
     set_test_msr(skale)
     print('Address', skale.wallet.address)
@@ -308,7 +307,7 @@ def create_validator(skale: SkaleManager) -> None:
     )
 
 
-def create_nodes(skales: List[SkaleManager], names: List[str] | None = None) -> list[NodeId]:
+def create_nodes(skales: tuple[SkaleManager], names: List[str] | None = None) -> list[NodeId]:
     # create couple of nodes
     print('Creating two nodes')
     node_names = names or (DEFAULT_NODE_NAME, SECOND_NODE_NAME)
@@ -332,7 +331,7 @@ def create_schain(
     schain_type: int = 1,
     random_name: bool = False,
     schain_options: SchainOptions | None = None,
-) -> str:
+) -> SchainName:
     print('Creating schain')
     # create 1 s-chain
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)

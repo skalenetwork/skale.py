@@ -35,10 +35,6 @@ jobs:
           . ./scripts/export_env.sh
           printenv >> $GITHUB_ENV
 
-      - name: Launch hardhat node
-        run: |
-          bash ./helper-scripts/helper.sh run_hh_node
-
       - name: Deploy manager
         run: |
           bash ./helper-scripts/deploy_manager.sh

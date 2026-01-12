@@ -188,7 +188,7 @@ def test_change_ip(skale: SkaleManager, nodes):
 def test_last_change_ip_time(skale: SkaleManager, nodes):
     node_id = skale.nodes.node_name_to_index(DEFAULT_NODE_NAME)
     new_ip = Helper.ip_to_bytes(generate_random_ip())
-    tx = skale.nodes.change_ip(node_id, new_ip, new_ip, wait_for=True, confirmation_blocks=5)
+    tx = skale.nodes.change_ip(node_id, new_ip, new_ip, wait_for=True, timeout=5)
     change_timestamp = skale.nodes.last_change_ip_time(node_id)
     block = skale.web3.eth.get_block(tx.receipt.blockNumber)
     assert change_timestamp == block.timestamp
