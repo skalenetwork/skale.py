@@ -98,3 +98,16 @@ def bytes_to_int(bytes_value: bytes) -> int:
 
 def bytes_to_bool(bytes_value: bytes) -> bool:
     return bool(int.from_bytes(bytes_value, 'big'))
+
+
+def hex_str_to_bytes(hex_str: HexStr, length: int = 32) -> bytes:
+    clean_hex = hex_str
+    if clean_hex.startswith('0x'):
+        clean_hex = clean_hex[2:]
+    val = int(clean_hex, 16)
+    return val.to_bytes(length, byteorder='big')
+
+
+def bytes_to_hex_str(bytes_value: bytes) -> HexStr:
+    return HexStr('0x' + bytes_value.hex())
+
