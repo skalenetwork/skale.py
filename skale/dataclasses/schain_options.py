@@ -26,6 +26,9 @@ if TYPE_CHECKING:
 from enum import Enum
 
 
+from eth_typing import HexStr
+
+
 class AllocationType(int, Enum):
     DEFAULT = 0
     NO_FILESTORAGE = 1
@@ -39,6 +42,8 @@ class SchainOptions:
     multitransaction_mode: bool
     threshold_encryption: bool
     allocation_type: AllocationType
+    external_gas_difficulty: HexStr
+    default_gas_price: HexStr
 
     def to_tuples(self) -> list[SchainOption]:
         return [
