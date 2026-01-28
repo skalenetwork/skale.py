@@ -50,6 +50,8 @@ class SchainOptions:
             ('multitr', bool_to_bytes(self.multitransaction_mode)),
             ('encrypt', bool_to_bytes(self.threshold_encryption)),
             ('alloc', int_to_bytes(self.allocation_type.value)),
+            ('pow', hex_str_to_bytes(self.external_gas_difficulty, 32)),
+            ('gasprice', hex_str_to_bytes(self.default_gas_price, 32)),
         ]
 
 
@@ -62,17 +64,26 @@ def parse_schain_options(raw_options: list[SchainOption]) -> SchainOptions:
     multitransaction_mode = False
     threshold_encryption = False
     allocation_type = AllocationType.DEFAULT
+    external_gas_difficulty = HexStr('0x0')
+    default_gas_price = HexStr('0x0')
+
     if len(raw_options) > 0:
         multitransaction_mode = bytes_to_bool(raw_options[0][1])
     if len(raw_options) > 1:
         threshold_encryption = bytes_to_bool(raw_options[1][1])
     if len(raw_options) > 2:
         allocation_type = AllocationType(bytes_to_int(raw_options[2][1]))
+    if len(raw_options) > 3:
+        external_gas_difficulty = bytes_to_hex_str(raw_options[3][1])
+    if len(raw_options) > 4:
+        default_gas_price = bytes_to_hex_str(raw_options[4][1])
 
     return SchainOptions(
         multitransaction_mode=multitransaction_mode,
         threshold_encryption=threshold_encryption,
         allocation_type=allocation_type,
+        external_gas_difficulty=external_gas_difficulty,
+        default_gas_price=default_gas_price,
     )
 
 
@@ -81,6 +92,8 @@ def get_default_schain_options() -> SchainOptions:
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x0'),
+        default_gas_price=HexStr('0x186a0'),
     )
 
 
