@@ -3,9 +3,10 @@
 import pytest
 from hexbytes import HexBytes
 from web3 import Web3
+from eth_typing import HexStr
 
 from skale.contracts.manager.schains import SchainStructure
-from skale.dataclasses.schain_options import AllocationType, SchainOptions
+from skale.dataclasses.schain_options import AllocationType, SchainOptions, hex_str_to_bytes
 from skale.skale_manager import SkaleManager
 from skale.utils.contracts_provision.fake_multisig_contract import (
     FAKE_MULTISIG_DATA_PATH,
@@ -44,6 +45,9 @@ def test_get_by_name(skale, schain):
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=None,
+        max_gas_price=None,
     )
 
 
@@ -68,6 +72,9 @@ def test_schain_get_object(skale, schain):
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=None,
+        max_gas_price=None,
     )
 
 
@@ -112,6 +119,9 @@ def test_all_schain_hashes(skale, schain):
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=None,
+        max_gas_price=None,
     )
 
 
@@ -167,6 +177,9 @@ def test_add_schain_by_foundation_with_options(mts, threshold, alloc, skale, nod
                 multitransaction_mode=mts,
                 threshold_encryption=threshold,
                 allocation_type=alloc,
+                external_gas_difficulty=HexStr('0x01'),
+                min_gas_price=None,
+                max_gas_price=None,
             ),
             wait_for=True,
         )
@@ -269,6 +282,9 @@ def test_options(skale, nodes):
         multitransaction_mode=True,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=HexStr('0x0100'),
+        max_gas_price=HexStr('0x0200'),
     )
     name = None
     try:
@@ -283,6 +299,9 @@ def test_options(skale, nodes):
             ('multitr', b'\x01'),
             ('encrypt', b'\x00'),
             ('alloc', b'\x00'),
+            ('powdifficulty', b'\x01'),
+            ('mingasprice', b'\x01\x00'),
+            ('maxgasprice', b'\x02\x00'),
         ]
 
     finally:
