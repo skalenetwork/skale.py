@@ -27,6 +27,7 @@ from enum import Enum
 
 
 from eth_typing import HexStr
+from web3 import Web3
 
 
 class AllocationType(int, Enum):
@@ -43,16 +44,21 @@ class SchainOptions:
     threshold_encryption: bool
     allocation_type: AllocationType
     external_gas_difficulty: HexStr
-    default_gas_price: HexStr
+    min_gas_price: HexStr | None
+    max_gas_price: HexStr | None
 
     def to_tuples(self) -> list[SchainOption]:
-        return [
+        options = [
             ('multitr', bool_to_bytes(self.multitransaction_mode)),
             ('encrypt', bool_to_bytes(self.threshold_encryption)),
             ('alloc', int_to_bytes(self.allocation_type.value)),
-            ('pow', hex_str_to_bytes(self.external_gas_difficulty, 32)),
-            ('gasprice', hex_str_to_bytes(self.default_gas_price, 32)),
+            ('powdifficulty', hex_str_to_bytes(self.external_gas_difficulty)),
         ]
+        if self.min_gas_price is not None:
+            options.append(('mingasprice', hex_str_to_bytes(self.min_gas_price)))
+        if self.max_gas_price is not None:
+            options.append(('maxgasprice', hex_str_to_bytes(self.max_gas_price)))
+        return options
 
 
 def parse_schain_options(raw_options: list[SchainOption]) -> SchainOptions:
@@ -60,30 +66,40 @@ def parse_schain_options(raw_options: list[SchainOption]) -> SchainOptions:
     Parses raw sChain options from smart contracts (list of tuples).
     Returns default values if nothing is set on contracts.
     """
+    options_map = {k: v for k, v in raw_options}
+    default_options = get_default_schain_options()
 
-    multitransaction_mode = False
-    threshold_encryption = False
-    allocation_type = AllocationType.DEFAULT
-    external_gas_difficulty = HexStr('0x0')
-    default_gas_price = HexStr('0x0')
+    multitransaction_mode = default_options.multitransaction_mode
+    if 'multitr' in options_map:
+        multitransaction_mode = bytes_to_bool(options_map['multitr'])
 
-    if len(raw_options) > 0:
-        multitransaction_mode = bytes_to_bool(raw_options[0][1])
-    if len(raw_options) > 1:
-        threshold_encryption = bytes_to_bool(raw_options[1][1])
-    if len(raw_options) > 2:
-        allocation_type = AllocationType(bytes_to_int(raw_options[2][1]))
-    if len(raw_options) > 3:
-        external_gas_difficulty = bytes_to_hex_str(raw_options[3][1])
-    if len(raw_options) > 4:
-        default_gas_price = bytes_to_hex_str(raw_options[4][1])
+    threshold_encryption = default_options.threshold_encryption
+    if 'encrypt' in options_map:
+        threshold_encryption = bytes_to_bool(options_map['encrypt'])
+
+    allocation_type = default_options.allocation_type
+    if 'alloc' in options_map:
+        allocation_type = AllocationType(bytes_to_int(options_map['alloc']))
+
+    external_gas_difficulty = default_options.external_gas_difficulty
+    if 'powdifficulty' in options_map:
+        external_gas_difficulty = bytes_to_hex_str(options_map['powdifficulty'])
+
+    min_gas_price = default_options.min_gas_price
+    if 'mingasprice' in options_map:
+        min_gas_price = bytes_to_hex_str(options_map['mingasprice'])
+
+    max_gas_price = default_options.max_gas_price
+    if 'maxgasprice' in options_map:
+        max_gas_price = bytes_to_hex_str(options_map['maxgasprice'])
 
     return SchainOptions(
         multitransaction_mode=multitransaction_mode,
         threshold_encryption=threshold_encryption,
         allocation_type=allocation_type,
         external_gas_difficulty=external_gas_difficulty,
-        default_gas_price=default_gas_price,
+        min_gas_price=min_gas_price,
+        max_gas_price=max_gas_price,
     )
 
 
@@ -92,8 +108,9 @@ def get_default_schain_options() -> SchainOptions:
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
-        external_gas_difficulty=HexStr('0x0'),
-        default_gas_price=HexStr('0x186a0'),
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=None,
+        max_gas_price=None,
     )
 
 
@@ -113,14 +130,9 @@ def bytes_to_bool(bytes_value: bytes) -> bool:
     return bool(int.from_bytes(bytes_value, 'big'))
 
 
-def hex_str_to_bytes(hex_str: HexStr, length: int = 32) -> bytes:
-    clean_hex = hex_str
-    if clean_hex.startswith('0x'):
-        clean_hex = clean_hex[2:]
-    val = int(clean_hex, 16)
-    return val.to_bytes(length, byteorder='big')
+def hex_str_to_bytes(hex_str: HexStr) -> bytes:
+    return Web3.to_bytes(hexstr=hex_str)
 
 
 def bytes_to_hex_str(bytes_value: bytes) -> HexStr:
-    return HexStr('0x' + bytes_value.hex())
-
+    return HexStr(Web3.to_hex(bytes_value))

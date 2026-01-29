@@ -75,7 +75,8 @@ class SchainStructure(Schain):
                 'threshold_encryption': self.options.threshold_encryption,
                 'allocation_type': self.options.allocation_type.value,
                 'external_gas_difficulty': self.options.external_gas_difficulty,
-                'default_gas_price': self.options.default_gas_price,
+                'min_gas_price': self.options.min_gas_price,
+                'max_gas_price': self.options.max_gas_price,
             },
             'active': self.active,
         }
