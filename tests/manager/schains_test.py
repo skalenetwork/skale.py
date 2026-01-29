@@ -1,12 +1,12 @@
 """SKALE chain test"""
 
 import pytest
+from eth_typing import HexStr
 from hexbytes import HexBytes
 from web3 import Web3
-from eth_typing import HexStr
 
 from skale.contracts.manager.schains import SchainStructure
-from skale.dataclasses.schain_options import AllocationType, SchainOptions, hex_str_to_bytes
+from skale.dataclasses.schain_options import AllocationType, SchainOptions
 from skale.skale_manager import SkaleManager
 from skale.utils.contracts_provision.fake_multisig_contract import (
     FAKE_MULTISIG_DATA_PATH,

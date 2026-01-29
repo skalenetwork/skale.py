@@ -25,7 +25,6 @@ if TYPE_CHECKING:
     from skale.types.schain import SchainOption
 from enum import Enum
 
-
 from eth_typing import HexStr
 from web3 import Web3
 
