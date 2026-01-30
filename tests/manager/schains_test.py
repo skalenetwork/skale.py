@@ -157,13 +157,22 @@ def test_add_schain_by_foundation(skale, nodes):
 
 
 @pytest.mark.parametrize(
-    'mts,threshold,alloc',
+    'mts,threshold,alloc,pow_difficulty,min_gas,max_gas',
     [
-        (True, False, AllocationType.MAX_CONSENSUS_DB),
-        (False, True, AllocationType.MAX_FILESTORAGE),
+        (True, False, AllocationType.MAX_CONSENSUS_DB, HexStr('0x01'), None, None),
+        (
+            False,
+            True,
+            AllocationType.MAX_FILESTORAGE,
+            HexStr('0x02'),
+            HexStr('0x0100'),
+            HexStr('0x0200'),
+        ),
     ],
 )
-def test_add_schain_by_foundation_with_options(mts, threshold, alloc, skale, nodes):
+def test_add_schain_by_foundation_with_options(
+    mts, threshold, alloc, pow_difficulty, min_gas, max_gas, skale, nodes
+):
     skale.schains.grant_role(skale.schains.schain_creator_role(), skale.wallet.address)
     _, lifetime_seconds, name = generate_random_schain_data(skale)
     type_of_nodes = 1  # test2 schain
@@ -177,9 +186,9 @@ def test_add_schain_by_foundation_with_options(mts, threshold, alloc, skale, nod
                 multitransaction_mode=mts,
                 threshold_encryption=threshold,
                 allocation_type=alloc,
-                external_gas_difficulty=HexStr('0x01'),
-                min_gas_price=None,
-                max_gas_price=None,
+                external_gas_difficulty=pow_difficulty,
+                min_gas_price=min_gas,
+                max_gas_price=max_gas,
             ),
             wait_for=True,
         )
@@ -188,6 +197,9 @@ def test_add_schain_by_foundation_with_options(mts, threshold, alloc, skale, nod
         assert schain.options.multitransaction_mode is mts
         assert schain.options.threshold_encryption is threshold
         assert schain.options.allocation_type is alloc
+        assert schain.options.external_gas_difficulty == pow_difficulty
+        assert schain.options.min_gas_price == min_gas
+        assert schain.options.max_gas_price == max_gas
     finally:
         skale.manager.delete_schain(name)
 
