@@ -147,6 +147,9 @@ def test_add_schain_by_foundation(skale, nodes):
         assert schain.options.multitransaction_mode is False
         assert schain.options.threshold_encryption is False
         assert schain.options.allocation_type is AllocationType.DEFAULT
+        assert schain.options.external_gas_difficulty == HexStr('0x01')
+        assert schain.options.min_gas_price is None
+        assert schain.options.max_gas_price is None
     finally:
         skale.manager.delete_schain(name, wait_for=True)
 
@@ -168,6 +171,7 @@ def test_add_schain_by_foundation(skale, nodes):
             HexStr('0x0100'),
             HexStr('0x0200'),
         ),
+        (False, False, AllocationType.DEFAULT, HexStr('0x01'), HexStr('0x1000'), None),
     ],
 )
 def test_add_schain_by_foundation_with_options(
