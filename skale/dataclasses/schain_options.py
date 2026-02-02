@@ -127,4 +127,4 @@ def hex_str_to_bytes(hex_str: HexStr) -> bytes:
 
 
 def bytes_to_hex_str(bytes_value: bytes) -> HexStr:
-    return HexStr(Web3.to_hex(bytes_value))
+    return Web3.to_hex(bytes_value)
