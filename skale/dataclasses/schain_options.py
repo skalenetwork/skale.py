@@ -68,37 +68,30 @@ def parse_schain_options(raw_options: list[SchainOption]) -> SchainOptions:
     options_map = {k: v for k, v in raw_options}
     default_options = get_default_schain_options()
 
-    multitransaction_mode = default_options.multitransaction_mode
-    if 'multitr' in options_map:
-        multitransaction_mode = bytes_to_bool(options_map['multitr'])
-
-    threshold_encryption = default_options.threshold_encryption
-    if 'encrypt' in options_map:
-        threshold_encryption = bytes_to_bool(options_map['encrypt'])
-
-    allocation_type = default_options.allocation_type
-    if 'alloc' in options_map:
-        allocation_type = AllocationType(bytes_to_int(options_map['alloc']))
-
-    external_gas_difficulty = default_options.external_gas_difficulty
-    if 'powdifficulty' in options_map:
-        external_gas_difficulty = bytes_to_hex_str(options_map['powdifficulty'])
-
-    min_gas_price = default_options.min_gas_price
-    if 'mingasprice' in options_map:
-        min_gas_price = bytes_to_hex_str(options_map['mingasprice'])
-
-    max_gas_price = default_options.max_gas_price
-    if 'maxgasprice' in options_map:
-        max_gas_price = bytes_to_hex_str(options_map['maxgasprice'])
+    def get_val(key, converter, default):
+        return converter(options_map[key]) if key in options_map else default
 
     return SchainOptions(
-        multitransaction_mode=multitransaction_mode,
-        threshold_encryption=threshold_encryption,
-        allocation_type=allocation_type,
-        external_gas_difficulty=external_gas_difficulty,
-        min_gas_price=min_gas_price,
-        max_gas_price=max_gas_price,
+        multitransaction_mode=get_val(
+            'multitr', bytes_to_bool, default_options.multitransaction_mode
+        ),
+        threshold_encryption=get_val(
+            'encrypt', bytes_to_bool, default_options.threshold_encryption
+        ),
+        allocation_type=get_val(
+            'alloc',
+            lambda x: AllocationType(bytes_to_int(x)),
+            default_options.allocation_type,
+        ),
+        external_gas_difficulty=get_val(
+            'powdifficulty', bytes_to_hex_str, default_options.external_gas_difficulty
+        ),
+        min_gas_price=get_val(
+            'mingasprice', bytes_to_hex_str, default_options.min_gas_price
+        ),
+        max_gas_price=get_val(
+            'maxgasprice', bytes_to_hex_str, default_options.max_gas_price
+        ),
     )
 
 
