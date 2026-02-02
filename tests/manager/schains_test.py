@@ -1,6 +1,7 @@
 """SKALE chain test"""
 
 import pytest
+from eth_typing import HexStr
 from hexbytes import HexBytes
 from web3 import Web3
 
@@ -44,6 +45,9 @@ def test_get_by_name(skale, schain):
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=None,
+        max_gas_price=None,
     )
 
 
@@ -68,6 +72,9 @@ def test_schain_get_object(skale, schain):
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=None,
+        max_gas_price=None,
     )
 
 
@@ -112,6 +119,9 @@ def test_all_schain_hashes(skale, schain):
         multitransaction_mode=False,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=None,
+        max_gas_price=None,
     )
 
 
@@ -137,6 +147,9 @@ def test_add_schain_by_foundation(skale, nodes):
         assert schain.options.multitransaction_mode is False
         assert schain.options.threshold_encryption is False
         assert schain.options.allocation_type is AllocationType.DEFAULT
+        assert schain.options.external_gas_difficulty == HexStr('0x01')
+        assert schain.options.min_gas_price is None
+        assert schain.options.max_gas_price is None
     finally:
         skale.manager.delete_schain(name, wait_for=True)
 
@@ -147,13 +160,23 @@ def test_add_schain_by_foundation(skale, nodes):
 
 
 @pytest.mark.parametrize(
-    'mts,threshold,alloc',
+    'mts,threshold,alloc,pow_difficulty,min_gas,max_gas',
     [
-        (True, False, AllocationType.MAX_CONSENSUS_DB),
-        (False, True, AllocationType.MAX_FILESTORAGE),
+        (True, False, AllocationType.MAX_CONSENSUS_DB, HexStr('0x01'), None, None),
+        (
+            False,
+            True,
+            AllocationType.MAX_FILESTORAGE,
+            HexStr('0x02'),
+            HexStr('0x0100'),
+            HexStr('0x0200'),
+        ),
+        (False, False, AllocationType.DEFAULT, HexStr('0x01'), HexStr('0x1000'), None),
     ],
 )
-def test_add_schain_by_foundation_with_options(mts, threshold, alloc, skale, nodes):
+def test_add_schain_by_foundation_with_options(
+    mts, threshold, alloc, pow_difficulty, min_gas, max_gas, skale, nodes
+):
     skale.schains.grant_role(skale.schains.schain_creator_role(), skale.wallet.address)
     _, lifetime_seconds, name = generate_random_schain_data(skale)
     type_of_nodes = 1  # test2 schain
@@ -167,6 +190,9 @@ def test_add_schain_by_foundation_with_options(mts, threshold, alloc, skale, nod
                 multitransaction_mode=mts,
                 threshold_encryption=threshold,
                 allocation_type=alloc,
+                external_gas_difficulty=pow_difficulty,
+                min_gas_price=min_gas,
+                max_gas_price=max_gas,
             ),
             wait_for=True,
         )
@@ -175,6 +201,9 @@ def test_add_schain_by_foundation_with_options(mts, threshold, alloc, skale, nod
         assert schain.options.multitransaction_mode is mts
         assert schain.options.threshold_encryption is threshold
         assert schain.options.allocation_type is alloc
+        assert schain.options.external_gas_difficulty == pow_difficulty
+        assert schain.options.min_gas_price == min_gas
+        assert schain.options.max_gas_price == max_gas
     finally:
         skale.manager.delete_schain(name)
 
@@ -269,6 +298,9 @@ def test_options(skale, nodes):
         multitransaction_mode=True,
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
+        external_gas_difficulty=HexStr('0x01'),
+        min_gas_price=HexStr('0x0100'),
+        max_gas_price=HexStr('0x0200'),
     )
     name = None
     try:
@@ -283,6 +315,9 @@ def test_options(skale, nodes):
             ('multitr', b'\x01'),
             ('encrypt', b'\x00'),
             ('alloc', b'\x00'),
+            ('powdifficulty', b'\x01'),
+            ('mingasprice', b'\x01\x00'),
+            ('maxgasprice', b'\x02\x00'),
         ]
 
     finally:
