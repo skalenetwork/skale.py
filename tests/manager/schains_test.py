@@ -168,10 +168,10 @@ def test_add_schain_by_foundation(skale, nodes):
             True,
             AllocationType.MAX_FILESTORAGE,
             HexStr('0x02'),
-            HexStr('0x0100'),
-            HexStr('0x0200'),
+            256,
+            512,
         ),
-        (False, False, AllocationType.DEFAULT, HexStr('0x01'), HexStr('0x1000'), None),
+        (False, False, AllocationType.DEFAULT, HexStr('0x01'), 4096, None),
     ],
 )
 def test_add_schain_by_foundation_with_options(
@@ -299,8 +299,8 @@ def test_options(skale, nodes):
         threshold_encryption=False,
         allocation_type=AllocationType.DEFAULT,
         external_gas_difficulty=HexStr('0x01'),
-        min_gas_price=HexStr('0x0100'),
-        max_gas_price=HexStr('0x0200'),
+        min_gas_price=256,
+        max_gas_price=512,
     )
     name = None
     try:
