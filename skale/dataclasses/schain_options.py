@@ -43,8 +43,8 @@ class SchainOptions:
     threshold_encryption: bool
     allocation_type: AllocationType
     external_gas_difficulty: HexStr
-    min_gas_price: HexStr | None
-    max_gas_price: HexStr | None
+    min_gas_price: int | None
+    max_gas_price: int | None
 
     def to_tuples(self) -> list[SchainOption]:
         options = [
@@ -54,9 +54,9 @@ class SchainOptions:
             ('powdifficulty', hex_str_to_bytes(self.external_gas_difficulty)),
         ]
         if self.min_gas_price is not None:
-            options.append(('mingasprice', hex_str_to_bytes(self.min_gas_price)))
+            options.append(('mingasprice', int_to_bytes(self.min_gas_price)))
         if self.max_gas_price is not None:
-            options.append(('maxgasprice', hex_str_to_bytes(self.max_gas_price)))
+            options.append(('maxgasprice', int_to_bytes(self.max_gas_price)))
         return options
 
 
@@ -86,12 +86,8 @@ def parse_schain_options(raw_options: list[SchainOption]) -> SchainOptions:
         external_gas_difficulty=get_val(
             'powdifficulty', bytes_to_hex_str, default_options.external_gas_difficulty
         ),
-        min_gas_price=get_val(
-            'mingasprice', bytes_to_hex_str, default_options.min_gas_price
-        ),
-        max_gas_price=get_val(
-            'maxgasprice', bytes_to_hex_str, default_options.max_gas_price
-        ),
+        min_gas_price=get_val('mingasprice', bytes_to_int, default_options.min_gas_price),
+        max_gas_price=get_val('maxgasprice', bytes_to_int, default_options.max_gas_price),
     )
 
 
@@ -111,7 +107,7 @@ def bool_to_bytes(bool_value: bool) -> bytes:
 
 
 def int_to_bytes(int_value: int) -> bytes:
-    return int.to_bytes(int_value, length=1, byteorder='big')
+    return int_value.to_bytes(max(1, (int_value.bit_length() + 7) // 8), byteorder='big')
 
 
 def bytes_to_int(bytes_value: bytes) -> int:
