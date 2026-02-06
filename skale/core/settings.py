@@ -147,11 +147,18 @@ def _resolve_type(node_type: NodeType, node_mode: NodeMode) -> type[BaseAdminSet
 def get_settings() -> BaseAdminSettings: ...
 @overload
 def get_settings[T: BaseAdminSettings](return_type: type[T]) -> T: ...
+@overload
+def get_settings[T1: BaseAdminSettings, T2: BaseAdminSettings](
+    return_type: tuple[type[T1], type[T2]],
+) -> T1 | T2: ...
 
 
 def get_settings(return_type=None):
     if return_type is not None:
-        return return_type()  # type: ignore[call-arg]
+        if isinstance(return_type, tuple):
+            return_type = None
+        else:
+            return return_type()  # type: ignore[call-arg]
     node_settings = get_node_settings()
     settings_cls = _resolve_type(node_settings.node_type, node_settings.node_mode)
     return settings_cls()  # type: ignore[call-arg]
