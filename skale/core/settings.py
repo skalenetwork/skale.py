@@ -174,3 +174,15 @@ def write_node_settings_file(
     data = cfg.model_dump(mode='json', exclude_none=True)
     _atomic_write_text(path, tomli_w.dumps(data))
     return cfg
+
+
+def write_admin_settings_file[T: BaseAdminSettings](
+    *,
+    path: Path,
+    settings_type: type[T],
+    data: dict,
+) -> T:
+    cfg = settings_type.model_validate(data)
+    dumped = cfg.model_dump(mode='json', exclude_none=True)
+    _atomic_write_text(path, tomli_w.dumps(dumped))
+    return cfg
