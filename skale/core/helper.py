@@ -33,7 +33,5 @@ def _atomic_write_text(path: Path, text: str, mode: int = 0o600) -> None:
         os.chmod(tmp_name, mode)
         os.replace(tmp_name, path)
     finally:
-        try:
-            os.unlink(tmp_name)
-        except FileNotFoundError:
-            pass
+        if Path(tmp_name).is_file():
+            Path(tmp_name).unlink()
