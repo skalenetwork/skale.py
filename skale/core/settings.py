@@ -137,7 +137,7 @@ class FairSettings(FairBaseSettings, ActiveSettings):
 
 
 @lru_cache
-def get_node_settings() -> InternalSettings:
+def get_internal_settings() -> InternalSettings:
     return InternalSettings()  # type: ignore[call-arg]
 
 
@@ -169,7 +169,7 @@ def get_settings(return_type=None):
             return_type = None
         else:
             return return_type()  # type: ignore[call-arg]
-    node_settings = get_node_settings()
+    node_settings = get_internal_settings()
     settings_cls = _resolve_type(node_settings.node_type, node_settings.node_mode)
     return settings_cls()  # type: ignore[call-arg]
 
