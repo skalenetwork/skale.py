@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import overload
 
 import tomli_w
-from pydantic import AnyUrl, BaseModel, field_validator
+from pydantic import AnyUrl, field_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -55,25 +55,26 @@ class TomlBaseSettings(BaseSettings):
         )
 
 
-class NodeSettings(TomlBaseSettings):
+class InternalSettings(TomlBaseSettings):
     node_type: NodeType
     node_mode: NodeMode
+
+    skale_dir_host: Path
+
+    @field_validator('skale_dir_host', mode='before')
+    @classmethod
+    def validate_skale_dir_host(cls, value: Path | str) -> Path:
+        return Path(value).expanduser().resolve()
+
+    @property
+    def node_data_path_host(self) -> Path:
+        return self.skale_dir_host / 'node_data'
 
     model_config = SettingsConfigDict(extra='forbid')
 
 
-class SkaleContracts(BaseModel):
-    manager: str
-    ima: str
-
-
-class FairContracts(BaseModel):
-    fair: str
-
-
-class BaseAdminSettings(TomlBaseSettings):
+class BaseNodeSettings(TomlBaseSettings):
     env_type: EnvType
-    skale_dir_host: Path
     endpoint: AnyUrl
 
     backup_run: bool = False
@@ -90,36 +91,45 @@ class BaseAdminSettings(TomlBaseSettings):
 
     disable_colors: bool = False
 
-    @field_validator('skale_dir_host', mode='before')
-    @classmethod
-    def validate_skale_dir_host(cls, value: Path | str) -> Path:
-        return Path(value).expanduser().resolve()
+    # node-cli level settings
 
-    @property
-    def node_data_path_host(self) -> Path:
-        return self.skale_dir_host / 'node_data'
+    node_version: str
+    block_device: str
+
+    filebeat_host: str = ''
+    container_configs_dir: str = ''
+    skip_docker_config: bool = False
+    skip_docker_cleanup: bool = False
 
     model_config = SettingsConfigDict(env_nested_delimiter=NESTED_DELIMITER)
 
 
-class SkaleBaseSettings(BaseAdminSettings):
-    contracts: SkaleContracts
+class _SkaleBaseSettings(BaseNodeSettings):
+    manager_contracts: str
+    ima_contracts: str
 
 
-class ActiveSettings(BaseAdminSettings):
+class ActiveSettings(BaseNodeSettings):
     sgx_url: AnyUrl
 
 
-class SkaleSettings(SkaleBaseSettings, ActiveSettings):
+class SkaleSettings(_SkaleBaseSettings, ActiveSettings):
     sgx_url: AnyUrl
+    docker_lvmpy_version: str
+
+    disable_dry_run: bool = False
+    default_gas_limit: int | None = None
+    default_gas_price_wei: int | None = None
 
 
-class SkalePassiveSettings(SkaleBaseSettings):
+class SkalePassiveSettings(_SkaleBaseSettings):
     schain_name: SchainName
+    enforce_btrfs: bool = False
 
 
-class FairBaseSettings(BaseAdminSettings):
-    contracts: FairContracts
+class FairBaseSettings(BaseNodeSettings):
+    fair_contracts: str
+    enforce_btrfs: bool = False
 
 
 class FairSettings(FairBaseSettings, ActiveSettings):
@@ -127,11 +137,11 @@ class FairSettings(FairBaseSettings, ActiveSettings):
 
 
 @lru_cache
-def get_node_settings() -> NodeSettings:
-    return NodeSettings()  # type: ignore[call-arg]
+def get_internal_settings() -> InternalSettings:
+    return InternalSettings()  # type: ignore[call-arg]
 
 
-SETTINGS_MAP: dict[tuple[NodeType, NodeMode], type[BaseAdminSettings]] = {
+SETTINGS_MAP: dict[tuple[NodeType, NodeMode], type[BaseNodeSettings]] = {
     ('skale', 'passive'): SkalePassiveSettings,
     ('skale', 'active'): SkaleSettings,
     ('fair', 'passive'): FairBaseSettings,
@@ -139,16 +149,16 @@ SETTINGS_MAP: dict[tuple[NodeType, NodeMode], type[BaseAdminSettings]] = {
 }
 
 
-def _resolve_type(node_type: NodeType, node_mode: NodeMode) -> type[BaseAdminSettings]:
-    return SETTINGS_MAP.get((node_type, node_mode), BaseAdminSettings)
+def _resolve_type(node_type: NodeType, node_mode: NodeMode) -> type[BaseNodeSettings]:
+    return SETTINGS_MAP.get((node_type, node_mode), BaseNodeSettings)
 
 
 @overload
-def get_settings() -> BaseAdminSettings: ...
+def get_settings() -> BaseNodeSettings: ...
 @overload
-def get_settings[T: BaseAdminSettings](return_type: type[T]) -> T: ...
+def get_settings[T: BaseNodeSettings](return_type: type[T]) -> T: ...
 @overload
-def get_settings[T1: BaseAdminSettings, T2: BaseAdminSettings](
+def get_settings[T1: BaseNodeSettings, T2: BaseNodeSettings](
     return_type: tuple[type[T1], type[T2]],
 ) -> T1 | T2: ...
 
@@ -159,24 +169,24 @@ def get_settings(return_type=None):
             return_type = None
         else:
             return return_type()  # type: ignore[call-arg]
-    node_settings = get_node_settings()
+    node_settings = get_internal_settings()
     settings_cls = _resolve_type(node_settings.node_type, node_settings.node_mode)
     return settings_cls()  # type: ignore[call-arg]
 
 
-def write_node_settings_file(
+def write_internal_settings_file(
     *,
     path: Path,
     node_type: NodeType,
     node_mode: NodeMode,
-) -> NodeSettings:
-    cfg = NodeSettings.model_validate({'node_type': node_type, 'node_mode': node_mode})
+) -> InternalSettings:
+    cfg = InternalSettings.model_validate({'node_type': node_type, 'node_mode': node_mode})
     data = cfg.model_dump(mode='json', exclude_none=True)
     _atomic_write_text(path, tomli_w.dumps(data))
     return cfg
 
 
-def write_admin_settings_file[T: BaseAdminSettings](
+def write_node_settings_file[T: BaseNodeSettings](
     *,
     path: Path,
     settings_type: type[T],
