@@ -46,7 +46,8 @@ def test_write_internal_settings(
     node_type, node_mode = node_type_mode
     monkeypatch.setenv('SKALE_DIR_HOST', str(tmp_path))
     path = tmp_path / 'node.toml'
-    result = write_internal_settings_file(path=path, node_type=node_type, node_mode=node_mode)
+    data = {'node_type': node_type, 'node_mode': node_mode, 'skale_dir_host': str(tmp_path)}
+    result = write_internal_settings_file(path=path, data=data)
     assert result.node_type == node_type
     assert result.node_mode == node_mode
     with open(path, 'rb') as f:
@@ -61,7 +62,8 @@ def test_write_internal_settings_invalid_type(
     monkeypatch.setenv('SKALE_DIR_HOST', str(tmp_path))
     with pytest.raises(ValidationError):
         write_internal_settings_file(
-            path=tmp_path / 'node.toml', node_type='unknown', node_mode='active'
+            path=tmp_path / 'node.toml',
+            data={'node_type': 'unknown', 'node_mode': 'active', 'skale_dir_host': str(tmp_path)},
         )
 
 
