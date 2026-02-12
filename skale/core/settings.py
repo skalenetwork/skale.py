@@ -61,6 +61,9 @@ class InternalSettings(TomlBaseSettings):
 
     skale_dir_host: Path
 
+    backup_run: bool = False
+    pull_config_for_schain: str | None = None
+
     @field_validator('skale_dir_host', mode='before')
     @classmethod
     def validate_skale_dir_host(cls, value: Path | str) -> Path:
@@ -77,8 +80,6 @@ class BaseNodeSettings(TomlBaseSettings):
     env_type: EnvType
     endpoint: AnyUrl
 
-    backup_run: bool = False
-    pull_config_for_schain: str | None = None
     bite: bool = False
 
     tg_api_key: str | None = None
@@ -100,6 +101,7 @@ class BaseNodeSettings(TomlBaseSettings):
     container_configs_dir: str = ''
     skip_docker_config: bool = False
     skip_docker_cleanup: bool = False
+    monitoring_containers: bool = False
 
     model_config = SettingsConfigDict(env_nested_delimiter=NESTED_DELIMITER)
 
@@ -174,23 +176,15 @@ def get_settings(return_type=None):
     return settings_cls()  # type: ignore[call-arg]
 
 
-def write_internal_settings_file(
-    *,
-    path: Path,
-    node_type: NodeType,
-    node_mode: NodeMode,
-) -> InternalSettings:
-    cfg = InternalSettings.model_validate({'node_type': node_type, 'node_mode': node_mode})
-    data = cfg.model_dump(mode='json', exclude_none=True)
-    _atomic_write_text(path, tomli_w.dumps(data))
+def write_internal_settings_file(*, path: Path, data: dict) -> InternalSettings:
+    cfg = InternalSettings.model_validate(data)
+    dumped = cfg.model_dump(mode='json', exclude_none=True)
+    _atomic_write_text(path, tomli_w.dumps(dumped))
     return cfg
 
 
 def write_node_settings_file[T: BaseNodeSettings](
-    *,
-    path: Path,
-    settings_type: type[T],
-    data: dict,
+    *, path: Path, settings_type: type[T], data: dict
 ) -> T:
     cfg = settings_type.model_validate(data)
     dumped = cfg.model_dump(mode='json', exclude_none=True)
