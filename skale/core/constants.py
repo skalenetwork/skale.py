@@ -17,4 +17,6 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-NESTED_DELIMITER = '__'
+from skale_core.constants import NESTED_DELIMITER
+
+__all__ = ['NESTED_DELIMITER']

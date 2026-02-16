@@ -8,8 +8,31 @@ on:
       - beta
 
 jobs:
+  publish-core:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged
+    strategy:
+      matrix:
+        python-version: [3.13]
+    env:
+      PIP_USERNAME: ${{ secrets.PIP_USERNAME }}
+      PIP_PASSWORD: ${{ secrets.PIP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+      - name: Build skale.py-core
+        run: bash ./scripts/build_core.sh
+      - name: Publish skale.py-core
+        run: bash ./scripts/publish_core.sh
+
   build:
     runs-on: ubuntu-latest
+    needs: publish-core
     if: github.event.pull_request.merged
     strategy:
       matrix:
