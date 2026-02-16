@@ -12,6 +12,5 @@ else
     uv publish --username "$PIP_USERNAME" --password "$PIP_PASSWORD" packages/skale-core/dist/*
 fi
 
-VERSION=$(grep '^version = ' packages/skale-core/pyproject.toml | cut -d'"' -f2)
 echo "==================================================================="
 echo "Uploaded to pypi, check at https://pypi.org/project/skale.py-core/$VERSION/"

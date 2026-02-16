@@ -25,6 +25,11 @@ jobs:
           enable-cache: true
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
+      - name: Calculate version
+        run: |
+          export BRANCH=${GITHUB_REF##*/}
+          export VERSION=$(bash ./scripts/calculate_version.sh)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Build skale.py-core
         run: bash ./scripts/build_core.sh
       - name: Publish skale.py-core
