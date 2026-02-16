@@ -21,11 +21,11 @@ from dataclasses import dataclass
 from typing import Any, NewType
 
 from eth_typing import ChecksumAddress
+from skale_core.types import SchainName
 from web3.types import Wei
 
 from skale.dataclasses.schain_options import SchainOptions
 
-SchainName = NewType('SchainName', str)
 SchainHash = NewType('SchainHash', bytes)
 SchainOption = tuple[str, bytes]
 

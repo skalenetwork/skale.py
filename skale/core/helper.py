@@ -17,21 +17,6 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-import tempfile
-from pathlib import Path
+from skale_core.helper import _atomic_write_text
 
-
-def _atomic_write_text(path: Path, text: str, mode: int = 0o600) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp_name = tempfile.mkstemp(prefix=path.name + '.', dir=str(path.parent))
-    try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as f:
-            f.write(text)
-            f.flush()
-            os.fsync(f.fileno())
-        os.chmod(tmp_name, mode)
-        os.replace(tmp_name, path)
-    finally:
-        if Path(tmp_name).is_file():
-            Path(tmp_name).unlink()
+__all__ = ['_atomic_write_text']

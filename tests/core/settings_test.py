@@ -3,8 +3,7 @@ from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
-
-from skale.core.settings import (
+from skale_core.settings import (
     BaseNodeSettings,
     FairBaseSettings,
     FairSettings,
@@ -14,7 +13,7 @@ from skale.core.settings import (
     write_internal_settings_file,
     write_node_settings_file,
 )
-from skale.core.types import NodeMode, NodeType
+from skale_core.types import NodeMode, NodeType
 
 BASE_NODE_DATA = {
     'env_type': 'mainnet',

@@ -17,6 +17,11 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from skale_core.types import EnvType, ImageType, NodeMode, NodeType, SchainName
+from typing import Literal, NewType
 
-__all__ = ['EnvType', 'ImageType', 'NodeMode', 'NodeType', 'SchainName']
+type EnvType = Literal['mainnet', 'devnet', 'testnet', 'qanet']
+type NodeType = Literal['skale', 'fair']
+type NodeMode = Literal['active', 'passive']
+type ImageType = Literal['ima', 'skaled']
+
+SchainName = NewType('SchainName', str)

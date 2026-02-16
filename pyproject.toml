@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skale.py"
-version = "7.12"
+version = "7.13"
 description = "SKALE client tools"
 readme = "README.md"
 requires-python = ">=3.11,<4"
@@ -22,6 +22,7 @@ dependencies = [
     "redis>=7.1.0",
     "sgx.py==0.11dev0",
     "skale-contracts==2.0.0a10",
+    "skale.py-core",
     "typing-extensions==4.15.0",
     "web3==7.14.0",
     "multisigwallet-predeployed==1.1.0b0",
@@ -55,6 +56,12 @@ Homepage = "https://github.com/skalenetwork/skale.py"
 
 [tool.uv]
 prerelease = "allow"
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+"skale.py-core" = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["skale"]
