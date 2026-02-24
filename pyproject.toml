@@ -19,21 +19,19 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "redis>=7.1.0",
-    "sgx.py==0.11dev0",
+    "redis>=7.2.0",
+    "sgx.py==0.11",
     "skale-contracts==2.0.0a10",
     "skale.py-core",
     "typing-extensions==4.15.0",
-    "web3==7.14.0",
+    "web3==7.14.1",
     "multisigwallet-predeployed==1.1.0b0",
-    "tomli-w>=1.2.0",
-    "pydantic-settings>=2.12.0",
 ]
 
 [project.optional-dependencies]
 linter = [
-    "ruff==0.14.2",
-    "mypy==1.18.2",
+    "ruff==0.15.2",
+    "mypy==1.19.1",
     "isort>=4.2.15,<5.4.3",
     "importlib-metadata<9.0",
 ]
@@ -43,7 +41,7 @@ dev = [
     "codecov",
     "freezegun==1.5.5",
     "mock==5.2.0",
-    "pytest==9.0.1",
+    "pytest==9.0.2",
     "pytest-cov==7.0.0",
     "pytest-timeout==2.4.0",
     "types-requests",
