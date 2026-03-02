@@ -89,7 +89,7 @@ class BaseNodeSettings(TomlBaseSettings):
 
     influx_url: AnyUrl | None = None
 
-    disable_colors: bool = False
+    disable_colors: bool = True
 
     # node-cli level settings
 
