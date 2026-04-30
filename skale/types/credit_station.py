@@ -30,4 +30,5 @@ class PaymentReceivedEvent(TypedDict):
     from_address: ChecksumAddress
     to_address: ChecksumAddress
     token_address: ChecksumAddress
+    value: int
     block_number: int
