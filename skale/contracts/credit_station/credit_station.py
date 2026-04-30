@@ -61,9 +61,13 @@ def get_events_in_chunks(
 class CreditStation(SkaleContract):
     @transaction_method
     def buy(
-        self, schain_name: SchainName, purchaser: ChecksumAddress, token: ChecksumAddress
+        self,
+        schain_name: SchainName,
+        purchaser: ChecksumAddress,
+        token: ChecksumAddress,
+        value: Wei,
     ) -> ContractFunction:
-        return self.contract.functions.buy(schain_name, purchaser, token)
+        return self.contract.functions.buy(schain_name, purchaser, token, value)
 
     @transaction_method
     def set_price(self, token: ChecksumAddress, price: Wei) -> ContractFunction:
@@ -105,6 +109,7 @@ class CreditStation(SkaleContract):
                 from_address=event['args']['from'],
                 to_address=event['args']['to'],
                 token_address=event['args']['tokenAddress'],
+                value=event['args']['value'],
                 block_number=event['blockNumber'],
             )
             for event in events
