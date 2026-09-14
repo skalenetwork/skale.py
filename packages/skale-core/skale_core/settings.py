@@ -178,7 +178,7 @@ def get_settings(return_type=None):
 def write_internal_settings_file(*, path: Path, data: dict) -> InternalSettings:
     cfg = InternalSettings.model_validate(data)
     dumped = cfg.model_dump(mode='json', exclude_none=True)
-    _atomic_write_text(path, tomli_w.dumps(dumped))
+    _atomic_write_text(path, tomli_w.dumps(dumped), mode=0o644)
     return cfg
 
 

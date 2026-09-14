@@ -19,24 +19,24 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "redis>=7.2.0",
+    "redis>=8.0.1",
     "sgx.py==0.11",
     "skale-contracts==2.0.0a12",
     "skale.py-core",
-    "typing-extensions==4.15.0",
-    "web3==7.15.0",
+    "typing-extensions==4.16.0",
+    "web3==7.16.0",
     "multisigwallet-predeployed==1.1.0b0",
 ]
 
 [project.optional-dependencies]
-linter = ["ruff==0.15.12", "mypy==1.20.2"]
-hw-wallet = ["ledgerblue==0.1.56"]
+linter = ["ruff==0.15.20", "mypy==2.1.0"]
+hw-wallet = ["ledgerblue==0.1.58"]
 dev = [
     "skale.py[linter,hw-wallet]",
     "codecov",
     "freezegun==1.5.5",
     "mock==5.2.0",
-    "pytest==9.0.3",
+    "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "pytest-timeout==2.4.0",
     "types-requests",
