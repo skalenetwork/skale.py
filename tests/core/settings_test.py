@@ -53,6 +53,7 @@ def test_write_internal_settings(
         data = tomllib.load(f)
     assert data['node_type'] == node_type
     assert data['node_mode'] == node_mode
+    assert path.stat().st_mode & 0o777 == 0o644
 
 
 def test_write_internal_settings_invalid_type(
@@ -112,6 +113,7 @@ def test_write_node_settings(
     with open(path, 'rb') as f:
         written = tomllib.load(f)
     assert written['env_type'] == data['env_type']
+    assert path.stat().st_mode & 0o777 == 0o600
 
 
 def test_node_settings_rejects_missing_fields(tmp_path: Path) -> None:
