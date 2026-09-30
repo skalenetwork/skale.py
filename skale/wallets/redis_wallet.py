@@ -37,7 +37,7 @@ from skale.transactions.exceptions import (
     TransactionNotSentError,
     TransactionWaitError,
 )
-from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT, MAX_WAITING_TIME
+from skale.utils.web3_utils import MAX_WAITING_TIME
 from skale.wallets import BaseWallet
 from skale.wallets.web3_wallet import Web3Wallet
 
@@ -227,12 +227,7 @@ class RedisWalletAdapter(BaseWallet):
             )
         raise ValueError('Unknown value was returned from get() call', response)
 
-    def wait(
-        self,
-        tx_id,
-        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-        timeout: int = MAX_WAITING_TIME,
-    ) -> TxReceipt:
+    def wait(self, tx_id, timeout: int = MAX_WAITING_TIME) -> TxReceipt:
         start_ts = time.time()
         status, result = None, None
         while (
