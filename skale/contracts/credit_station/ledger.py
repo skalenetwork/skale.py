@@ -19,7 +19,6 @@
 
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
-from web3.types import Wei
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
@@ -31,5 +30,5 @@ class Ledger(SkaleContract):
     def fulfill(self, payment: PaymentId, purchaser: ChecksumAddress) -> ContractFunction:
         return self.contract.functions.fulfill(payment, purchaser)
 
-    def is_fulfilled(self, payment: PaymentId) -> Wei:
+    def is_fulfilled(self, payment: PaymentId) -> bool:
         return self.contract.functions.isFulfilled(payment).call()

@@ -17,18 +17,19 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
-from typing import NewType, TypedDict
+from typing import NamedTuple, NewType
 
-from eth_typing import ChecksumAddress, HexStr
+from eth_typing import ChecksumAddress
+
+from skale.types.schain import SchainHash
 
 PaymentId = NewType('PaymentId', int)
 
 
-class PaymentReceivedEvent(TypedDict):
-    payment_id: PaymentId
-    schain_hash: HexStr
+class PaymentInfo(NamedTuple):
+    schain_hash: SchainHash
     from_address: ChecksumAddress
     to_address: ChecksumAddress
+    block_number: int
     token_address: ChecksumAddress
     value: int
-    block_number: int

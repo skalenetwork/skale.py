@@ -30,7 +30,6 @@ from web3.types import TxParams, TxReceipt, _Hash32
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
 from skale.utils.web3_utils import (
-    DEFAULT_BLOCKS_TO_WAIT,
     MAX_WAITING_TIME,
     get_eth_nonce,
     wait_for_receipt,
@@ -114,10 +113,5 @@ class SgxWallet(BaseWallet):
         account = self.sgx_client.get_account(key_name)
         return Web3.to_checksum_address(account.address), account.public_key
 
-    def wait(
-        self,
-        tx_hash: _Hash32,
-        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-        timeout: int = MAX_WAITING_TIME,
-    ) -> TxReceipt:
+    def wait(self, tx_hash: _Hash32, timeout: int = MAX_WAITING_TIME) -> TxReceipt:
         return wait_for_receipt(self._web3, tx_hash, timeout=timeout)
