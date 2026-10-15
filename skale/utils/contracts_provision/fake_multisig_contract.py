@@ -22,7 +22,7 @@ import os
 
 from web3 import Web3
 
-from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt_by_blocks
+from skale.utils.web3_utils import get_eth_nonce, wait_for_receipt
 from skale.wallets.common import BaseWallet
 
 # Usage note: to change this contract update the code, compile it and put the new bytecode and
@@ -80,7 +80,7 @@ def deploy_fake_multisig_contract(web3: Web3, wallet: BaseWallet) -> None:
         }
     )
     tx_hash = wallet.sign_and_send(tx)
-    receipt = wait_for_receipt_by_blocks(web3, tx_hash)
+    receipt = wait_for_receipt(web3, tx_hash)
     print(f'Sample contract successfully deployed: {receipt["contractAddress"]}')
     content = {'address': receipt['contractAddress'], 'abi': FAKE_MULTISIG_ABI}
     with open(FAKE_MULTISIG_DATA_PATH, 'w') as outfile:

@@ -31,7 +31,6 @@ from skale.transactions.result import TxRes, TxStatus
 from skale.transactions.tools import make_dry_run_call, transaction_from_method
 from skale.utils.helper import to_camel_case
 from skale.utils.web3_utils import (
-    DEFAULT_BLOCKS_TO_WAIT,
     MAX_WAITING_TIME,
     default_gas_price,
     get_eth_nonce,
@@ -88,7 +87,6 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
         self: BaseContract,
         *args: Any,
         wait_for: bool = True,
-        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
         timeout: int = MAX_WAITING_TIME,
         gas_limit: int | None = None,
         gas_price: int | None = None,
@@ -139,7 +137,7 @@ def transaction_method(transaction: Callable[..., ContractFunction]) -> Callable
             )
 
         if tx_hash is not None and wait_for:
-            receipt = self.wallet.wait(tx_hash)
+            receipt = self.wallet.wait(tx_hash, timeout=timeout)
 
         should_confirm = receipt is not None and confirmation_blocks > 0
         if should_confirm:

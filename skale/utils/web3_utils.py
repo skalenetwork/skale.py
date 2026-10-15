@@ -27,13 +27,18 @@ from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
 from requests.exceptions import ConnectionError  # type: ignore
 from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
-from web3.exceptions import ProviderConnectionError, StaleBlockchain, TransactionNotFound
+from web3.exceptions import (
+    ProviderConnectionError,
+    StaleBlockchain,
+    TimeExhausted,
+)
 from web3.middleware import AttributeDictMiddleware, Middleware, StalecheckMiddlewareBuilder
 from web3.providers.base import JSONBaseProvider
 from web3.types import ENS, Nonce, TxReceipt, _Hash32
 
 import skale.config as config
 from skale.transactions.exceptions import TransactionFailedError, TransactionNotMinedError
+from skale.utils.cache import RedisCacheConfig, redis_cache_middleware
 from skale.utils.constants import GAS_PRICE_COEFFICIENT
 from skale.utils.exceptions import NoSyncedEndpointError
 
@@ -42,9 +47,7 @@ logger = logging.getLogger(__name__)
 
 WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 MAX_WAITING_TIME = 3 * 60 * 60  # 3 hours
-BLOCK_WAITING_TIMEOUT = 1
 DEFAULT_HTTP_TIMEOUT = 120
-DEFAULT_BLOCKS_TO_WAIT = 50
 
 
 def get_provider(
@@ -69,6 +72,7 @@ def init_web3(
     endpoint: str,
     provider_timeout: int = DEFAULT_HTTP_TIMEOUT,
     middlewares: Iterable[Middleware] | None = None,
+    cache_config: RedisCacheConfig | None = None,
     ts_diff: int | None = None,
     session: requests.Session | None = None,
 ) -> Web3:
@@ -86,6 +90,17 @@ def init_web3(
             middlewares = [stalecheck_middleware, AttributeDictMiddleware]
         else:
             middlewares = [AttributeDictMiddleware]
+
+    if cache_config is not None:
+        caching_middleware = redis_cache_middleware(cache_config)
+        middlewares_list = list(middlewares)
+        try:
+            attribute_index = middlewares_list.index(AttributeDictMiddleware)
+        except ValueError:
+            attribute_index = len(middlewares_list)
+        middlewares_list.insert(attribute_index, caching_middleware)
+        middlewares = middlewares_list
+
     for middleware in middlewares:
         w3.middleware_onion.add(middleware)
     return w3
@@ -121,53 +136,21 @@ def _get_connected_endpoint(
     raise NoSyncedEndpointError(f'Could not connect to any RPC endpoints: {endpoints}')
 
 
-def get_receipt(web3: Web3, tx: _Hash32) -> TxReceipt:
-    return web3.eth.get_transaction_receipt(tx)
-
-
 def get_eth_nonce(web3: Web3, address: Address | ChecksumAddress | ENS) -> Nonce:
     return web3.eth.get_transaction_count(address)
 
 
-def wait_for_receipt_by_blocks(
+def wait_for_receipt(
     web3: Web3,
     tx: _Hash32,
-    blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
     timeout: int = MAX_WAITING_TIME,
 ) -> TxReceipt:
-    blocks_to_wait = blocks_to_wait or DEFAULT_BLOCKS_TO_WAIT
-    timeout = timeout or MAX_WAITING_TIME
-    previous_block = web3.eth.block_number
-    current_block = previous_block
-    wait_start_time = time.time()
-    while (
-        time.time() - wait_start_time < timeout and current_block <= previous_block + blocks_to_wait
-    ):
-        try:
-            receipt = get_receipt(web3, tx)
-        except TransactionNotFound:
-            receipt = None
-        if receipt is not None:
-            return receipt
-        current_block = web3.eth.block_number
-        time.sleep(3)
-    raise TransactionNotMinedError(
-        f'Transaction with hash: {str(tx)} not found in {blocks_to_wait} blocks.'
-    )
-
-
-def wait_receipt(web3: Web3, tx: _Hash32, retries: int = 30, timeout: int = 5) -> TxReceipt:
-    for _ in range(0, retries):
-        try:
-            receipt = get_receipt(web3, tx)
-        except TransactionNotFound:
-            receipt = None
-        if receipt is not None:
-            return receipt
-        time.sleep(timeout)  # pragma: no cover
-    raise TransactionNotMinedError(
-        f'Transaction with hash: {str(tx)} not mined after {retries} retries.'
-    )
+    try:
+        return web3.eth.wait_for_transaction_receipt(tx, timeout=timeout)
+    except TimeExhausted:
+        raise TransactionNotMinedError(
+            f'Transaction with hash: {str(tx)} not found within {timeout} seconds.'
+        )
 
 
 def check_receipt(receipt: TxReceipt, raise_error: bool = True) -> bool:

@@ -16,7 +16,6 @@
 #
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
-"""Nodes.sol functions"""
 
 import socket
 from typing import Any, Dict, List, Tuple, cast
@@ -28,10 +27,10 @@ from web3.exceptions import BadFunctionCallOutput, ContractLogicError
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_manager_contract import SkaleManagerContract
-from skale.types.node import Node, NodeId, NodeStatus, Port
+from skale.types.node import Node, NodeId, NodeStatus, NodeWithChangeIp, Port
 from skale.types.validator import ValidatorId
 from skale.utils.exceptions import InvalidNodeIdError
-from skale.utils.helper import format_fields
+from skale.utils.helper import format_fields, ip_from_bytes
 
 FIELDS = [
     'name',
@@ -57,12 +56,12 @@ class Nodes(SkaleManagerContract):
 
     def __get_raw_w_pk(self, node_id: NodeId) -> List[Any]:
         raw_node_struct = self.__get_raw(node_id)
-        raw_node_struct.append(self.get_node_public_key(node_id))
+        raw_node_struct.append(self.node_public_key(node_id))
         return raw_node_struct
 
     def __get_raw_w_pk_w_domain(self, node_id: NodeId) -> List[Any]:
         raw_node_struct_w_pk = self.__get_raw_w_pk(node_id)
-        raw_node_struct_w_pk.append(self.get_domain_name(node_id))
+        raw_node_struct_w_pk.append(self.domain_name(node_id))
         return raw_node_struct_w_pk
 
     @format_fields(FIELDS)
@@ -79,33 +78,54 @@ class Nodes(SkaleManagerContract):
             return self._to_node(node[0])
         raise ValueError("Can't process returned node type")
 
+    def get_with_change_ip(self, node_id: NodeId) -> NodeWithChangeIp:
+        node = self.get(node_id)
+        ip_change_ts = self.last_change_ip_time(node_id)
+        ip_str = ip_from_bytes(node['ip'])
+        public_ip_str = ip_from_bytes(node['publicIP'])
+        return NodeWithChangeIp(
+            name=node['name'],
+            port=node['port'],
+            start_block=node['start_block'],
+            last_reward_date=node['last_reward_date'],
+            finish_time=node['finish_time'],
+            status=node['status'],
+            validator_id=node['validator_id'],
+            publicKey=node['publicKey'],
+            domain_name=node['domain_name'],
+            id=node_id,
+            ip_change_ts=ip_change_ts,
+            ip=ip_str,
+            publicIP=public_ip_str,
+        )
+
     @format_fields(FIELDS)
     def get_by_name(self, name: str) -> List[Any]:
         name_hash = self.name_to_id(name)
         _id = self.contract.functions.nodesNameToIndex(name_hash).call()
         return self.__get_raw_w_pk_w_domain(_id)
 
-    def get_nodes_number(self) -> int:
+    def nodes_number(self) -> int:
         return int(self.contract.functions.getNumberOfNodes().call())
 
-    def get_active_node_ids(self) -> List[NodeId]:
-        nodes_number = self.get_nodes_number()
+    def active_node_ids(self) -> List[NodeId]:
+        nodes_number = self.nodes_number()
         return [
             NodeId(node_id)
             for node_id in range(0, nodes_number)
-            if self.get_node_status(NodeId(node_id)) == NodeStatus.ACTIVE
+            if self.node_status(NodeId(node_id)) == NodeStatus.ACTIVE
         ]
 
-    def get_active_node_ips(self) -> List[bytes]:
-        nodes_number = self.get_nodes_number()
+    def active_node_ips(self) -> List[bytes]:
+        nodes_number = self.nodes_number()
         return [
             self.get(NodeId(node_id))['ip']
             for node_id in range(0, nodes_number)
-            if self.get_node_status(NodeId(node_id)) == NodeStatus.ACTIVE
+            if self.node_status(NodeId(node_id)) == NodeStatus.ACTIVE
         ]
 
-    def get_public_keys(self, node_ids: list[NodeId]) -> list[tuple[NodeId, str]]:
-        return [(node_id, self.get_node_public_key(node_id)) for node_id in node_ids]
+    def public_keys(self, node_ids: list[NodeId]) -> list[tuple[NodeId, str]]:
+        return [(node_id, self.node_public_key(node_id)) for node_id in node_ids]
 
     def name_to_id(self, name: str) -> bytes:
         keccak_hash = keccak.new(data=name.encode('utf8'), digest_bits=256)
@@ -119,23 +139,23 @@ class Nodes(SkaleManagerContract):
         ip_bytes = socket.inet_aton(ip)
         return not self.contract.functions.nodesIPCheck(ip_bytes).call()
 
-    def node_name_to_index(self, name: str) -> int:
+    def node_name_to_index(self, name: str) -> NodeId:
         name_hash = self.name_to_id(name)
-        return int(self.contract.functions.nodesNameToIndex(name_hash).call())
+        return NodeId(self.contract.functions.nodesNameToIndex(name_hash).call())
 
-    def get_node_status(self, node_id: NodeId) -> NodeStatus:
+    def node_status(self, node_id: NodeId) -> NodeStatus:
         try:
             return NodeStatus(self.contract.functions.getNodeStatus(node_id).call())
         except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
-    def get_node_finish_time(self, node_id: NodeId) -> int:
+    def node_finish_time(self, node_id: NodeId) -> int:
         try:
             return int(self.contract.functions.getNodeFinishTime(node_id).call())
         except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
-    def __get_node_public_key_raw(self, node_id: NodeId) -> Tuple[bytes, bytes]:
+    def __node_public_key_raw(self, node_id: NodeId) -> Tuple[bytes, bytes]:
         try:
             return cast(
                 Tuple[bytes, bytes], self.contract.functions.getNodePublicKey(node_id).call()
@@ -143,23 +163,18 @@ class Nodes(SkaleManagerContract):
         except (ContractLogicError, ValueError, BadFunctionCallOutput):
             raise InvalidNodeIdError(node_id)
 
-    def get_node_public_key(self, node_id: NodeId) -> str:
-        raw_key = self.__get_node_public_key_raw(node_id)
+    def node_public_key(self, node_id: NodeId) -> str:
+        raw_key = self.__node_public_key_raw(node_id)
         key_bytes = raw_key[0] + raw_key[1]
         return self.skale.web3.to_hex(key_bytes)
 
-    def get_validator_node_indices(self, validator_id: int) -> list[NodeId]:
-        """Returns list of node indices to the validator
-
-        :returns: List of trusted node indices
-        :rtype: list
-        """
+    def validator_node_indices(self, validator_id: int) -> list[NodeId]:
         return [
             NodeId(id)
             for id in self.contract.functions.getValidatorNodeIndexes(validator_id).call()
         ]
 
-    def get_last_change_ip_time(self, node_id: NodeId) -> int:
+    def last_change_ip_time(self, node_id: NodeId) -> int:
         return int(self.contract.functions.getLastChangeIpTime(node_id).call())
 
     @transaction_method
@@ -174,7 +189,7 @@ class Nodes(SkaleManagerContract):
     def set_domain_name(self, node_id: NodeId, domain_name: str) -> 'ContractFunction':
         return self.contract.functions.setDomainName(node_id, domain_name)
 
-    def get_domain_name(self, node_id: NodeId) -> str:
+    def domain_name(self, node_id: NodeId) -> str:
         return str(self.contract.functions.getNodeDomainName(node_id).call())
 
     @transaction_method

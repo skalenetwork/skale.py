@@ -125,8 +125,8 @@ def run_dkg(nodes, skale_instances, group_index, skip_time=True, rotation_id=0):
 
 
 def remove_node(skale, node_id):
-    if skale.nodes.get_node_status(node_id) == NodeStatus.IN_MAINTENANCE:
+    if skale.nodes.node_status(node_id) == NodeStatus.IN_MAINTENANCE:
         skale.nodes.remove_from_in_maintenance(node_id)
-    if skale.nodes.get_node_status(node_id) != NodeStatus.LEFT:
+    if skale.nodes.node_status(node_id) != NodeStatus.LEFT:
         skale.nodes.init_exit(node_id)
         skale.manager.node_exit(node_id)

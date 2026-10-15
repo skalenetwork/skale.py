@@ -48,7 +48,7 @@ class Nodes(SkaleContract):
     def get_passive_node_ids(self) -> list[NodeId]:
         return self.contract.functions.getPassiveNodeIds().call()
 
-    def get_active_node_ids(self) -> list[NodeId]:
+    def active_node_ids(self) -> list[NodeId]:
         return self.contract.functions.getActiveNodeIds().call()
 
     def active_node_exists(self, node_id: NodeId) -> bool:

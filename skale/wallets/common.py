@@ -26,7 +26,7 @@ from web3 import Web3
 from web3.types import TxParams, TxReceipt, _Hash32
 
 from skale.transactions.exceptions import ChainIdError
-from skale.utils.web3_utils import DEFAULT_BLOCKS_TO_WAIT
+from skale.utils.web3_utils import MAX_WAITING_TIME
 
 
 def ensure_chain_id(tx_dict: TxParams, web3: Web3) -> None:
@@ -74,5 +74,5 @@ class BaseWallet(ABC):
         pass
 
     @abstractmethod
-    def wait(self, tx: _Hash32, confirmation_blocks: int = DEFAULT_BLOCKS_TO_WAIT) -> TxReceipt:
+    def wait(self, tx: _Hash32, timeout: int = MAX_WAITING_TIME) -> TxReceipt:
         pass

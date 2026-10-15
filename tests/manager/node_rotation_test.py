@@ -5,6 +5,8 @@ from unittest import mock
 import pytest
 
 from skale.contracts.manager.node_rotation import Rotation
+from skale.skale_manager import SkaleManager
+from skale.types.validator import ValidatorId
 from skale.utils.contracts_provision.main import (
     add_test4_schain_type,
     cleanup_nodes_schains,
@@ -44,7 +46,7 @@ def test_wait_for_new_node(skale):
 
 
 @pytest.fixture
-def four_node_schain(skale, validator):
+def four_node_schain(skale: SkaleManager, validator: ValidatorId):
     nodes, skale_instances = set_up_nodes(skale, 4, no_zero_id=False)
     add_test4_schain_type(skale)
     try:
@@ -58,7 +60,7 @@ def four_node_schain(skale, validator):
         cleanup_nodes_schains(skale)
 
 
-def test_is_rotation_active(skale, four_node_schain):
+def test_is_rotation_active(skale: SkaleManager, four_node_schain):
     nodes, skale_instances, name = four_node_schain
     group_index = skale.web3.keccak(text=name)
 

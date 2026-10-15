@@ -21,11 +21,11 @@ from dataclasses import dataclass
 from typing import Any, NewType
 
 from eth_typing import ChecksumAddress
+from skale_core.types import SchainName
 from web3.types import Wei
 
 from skale.dataclasses.schain_options import SchainOptions
 
-SchainName = NewType('SchainName', str)
 SchainHash = NewType('SchainHash', bytes)
 SchainOption = tuple[str, bytes]
 
@@ -74,6 +74,9 @@ class SchainStructure(Schain):
                 'multitransaction_mode': self.options.multitransaction_mode,
                 'threshold_encryption': self.options.threshold_encryption,
                 'allocation_type': self.options.allocation_type.value,
+                'external_gas_difficulty': self.options.external_gas_difficulty,
+                'min_gas_price': self.options.min_gas_price,
+                'max_gas_price': self.options.max_gas_price,
             },
             'active': self.active,
         }

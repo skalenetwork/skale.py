@@ -20,6 +20,7 @@
 
 import abc
 import logging
+from urllib.parse import urlparse
 
 import requests
 from skale_contracts import skale_contracts
@@ -27,6 +28,7 @@ from skale_contracts.project_factory import SkaleProject
 from web3 import Web3
 
 from skale.rpc_session import CountingSession, RpcHttpStats
+from skale.utils.cache import RedisCacheConfig
 from skale.utils.exceptions import EmptyWalletError, InvalidWalletError
 from skale.utils.helper import contract_name_to_snake_case
 from skale.utils.web3_utils import default_gas_price, get_endpoint, init_web3
@@ -50,14 +52,15 @@ class SkaleBase:
         state_path: str | None = None,
         ts_diff: int | None = None,
         provider_timeout: int = 30,
-        debug: bool = False,
         session: requests.Session | None = None,
         enable_stats: bool = False,
+        redis_cache_config: RedisCacheConfig | None = None,
     ):
+        self._endpoint = get_endpoint(endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
         logger.info(
-            'Initializing %s, endpoint: %s, alias_or_address: %s, wallet: %s',
+            'Initializing %s, endpoint host: %s, alias_or_address: %s, wallet: %s',
             self.__class__.__name__,
-            endpoint,
+            urlparse(self._endpoint).hostname,
             alias_or_address,
             type(wallet).__name__,
         )
@@ -68,18 +71,18 @@ class SkaleBase:
         self.stats = RpcHttpStats()
         if session is None and enable_stats:
             session = CountingSession(self.stats)
-        self._endpoint = get_endpoint(endpoint, ts_diff=ts_diff, provider_timeout=provider_timeout)
         self._alias_or_address = alias_or_address
+
         self.web3 = init_web3(
             self._endpoint,
             ts_diff=ts_diff,
             provider_timeout=provider_timeout,
             session=session,
+            cache_config=redis_cache_config,
         )
         self.network = skale_contracts.get_network_by_provider(self.web3.provider)
         self.project = self.network.get_project(self.project_name)
         self.instance = self.project.get_instance(alias_or_address)
-        self.debug = debug
         if wallet:
             self.wallet = wallet
 

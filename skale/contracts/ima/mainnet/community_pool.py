@@ -17,8 +17,10 @@
 #   You should have received a copy of the GNU Affero General Public License
 #   along with SKALE.py.  If not, see <https://www.gnu.org/licenses/>.
 
+
 from eth_typing import ChecksumAddress
 from web3.contract.contract import ContractFunction
+from web3.types import TxParams
 
 from skale.contracts.base_contract import transaction_method
 from skale.contracts.skale_contract import SkaleContract
@@ -53,10 +55,15 @@ class CommunityPool(SkaleContract):
             schain_name_to_hash(schain_name), receiver
         ).call()
 
-    def get_recommended_recharge_amount(self, schain_name: SchainName, receiver: int) -> int:
+    def get_recommended_recharge_amount(
+        self,
+        schain_name: SchainName,
+        receiver: ChecksumAddress,
+        transaction: TxParams | None = None,
+    ) -> int:
         return self.contract.functions.getRecommendedRechargeAmount(
             schain_name_to_hash(schain_name), receiver
-        ).call()
+        ).call(transaction)
 
     def constant_setter_role(self) -> bool:
         return self.contract.functions.CONSTANT_SETTER_ROLE().call()

@@ -7,25 +7,24 @@ import pytest
 from web3.auto import w3
 
 from skale import SkaleManager
-from skale.utils.account_tools import generate_account, send_eth
+from skale.types.node import NodeId
+from skale.types.schain import SchainName
+from skale.types.validator import ValidatorId
+from skale.utils.account_tools import send_eth
 from skale.utils.contracts_provision.fake_multisig_contract import deploy_fake_multisig_contract
 from skale.utils.contracts_provision.main import (
     add_test2_schain_type,
     add_test_permissions,
-    cleanup_nodes,
-    cleanup_schains,
     create_nodes,
     create_schain,
     link_nodes_to_validator,
-    set_automining,
-    set_default_mining_interval,
-    set_mining_interval,
     setup_validator,
 )
-from skale.utils.contracts_provision.utils import generate_random_node_data
+from skale.utils.contracts_provision.utils import generate_random_name, generate_random_node_data
 from skale.utils.helper import get_skale_manager_address
 from skale.utils.web3_utils import init_web3
 from skale.wallets import Web3Wallet
+from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import ENDPOINT, TEST_ABI_FILEPATH
 from tests.helper import init_fair, init_skale, init_skale_allocator
 
@@ -93,7 +92,7 @@ def fair(web3):
 
 
 @pytest.fixture(scope='session')
-def validator(skale):
+def validator(skale) -> ValidatorId:
     return setup_validator(skale)
 
 
@@ -103,12 +102,10 @@ def number_of_nodes():
 
 
 @pytest.fixture
-def node_wallets(skale, number_of_nodes):
+def node_wallets(skale: SkaleManager, number_of_nodes: int):
     wallets = []
-    for i in range(number_of_nodes):
-        acc = generate_account(skale.web3)
-        pk = acc['private_key']
-        wallet = Web3Wallet(pk, skale.web3)
+    for _ in range(number_of_nodes):
+        wallet = generate_wallet(skale.web3)
         send_eth(
             web3=skale.web3,
             wallet=skale.wallet,
@@ -128,13 +125,26 @@ def node_skales(skale, node_wallets):
 
 
 @pytest.fixture
-def nodes(skale, node_skales, validator):
+def nodes(skale: SkaleManager, node_skales, validator: ValidatorId) -> list[NodeId]:
     link_nodes_to_validator(skale, validator, node_skales)
     ids = create_nodes(node_skales)
-    try:
-        yield ids
-    finally:
-        cleanup_nodes(skale, ids)
+    return ids
+
+
+@pytest.fixture
+def node(skale: SkaleManager, validator: ValidatorId) -> tuple[NodeId, Web3Wallet]:
+    wallet = generate_wallet(skale.web3)
+    send_eth(
+        web3=skale.web3,
+        wallet=skale.wallet,
+        receiver_address=wallet.address,
+        amount=ETH_AMOUNT_PER_NODE,
+    )
+    node_skales = (SkaleManager(ENDPOINT, get_skale_manager_address(TEST_ABI_FILEPATH), wallet),)
+    link_nodes_to_validator(skale, validator, node_skales)
+    ids = create_nodes(node_skales, names=[generate_random_name()])
+    node_id = ids[0]
+    return node_id, wallet
 
 
 @pytest.fixture
@@ -171,18 +181,29 @@ def fair_passive_nodes(fair, node_wallets):
 
 
 @pytest.fixture
-def schain(skale, nodes):
+def schain(skale: SkaleManager, nodes: list[NodeId]) -> SchainName:
+    return create_schain(
+        skale,
+        schain_type=1,  # test2 should have 1 index
+        random_name=True,
+    )
+
+
+@pytest.fixture(autouse=True)
+def isolation(web3):
+    response = web3.provider.make_request('evm_snapshot', [])
+    if 'result' not in response:
+        logger.warning('EVM snapshot not supported by the provider')
+        yield
+        return
+    snapshot_id = response['result']
     try:
-        yield create_schain(
-            skale,
-            schain_type=1,  # test2 should have 1 index
-            random_name=True,
-        )
+        yield
     finally:
-        cleanup_schains(skale)
+        web3.provider.make_request('evm_revert', [snapshot_id])
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def skale_allocator(web3):
     """Returns a SKALE Allocator instance with provider from config"""
     return init_skale_allocator(web3)
@@ -203,16 +224,3 @@ def failed_skale(skale):
     finally:
         skale.wallet.sign_and_send = tmp_sign_and_send
         skale.wallet.wait = tmp_wait
-
-
-@pytest.fixture
-def block_in_seconds(skale):
-    # Mine block every three seconds without automine
-    # Makes web3.py throw exception in a same way as for geth
-    try:
-        set_automining(skale.web3, False)
-        set_mining_interval(skale.web3, 3)
-        yield
-    finally:
-        set_automining(skale.web3, True)
-        set_default_mining_interval(skale.web3)

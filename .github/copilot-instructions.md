@@ -11,6 +11,10 @@
 - no redundant code - move repeated logic into helper functions
 - use type hints to specify the expected types of function arguments and return values
 
-- check `ruff.toml` for formatting rules
-- always lint changes using `ruff check`
+- check `pyproject.toml` for formatting rules
+- always lint changes using `uv run ruff check`
 - tests should be placed in `tests/` directory, follow the existing structure and code style
+- always use `uv` to run all commands in the repo (e.g., `uv run ruff`, `uv run pytest`, etc.)
+- for running tests, export environment variables in the terminal before running the tests: `. ./scripts/export_env.sh`
+- some tests require a local anvil node with deployed smart contracts: use `. ./scripts/export_env.sh && bash ./helper-scripts/deploy_manager.sh` to deploy, then run the tests
+- if `anvil` container is already running, proceed directly to exporting environment variables and running tests: `. ./scripts/export_env.sh && uv run pytest ...`

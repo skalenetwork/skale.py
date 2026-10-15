@@ -25,7 +25,7 @@ from skale.types.schain import SchainName
 
 def get_nodes_for_schain(skale: SkaleManager, name: SchainName) -> list[NodeWithId]:
     nodes = []
-    ids = skale.schains_internal.get_node_ids_for_schain(name)
+    ids = skale.schains_internal.node_ids_for_schain(name)
     for id_ in ids:
         node = skale.nodes.get(id_)
         nodes.append(NodeWithId(id=id_, **node))
@@ -39,7 +39,7 @@ def get_schain_nodes_with_schain_hashes(
     nodes = get_nodes_for_schain(skale, schain_name)
     return [
         NodeWithSchainHashes(
-            schain_hashes=skale.schains_internal.get_schain_hashes_for_node(node['id']), **node
+            schain_hashes=skale.schains_internal.schain_hashes_for_node(node['id']), **node
         )
         for node in nodes
     ]

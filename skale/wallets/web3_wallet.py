@@ -31,10 +31,9 @@ from web3.types import TxParams, TxReceipt, _Hash32
 import skale.config as config
 from skale.transactions.exceptions import TransactionNotSentError, TransactionNotSignedError
 from skale.utils.web3_utils import (
-    DEFAULT_BLOCKS_TO_WAIT,
     MAX_WAITING_TIME,
     get_eth_nonce,
-    wait_for_receipt_by_blocks,
+    wait_for_receipt,
 )
 from skale.wallets.common import BaseWallet, MessageNotSignedError, ensure_chain_id
 
@@ -112,15 +111,8 @@ class Web3Wallet(BaseWallet):
     def public_key(self) -> str:
         return str(self._public_key)
 
-    def wait(
-        self,
-        tx_hash: _Hash32,
-        blocks_to_wait: int = DEFAULT_BLOCKS_TO_WAIT,
-        timeout: int = MAX_WAITING_TIME,
-    ) -> TxReceipt:
-        return wait_for_receipt_by_blocks(
-            self._web3, tx_hash, blocks_to_wait=blocks_to_wait, timeout=timeout
-        )
+    def wait(self, tx_hash: _Hash32, timeout: int = MAX_WAITING_TIME) -> TxReceipt:
+        return wait_for_receipt(self._web3, tx_hash, timeout=timeout)
 
 
 def generate_wallet(web3: Web3) -> Web3Wallet:

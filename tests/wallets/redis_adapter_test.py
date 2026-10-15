@@ -52,8 +52,8 @@ def test_make_record():
     assert tx_id.startswith(b'tx-') and len(tx_id) == 19
     assert (
         r
-        == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": 22000, "nonce": 1, "chainId": 1}'
-    )  # noqa
+        == b'{"status": "PROPOSED", "score": "51623233060", "multiplier": 2, "tx_hash": null, "method": "createNode", "from": "0x1", "to": "0x2", "value": 1, "gasPrice": 1, "gas": 22000, "nonce": 1, "chainId": 1}'  # noqa
+    )
 
 
 def test_sign_and_send(rdp):
@@ -93,6 +93,10 @@ def test_rdp_wait(rdp):
 
     rdp.get_record = mock.Mock(return_value={'tx_hash': 'test', 'status': 'SUCCESS'})
     fake_receipt = {'test': 'test'}
-    with mock.patch('skale.wallets.redis_wallet.get_receipt', return_value=fake_receipt):
+    with mock.patch.object(
+        rdp.wallet._web3.eth,
+        'get_transaction_receipt',
+        return_value=fake_receipt,
+    ):
         with in_time(2):
             assert rdp.wait(tx_id, timeout=100) == fake_receipt

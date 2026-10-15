@@ -19,6 +19,7 @@
 
 
 from time import sleep
+from typing import Any
 
 from eth_typing import ChecksumAddress
 from web3 import Web3
@@ -105,8 +106,11 @@ class Erc20Contract(BaseContract):
         web3: Web3,
         address: ChecksumAddress,
         wallet: BaseWallet | None = None,
+        erc20_abi: list[Any] | None = ERC20_ABI,
     ):
-        super().__init__(web3, address, ERC20_ABI, wallet)
+        abi_to_use = erc20_abi if erc20_abi is not None else ERC20_ABI
+
+        super().__init__(web3, address, abi_to_use, wallet)
 
     def balance_of(self, account: ChecksumAddress) -> Wei:
         return Wei(self.contract.functions.balanceOf(account).call())

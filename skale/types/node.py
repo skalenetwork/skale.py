@@ -40,10 +40,8 @@ class NodeStatus(IntEnum):
     IN_MAINTENANCE = 3
 
 
-class Node(TypedDict):
+class NodeBase(TypedDict):
     name: str
-    ip: bytes
-    publicIP: bytes
     port: Port
     start_block: BlockNumber
     last_reward_date: int
@@ -52,6 +50,11 @@ class Node(TypedDict):
     validator_id: ValidatorId
     publicKey: HexStr
     domain_name: str
+
+
+class Node(NodeBase):
+    ip: bytes
+    publicIP: bytes
 
 
 FairNodeType = TypeVar('FairNodeType', bound='FairNode')
@@ -109,6 +112,13 @@ def get_ghost_fair_node(node_id: NodeId) -> FairNode:
 
 class NodeWithId(Node):
     id: NodeId
+
+
+class NodeWithChangeIp(NodeBase):
+    id: NodeId
+    ip_change_ts: int
+    ip: str
+    publicIP: str
 
 
 class NodeWithSchainHashes(NodeWithId):

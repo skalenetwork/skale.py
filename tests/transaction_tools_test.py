@@ -4,7 +4,11 @@ import pytest
 from web3 import Web3
 
 from skale import SkaleManager
-from skale.transactions.exceptions import DryRunFailedError, TransactionFailedError
+from skale.transactions.exceptions import (
+    DryRunFailedError,
+    TransactionFailedError,
+    TransactionNotMinedError,
+)
 from skale.transactions.tools import (
     TxCallResult,
     TxStatus,
@@ -14,7 +18,7 @@ from skale.transactions.tools import (
 )
 from skale.utils.account_tools import generate_account
 from skale.utils.helper import get_skale_manager_address
-from skale.utils.web3_utils import init_web3
+from skale.utils.web3_utils import init_web3, wait_for_receipt
 from skale.wallets import Web3Wallet
 from skale.wallets.web3_wallet import generate_wallet
 from tests.constants import (
@@ -168,3 +172,8 @@ def test_tx_fee_options(skale):
         max_fee_per_gas=max_fee,
         max_priority_fee_per_gas=int(max_fee / 2),
     )
+
+
+def test_wait_for_receipt_fail(skale):
+    with pytest.raises(TransactionNotMinedError):
+        wait_for_receipt(skale.web3, b'\x00' * 32, timeout=2)

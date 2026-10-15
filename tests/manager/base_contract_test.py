@@ -6,12 +6,13 @@ import pytest
 from web3 import Web3
 
 import skale.config as config
+from skale.skale_manager import SkaleManager
 from skale.transactions.exceptions import TransactionNotSentError
 from skale.transactions.result import TxStatus
 from skale.transactions.tools import estimate_gas
 from skale.utils.account_tools import generate_account
 from skale.utils.contracts_provision.utils import generate_random_schain_data
-from skale.utils.web3_utils import wait_for_receipt_by_blocks
+from skale.utils.web3_utils import wait_for_receipt
 from tests.constants import TEST_GAS_LIMIT
 
 ETH_IN_WEI = 10**18
@@ -19,7 +20,7 @@ CUSTOM_DEFAULT_GAS_LIMIT = 2 * 10**6
 CUSTOM_DEFAULT_GAS_PRICE_WEI = 1500000000
 
 
-def test_dry_run(skale):
+def test_dry_run(skale: SkaleManager):
     account = generate_account(skale.web3)
     address_to = account['address']
     address_from = Web3.to_checksum_address(skale.wallet.address)
@@ -60,7 +61,7 @@ def test_disable_dry_run_env(skale, disable_dry_run_env):
         dry_run_mock.assert_not_called()
 
 
-def test_skip_dry_run(skale):
+def test_skip_dry_run(skale: SkaleManager):
     account = generate_account(skale.web3)
     address_to = account['address']
     address_from = Web3.to_checksum_address(skale.wallet.address)
@@ -79,7 +80,7 @@ def test_skip_dry_run(skale):
     assert balance_to_after == balance_to_before + amount
 
 
-def test_wait_for_false(skale):
+def test_wait_for_false(skale: SkaleManager):
     ETH_IN_WEI = 10**18
     account = generate_account(skale.web3)
     address_to = account['address']
@@ -95,7 +96,7 @@ def test_wait_for_false(skale):
     assert isinstance(tx_res.tx_call_result.data['gas'], int)
     assert tx_res.tx_call_result.status == TxStatus.SUCCESS
 
-    tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.tx_hash)
+    tx_res.receipt = wait_for_receipt(skale.web3, tx_res.tx_hash)
     tx_res.raise_for_status()
 
     balance_from_after = skale.token.get_balance(address_from)
@@ -104,7 +105,7 @@ def test_wait_for_false(skale):
     assert balance_to_after == balance_to_before + amount
 
 
-def test_tx_res_dry_run(skale):
+def test_tx_res_dry_run(skale: SkaleManager):
     account = generate_account(skale.web3)
     token_amount = 10
     tx_res = skale.token.transfer(account['address'], token_amount, dry_run_only=True)
@@ -114,7 +115,7 @@ def test_tx_res_dry_run(skale):
     tx_res.raise_for_status()
 
 
-def test_tx_res_wait_for_false(skale):
+def test_tx_res_wait_for_false(skale: SkaleManager):
     account = generate_account(skale.web3)
     token_amount = 10
     tx_res = skale.token.transfer(account['address'], token_amount, wait_for=False)
@@ -122,11 +123,11 @@ def test_tx_res_wait_for_false(skale):
     assert tx_res.receipt is None
     tx_res.raise_for_status()
 
-    tx_res.receipt = wait_for_receipt_by_blocks(skale.web3, tx_res.tx_hash)
+    tx_res.receipt = wait_for_receipt(skale.web3, tx_res.tx_hash)
     tx_res.raise_for_status()
 
 
-def test_tx_res_wait_for_true(skale):
+def test_tx_res_wait_for_true(skale: SkaleManager):
     account = generate_account(skale.web3)
     token_amount = 10
     tx_res = skale.token.transfer(account['address'], token_amount)
@@ -135,7 +136,7 @@ def test_tx_res_wait_for_true(skale):
     tx_res.raise_for_status()
 
 
-def test_tx_res_with_insufficient_funds(skale):
+def test_tx_res_with_insufficient_funds(skale: SkaleManager):
     account = generate_account(skale.web3)
     token_amount = 9
     huge_gas_price = 10**22
@@ -143,7 +144,7 @@ def test_tx_res_with_insufficient_funds(skale):
         skale.token.transfer(account['address'], token_amount, gas_price=huge_gas_price)
 
 
-def test_confirmation_blocks(skale):
+def test_confirmation_blocks(skale: SkaleManager):
     account = generate_account(skale.web3)
     token_amount = 10
     confirmation_blocks = 0  # todo: enable mining on ganache
@@ -152,7 +153,7 @@ def test_confirmation_blocks(skale):
     assert skale.web3.eth.block_number >= start_block + confirmation_blocks
 
 
-def test_block_limit_estimate_gas(skale):
+def test_block_limit_estimate_gas(skale: SkaleManager):
     account = generate_account(skale.web3)
     token_amount = 10
     max_gas = 200000000
@@ -164,7 +165,7 @@ def test_block_limit_estimate_gas(skale):
         assert res < max_gas
 
 
-def test_value_option(skale, nodes):
+def test_value_option(skale: SkaleManager, nodes):
     skale.schains.grant_role(skale.schains.schain_creator_role(), skale.wallet.address)
     type_of_nodes, lifetime_seconds, name = generate_random_schain_data(skale)
     value_wei = 1000
