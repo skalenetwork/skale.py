@@ -2,7 +2,7 @@
 
 export ENDPOINT=http://127.0.0.1:8545
 export MANAGER_TAG=1.12.0-develop.23
-export ALLOCATOR_TAG=2.2.3-develop.5
+export ALLOCATOR_TAG=2.2.3-develop.6
 export FAIR_TAG=0.0.1-develop.71
 export MINING_INTERVAL=10
 export MAINNET_ENDPOINT=http://127.0.0.1:8545
