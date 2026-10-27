@@ -2,7 +2,8 @@
 
 set -e
 
-sed -i "s/version = \".*\"/version = \"${VERSION}\"/g" pyproject.toml
+sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" pyproject.toml
+sed -i "s/^\( *\)\"skale\.py-core\",$/\1\"skale.py-core==${VERSION}\",/" pyproject.toml
 
 rm -rf ./dist/*
 

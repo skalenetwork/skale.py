@@ -4,7 +4,7 @@ set -e
 
 VERSION=${VERSION:-$(grep '^version = ' pyproject.toml | cut -d'"' -f2)}
 
-sed -i "s/version = \".*\"/version = \"${VERSION}\"/g" packages/skale-core/pyproject.toml
+sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" packages/skale-core/pyproject.toml
 
 rm -rf packages/skale-core/dist/*
 
