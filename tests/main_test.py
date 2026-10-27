@@ -4,7 +4,7 @@ from functools import cached_property
 
 import pytest
 from skale_contracts.projects.skale_manager import SkaleManagerContract
-from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
+from web3 import HTTPProvider, Web3
 
 from skale import SkaleManager
 from skale.contracts.manager.nodes import Nodes
@@ -41,11 +41,8 @@ def test_lib_init():
     isinstance(skale.web3.provider, HTTPProvider)
 
     ws_endpoint = 'ws://localhost:8545'
-
-    skale = SkaleManager(ws_endpoint, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
-    assert skale.web3.provider.websocket_timeout == 30
-    assert skale.web3.provider.conn.websocket_kwargs == {'max_size': 5 * 1024 * 1024}
-    assert isinstance(skale.web3.provider, LegacyWebSocketProvider)
+    with pytest.raises(Exception, match='Supported endpoint schemes: http/https'):
+        SkaleManager(ws_endpoint, get_skale_manager_address(TEST_ABI_FILEPATH), wallet)
 
     file_endpoint = 'file://local_file:1001'
     with pytest.raises(Exception):

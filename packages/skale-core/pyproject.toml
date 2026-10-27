@@ -21,7 +21,6 @@ classifiers = [
 dependencies = [
   "pydantic-settings>=2.14.2",
   "tomli-w>=1.2.0",
-  "typing-extensions==4.16.0",
 ]
 
 [project.urls]
