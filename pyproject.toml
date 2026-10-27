@@ -20,16 +20,16 @@ classifiers = [
 ]
 dependencies = [
     "redis>=8.0.1",
-    "sgx.py==0.11b1",
-    "skale-contracts==2.0.0a12",
+    "sgx.py==0.12.dev1",
+    "skale-contracts==2.0.0a15",
     "skale.py-core",
     "typing-extensions==4.16.0",
-    "web3==7.16.0",
+    "web3==8.0.0",
     "multisigwallet-predeployed==1.1.0b0",
 ]
 
 [project.optional-dependencies]
-linter = ["ruff==0.15.20", "mypy==2.1.0"]
+linter = ["ruff==0.17.3", "mypy==2.4.0"]
 hw-wallet = ["ledgerblue==0.1.58"]
 dev = [
     "skale.py[linter,hw-wallet]",
@@ -72,7 +72,7 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 warn_unused_configs = true
 ignore_missing_imports = true
 

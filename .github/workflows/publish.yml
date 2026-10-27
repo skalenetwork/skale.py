@@ -13,15 +13,16 @@ jobs:
     if: github.event.pull_request.merged
     strategy:
       matrix:
-        python-version: [3.13]
+        python-version: ["3.14"]
     env:
       PIP_USERNAME: ${{ secrets.PIP_USERNAME }}
       PIP_PASSWORD: ${{ secrets.PIP_PASSWORD }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v10.3.2
         with:
+          version: "0.13.5"
           enable-cache: true
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
@@ -41,17 +42,18 @@ jobs:
     if: github.event.pull_request.merged
     strategy:
       matrix:
-        python-version: [3.13]
+        python-version: ["3.14"]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
       ENDPOINT: ${{ secrets.ENDPOINT }}
       PIP_USERNAME: ${{ secrets.PIP_USERNAME }}
       PIP_PASSWORD: ${{ secrets.PIP_PASSWORD }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v10.3.2
         with:
+          version: "0.13.5"
           enable-cache: true
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
@@ -74,7 +76,7 @@ jobs:
         run: |
           bash ./scripts/publish.sh
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.VERSION }}
           name: ${{ env.VERSION }}

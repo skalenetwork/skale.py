@@ -26,7 +26,7 @@ import requests
 from eth_keys.main import lazy_key_api as keys
 from eth_typing import Address, AnyAddress, ChecksumAddress, HexStr
 from requests.exceptions import ConnectionError  # type: ignore
-from web3 import HTTPProvider, LegacyWebSocketProvider, Web3
+from web3 import HTTPProvider, Web3
 from web3.exceptions import (
     ProviderConnectionError,
     StaleBlockchain,
@@ -45,7 +45,6 @@ from skale.utils.exceptions import NoSyncedEndpointError
 logger = logging.getLogger(__name__)
 
 
-WS_MAX_MESSAGE_DATA_BYTES = 5 * 1024 * 1024
 MAX_WAITING_TIME = 3 * 60 * 60  # 3 hours
 DEFAULT_HTTP_TIMEOUT = 120
 
@@ -57,15 +56,11 @@ def get_provider(
     session: Any = None,
 ) -> JSONBaseProvider:
     scheme = urlparse(endpoint).scheme
-    if scheme == 'ws' or scheme == 'wss':
-        kwargs = request_kwargs or {'max_size': WS_MAX_MESSAGE_DATA_BYTES}
-        return LegacyWebSocketProvider(endpoint, websocket_timeout=timeout, websocket_kwargs=kwargs)
-
     if scheme == 'http' or scheme == 'https':
         kwargs = {'timeout': timeout, **(request_kwargs or {})}
         return HTTPProvider(endpoint, session=session, request_kwargs=kwargs)
 
-    raise Exception('Wrong endpoint option.Supported endpoint schemes: http/https/ws/wss')
+    raise Exception('Wrong endpoint option. Supported endpoint schemes: http/https')
 
 
 def init_web3(
