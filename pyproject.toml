@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     "redis>=8.0.1",
-    "sgx.py==0.12.dev1",
+    "sgx.py==0.12.dev2",
     "skale-contracts==2.0.0a15",
     "skale.py-core",
     "web3==8.0.0",
