@@ -9,7 +9,6 @@ jobs:
         component: [manager, allocator, fair]
     env:
       ETH_PRIVATE_KEY: ${{ secrets.ETH_PRIVATE_KEY }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -69,10 +68,6 @@ jobs:
 
       - name: Run tests for ${{ matrix.component }}
         run: bash ./scripts/run_${{ matrix.component }}_tests.sh
-
-      - name: Codecov
-        run: |
-          uv run codecov -t $CODECOV_TOKEN
 
       - name: Show stats after tests
         if: always()
