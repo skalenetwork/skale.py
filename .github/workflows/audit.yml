@@ -1,0 +1,19 @@
+name: Audit
+on:
+  push:
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.13.6"
+      - run: uv export --no-dev --no-emit-workspace --no-hashes -o requirements.txt
+      - run: uvx pip-audit==2.10.1 -r requirements.txt --no-deps --disable-pip -s osv
