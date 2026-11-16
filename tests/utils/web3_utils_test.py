@@ -50,6 +50,7 @@ def test_transaction_with_outdated_client(skale):
     with freeze_time(dt):
         skale.constants_holder.set_rotation_delay(new_rotation_delay, wait_for=True)
 
+    current_ts = skale.web3.eth.get_block('latest')['timestamp']
     dt = datetime.utcfromtimestamp(current_ts + allowed_diff + 15)
     new_rotation_delay = 101
     with freeze_time(dt):
