@@ -13,7 +13,7 @@ TEST_PLAN_PARAMS = {
     'vestingIntervalTimeUnit': 1,
     'vestingInterval': 6,
     'isDelegationAllowed': True,
-    'isTerminatable': True,
+    'isTerminable': True,
 }
 
 D_END_TIMESTAMP = 1693526400

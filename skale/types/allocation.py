@@ -45,7 +45,7 @@ class Plan(TypedDict):
     vestingIntervalTimeUnit: TimeUnit
     vestingInterval: int
     isDelegationAllowed: bool
-    isTerminatable: bool
+    isTerminable: bool
 
 
 class PlanWithId(Plan):

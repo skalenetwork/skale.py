@@ -44,7 +44,7 @@ PLAN_FIELDS = [
     'vestingIntervalTimeUnit',
     'vestingInterval',
     'isDelegationAllowed',
-    'isTerminatable',
+    'isTerminable',
 ]
 
 BENEFICIARY_FIELDS = ['status', 'planId', 'startMonth', 'fullAmount', 'amountAfterLockup']
@@ -81,7 +81,7 @@ class Allocator(AllocatorContract):
         vesting_interval_time_unit: TimeUnit,
         vesting_interval: int,
         can_delegate: bool,
-        is_terminatable: bool,
+        is_terminable: bool,
     ) -> 'ContractFunction':
         return self.contract.functions.addPlan(
             vestingCliff=vesting_cliff,
@@ -89,7 +89,7 @@ class Allocator(AllocatorContract):
             vestingIntervalTimeUnit=vesting_interval_time_unit.value,
             vestingInterval=vesting_interval,
             canDelegate=can_delegate,
-            isTerminatable=is_terminatable,
+            isTerminable=is_terminable,
         )
 
     @transaction_method
@@ -196,7 +196,7 @@ class Allocator(AllocatorContract):
                 'vestingIntervalTimeUnit': TimeUnit(untyped_plan['vestingIntervalTimeUnit']),
                 'vestingInterval': int(untyped_plan['vestingInterval']),
                 'isDelegationAllowed': bool(untyped_plan['isDelegationAllowed']),
-                'isTerminatable': bool(untyped_plan['isTerminatable']),
+                'isTerminable': bool(untyped_plan['isTerminable']),
             }
         )
 

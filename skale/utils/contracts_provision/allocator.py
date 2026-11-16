@@ -30,7 +30,7 @@ from skale.utils.contracts_provision import (
     POLL_INTERVAL,
     TEST_CAN_DELEGATE,
     TEST_FULL_AMOUNT,
-    TEST_IS_TERMINATABLE,
+    TEST_IS_TERMINABLE,
     TEST_LOCKUP_AMOUNT,
     TEST_SKALE_AMOUNT,
     TEST_START_MONTH,
@@ -63,7 +63,7 @@ def add_test_plan(skale_allocator: SkaleAllocator) -> int:
         vesting_interval_time_unit=TEST_VESTING_INTERVAL_TIME_UNIT,
         vesting_interval=TEST_VESTING_INTERVAL,
         can_delegate=TEST_CAN_DELEGATE,
-        is_terminatable=TEST_IS_TERMINATABLE,
+        is_terminable=TEST_IS_TERMINABLE,
     )
     return len(skale_allocator.allocator.get_all_plans())
 
